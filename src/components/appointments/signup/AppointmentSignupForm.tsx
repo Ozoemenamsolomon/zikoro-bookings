@@ -1,5 +1,5 @@
 "use client";
-import { CrossedEye } from "@/constants";
+// import { CrossedEye } from "@/constants";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -97,7 +97,7 @@ const AppointmentSignupForm = () => {
               minLength={8}
             />
             <div onClick={() => setShowPassword(!showPassword)}>
-              <CrossedEye />
+              {/* <CrossedEye /> */}
             </div>
           </div>
         </div>

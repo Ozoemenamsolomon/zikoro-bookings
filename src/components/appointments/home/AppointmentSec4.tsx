@@ -1,13 +1,11 @@
 "use client";
-import { QuestonMarkIcon2 } from "@/constants";
+// import { QuestonMarkIcon2 } from "@/constants";
 import Image from "next/image";
 
 export default function AppointmentSec4() {
   return (
     <div className=" px-5 mt-[160px] max-w-[1200px] mx-auto ">
-      <div className=" flex justify-center">
-        <QuestonMarkIcon2 />
-      </div>
+      <div className=" flex justify-center">{/* <QuestonMarkIcon2 /> */}</div>
       {/* Section1 */}
       <div className="flex flex-col lg:flex-row gap-5 mt-[87px]">
         {/* left */}

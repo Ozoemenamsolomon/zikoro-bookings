@@ -1,7 +1,7 @@
-import React, { useState } from "react";
 import Image from "next/image";
+import { useState } from "react";
 import { ChevronDown } from "styled-icons/bootstrap";
-import { ThreeLineCircle, XCircle } from "@/constants";
+// import { ThreeLineCircle, XCircle } from "@/constants";
 import { useRouter } from "next/navigation";
 
 const AppointmentNav = () => {
@@ -56,7 +56,7 @@ const AppointmentNav = () => {
 
         <div className="lg:hidden">
           <button className="text-black" onClick={toggleMenu}>
-            {isOpen ? <XCircle /> : <ThreeLineCircle />}
+            {/* {isOpen ? <XCircle /> : <ThreeLineCircle />} */}
           </button>
         </div>
       </div>
