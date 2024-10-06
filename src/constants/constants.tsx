@@ -1,16 +1,16 @@
 import React from "react";
 
-type NavLinkType {
+type NavLinkType = {
   name: string;
   href: string;
   icon: ({ color }: { color: string }) => React.JSX.Element;
-}
+};
 
-type AdminNavLinkType {
+type AdminNavLinkType = {
   name: string;
   href: string;
   image: string;
-}
+};
 
 export function HomeIcon({ color }: { color: string }) {
   return (
