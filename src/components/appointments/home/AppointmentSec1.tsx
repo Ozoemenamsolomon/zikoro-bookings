@@ -36,7 +36,7 @@ export default function AppointmentSec1() {
           <span className="font-medium">improve </span>
           clients interactions, and run an
           <span className="font-medium"> effectient </span> business.
-          <br className="block lg:hidden" /> Whether you're a
+          <br className="block lg:hidden" /> Whether you&apos;re a
           <span className="font-medium"> freelancer </span> small
           <span className="font-medium"> business owner </span>
           or a<span className="font-medium"> large enterprise, </span>

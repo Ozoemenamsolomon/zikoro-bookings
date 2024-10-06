@@ -19,7 +19,7 @@ export default function AppointmentSec4() {
             A user-friendly website to schedule{" "}
             <span className="inline lg:block">
               {" "}
-              clients' appointments 24/7.
+              clients&apos; appointments 24/7.
             </span>{" "}
           </p>
 

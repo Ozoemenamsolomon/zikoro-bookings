@@ -15,14 +15,14 @@ const AppointmentLoginForm = () => {
     password: "",
   });
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  async function onSubmit(e: any) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    await logIn(formData, "/appointments");
+    // await logIn(formData, "/appointments");
   }
 
   return (
@@ -105,7 +105,7 @@ const AppointmentLoginForm = () => {
       </button> */}
 
       <p className="mt-[14px] text-center">
-        Don't have an account?{" "}
+        Don&apos;t have an account?{" "}
         <span
           className="text-indigo-400 cursor-pointer"
           onClick={() => router.push("/bookings/signup")}

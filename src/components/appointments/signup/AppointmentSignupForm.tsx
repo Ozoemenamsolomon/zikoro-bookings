@@ -2,7 +2,7 @@
 import { CrossedEye } from "@/constants";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 // import { useRegistration } from "@/hooks";
 
 const AppointmentSignupForm = () => {
@@ -16,12 +16,12 @@ const AppointmentSignupForm = () => {
     password: "",
   });
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  async function onSubmit(e: any) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     // await register(formData);
   }
@@ -42,7 +42,7 @@ const AppointmentSignupForm = () => {
         Sign Up
       </p>
       <p className="mt-4 font-normal text-center lg:text-left">
-        It'll Only Take 2 Minutes to Get You Up and Running!
+        It&apos;ll Only Take 2 Minutes to Get You Up and Running!
       </p>
 
       <form action="" className="mt-10" onSubmit={onSubmit}>

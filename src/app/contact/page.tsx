@@ -1,10 +1,8 @@
 "use client";
-import React from "react";
-import AppointmentNav from "@/components/appointments/home/AppointmentNav";
-import AppointmentFooter from "@/components/appointments/home/AppointmentFooter";
 import AppointmentContactForm from "@/components/appointments/contact/AppointmentContactForm";
+import AppointmentFooter from "@/components/appointments/home/AppointmentFooter";
+import AppointmentNav from "@/components/appointments/home/AppointmentNav";
 import Image from "next/image";
-
 
 const AppointmentContactPage = () => {
   return (
@@ -20,7 +18,7 @@ const AppointmentContactPage = () => {
               Send Us a message
             </p>
             <p className="text-xl text-[#1F1F1F] font-normal mt-[10px]">
-              - Let's talk
+              - Let&apos;s talk
             </p>
           </div>
 
@@ -40,7 +38,7 @@ const AppointmentContactPage = () => {
               Send Us a message
             </p>
             <p className="text-[12px]  text-[#1F1F1F] font-normal  mt-[10px] text-center ">
-              Let's talk
+              Let&apos;s talk
             </p>
           </div>
           <AppointmentContactForm />

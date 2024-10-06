@@ -7,7 +7,7 @@ const ForgotPasswordComponent = () => {
 
   const [email, setEmail] = useState<string>("");
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // await forgotPassword(email);
   };
