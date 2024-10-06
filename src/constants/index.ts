@@ -1,3 +1,2 @@
-export * from "./icons"
-export * from "./constants"
-export * from "./data"
+export * from "./constants";
+export * from "./data";
