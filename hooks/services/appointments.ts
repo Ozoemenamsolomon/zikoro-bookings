@@ -7,7 +7,9 @@ import {toast} from "react-toastify";
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, subWeeks, subMonths, subYears } from 'date-fns';
 import useUserStore from "@/store/globalUserStore";
 import { createClient } from "@/utils/supabase/client";
+import { fetchAllData } from "@/lib/client";
 
+const supabase = createClient()
 
 export const useGetAppointments = () => {
   const [appointments, setAppointments] = useState<AppointmentLink[]>([]);
@@ -18,16 +20,18 @@ export const useGetAppointments = () => {
     try {
         setLoading(true);
         setError('')
-        const { data, status, } = await getRequest<AppointmentLink[]>({
-          endpoint: `/appointments/schedules`,
-        });
-        // console.log({ data, status, } )
+        // const { data, status, } = await getRequest<AppointmentLink[]>({
+        //   endpoint: `/appointments/schedules`,
+        // });
+
+        const {data,count,error} = await fetchAllData('bookings')
+// CONTINUE
         
-        if(status!==200){
+        if(error){
           setError('Error fetching schedules!')
           toast.error('Error fetching schedules!')
         }
-        setAppointments(data.data)
+        setAppointments(data)
     } catch (error) {
         setError('Error fetching schedules!')
         toast.error('Error fetching schedules!')

@@ -2,8 +2,6 @@
 import { createClient } from "@/utils/supabase/server"; 
 import { PostgrestError } from "@supabase/supabase-js";
 import { settings } from "../settings";
-import { error } from "console";
-
 
 export const getUserData = async () =>{
   const supabase = createClient();

@@ -13,6 +13,11 @@ import { useLogOut } from '@/hooks';
 const navlinks = [
   {
     icon: Calendar,
+    label: 'Signin',
+    link: `/workspace/signin`,
+  },
+  {
+    icon: Calendar,
     label: 'Calendar',
     link: `/workspace/calendar`,
   },

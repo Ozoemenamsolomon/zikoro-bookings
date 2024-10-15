@@ -19,10 +19,11 @@ export const fetchSchedules = async (
       .from('appointmentLinks')
       .select('*', { count: 'exact' }) 
       .eq('createdBy', user?.id)
+      .range(0, 19)
       .order('created_at', {ascending: false} ); 
 
     const { data, count, error } = await query;
-    console.error({user, data, count, error });
+    // console.error({user, data, count, error });
 
     if (error) {
       console.error('Error fetching contacts:', error);
