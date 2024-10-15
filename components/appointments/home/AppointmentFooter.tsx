@@ -70,7 +70,7 @@ export default function AppointmentFooter() {
           {/* Second List Item */}
           <li
             className="flex flex-col gap-y-2 cursor-pointer justify-center items-center"
-            onClick={() => router.push("/bookings/contact")}
+            onClick={() => router.push("/contact")}
           >
             {/* <FooterMail /> */}
             <span className="text-[10px] lg:text-base font-normal lg:font-medium">

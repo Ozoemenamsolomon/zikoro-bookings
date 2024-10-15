@@ -19,7 +19,8 @@ const AppointmentNav = () => {
           width={115}
           height={40}
           alt=""
-          onClick={() => router.push("/bookings")}
+          className="cursor-pointer"
+          onClick={() => router.push("/")}
         />
 
         {/* links */}
@@ -31,7 +32,7 @@ const AppointmentNav = () => {
             Other Products <ChevronDown size={20} />
           </p>
           <p
-            onClick={() => router.push("/bookings/contact")}
+            onClick={() => router.push("/contact")}
             className="text-base font-medium cursor-pointer"
           >
             Contact us
@@ -41,13 +42,13 @@ const AppointmentNav = () => {
         {/* buttons */}
         <div className=" border-[1px] border-gray-200 rounded-[51px] hidden lg:flex gap-x-4 p-3 ">
           <button
-            onClick={() => router.push("/bookings/signup")}
+            onClick={() => router.push("/signup")}
             className="text-base px-[20px] py-[10px] text-white bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end rounded-[28px]"
           >
             Sign Up
           </button>
           <button
-            onClick={() => router.push("/bookings/login")}
+            onClick={() => router.push("/login")}
             className="text-base px-[20px] py-[10px] text-indigo-700 bg-transparent border border-indigo-800 rounded-[28px]"
           >
             Login
@@ -94,7 +95,7 @@ const AppointmentNav = () => {
             </li>
             <li
               className="mt-5 font-medium "
-              onClick={() => router.push("/bookings/contact")}
+              onClick={() => router.push("/contact")}
             >
               Contact Us{" "}
             </li>
@@ -102,13 +103,13 @@ const AppointmentNav = () => {
 
           <div className=" border-[1px] border-gray-300 rounded-[51px] flex gap-x-4 p-3 mt-[72px] items-center w-fit mx-auto ">
             <button
-              onClick={() => router.push("/bookings/signup")}
+              onClick={() => router.push("/signup")}
               className="text-base px-[20px] py-[10px] text-white bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end rounded-[28px]"
             >
               Sign Up
             </button>
             <button
-              onClick={() => router.push("/bookings/login")}
+              onClick={() => router.push("/login")}
               className="text-base px-[20px] py-[10px] text-indigo-700 bg-transparent border border-indigo-800 rounded-[28px]"
             >
               Login
