@@ -1,10 +1,7 @@
 'use server'
 import { createClient } from "@/utils/supabase/server"; 
 import { PostgrestError } from "@supabase/supabase-js";
-
-let settings = {
-  countLimit : 20
-}
+import { settings } from "../settings";
 
 export const fetchAllData = async (table: string, orderBy?: string, start:number=1, end:number=settings.countLimit, selectOptions:string=`*`, ): Promise<{ data: any[]; error: PostgrestError | null; count:number | null }> => {
     const supabase = createClient();

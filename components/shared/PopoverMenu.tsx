@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/popover"
 import { cn } from "@/lib/utils";
 
-export const DropOver = ({
+export const PopoverMenu = ({
     trigerBtn=<Button variant="outline">Open</Button>, 
     children, className}
     :{
