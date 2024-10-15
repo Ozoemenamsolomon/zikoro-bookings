@@ -21,7 +21,7 @@ export default function AppointmentSec5() {
           </span>
         </p>
         <button
-          onClick={() => router.push("/bookings/login")}
+          onClick={() => router.push("/login")}
           className="text-base font-semibold py-[10px] px-[64px] text-indigo-700 bg-white mt-[28px] rounded-[6px] w-full lg:w-fit "
         >
           Get started for free
