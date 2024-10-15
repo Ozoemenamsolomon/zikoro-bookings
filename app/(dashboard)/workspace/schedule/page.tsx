@@ -1,11 +1,16 @@
-// import LinksPage from '@/components/appointments/schedule'
+import SchedulesLinks from '@/components/workspace/schedule'
+import { fetchSchedules } from '@/lib/server/schedules'
 import React from 'react'
 
-const page =  () => {
+const SchedulesPage = async ({searchParams}:{
+  searchParams:string}) => {
+    const {data,count,error} = await fetchSchedules()
+
   return (
-    <></>
-    // <LinksPage/>
+    <SchedulesLinks schedules={data} count={count} error={error} />
   )
 }
 
-export default page
+export default SchedulesPage
+
+ 

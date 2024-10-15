@@ -2,6 +2,17 @@
 import { createClient } from "@/utils/supabase/server"; 
 import { PostgrestError } from "@supabase/supabase-js";
 import { settings } from "../settings";
+import { error } from "console";
+
+
+export const getUserData = async () =>{
+  const supabase = createClient();
+
+  const  {data:{user}, error} = await supabase.auth.getUser()
+  const {data:userData, error:err} = await supabase.from('users').select('userEmail,id').eq('userEmail', user?.email).single()
+
+  return {user:userData, error:error||err}
+}
 
 export const fetchAllData = async (table: string, orderBy?: string, start:number=1, end:number=settings.countLimit, selectOptions:string=`*`, ): Promise<{ data: any[]; error: PostgrestError | null; count:number | null }> => {
     const supabase = createClient();

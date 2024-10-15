@@ -14,32 +14,32 @@ const navlinks = [
   {
     icon: Calendar,
     label: 'Calendar',
-    link: `/appointments/calendar`,
+    link: `/workspace/calendar`,
   },
   {
     icon: Briefcase,
     label: 'Appointments',
-    link: `/appointments`,
+    link: `/workspace/appointments`,
   },
   {
     icon: Link2,
     label: 'Schedules',
-    link: `/appointments/schedule`,
+    link: `/workspace/schedule`,
   },
   {
     icon: Users,
     label: 'Contacts',
-    link: `/appointments/contacts`,
+    link: `/workspace/contacts`,
   },
   {
     icon: BarChartBig,
     label: 'Analytics',
-    link: `/appointments/analytics`,
+    link: `/workspace/analytics`,
   },
   {
     icon: Store,
     label: 'Store Front',
-    link: `/appointments/shop-front/booking`,
+    link: `/workspace/shop-front/booking`,
   },
   // {
   //   icon: Bell,
@@ -49,7 +49,7 @@ const navlinks = [
   {
     icon: Settings,
     label: 'Settings',
-    link: `/appointments/settings/profile`,
+    link: `/workspace/settings/profile`,
   },
 ];
 
