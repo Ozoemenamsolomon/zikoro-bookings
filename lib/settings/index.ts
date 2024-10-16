@@ -1,3 +1,4 @@
 export const settings = {
-    countLimit : 20
+    countLimit : 20,
+    schedulesLimit: 20,
   }

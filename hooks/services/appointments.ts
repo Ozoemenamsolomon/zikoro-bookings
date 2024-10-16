@@ -2,49 +2,68 @@
 
 import { AppointmentLink, AppointmentUnavailability, Booking, BookingsContact, UserType } from "@/types/appointments";
 import { getRequest } from "@/utils/api";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {toast} from "react-toastify";
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, subWeeks, subMonths, subYears } from 'date-fns';
 import useUserStore from "@/store/globalUserStore";
 import { createClient } from "@/utils/supabase/client";
 import { fetchAllData } from "@/lib/client";
+import { settings } from "@/lib/settings";
 
-const supabase = createClient()
+const supabase = createClient();
 
-export const useGetAppointments = () => {
-  const [appointments, setAppointments] = useState<AppointmentLink[]>([]);
-  const [isLoading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+export const useGetSchedules =  (scheduleData?: { error?: string | null; schedules?: AppointmentLink[] | null; count?: number } )=> {
+  const { user } = useUserStore();
+  const [isError, setIsError] = useState<string>(scheduleData?.error||'');
+  const [scheduleList, setScheduleList] = useState<AppointmentLink[]>(scheduleData?.schedules || []);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const limit = settings.schedulesLimit || 20
+  const [totalPages, setTotalPages] = useState<number>(Math.ceil((scheduleData?.count || 0) / limit))
   
-  const getAppointments = async () => {
-    try {
+  const fetchSchedules = useCallback(
+    async (page: number = 1) => {
+      try {
+        setIsError('');
         setLoading(true);
-        setError('')
-        // const { data, status, } = await getRequest<AppointmentLink[]>({
-        //   endpoint: `/appointments/schedules`,
-        // });
 
-        const {data,count,error} = await fetchAllData('bookings')
-// CONTINUE
-        
-        if(error){
-          setError('Error fetching schedules!')
-          toast.error('Error fetching schedules!')
+        const offset = (page - 1) * limit;
+
+        const { data, count: newCount, error: fetchError } = await supabase
+          .from('appointmentLinks')
+          .select('*', { count: 'exact' })
+          .eq('createdBy', user?.id)
+          .range(offset, offset + limit - 1)
+          .order('created_at', { ascending: false });
+
+        if (fetchError) {
+          console.error('Error fetching appointments:', fetchError);
+          setIsError('Failed to fetch appointments. Please try again later.');
+          return;
         }
-        setAppointments(data)
-    } catch (error) {
-        setError('Error fetching schedules!')
-        toast.error('Error fetching schedules!')
-    } finally { 
-        setLoading(false) 
-    }
-  };
 
-  useEffect(() => {
-    getAppointments();
-  }, []);
+        setScheduleList(data || []);
+        setTotalPages(Math.ceil((newCount || 0) / limit))
+        setCurrentPage(page);
+        setIsError('');
+      } catch (serverError) {
+        console.error('Server error:', serverError);
+        setIsError('Server error occurred. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user?.id, limit]  
+  );
 
-  return { appointments, isLoading,error,getAppointments };
+  const handlePageChange = useCallback(
+    (page: number) => {
+      setCurrentPage(page);
+      fetchSchedules(page);
+    }, [fetchSchedules]);
+
+  return { fetchSchedules, handlePageChange,totalPages,loading,currentPage,scheduleList,isError };
 };
 
 export const useGetBookings = () => {
