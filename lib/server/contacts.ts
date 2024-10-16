@@ -18,6 +18,7 @@ export const fetchContacts = async (
       .from('bookingsContact')
       .select('*', { count: 'exact' }) 
       .eq('createdBy', user?.id)
+      .or('status.is.null,status.neq.ARCHIVED')
       .order('firstName', {ascending: false} ); 
 
     // If 'q' is provided, add additional filtering
@@ -26,7 +27,7 @@ export const fetchContacts = async (
     }
 
     const { data, count, error } = await query;
-    // console.error({user, userData, err, data, count, error });
+    // console.error({user, data, count, error });
 
     if (error) {
       console.error('Error fetching contacts:', error);

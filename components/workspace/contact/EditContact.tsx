@@ -85,7 +85,7 @@ const EditContact = ({contact, }:{contact:BookingsContact, }) => {
         }
     };
     
-    const isFormValid = useMemo(() => Object.keys(errors).length === 0, [errors])
+    // const isFormValid = useMemo(() => Object.keys(errors).length === 0, [errors])
 
     return (
         <CenterModal

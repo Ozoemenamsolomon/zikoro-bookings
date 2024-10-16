@@ -8,6 +8,7 @@ import {
   DrawerContent,
   DrawerTrigger,
 } from "@/components/ui/drawer"
+import { cn } from "@/lib/utils"
 
 export const BottomModal = ({
     trigerBtn=<Button variant="outline">Open</Button>, 
@@ -23,7 +24,7 @@ export const BottomModal = ({
         <DrawerTrigger asChild>
           {trigerBtn}
         </DrawerTrigger>
-        <DrawerContent>
+        <DrawerContent className={cn("p-0", className)} >
           {children}
         </DrawerContent>
       </Drawer>

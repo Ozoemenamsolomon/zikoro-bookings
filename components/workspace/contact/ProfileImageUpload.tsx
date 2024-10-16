@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Loader, Pencil } from 'lucide-react';
 import { toast } from 'react-toastify';
+import Image from 'next/image';
 
 // Cloudinary upload function
 export const uploadImage = async (file: File) => {
@@ -57,9 +58,11 @@ const ProfileImageUpload: React.FC<ProfileImageUploadProps> = ({ formData, setFo
          <Loader className='animate-spin' />
         :
       formData?.profileImg ? (
-        <img
+        <Image
           src={formData?.profileImg || ''}
           alt=""
+          width={200}
+          height={200}
           className="w-full h-full rounded-full object-cover"
         />
       ) : (
