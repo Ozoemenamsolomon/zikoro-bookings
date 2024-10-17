@@ -3,8 +3,9 @@ import { useAppointmentContext } from '@/context/AppointmentContext'
 import useUserStore from '@/store/globalUserStore'
 import { createClient } from '@/utils/supabase/client'
 import { X } from 'lucide-react'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import EmptyList from '../ui/EmptyList'
+import { toast } from 'react-toastify'
 
 const ContactTags = () => {
     const {contact, setContact,contacts, setContacts} = useAppointmentContext()
@@ -22,8 +23,8 @@ const ContactTags = () => {
 
     const addNewTag = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(null);
-        setSuccess(false);
+        // setError(null);
+        // setSuccess(false);
 
         if (!tag) {
             setError('Tag is required');
@@ -58,10 +59,12 @@ const ContactTags = () => {
                 setContacts(list!)
             }
 
-            setSuccess(true); 
+            // setSuccess(true); 
+            toast.success('New tag was added')
             setTag('');  
         } catch (err) {
-            setError('Failed to add tag. Please try again.');
+            toast.success('Failed to add tag. Please try again.')
+            // setError('Failed to add tag. Please try again.');
         } finally {
             setLoading('');
         }
@@ -89,7 +92,7 @@ const ContactTags = () => {
 
     useEffect(()=>{
         fetchTags()
-    },[])
+    },[contact])
 
     const updateTags = (tag: string) => {
         if (!contactTags.some(item => item.tag === tag)) {
@@ -125,6 +128,36 @@ const ContactTags = () => {
         }
     }
 
+    const deleteTag = useCallback(async (tagToDelete: string) => {
+        if (!contact?.tags) return; // Early exit if no tags
+    
+        const filteredTags = contact.tags.filter(item => item.tag !== tagToDelete);
+        const previousContactState = contacts?.find(item => item?.id === contact?.id);
+    
+        setContact({ ...contact, tags: filteredTags });
+    
+        try {
+            const { data, error } = await supabase
+                .from('bookingsContact')
+                .update({ tags: filteredTags })
+                .eq('id', contact?.id)
+                // .select('*')
+                // .single()
+    
+            if (error) {
+                throw new Error(error.message);
+            }
+    
+            toast.success(`Tag - ${tagToDelete} was deleted`);
+        } catch (error) {
+            toast.error(`Error occurred! Tag - ${tagToDelete} not deleted`);
+            if (previousContactState) {
+                setContact(previousContactState); // Revert state on error
+            }
+        }
+    }, [contact, contacts]);
+    
+
   return (
     <div className=" border rounded-md space-y-3">
                 <div className="text-center w-full p-4 bg-baseBg border-b font-semibold   rounded-md">Tags</div>
@@ -137,7 +170,7 @@ const ContactTags = () => {
                             className={`p-2 py-1 min-w-24 text-center bg-red-500/20 ring-1 ring-red-600 text-red-600 relative text-sm rounded-md
                                 `}>
                                     {item?.tag}
-                                    <div  className='border cursor-pointer bg-white p-1  rounded-full text-gray-500 absolute -top-2 right-0'>
+                                    <div onClick={()=>deleteTag(item?.tag)} className='border cursor-pointer bg-white p-1  rounded-full text-gray-500 absolute -top-2 right-0'>
                                         <X size={12} className='shrink-0'/>
                                     </div>
                             </button>
@@ -177,7 +210,7 @@ const ContactTags = () => {
                             </div>
                         
                             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-                            {success && <p className="text-blue-500 text-sm mb-4">Tag added successfully!</p>}
+                            {/* {success && <p className="text-blue-500 text-sm mb-4">Tag added successfully!</p>} */}
                         
                             <button
                                 type="submit"

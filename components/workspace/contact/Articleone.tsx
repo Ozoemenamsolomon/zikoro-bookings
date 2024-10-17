@@ -69,7 +69,7 @@ const Articleone = () => {
                         }
                     </div>
                 </div>
-                <EditContact contact={contact}/>
+                <EditContact />
             </div>
 
             <p className="text-center text-sm py-2"><span className='font-semibold'>Contact Added: </span>{contact?.created_at && format(new Date(contact?.created_at!), 'MMM dd yyyy, hh:mm a')} </p>

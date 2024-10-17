@@ -21,6 +21,8 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery }) =
   const [searchTerm, setSearchTerm] = useState(searchquery || '');
   const [loading, setLoading] = useState<number | null>(null);
 
+  // console.log({fetchedcontacts})
+
   // Function to filter contacts based on search term
   const filterContacts = useCallback(() => {
     if (!contacts) return;
@@ -111,12 +113,15 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery }) =
             <Loader2Icon className="animate-spin text-basePrimary/50" />
           </div>
         ) : contacts?.length ? (
-          contacts.map(({ firstName, profileImg, lastName, favorite, id, email }) => (
-            <div key={id} onClick={() => setContact({ id, firstName, lastName, favorite, profileImg, email })} className="py-2 w-full cursor-pointer">
+          contacts.map((item) => {
+            const { firstName, profileImg, lastName, favorite, id, email } = item
+            return (
+            <div key={id} 
+              onClick={() => setContact(item)} className="py-2 w-full cursor-pointer">
               <div
                 className={`${
-                  contact?.id === id ? 'bg-slate-100' : ''
-                } rounded w-full p-2 hover:bg-slate-50 duration-300 flex gap-2 items-center`}
+                  contact?.id === id ? 'bg-baseBg ring-1 ring-slate-300' : ''
+                } rounded-md w-full p-2 hover:bg-slate-100 duration-300 flex gap-2 items-center`}
               >
                 <div className="h-12 w-12 rounded-full bg-baseLight uppercase font-semibold shrink-0 flex items-center justify-center">
                   {profileImg ? (
@@ -148,7 +153,7 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery }) =
                 </div>
               </div>
             </div>
-          ))
+          )})
         ) : (
           <EmptyList size="34" text="No contacts found" />
         )}
