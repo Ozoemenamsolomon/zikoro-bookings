@@ -3,14 +3,14 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-// import { useRegistration } from "@/hooks";
+import { useRegistration } from "@/hooks/services/auth";
 
 const AppointmentSignupForm = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
-  // const { loading, register } = useRegistration();
+  const { loading, register } = useRegistration();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -23,7 +23,7 @@ const AppointmentSignupForm = () => {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // await register(formData);
+    await register(formData);
   }
 
   return (

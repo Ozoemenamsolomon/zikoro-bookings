@@ -9,7 +9,6 @@ const ForgotPasswordComponent = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // await forgotPassword(email);
   };
 
   return (
