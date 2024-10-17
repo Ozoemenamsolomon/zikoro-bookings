@@ -15,11 +15,11 @@ export const PopoverMenu = ({
     className?:string
 }) => {
   return (
-    <Popover>
+    <Popover >
       <PopoverTrigger asChild>
         {trigerBtn}
       </PopoverTrigger>
-      <PopoverContent className={cn(`w-80 `, className)}>
+      <PopoverContent className={cn(`w-80 p-0`, className)}>
         {children}
       </PopoverContent>
     </Popover>

@@ -169,3 +169,9 @@ export interface BookingsContact {
   favorite?: boolean;
 }
 
+export interface ContactTag {
+  id?: number;  
+  created_at?: string;  
+  tag: string; 
+  createdBy: number; 
+}

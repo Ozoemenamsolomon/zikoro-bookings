@@ -7,17 +7,18 @@ import { ChevronLeft } from 'lucide-react'
 import { CenterModal } from '@/components/shared/CenterModal'
 import { useGetSchedules } from '@/hooks/services/appointments'
 import PaginationMain from '@/components/shared/PaginationMain'
+import useUserStore from '@/store/globalUserStore'
 
 const ScheduleAppointment = ({ contact, appointmentLinks }: { contact: BookingsContact, appointmentLinks: AppointmentLink[] }) => {
   const [show, setShow] = useState<'links' | 'date' | 'final'>('links')
   const [selectedAppointmentLink, setSelectedAppointmentLink] = useState<AppointmentLink | null>(null)
-  
+  const {user} = useUserStore()
   // Fetching schedule data using custom hook
   const { fetchSchedules, handlePageChange, totalPages, loading, currentPage, scheduleList, isError } = useGetSchedules()
 
   useEffect(() => {
     fetchSchedules() // Fetch schedules when component mounts
-  }, [])
+  }, [user])
 
   return (
     <CenterModal

@@ -24,6 +24,7 @@ export const useGetSchedules =  (scheduleData?: { error?: string | null; schedul
   
   const fetchSchedules = useCallback(
     async (page: number = 1) => {
+      if(!user) return
       try {
         setIsError('');
         setLoading(true);

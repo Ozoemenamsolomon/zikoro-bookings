@@ -19,7 +19,7 @@ export const DropMenu = ({
       <DropdownMenuTrigger asChild>
         {trigerBtn}
       </DropdownMenuTrigger>
-      <DropdownMenuContent className={cn("w-56", className)}>
+      <DropdownMenuContent className={cn("p-0", className)}>
         {children}
       </DropdownMenuContent>
     </DropdownMenu>

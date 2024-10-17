@@ -1,4 +1,5 @@
-import Main from "@/components/workspace/Main";
+
+import { AppointmentProvider } from "@/context/AppointmentContext";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,8 +9,8 @@ export const metadata: Metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
-      <Main>
+    <AppointmentProvider>
         {children}
-      </Main>
+    </AppointmentProvider>
   );
 }

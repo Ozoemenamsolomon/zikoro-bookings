@@ -3,6 +3,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
+import { cn } from "@/lib/utils";
 
 
 export const CenterModal = ({
@@ -18,7 +19,7 @@ export const CenterModal = ({
           <DialogTrigger asChild>
             {trigerBtn}
           </DialogTrigger>
-          <DialogContent className={className}>
+          <DialogContent className={cn("p-0", className)}>
             {children}
           </DialogContent>
         </Dialog>

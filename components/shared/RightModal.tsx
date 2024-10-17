@@ -7,6 +7,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { cn } from "@/lib/utils";
 
 
 export const RightModal = ({
@@ -22,7 +23,7 @@ export const RightModal = ({
           <SheetTrigger asChild>
             {trigerBtn}
           </SheetTrigger>
-          <SheetContent className={className}>
+          <SheetContent className={cn("p-0", className)}>
             {children}
           </SheetContent>
         </Sheet>

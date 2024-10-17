@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import { Pencil } from 'lucide-react'
 import CustomInput from '../ui/CustomInput'
 import { DatePicker } from '../ui/DatePicker'
@@ -12,21 +12,27 @@ import { useAppointmentContext } from '@/context/AppointmentContext'
 import { CenterModal } from '@/components/shared/CenterModal'
 
 
-// Form validation helper function
 const validateForm = (formData: any) => {
     let errors = {}
-    if (!formData.firstName) errors = { ...errors, firstName: 'First name is required' }
-    if (!formData.lastName) errors = { ...errors, lastName: 'Last name is required' }
+    // if (!formData.firstName) errors = { ...errors, firstName: 'First name is required' }
+    // if (!formData.lastName) errors = { ...errors, lastName: 'Last name is required' }
     if (!formData.email) errors = { ...errors, email: 'Email is required' }
     else if (!/\S+@\S+\.\S+/.test(formData.email)) errors = { ...errors, email: 'Invalid email format' }
     return errors
 }
 
-const EditContact = ({contact, }:{contact:BookingsContact, }) => {
-    const {  setContact, setContacts } = useAppointmentContext()
+const EditContact = () => {
+    const { contact, setContact, setContacts } = useAppointmentContext()
+
     const [formData, setFormData] = useState<BookingsContact>({
         ...contact
     })
+
+    useEffect(() => {
+        contact && setFormData(contact)
+    }, [contact])
+    
+
     const [errors, setErrors] = useState<any>({})
     const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -85,7 +91,7 @@ const EditContact = ({contact, }:{contact:BookingsContact, }) => {
         }
     };
     
-    const isFormValid = useMemo(() => Object.keys(errors).length === 0, [errors])
+    // const isFormValid = useMemo(() => Object.keys(errors).length === 0, [errors])
 
     return (
         <CenterModal
