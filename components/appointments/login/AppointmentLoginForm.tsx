@@ -1,14 +1,14 @@
 "use client";
-// import { CrossedEye } from "@/constants";
+import { CrossedEye } from "@/constants/icons";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-// import { useLogin } from "@/hooks";
+import { useLogin } from "@/hooks/services/auth";
 
 const AppointmentLoginForm = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  // const { loading, logIn } = useLogin();
+  const { loading, logIn } = useLogin();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -22,7 +22,7 @@ const AppointmentLoginForm = () => {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // await logIn(formData, "/appointments");
+    await logIn(formData, "/appointments");
   }
 
   return (
@@ -72,7 +72,7 @@ const AppointmentLoginForm = () => {
               minLength={8}
             />
             <div onClick={() => setShowPassword(!showPassword)}>
-              {/* <CrossedEye /> */}
+              <CrossedEye />
             </div>
           </div>
           <p
