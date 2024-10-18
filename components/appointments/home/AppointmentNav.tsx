@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { ChevronDown } from "styled-icons/bootstrap";
-// import { ThreeLineCircle, XCircle } from "@/constants";
+import { ThreeLineCircle, XCircle } from "@/constants/icons";
 import { useRouter } from "next/navigation";
 
 const AppointmentNav = () => {

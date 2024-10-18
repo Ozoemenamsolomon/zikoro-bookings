@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
-// import { FooterMail, FooterMenu } from "@/constants";
+import { FooterMail, FooterMenu } from "@/constants/icons";
 import { useRouter } from "next/navigation";
 
 export default function AppointmentFooter() {
@@ -61,7 +61,7 @@ export default function AppointmentFooter() {
             className="flex flex-col gap-y-2 cursor-pointer justify-center items-center"
             onClick={() => setIsPreviewUp(!isPreviewUp)}
           >
-            {/* <FooterMenu /> */}
+            <FooterMenu />
             <span className="text-[10px] lg:text-base font-normal lg:font-medium">
               Other Products
             </span>
@@ -72,7 +72,7 @@ export default function AppointmentFooter() {
             className="flex flex-col gap-y-2 cursor-pointer justify-center items-center"
             onClick={() => router.push("/contact")}
           >
-            {/* <FooterMail /> */}
+            <FooterMail />
             <span className="text-[10px] lg:text-base font-normal lg:font-medium">
               Contact Us
             </span>
