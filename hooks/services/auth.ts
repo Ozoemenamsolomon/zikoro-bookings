@@ -119,3 +119,18 @@ export function useRegistration() {
   
     return { setLoggedInUser };
   };
+
+  export function useLogOut(redirectPath: string = "/") {
+    const router = useRouter();
+    const { setUser } = useUserStore();
+  
+    async function logOut() {
+      await supabase.auth.signOut();
+      setUser(null);
+      router.push(redirectPath);
+    }
+  
+    return {
+      logOut,
+    };
+  }

@@ -20,7 +20,7 @@ export default function AppointmentSec5() {
         </p>
         <div className="flex w-full">
           <Link
-            href="/login"
+             href="/workspace/appointments"
             className="text-base font-semibold py-[10px] px-[64px] text-indigo-700 bg-white mt-[28px] rounded-[6px] w-full lg:w-fit "
           >
             Get started for free

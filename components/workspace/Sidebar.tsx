@@ -1,6 +1,5 @@
 'use client'
-// import { BriefCase, CircleArrowRight, CalenderIcon } from '@/constants';
-// import { getUser, useLogOut } from '@/hooks';
+
 import { Bell, Calendar, Grip,  Link2, Menu, Plus, Settings, BriefcaseIcon, Users, BarChartBig, Store, CircleArrowRight, Briefcase } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -11,11 +10,11 @@ import { useClickOutside } from '@/lib/useClickOutside';
 import { useLogOut } from '@/hooks';
 
 const navlinks = [
-  {
-    icon: Calendar,
-    label: 'Signin',
-    link: `/workspace/signin`,
-  },
+  // {
+  //   icon: Calendar,
+  //   label: 'Signin',
+  //   link: `/workspace/signin`,
+  // },
   {
     icon: Calendar,
     label: 'Calendar',
