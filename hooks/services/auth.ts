@@ -1,14 +1,14 @@
 "use client";
 
-import { loginSchema, onboardingSchema } from "@/schemas/auth";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useState, useEffect } from "react";
-import toast from "react-hot-toast";
+import { loginSchema,  } from "@/schemas/auth";
+import { useState,  } from "react";
+import {toast} from "react-toastify";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import useUserStore from "@/store/globalUserStore";
+import { createClient } from "@/utils/supabase/client";
 
-const supabase = createClientComponentClient();
+const supabase = createClient();
 export function useRegistration() {
     const [loading, setLoading] = useState(false);
     const router = useRouter();

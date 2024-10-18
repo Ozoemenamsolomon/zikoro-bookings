@@ -1,5 +1,4 @@
-"use client";
-// import { QuestonMarkIcon2 } from "@/constants";
+
 import Image from "next/image";
 
 export default function AppointmentSec4() {
