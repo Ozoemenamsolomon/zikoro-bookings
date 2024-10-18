@@ -22,7 +22,7 @@ const AppointmentLoginForm = () => {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    await logIn(formData, "/appointments");
+    await logIn(formData, "/workspace/appointments");
   }
 
   return (

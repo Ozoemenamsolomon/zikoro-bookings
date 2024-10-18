@@ -1,8 +1,6 @@
-"use client";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function AppointmentSec5() {
-  const router = useRouter();
 
   return (
     <div className="mt-[140px] bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end py-[35px] lg:py-[115px] px-5 lg:px-[99px]max-w-full xl:max-w-[97rem] mx-auto">
@@ -20,12 +18,14 @@ export default function AppointmentSec5() {
             transform your business!
           </span>
         </p>
-        <button
-          onClick={() => router.push("/login")}
-          className="text-base font-semibold py-[10px] px-[64px] text-indigo-700 bg-white mt-[28px] rounded-[6px] w-full lg:w-fit "
-        >
-          Get started for free
-        </button>
+        <div className="flex w-full">
+          <Link
+             href="/workspace/appointments"
+            className="text-base font-semibold py-[10px] px-[64px] text-indigo-700 bg-white mt-[28px] rounded-[6px] w-full lg:w-fit "
+          >
+            Get started for free
+          </Link>
+        </div>
       </div>
     </div>
   );

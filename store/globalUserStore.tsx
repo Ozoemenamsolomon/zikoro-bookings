@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { TUser } from "@/types";
+import { TUser } from "@/types/user";
 
 // Define the user state interface
 interface userState {

@@ -1,5 +1,3 @@
-"use client";
-
 import AppointmentFooter from "@/components/appointments/home/AppointmentFooter";
 import AppointmentNav from "@/components/appointments/home/AppointmentNav";
 import AppointmentSec1 from "@/components/appointments/home/AppointmentSec1";

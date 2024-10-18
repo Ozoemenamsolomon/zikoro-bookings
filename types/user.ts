@@ -24,6 +24,4 @@ export interface TUserAccess {
   isTeamMember?:boolean;
   attendeeId?: number;
   attendee?: TAttendee
-
-  
 }

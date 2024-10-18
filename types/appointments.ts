@@ -1,5 +1,5 @@
-import { Category } from "@/components/appointments/create/CategoryForm";
-import { DaySchedule } from "@/components/appointments/ui/DateTimeScheduler";
+// import { Category } from "@/components/appointments/create/CategoryForm";
+// import { DaySchedule } from "@/components/appointments/ui/DateTimeScheduler";
 
 export interface AppointmentLink {
     id?: bigint;
@@ -27,50 +27,50 @@ export interface AppointmentLink {
     zikoroBranding: string | null;
     isPaidAppointment?: boolean;
 }
-export interface AppointmentFormData {
-  id?: bigint;
-  created_at?: string;
-  appointmentName: string;
-  category: string|Category[];
-  duration: number|null;
-  loctionType: string;
-  locationDetails: string;
-  timeZone: string;
-  timeDetails:  DaySchedule[] ;
-  curency: string;
-  amount: number|null;
-  paymentGateway: string;
-  maxBooking: number|null;
-  sessionBreak: number|null;
-  statusOn: boolean;
-  note: string;
-  appointmentAlias: string;
-  createdBy: any;
-  businessName: string | null;
-  logo: string | null;
-  brandColour: string | null;
-  teamMembers: string | null;
-  zikoroBranding: string | null | boolean;
-  files?:File[] | null;
-  isPaidAppointment?: boolean;
+// export interface AppointmentFormData {
+//   id?: bigint;
+//   created_at?: string;
+//   appointmentName: string;
+//   category: string|Category[];
+//   duration: number|null;
+//   loctionType: string;
+//   locationDetails: string;
+//   timeZone: string;
+//   timeDetails:  DaySchedule[] ;
+//   curency: string;
+//   amount: number|null;
+//   paymentGateway: string;
+//   maxBooking: number|null;
+//   sessionBreak: number|null;
+//   statusOn: boolean;
+//   note: string;
+//   appointmentAlias: string;
+//   createdBy: any;
+//   businessName: string | null;
+//   logo: string | null;
+//   brandColour: string | null;
+//   teamMembers: string | null;
+//   zikoroBranding: string | null | boolean;
+//   files?:File[] | null;
+//   isPaidAppointment?: boolean;
 
-}
-export interface FormProps {
-  formData?: AppointmentFormData;
-  setFormData?: React.Dispatch<React.SetStateAction<AppointmentFormData>>;
-  errors?: any;
-  setErrors?: React.Dispatch<React.SetStateAction<any>>;
-  loading?: boolean;
-  setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
-  handleChange?:  (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-}
+// }
+// export interface FormProps {
+//   formData?: AppointmentFormData;
+//   setFormData?: React.Dispatch<React.SetStateAction<AppointmentFormData>>;
+//   errors?: any;
+//   setErrors?: React.Dispatch<React.SetStateAction<any>>;
+//   loading?: boolean;
+//   setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
+//   handleChange?:  (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+// }
 
-export interface DetailItem {
-  title: string;
-  icon: JSX.Element;
-  description: string;
-  formComponent: React.FC<FormProps>;
-}
+// export interface DetailItem {
+//   title: string;
+//   icon: JSX.Element;
+//   description: string;
+//   formComponent: React.FC<FormProps>;
+// }
 
 export interface Booking {
   id?: bigint;
@@ -169,3 +169,9 @@ export interface BookingsContact {
   favorite?: boolean;
 }
 
+export interface ContactTag {
+  id?: number;  
+  created_at?: string;  
+  tag: string; 
+  createdBy: number; 
+}

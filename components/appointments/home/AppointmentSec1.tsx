@@ -1,9 +1,7 @@
-"use client";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function AppointmentSec1() {
-  const router = useRouter();
   return (
     <div className=" px-5 mt-[100px] lg:mt-[140px] relative max-w-full xl:max-w-7xl mx-0 xl:mx-auto">
       <Image
@@ -47,12 +45,12 @@ export default function AppointmentSec1() {
       <div className="flex flex-col lg:hidden mt-20">
         <div>
           <div className=" flex items-center justify-center mx-auto">
-            <button
-              onClick={() => router.push("/appointments")}
+            <Link
+                href="/workspace/appointments"
               className="text-white font-semibold text-base bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end py-[10px] px-[64px] rounded-lg"
             >
               Get Started For Free!
-            </button>
+            </Link>
           </div>
 
           <p className=" text-xs lg:text-sm font-light mt-2 lg:mt-3 text-center">
