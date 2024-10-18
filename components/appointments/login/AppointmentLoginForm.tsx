@@ -77,7 +77,7 @@ const AppointmentLoginForm = () => {
           </div>
           <p
             className="text-blue-500 text-right cursor-pointer"
-            onClick={() => router.push("/bookings/forgot-password")}
+            onClick={() => router.push("/forgot-password")}
           >
             Forgot password?
           </p>
@@ -108,7 +108,7 @@ const AppointmentLoginForm = () => {
         Don&apos;t have an account?{" "}
         <span
           className="text-indigo-400 cursor-pointer"
-          onClick={() => router.push("/bookings/signup")}
+          onClick={() => router.push("/signup")}
         >
           Signup
         </span>
