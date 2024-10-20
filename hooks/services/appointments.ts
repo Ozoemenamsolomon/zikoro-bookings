@@ -1,6 +1,6 @@
 "use client";
 
-import { AppointmentLink, } from "@/types/appointments";
+import { AppointmentLink, Booking, } from "@/types/appointments";
 // import { getRequest } from "@/utils/api";
 import { useState,   useCallback,  } from "react";
 // import {toast} from "react-toastify";
@@ -9,6 +9,10 @@ import useUserStore from "@/store/globalUserStore";
 import { createClient } from "@/utils/supabase/client";
 // import { fetchAllData } from "@/lib/client";
 import { settings } from "@/lib/settings";
+import { toast } from "react-toastify";
+import { GroupedBookings } from "@/lib/server/appointments";
+import { getRequest } from "@/utils/api";
+import axios from "axios";
 
 const supabase = createClient();
 
@@ -67,89 +71,52 @@ export const useGetSchedules =  (scheduleData?: { error?: string | null; schedul
   return { fetchSchedules, handlePageChange,totalPages,loading,currentPage,scheduleList,isError };
 };
 
-// export const useGetBookings = () => {
-//   const { user } = useUserStore();
-//   // console.log({userF:user})
+export const useGetBookings = ({
+  groupedBookingData,
+  fetchedcount,
+  fetchError,
+}: {
+  groupedBookingData: GroupedBookings | null;
+  fetchedcount: number;
+  fetchError: string | null;
+}) => {
+  const { user } = useUserStore(); 
+  const [groupedBookings, setGroupedBookings] = useState<GroupedBookings | null>(groupedBookingData);
+  const [isLoading, setLoading] = useState<boolean>(false);
+  const [count, setCount] = useState<number>(fetchedcount);
+  const [errorMessage, setError] = useState<string | null>(fetchError);
 
-//   const [bookings, setBookings] = useState<Booking[]>([]);
-//   const [isLoading, setLoading] = useState<boolean>(true);
-//   const [error, setError] = useState<string | null>(null);
+  const getBookings = async (type: string = '') => {
+    setLoading(true);
+    setError(null);  
+  
+    try {
+      const { data: { data, error, count } } = await getRequest<GroupedBookings | null>({
+        endpoint: `/appointments?type=${type}&userId=${user?.id}`,
+      });
+  
+      if (error) {
+        throw new Error('Error fetching appointments');
+      }
+  
+      // console.log({ data, error, count });
+  
+      setGroupedBookings(data);
+      setCount(count);
+  
+      return data;
+      
+    } catch (err) {
+      setError('Error fetching data! Try again');
+      toast.error('Error fetching data! Try again');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
-//   const getBookings = async (date: Date | string) => {
-//     setLoading(true);
-//     setError('')
-//     try {
-//       const response = await fetch(`/api/appointments?date=${date}&userId=${user?.id}`, {
-//         method: 'GET',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//       });
-
-//       if (!response.ok) {
-//         setError('Error fetching schedules!');
-//         toast.error('Error fetching schedules!');
-//         return;
-//       }
-
-//       const data = await response.json();
-//       // console.log('Fetched Appointments:', data);
-
-//       if (data?.error) {
-//         setError('Error fetching schedules!');
-//         toast.error('Error fetching schedules!');
-//         return;
-//       }
-
-//       setBookings(data.data);
-//       return data
-//     } catch (error) {
-//       // console.error('Error fetching schedules:', error);
-//       setError('Error fetching schedules!');
-//       toast.error('Error fetching schedules!');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const getPastBookings = async () => {
-//     setLoading(true);
-//     setError('')
-//     try {
-//       const response = await fetch(`/api/appointments/old_appointments?userId=${user?.id}`, {
-//         method: 'GET',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//       });
-
-//       if (!response.ok) {
-//         setError('Error fetching schedules!');
-//         toast.error('Error fetching schedules!');
-//         return;
-//       }
-
-//       const data = await response.json();
-//       // console.log('Fetched Appointments:', data);
-
-//       if (data?.error) {
-//         setError('Error fetching schedules!');
-//         toast.error('Error fetching schedules!');
-//         return;
-//       }
-
-//       setBookings(data.data);
-//     } catch (error) {
-//       // console.error('Error fetching schedules:', error);
-//       setError('Error fetching schedules!');
-//       toast.error('Error fetching schedules!');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return { bookings, isLoading, error, getBookings, getPastBookings };
-// };
+  return { groupedBookings, isLoading, error: errorMessage, count, getBookings };
+};
 
 
 // export const getAppointment = async (appointmentAlias:string) => {
@@ -201,7 +168,7 @@ export const useGetSchedules =  (scheduleData?: { error?: string | null; schedul
 // };
 
 // export const useGetBookingList = (appointmentAlias: string) => {
-//   const [bookings, setBookings] = useState<AppointmentLink | null>(null);
+//   const [bookings, setGroupedBookings] = useState<AppointmentLink | null>(null);
 //   const [isLoading, setLoading] = useState<boolean>(false);
 //   const [error, setError] = useState<string | null>(null);
 
@@ -214,7 +181,7 @@ export const useGetSchedules =  (scheduleData?: { error?: string | null; schedul
 //       });
 
 //       if (status === 200) {
-//         setBookings(data.data);
+//         setGroupedBookings(data.data);
 //       } else {
 //         setError(`Error: ${status}`);
 //       }
