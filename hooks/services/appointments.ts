@@ -91,11 +91,11 @@ export const useGetBookings = ({
     setError(null);  
   
     try {
-      const { data: { data, error, count } } = await getRequest<GroupedBookings | null>({
+      const { data: { data, error, count },status } = await getRequest<GroupedBookings | null>({
         endpoint: `/appointments?type=${type}&userId=${user?.id}`,
       });
   
-      if (error) {
+      if ( error) {
         throw new Error('Error fetching appointments');
       }
   

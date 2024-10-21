@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, RefreshCw, XCircle } from "lucide-react";
+import { ChevronDown, RefreshCw, SquarePen, XCircle } from "lucide-react";
 import React, { Suspense, useRef, useState } from "react";
 import { useGetBookings } from "@/hooks/services/appointments";
 import { format, parseISO } from "date-fns";
@@ -15,6 +15,8 @@ import useUserStore from "@/store/globalUserStore";
 // import { Reschedule } from "./Reschedule";
 import { GroupedBookings } from "@/lib/server/appointments";
 import { useAppointmentContext } from "@/context/AppointmentContext";
+import { PopoverMenu } from "../../shared/PopoverMenu";
+import Loading from "@/components/shared/Loader";
 
 // export function getEnabledTimeDetails(
 //   appointmnetLink: AppointmentLink
@@ -50,14 +52,6 @@ const BookingRow = ({ booking, showNote, setShowNote }: { booking: Booking, show
   const dateTime = new Date(dateTimeString);
   const notesRef = useRef(null)
 
-  const handleNotesClick = () => {
-    if (showNote === id) {
-      setShowNote(null);
-    } else {
-      setShowNote(id);
-    }
-  };
-
   const { setBookingFormData, setSelectedItem } = useAppointmentContext();
   useClickOutside(notesRef, ()=>setShowNote(null))
   
@@ -75,7 +69,7 @@ const BookingRow = ({ booking, showNote, setShowNote }: { booking: Booking, show
           {(firstName + " " + lastName)
             .split(" ")
             .map((n) => n[0])
-            .join("")}
+            .join("").toUpperCase()}
         </div>
         <div>
           <p className="font-medium text-gray-800">
@@ -87,16 +81,25 @@ const BookingRow = ({ booking, showNote, setShowNote }: { booking: Booking, show
     </td>
     <td className="py-2 px-4">{appointmentTimeStr}</td>
     <td className="py-2 px-4">{appointmentName}</td>
-    <td ref={notesRef} className="py-2 px-4 ">
-      <button onClick={handleNotesClick} className=" relative cursor-pointer w-full flex justify-start">
-        {notes ? <p>...</p> : null}
-        {showNote === id && (
-          <div className="absolute z-50 w-44 transform transition-all p-6 -left-10 rounded-lg shadow-md bg-white">
-            {notes}
-          </div>
-        )}
-      </button>
+
+    <td className="py-2 px-4  ">
+      {/* <div className="flex justify-center items-center h-full"> */}
+    {
+      notes ?
+      <PopoverMenu
+        trigerBtn={
+          <button className=" "><SquarePen className="bg-purple-50 p-1.5 rounded-full text-blue-600" /></button>
+        }
+        className="w-80 p-6"
+        >
+            {notes} 
+        </PopoverMenu>
+        : 
+        <button className="underline text-blue-600 text-sm">Add </button>
+      }
+      {/* </div> */}
     </td>
+
     <td
       className={`py-2 px-4 ${
         bookingStatus === "CANCELLED"
@@ -217,7 +220,6 @@ const Appointments = ({groupedBookingData,fetchedcount,fetchError}:{
     groupedBookingData,fetchedcount,fetchError
   });
 
-  // const [groupedBookings, setGroupBookings] = useState<GroupedBookings>();
   const [drop, setDrop] = useState(false);
   const [filter, setFilter] = useState("");
   const dropRef = useRef(null);
@@ -257,19 +259,6 @@ const Appointments = ({groupedBookingData,fetchedcount,fetchError}:{
     }
   };
 
-  // useEffect(() => {
-  //   if (!isLoading && !error && bookings?.length > 0) {
-  //     setGroupBookings(groupBookingsByDate(bookings));
-  //     const dateHash = window.location.hash.substring(1)?.split('?')[0];
-  //     const element = document.getElementById(dateHash);
-  //     if (element) {
-  //       element.scrollIntoView({ behavior: 'smooth' });
-  //     }
-  //   }
-  // }, [bookings, isLoading, error]);
-
-  // console.log({bookings, groupedBookings, user, isLoading},'====')
-  // console.log({count})
   return (
     <>
       {/* <Reschedule refresh={refresh} /> */}
@@ -346,8 +335,9 @@ const Appointments = ({groupedBookingData,fetchedcount,fetchError}:{
       <Suspense fallback={<div className="p-40 text-center">Loading...</div>}>
         {
         isLoading ? (
-          // <PageLoading isLoading={isLoading} />
-          <div className="p-40 text-center">Loading...</div>
+          <div className="h-screen w-full flex justify-center items-center">
+            <Loading size={40}/>
+          </div>
         ) : 
         error ? (
           <section className="py-20 text-center w-full">{error}</section>
