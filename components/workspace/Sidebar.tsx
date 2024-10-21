@@ -43,7 +43,7 @@ const navlinks = [
   {
     icon: Store,
     label: 'Store Front',
-    link: `/workspace/shop-front/booking`,
+    link: `/shop-front/booking`,
   },
   // {
   //   icon: Bell,
