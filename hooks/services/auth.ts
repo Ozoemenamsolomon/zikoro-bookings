@@ -1,8 +1,8 @@
 "use client";
 
-import { loginSchema,  } from "@/schemas/auth";
-import { useState,  } from "react";
-import {toast} from "react-toastify";
+import { loginSchema, } from "@/schemas/auth";
+import { useState, } from "react";
+import { toast } from "react-toastify";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import useUserStore from "@/store/globalUserStore";
@@ -118,130 +118,129 @@ export const useSetLoggedInUser = () => {
 
   return { setLoggedInUser };
 };
-  
 
-  export function useForgotPassword() {
-    const [loading, setLoading] = useState(false);
-    const router = useRouter();
-  
-    async function forgotPassword(email: string) {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/update-password`,
-        });
-  
-        if (error) {
-          toast.error(error.message);
-          setLoading(false);
-          return;
-        }
-  
-        if (data) {
-          //  saveCookie("user", data);
-  
-          router.push(
-            `/verify-email?message=Reset Password&content=If the email you entered is registered, we've sent an OTP code to your inbox. Please check your email and follow the instructions to reset your password.&email=${email}&type=reset-password`
-          );
-        }
-      } catch (error) {
+
+export function useForgotPassword() {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  async function forgotPassword(email: string) {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/update-password`,
+      });
+
+      if (error) {
+        toast.error(error.message);
         setLoading(false);
+        return;
       }
+
+      if (data) {
+        //  saveCookie("user", data);
+
+        router.push(
+          `/verify-email?message=Reset Password&content=If the email you entered is registered, we've sent an OTP code to your inbox. Please check your email and follow the instructions to reset your password.&email=${email}&type=reset-password`
+        );
+      }
+    } catch (error) {
+      setLoading(false);
     }
-  
-    return {
-      forgotPassword,
-      loading,
-    };
   }
-  
-  export function useUpdatePassword() {
-    const [loading, setLoading] = useState(false);
-    const router = useRouter();
-  
-    async function updatePassword(password: string) {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase.auth.updateUser({ password });
-  
-        if (error) {
-          toast.error(error.message);
-          setLoading(false);
-          return;
-        }
-  
-        if (data) {
-          //  saveCookie("user", data);
-          toast.success("Password Reset Successfully");
-          router.push(`/login`);
-        }
-      } catch (error) {
+
+  return {
+    forgotPassword,
+    loading,
+  };
+}
+
+export function useUpdatePassword() {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  async function updatePassword(password: string) {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.auth.updateUser({ password });
+
+      if (error) {
+        toast.error(error.message);
         setLoading(false);
+        return;
       }
-    }
-  
-    return {
-      updatePassword,
-      loading,
-    };
-  }
-  
-  export function useResendLink() {
-    const [loading, setLoading] = useState(false);
-  
-    async function resendLink(email: string) {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase.auth.signInWithOtp({
-          email,
-        });
-      } catch (error) {
-      } finally {
-        setLoading(false);
+
+      if (data) {
+        //  saveCookie("user", data);
+        toast.success("Password Reset Successfully");
+        router.push(`/login`);
       }
+    } catch (error) {
+      setLoading(false);
     }
-  
-    return {
-      resendLink,
-      loading,
-    };
   }
-  
-  export function useVerifyCode() {
-    const [loading, setLoading] = useState(false);
-    const router = useRouter();
-  
-    async function verifyCode(email: string, token: string, type: string | null) {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase.auth.verifyOtp({
-          email,
-          token,
-          type: "email",
-        });
-  
-        if (error) {
-          throw error;
-        }
-  
-        if (type === "reset-password") {
-          router.push(`${window.location.origin}/update-password`);
-        } else {
-          router.push(
-            `${
-              window.location.origin
-            }/onboarding?email=${email}&createdAt=${new Date().toISOString()}`
-          );
-        }
-      } catch (error: any) {
-        toast.error(error?.message);
-      } finally {
-        setLoading(false);
+
+  return {
+    updatePassword,
+    loading,
+  };
+}
+
+export function useResendLink() {
+  const [loading, setLoading] = useState(false);
+
+  async function resendLink(email: string) {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.auth.signInWithOtp({
+        email,
+      });
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return {
+    resendLink,
+    loading,
+  };
+}
+
+export function useVerifyCode() {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  async function verifyCode(email: string, token: string, type: string | null) {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token,
+        type: "email",
+      });
+
+      if (error) {
+        throw error;
       }
+
+      if (type === "reset-password") {
+        router.push(`${window.location.origin}/update-password`);
+      } else {
+        router.push(
+          `${window.location.origin
+          }/onboarding?email=${email}&createdAt=${new Date().toISOString()}`
+        );
+      }
+    } catch (error: any) {
+      toast.error(error?.message);
+    } finally {
+      setLoading(false);
     }
-  
-    return {
-      loading,
-      verifyCode,
-    };
   }
+
+  return {
+    loading,
+    verifyCode,
+  };
+}

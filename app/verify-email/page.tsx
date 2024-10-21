@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/";
+import { Button } from "@/components/custom/Button";
 import { useResendLink, useVerifyCode } from "@/hooks";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -8,8 +8,17 @@ import { useState, useEffect } from "react";
 import VerificationInput from "react-verification-input";
 import { LoaderAlt } from "styled-icons/boxicons-regular";
 
+type SearchParams = {
+  email: string;
+  message: string;
+  content: any;
+  type: any;
+};
+
 export default function Page({
   searchParams: { message, content, email, type },
+}: {
+  searchParams: SearchParams;
 }) {
   const [secondsLeft, setSecondsLeft] = useState(60);
   const { loading, resendLink } = useResendLink();

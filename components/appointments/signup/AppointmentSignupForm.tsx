@@ -127,7 +127,7 @@ const AppointmentSignupForm = () => {
         Already have an account?{" "}
         <span
           className="text-indigo-400 cursor-pointer"
-          onClick={() => router.push("/bookings/login")}
+          onClick={() => router.push("/login")}
         >
           Login
         </span>

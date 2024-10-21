@@ -51,7 +51,7 @@ const AppointmentNav = () => {
                     height={278}
                     alt=""
                     className=" w-[577px] h-[307px] "
-                    onClick={() => router.push("/")}
+                    onClick={() => router.push("https://www.zikoro.com")}
                   />
                 </div>
             </PopoverMenu>
@@ -115,7 +115,7 @@ const AppointmentNav = () => {
                     height={278}
                     alt=""
                     className="mt-[19px] w-[273px] h-[278px] block lg:hidden"
-                    onClick={() => router.push("/")}
+                    onClick={() => router.push("https://www.zikoro.com/")}
                   />
                 </div>
             </PopoverMenu>
