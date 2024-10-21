@@ -1,10 +1,11 @@
 "use client";
 
-import { loginSchema, } from "@/schemas/auth";
+import { loginSchema, onboardingSchema } from "@/schemas/auth";
 import { useState, } from "react";
 import { toast } from "react-toastify";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
+import { getRequest, postRequest } from "@/utils/api";
 import useUserStore from "@/store/globalUserStore";
 import { createClient } from "@/utils/supabase/client";
 
@@ -242,5 +243,74 @@ export function useVerifyCode() {
   return {
     loading,
     verifyCode,
+  };
+}
+
+
+export const getUser = async (email: string | null) => {
+  if (!email) return;
+  const { data: user, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("userEmail", email)
+    .single();
+  if (error) {
+    //  console.log({error});
+    window.open(
+      `/onboarding?email=${email}&createdAt=${new Date().toISOString()}`,
+      "_self"
+    );
+    return;
+  }
+  // console.log(user);
+  // saveCookie("user", user);
+  return user;
+};
+
+export function useOnboarding() {
+  const [loading, setLoading] = useState(false);
+  const { setUser } = useUserStore();
+  const router = useRouter();
+
+  type CreateUser = {
+    values: z.infer<typeof onboardingSchema>;
+    email: string | null;
+    createdAt: string | null;
+  };
+  async function registration(
+    values: z.infer<typeof onboardingSchema>,
+    email: string | null,
+    createdAt: string | null
+  ) {
+    try {
+      setLoading(true);
+      const { data, status } = await postRequest<CreateUser>({
+        endpoint: "/auth/user",
+        payload: {
+          ...values,
+          userEmail: email,
+          created_at: createdAt,
+        },
+      });
+
+      if (status === 201 || status === 200) {
+        const user = await getUser(email);
+        setUser(user);
+        setLoading(false);
+        toast.success("Profile Updated Successfully");
+        router.push("/home");
+      }
+
+      return data;
+    } catch (error: any) {
+      //
+      toast.error(error?.response?.data?.error);
+    } finally {
+      setLoading(false);
+    }
+  }
+  return {
+    registration,
+    loading,
   };
 }
