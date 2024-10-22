@@ -29,6 +29,7 @@
     "react-hot-toast": "^2.4.1",
     "react-toastify": "^10.0.6",
     "react-verification-input": "^4.1.2",
+    "recharts": "^2.13.0",
     "styled-icons": "^10.47.1",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",

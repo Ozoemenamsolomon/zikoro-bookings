@@ -27,34 +27,36 @@ export interface AppointmentLink {
     zikoroBranding: string | null;
     isPaidAppointment?: boolean;
 }
-// export interface AppointmentFormData {
-//   id?: bigint;
-//   created_at?: string;
-//   appointmentName: string;
-//   category: string|Category[];
-//   duration: number|null;
-//   loctionType: string;
-//   locationDetails: string;
-//   timeZone: string;
-//   timeDetails:  DaySchedule[] ;
-//   curency: string;
-//   amount: number|null;
-//   paymentGateway: string;
-//   maxBooking: number|null;
-//   sessionBreak: number|null;
-//   statusOn: boolean;
-//   note: string;
-//   appointmentAlias: string;
-//   createdBy: any;
-//   businessName: string | null;
-//   logo: string | null;
-//   brandColour: string | null;
-//   teamMembers: string | null;
-//   zikoroBranding: string | null | boolean;
-//   files?:File[] | null;
-//   isPaidAppointment?: boolean;
+export interface AppointmentFormData {
+  id?: bigint;
+  created_at?: string;
+  appointmentName: string;
+  category: any;
+  // category: string|Category[];
+  duration: number|null;
+  loctionType: string;
+  locationDetails: string;
+  timeZone: string;
+  timeDetails: any ;
+  // timeDetails:  DaySchedule[] ;
+  curency: string;
+  amount: number|null;
+  paymentGateway: string;
+  maxBooking: number|null;
+  sessionBreak: number|null;
+  statusOn: boolean;
+  note: string;
+  appointmentAlias: string;
+  createdBy: any;
+  businessName: string | null;
+  logo: string | null;
+  brandColour: string | null;
+  teamMembers: string | null;
+  zikoroBranding: string | null | boolean;
+  files?:File[] | null;
+  isPaidAppointment?: boolean;
+}
 
-// }
 // export interface FormProps {
 //   formData?: AppointmentFormData;
 //   setFormData?: React.Dispatch<React.SetStateAction<AppointmentFormData>>;
