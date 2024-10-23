@@ -177,3 +177,15 @@ export interface ContactTag {
   tag: string; 
   createdBy: number; 
 }
+
+
+export interface FormattedUnavailability {
+  from: string; // Formatted start time (e.g., '09:00 AM')
+  to: string; // Formatted end time (e.g., '10:00 AM')
+  id: bigint | number; // Unavailability ID
+  appointmentDate: string; // Formatted appointment date (e.g., 'Tue Oct 22 2024')
+}
+
+export interface UnavailabilityByDay {
+  [dayString: string]: FormattedUnavailability[]; // Array of
+}

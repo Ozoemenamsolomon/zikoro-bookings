@@ -16,11 +16,11 @@ export async function POST(req: NextRequest) {
 
     if (result?.error) {
       console.error("Error inserting data:", result?.error.message);
-      return NextResponse.json({ error: result?.error.message }, { status: 400 });
+      return NextResponse.json({ data:null, error: result?.error.message }, { status: 400 });
     }
 
     console.log('ADD UNAVAILABILITY RESULT:', result)
-    return NextResponse.json({ result }, { status: 200 });
+    return NextResponse.json({ data:result?.data, error:result.error }, { status: 200 });
   } catch (error) {
     console.error("Unhandled error:", error);
     return NextResponse.json(

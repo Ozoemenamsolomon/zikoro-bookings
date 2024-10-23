@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/server"
 import { getUserData } from ".";
-import { Booking } from "@/types/appointments";
+import { AppointmentUnavailability, Booking, FormattedUnavailability, UnavailabilityByDay } from "@/types/appointments";
 import { subMonths, addMonths, isValid, startOfWeek, endOfWeek, format } from 'date-fns';
 
 interface FetchBookingsResult {
@@ -65,6 +65,32 @@ export function formatAppointmentsByWeek(data: Booking[]): Record<string, Record
   return formatted;
 }
 
+// Function to format the unavailability data grouped by dayString with detailed formatting
+export const formatUnavailability = (data: AppointmentUnavailability[]): UnavailabilityByDay => {
+  return data.reduce<UnavailabilityByDay>((acc, item) => {
+    if (!item.startDateTime || !item.endDateTime || !item.appointmentDate) return acc;
+    
+    const dayString = format(new Date(item.appointmentDate), 'eee MMM dd yyyy');
+    
+    const formattedUnavailability: FormattedUnavailability = {
+      from: format(new Date(item.startDateTime), 'hh:mm a'),
+      to: format(new Date(item.endDateTime), 'hh:mm a'),
+      id: item.id!,
+      appointmentDate: format(new Date(item.appointmentDate), 'eee MMM dd yyyy')
+    };
+    
+    // Add to the respective dayString array
+    if (!acc[dayString]) {
+      acc[dayString] = [formattedUnavailability];
+    } else {
+      acc[dayString].push(formattedUnavailability);
+    }
+
+    return acc;
+  }, {});
+};
+
+
 export async function fetchCalendarData(date: Date | string, viewingType: 'month' | 'week', userId?:string) {
   // Validate the viewing type and default to 'month' if invalid
   const viewing = viewingType === 'month' || viewingType === 'week' ? viewingType : 'month';
@@ -103,7 +129,7 @@ export async function fetchCalendarData(date: Date | string, viewingType: 'month
     .from('bookings') 
     .select('*', { count: 'exact' } )
     .eq("createdBy", id)
-
+  
   // Error handling
   if (error) {
     console.error(`Error fetching appointments from ${startRangeDate} to ${endRangeDate}:`, error);
@@ -115,35 +141,46 @@ export async function fetchCalendarData(date: Date | string, viewingType: 'month
       count,
       error:error?.message,
       dateDisplay,
+      viewing,
     };
   }
-  // Format the data based on the viewing type
-  const formattedData = viewing === 'month'
-    ? formatAppointmentsByMonth(data || {})
-    : formatAppointmentsByWeek(data || {});
 
-  console.log({ formattedData, startRangeDate, endRangeDate, date: formattedDate , count, dateDisplay, id});
+  // fetch unavailble dates
+  const { data:unavailableDatesData, error:err,  count:cc } = await supabase
+    .from('appointmentUnavailability')
+    .select('*',  { count: 'exact' })
+    .eq("createdBy", id)
+  
+  // Format the data based on the viewing type
+  const formattedMonthData = formatAppointmentsByMonth(data || {})
+  const formattedWeekData = formatAppointmentsByWeek(data || {});
+  const unavailableDates:UnavailabilityByDay = formatUnavailability(unavailableDatesData || []);
+
+  // console.log({ formattedMonthData,formattedWeekData, startRangeDate, endRangeDate, date: formattedDate , count, dateDisplay, id});
 
   // Return the formatted data and range details
   return {
-    data: formattedData,
+    formattedWeekData,formattedMonthData,
     startRangeDate,
     endRangeDate,
     date: formattedDate,
     count,
     error: null, 
     dateDisplay,
+    unavailableDates, 
+    viewing
   }
 } catch (error){
     console.error(`Error fetching appointments from ${startRangeDate} to ${endRangeDate}:`, error);
     return {
-      data: null,
+      formattedWeekData:null,formattedMonthData:null,
       startRangeDate,
       endRangeDate,
       date: formattedDate,
       count:0,
       error: `Error fetching appointments from ${startRangeDate} to ${endRangeDate}`,
       dateDisplay,
+      unavailableDates:null,
     };
 }
 }

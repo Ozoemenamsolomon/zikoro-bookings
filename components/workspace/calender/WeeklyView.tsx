@@ -8,7 +8,7 @@ import {
     getHours,
     getMinutes,
     differenceInMinutes,setHours, setMinutes, setSeconds,
-    getDay,eachHourOfInterval,endOfWeek,eachDayOfInterval,parse
+    eachHourOfInterval,endOfWeek,eachDayOfInterval,parse
 } from 'date-fns';
 import { Booking } from '@/types/appointments';
 import { Clock, MoreVertical } from 'lucide-react';
@@ -25,19 +25,13 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ appointments, currentDate }) =>
     const days = eachDayOfInterval({ start: weekStart, end: endDate });
     const hours = eachHourOfInterval({ start: new Date().setHours(0, 0, 0, 0), end: new Date().setHours(23, 59, 59, 999) });
 
-    const [bookings, setBookings] = useState<Record<string, Record<number, Booking[]>>>()
-
-    useEffect(() => {
-        setBookings(appointments)
-    }, [])
     // Displaying current time
-    useEffect(() => {
+    useMemo(() => {
         const intervalId = setInterval(() => {
             setCurrentTime(new Date());
         }, 60000); // Update every minute
-
-        return () => clearInterval(intervalId); // Clean up on component unmount
-    }, []);
+        return () => clearInterval(intervalId);  
+    }, [currentTime]);
 
     const currentTimePosition = useMemo(() => {
         const currentHour = getHours(currentTime);
@@ -64,12 +58,9 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ appointments, currentDate }) =>
                         const today = format(new Date(), 'eee dd')
                         const active = today === format(day, 'eee dd')
                         const dayString = format(day, 'eee MMM dd yyyy');
-                        const record = bookings?.[dayString] as Record<number, Booking[]> | undefined;
-                        const appointmentLength = record && Object.entries(record).flatMap(([key, value]) => {
-                            if (Array.isArray(value)) {
-                                return `${value.length}appt.`
-                            }})
-                        // console.log({record})
+                        const record = appointments[dayString] as Record<number, Booking[]> | undefined;
+                        
+                        const appointmentLength = record && `${Object.keys(record).length}appt`
                         return (
                             <div key={idx} className="relative">
                                 <div  className={`overflow-hidden border p-2 text-center bg-slate-100 ${idx === 0 ? 'rounded-tl-xl' : idx === 6 ? 'rounded-tr-xl' : ''} `}>
@@ -135,7 +126,6 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ appointments, currentDate }) =>
                     }
                     });
 
-                    // console.log({ record, newList, appointments });
                     return (
                         <div key={dayIndex} className="grid border-l  relative">
                                 {hours.map((hour, index) => {

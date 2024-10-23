@@ -293,30 +293,22 @@ export const useGetBookingsAnalytics = ({
   };
 };
 
-export const useGetUnavailableDates = (dayString:string) => {
+export const useGetUnavailableDates = (dayString:string, fecthedUnavailableDates?:AppointmentUnavailability[]) => {
   const {user} = useUserStore()
-  const [unavailableDates, setUnavailableDates] = useState<any>(null);
+  const [unavailableDates, setUnavailableDates] = useState<any>(fecthedUnavailableDates||[]);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [slotList, setSlotList] = useState<{ from: string, to: string, id: bigint|number }[]>([]);
 
-  const getUnavailableDates = useCallback(async () => {
+  const getUnavailableDates = useCallback(async (dayString?:string) => {
     setLoading(true);
     setError(null);
     try {
       const { data, status } = await getRequest<any>({
-        endpoint: `/calendar/fetchUnavailability?userId=${user?.id}&dayString=${dayString}`,
+        endpoint: `/calendar/fetchUnavailability?userId=${user?.id}`,
       });
 
       if (status === 200) {
-        const filteredSlots = data.data?.filter((item:any) => format(new Date(item.appointmentDate!), 'yyyy-MM-dd') === format(new Date(dayString), 'yyyy-MM-dd'))
-        .map((item: AppointmentUnavailability) => ({
-          from: format(item?.startDateTime!, 'hh:mm a'),
-          to: format(item?.endDateTime!, 'hh:mm a'),
-          id: item?.id!,
-          appointmentDate: format(item?.appointmentDate!, 'eee MMM dd yyyy'),
-        }));
-        setSlotList(filteredSlots||[]);
         setUnavailableDates(data.data);
 // console.log({dayString, data:data.data,})
       } else {
@@ -331,18 +323,15 @@ export const useGetUnavailableDates = (dayString:string) => {
     }
   }, [user?.id, dayString]);
 
-  useEffect(() => {
-    if (user?.id) {
-      getUnavailableDates();
-    }
-  }, []);
+
 
   return { unavailableDates,setUnavailableDates, isLoading, error, getUnavailableDates, slotList, setSlotList };
 };
 
 
 interface CalendarDataState {
-  data: Record<string, Booking[]> | Record<string, Record<number, Booking[]>> | null;
+  formattedWeekData:  Record<string, Record<number, Booking[]>>|null,
+  formattedMonthData: Record<string, Booking[]> | null;
   startRangeDate: Date | null;
   endRangeDate: Date | null;
   count: number;
@@ -351,20 +340,21 @@ interface Params {
   viewing: 'month' | 'week';
   date: Date;
   count: number;
-  data: Record<string, Booking[]> | Record<string, Record<number, Booking[]>> | null;
+  formattedWeekData:  Record<string, Record<number, Booking[]>>|null,
+  formattedMonthData: Record<string, Booking[]> | null;
   startRangeDate: Date;
   endRangeDate: Date;
   errorMsg: string | null;
 }
 
-export const useCalendarData = ({viewing, date, count, data, startRangeDate, endRangeDate, errorMsg}: Params) => {
+export const useCalendarData = ({viewing, date, count, formattedWeekData,formattedMonthData, startRangeDate, endRangeDate, errorMsg}: Params) => {
   const {user} = useUserStore()
   const [view, setView] = useState<'month' | 'week'>(viewing);
   const [currentDate, setCurrentDate] = useState<Date>(date);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string|null>(errorMsg);
   const [calendarData, setCalendarData] = useState<CalendarDataState>({
-    data: data,
+    formattedWeekData,formattedMonthData,
     startRangeDate: startRangeDate,
     endRangeDate: endRangeDate,
     count: count,
@@ -382,7 +372,7 @@ export const useCalendarData = ({viewing, date, count, data, startRangeDate, end
       const { count, data, startRangeDate, endRangeDate, date: fetchedDate } = await response.json();
       console.log({ count, data, startRangeDate, endRangeDate, date: fetchedDate });
       setCalendarData({
-        data,
+        formattedWeekData,formattedMonthData,
         startRangeDate,
         endRangeDate,
         count,

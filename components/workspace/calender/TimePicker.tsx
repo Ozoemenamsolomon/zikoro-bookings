@@ -1,125 +1,99 @@
-import React, { useEffect, useState } from 'react';
-import { AppointmentUnavailability, Booking } from '@/types/appointments';
+import React, { useState, useMemo } from 'react';
+import { AppointmentUnavailability, Booking, FormattedUnavailability } from '@/types/appointments';
 import { Trash } from 'lucide-react';
 import { generateTimeOptions } from '../ui/DateTimeScheduler';
-import toast from 'react-hot-toast';
-import { format, isValid, parse,  } from 'date-fns';
+import {toast} from 'react-toastify';
+import { format, parse, isValid } from 'date-fns';
 import useUserStore from '@/store/globalUserStore';
-import { useGetUnavailableDates } from '@/hooks/services/appointments';
 
-const timeOptions = generateTimeOptions();
-// 2024-07-16
-interface BookingInput {
-  time: string;
-  selectedDate: Date | string | null;
-}
-
-const TimePicker = ({ booking, isOpen, dayString,  }: { dayString:string, booking: Booking, isOpen:string , unavailableDates?:AppointmentUnavailability[]}) => {
+const TimePicker = ({
+  dayString,
+  booking,
+  handleUnavailabilityChange,
+  unavailableForDay,
+}: {
+  dayString: string;
+  booking: Booking;
+  handleUnavailabilityChange: (dayString: string, newData: AppointmentUnavailability|null, deleteId?: number|bigint) => void; 
+  unavailableForDay?: FormattedUnavailability[];
+}) => {
   const { user } = useUserStore();
-  const {  isLoading, unavailableDates, getUnavailableDates, slotList, setSlotList } = useGetUnavailableDates(dayString);
-  const [slot, setSlot] = useState<{ from: string, to: string }>({ from: '', to: '' });
-  // const [slotList, setSlotList] = useState<{ from: string, to: string, id: bigint|number }[]>([]);
+  const [slot, setSlot] = useState<{ from: string; to: string }>({ from: '', to: '' });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-
-  // useEffect(() => {
-  //   const filteredSlots = unavailableDates?.filter(item => format(new Date(item.appointmentDate!), 'yyyy-MM-dd') === format(new Date(dayString), 'yyyy-MM-dd'))
-  //     .map((item: AppointmentUnavailability) => ({
-  //       from: format(item?.startDateTime!, 'hh:mm a'),
-  //       to: format(item?.endDateTime!, 'hh:mm a'),
-  //       id: item?.id!,
-  //       appointmentDate: format(item?.appointmentDate!, 'eee MMM dd yyyy'),
-  //     }));
-  //   setSlotList(filteredSlots||[]);
-
-  // }, []);
   
+  const timeOptions = useMemo(() => generateTimeOptions(), []);
 
-  const handleTimeChange = ( field: 'from' | 'to', value: string) => {
-    setSlot(prev=>({...prev, [field]:value}));
-    if(field === 'from'){
-      setSlot(prev=>({...prev, to:''}))
+  const handleTimeChange = (field: 'from' | 'to', value: string) => {
+    setSlot((prev) => ({ ...prev, [field]: value }));
+    if (field === 'from') {
+      setSlot((prev) => ({ ...prev, to: '' }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('')
-    if ( !slot.from || !slot.to) {
+    setError(null);
+
+    if (!slot.from || !slot.to) {
       setError('Please fill out all time slots.');
       return;
     }
 
-    const formData  = {
-      startDateTime: generateAppointmentTime({ time: slot.from, selectedDate: format(dayString, 'yyyy-MM-dd') }),
-      endDateTime: generateAppointmentTime({ time: slot.to, selectedDate: format(dayString, 'yyyy-MM-dd') }),
+    const formData = {
+      startDateTime: generateAppointmentTime({ time: slot.from, selectedDate: dayString }),
+      endDateTime: generateAppointmentTime({ time: slot.to, selectedDate: dayString }),
       createdBy: user?.id!,
       appointmentDate: format(dayString, 'yyyy-MM-dd'),
-    } 
-    if (formData?.startDateTime! >= formData?.endDateTime!){
-      setError('Select accurate time range.');
+    };
+
+    if (formData?.startDateTime! >= formData?.endDateTime!) {
+      setError('Select an accurate time range.');
       return;
     }
 
-try {
+    try {
       setLoading(true);
       const response = await fetch('/api/calendar/addunavailability', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify([formData])
+        body: JSON.stringify([formData]),
       });
 
-      const result = await response.json();
-
       if (!response.ok) {
-        setError('Failed to submit form. Please try again.');
-      } else {
-        toast.success('Form submitted');
-        setSlot({ from: '', to: '' });
-       
-        setSlotList(prev=>[...prev, {
-          from: slot.from,
-          to: slot.to,
-          id: new Date().getMilliseconds(),
-        }])
-        // we can call getUnavailbilityData here ...
+        throw new Error('Failed to submit form.');
       }
+
+      const { data } = await response.json();
+      toast.success('Form submitted');
+      setSlot({ from: '', to: '' });
+      handleUnavailabilityChange(dayString, data);
     } catch (error: any) {
-      console.error('Error submitting form:', error);
       setError('Server error. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const deleteSlot = async (item: AppointmentUnavailability) => {
-    
+  const deleteSlot = async (item: FormattedUnavailability) => {
     try {
       setLoading(true);
-      setError('');
+      setError(null);
 
       const response = await fetch(`/api/calendar/deleteUnavailability?id=${item?.id}&userId=${user?.id!}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
 
-      const result = await response.json();
-
       if (!response.ok) {
-        setError('Failed to delete item. Please try again.');
-      } else {
-        toast.success('Deletion Successful');
-        setSlotList(slotList.filter(slot => slot.id !== item.id));
-
-        // we can call getUnavailbilityData here ...
-        await getUnavailableDates()
+        throw new Error('Failed to delete item.');
       }
+
+      toast.success('Deletion Successful');
+      handleUnavailabilityChange(dayString, null, item?.id!); // Pass the id for deletion
     } catch (error: any) {
-      console.error('Error deleting item:', error);
       setError('Server error. Please try again.');
     } finally {
       setLoading(false);
@@ -135,96 +109,117 @@ try {
         </div>
 
         <div className="space-y-2 max-h-96 overflow-auto no-scrollbar">
-           
-            <div  className="flex px-4 justify-center gap-3 items-center w-full">
-              <div className="flex h-10 w-32 justify-center items-center  bg-purple-100 rounded-md shrink-0">
-                <select
-                  className="bg-transparent no-scrollbar border-none focus:outline-none"
+          <div className="grid grid-cols-12 px-4 justify-center gap-3 items-center w-full">
+              <div className="px-2 col-span-5 bg-purple-100  rounded">
+                  <select
+                  className="bg-transparent h-10 w-full flex justify-center items-center shrink-0 no-scrollbar focus:outline-none"
                   value={slot.from}
                   onChange={(e) => handleTimeChange('from', e.target.value)}
                   required
                 >
-                  <option value="" disabled>Start time</option>
-                  {timeOptions.map((time: string, idx: number) => {
-                    
-                    const exists = !!slotList.find(item => item.from === time);
-                    return (
-                      <option key={idx} value={time} disabled={exists}>{time}</option>
-                    );
-                  })}
-                </select>
+                    <option value="" disabled className='disabled:text-slate-300'>Start time</option>
+                    {timeOptions?.map((time: string, idx: number) => {
+                      const exists = isTimeUnavailable(time,dayString,unavailableForDay!)
+                      return (
+                        <option key={idx} value={time} disabled={exists} className='disabled:text-slate-300'>{time}</option>
+                      );
+                    })}
+                  </select>
               </div>
-              <hr className='w-4 border-gray-700'/>
-              <div className="flex h-10 w-32 justify-center items-center  bg-purple-100 rounded-md shrink-0 ">
-                <select
-                  className="bg-transparent no-scrollbar border-none focus:outline-none"
-                  value={slot.to}
-                  onChange={(e) => handleTimeChange('to', e.target.value)}
-                  required
-                >
-                  <option value="" disabled>End time</option>
-                  {timeOptions.map((time: string, idx: number) => {
-                    const exists = !!slotList.find(item => item.from === time);
-                    const lessThanStart = 
-                        generateAppointmentTime({ time: time, selectedDate: format(dayString, 'yyyy-MM-dd') })! <=
-                        generateAppointmentTime({ time: slot.from, selectedDate: format(dayString, 'yyyy-MM-dd') })!
-                    return (
 
-                      <option key={idx} value={time} disabled={exists || lessThanStart}>{time}</option>
-                    );
-                  })}
-                </select>
-              </div>
-              <Trash size={18}  className='opacity-0'/>
-            </div>
-           
+              <hr className=' border-gray-600'/>
 
-          {isLoading ? (
-            <p className="p-3 text-center w-full">Checking for data...</p>
-          ) : (
-            slotList.map((slot, idx) => (
+                <div className="px-2 col-span-5 bg-purple-100  rounded">
+                  <select
+                    className="bg-transparent h-10  w-full flex justify-center items-center shrink-0 no-scrollbar focus:outline-none"
+                    value={slot?.to}
+                    onChange={(e) => handleTimeChange('to', e.target.value)}
+                    required
+                  >
+                    <option value="" disabled className='disabled:text-slate-300'>End time</option>
+                    {timeOptions.map((time: string, idx: number) => {
+                      const exists = isTimeUnavailable(time,dayString,unavailableForDay!);
+                      const lessThanStart = 
+                          generateAppointmentTime({ time: time, selectedDate: format(dayString, 'yyyy-MM-dd') })! <=
+                          generateAppointmentTime({ time: slot?.from, selectedDate: format(dayString, 'yyyy-MM-dd') })!
+                      return (
+                        <option key={idx} value={time} disabled={exists || lessThanStart } className='disabled:text-slate-300'>{time}</option>
+                      );
+                    })}
+                  </select>
+                </div>
+            <Trash size={18}  className='opacity-0' />
+          </div>
+
+          {
+            unavailableForDay?.map((slot, idx) => (
                (
-                <div key={idx} className="flex px-4 justify-between gap-3 items-center w-full">
-                  <div className="flex h-10 w-32 justify-center items-center  bg-purple-100 rounded-md shrink-0">{slot.from}</div>
+                <div key={idx} className="  px-4 grid grid-cols-12  gap-3 items-center w-full">
+                  <div className="flex h-10 col-span-5 justify-center items-center  bg-purple-100 rounded shrink-0">{slot?.from}</div>
                   <hr className='w-4 border-gray-700'/>
-                  <div className="flex h-10 w-32 justify-center items-center  bg-purple-100 rounded-md shrink-0">{slot.to}</div>
+                  <div className="flex h-10 col-span-5 justify-center items-center  bg-purple-100 rounded shrink-0">{slot?.to}</div>
                   <Trash size={18} onClick={() => deleteSlot(slot)} />
                 </div>
               )
             ))
-          )}
+          }
 
-          {/* <div className="flex">
-            <div onClick={addSlot} className="flex gap-2 items-center text-zikoroBlue cursor-pointer">
-              <PlusCircle size={18} />
-              <p>Add Time</p>
-            </div>
-          </div> */}
         </div>
-
+        
         <p className="text-red-500 text-sm h-3 text-center w-full">{error}</p>
       </div>
 
-      <button type="submit" className="bg-basePrimary rounded-md p-3 text-center w-full text-white">
-        {loading ? 'Submitting...' : 'Apply'}
-      </button>
+      <div className="w-full">
+        <button type="submit" className="bg-basePrimary rounded-md p-3 text-center w-full text-white">
+          {loading ? 'Submitting...' : 'Apply'}
+        </button>
+      </div>
+     
     </form>
   );
 };
 
-export default TimePicker;
-
-function generateAppointmentTime({ time, selectedDate }: BookingInput): string | null {
+function generateAppointmentTime({ time, selectedDate }: { time: string; selectedDate: string }): string | null {
   if (!time) {
     return null;
   }
-
-  const appointmentDateTime = parse(`${selectedDate} ${time}`, 'yyyy-MM-dd hh:mm a', new Date());
+  // Format selectedDate to 'yyyy-MM-dd' if it's not already
+  const formattedSelectedDate = format(new Date(selectedDate), 'yyyy-MM-dd');
+  // Adjust the parsing format to match
+  const appointmentDateTime = parse(`${formattedSelectedDate} ${time}`, 'yyyy-MM-dd hh:mm a', new Date());
 
   if (!isValid(appointmentDateTime)) {
     console.error("Invalid time format:", time);
     return null;
   }
-
   return format(appointmentDateTime, 'yyyy-MM-dd HH:mm:ss');
 }
+
+function isTimeUnavailable(
+  time: string, // e.g., '2:00 AM'
+  selectedDate: string, // e.g., 'Tue Oct 15 2024'
+  unAvailableDates: FormattedUnavailability[] // List of unavailable times
+): boolean {
+  // Create a Date object for the selected date
+  const baseDate = new Date(selectedDate);
+  
+  // Parse the input time into a Date object
+  const inputTime = new Date(`${baseDate.toDateString()} ${time}`);
+
+  // Check against each unavailability
+  for (const unavailability of unAvailableDates) {
+    // Create Date objects for the 'from' and 'to' times
+    const fromTime = new Date(`${unavailability.appointmentDate} ${unavailability.from}`);
+    const toTime = new Date(`${unavailability.appointmentDate} ${unavailability.to}`);
+
+    // Check if the input time is within the unavailable interval
+    if (inputTime >= fromTime && inputTime <= toTime) {
+      return true; // The time is unavailable
+    }
+  }
+
+  return false; // The time is available
+}
+
+export default TimePicker;
+
