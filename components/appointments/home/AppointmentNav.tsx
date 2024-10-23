@@ -11,14 +11,16 @@ import { useClickOutside } from "@/lib/useClickOutside";
 
 const AppointmentNav = () => {
   const router = useRouter();
-  const menuRef = useRef(null)
+  const menuRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isPreviewOn, setIsPreviewOn] = useState<boolean>(false);
+  const [isPreviewShowing, setIsPreviewShowing] = useState<boolean>(false);
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
-  useClickOutside(menuRef, ()=>setIsPreviewOn(false))
+  useClickOutside(menuRef, () => setIsPreviewOn(false));
+
   return (
     <div className="py-6 px-3 md:px-6 relative ">
       <div className=" bg-white flex items-center lg:max-w-[970px] xl:max-w-[1165px] py-3 px-3 md:px-6 lg:px-[36px] rounded-[64px] justify-between mx-auto shadow  ">
@@ -33,34 +35,41 @@ const AppointmentNav = () => {
 
         {/* links */}
         <div className="gap-x-8 hidden lg:flex ">
-        <PopoverMenu
-              trigerBtn={
-                <button
-                  ref={menuRef} 
-                  className="font-medium flex items-center gap-1 "
-                  onClick={() => setIsPreviewOn(!isPreviewOn)}
-                >
-                  <p>Other Products </p><ChevronDown size={20} className={`${isPreviewOn ?'rotate-180':''} transition-all duration-200`} />
-                </button> 
-            }>
-              <div className="">
-                <Image
-                    ref={menuRef} 
-                    src="/appointments/OtherTopPrevS.png"
-                    width={273}
-                    height={278}
-                    alt=""
-                    className=" w-[577px] h-[307px] "
-                    onClick={() => router.push("https://www.zikoro.com")}
-                  />
-                </div>
-            </PopoverMenu>
-          {/* <p
-            className="text-base font-medium cursor-pointer flex gap-2 items-center"
-            onClick={() => setIsPreviewOn(!isPreviewOn)}
+          {/* <PopoverMenu
+            trigerBtn={
+              <button
+                ref={menuRef}
+                className="font-medium flex items-center gap-1 "
+                onClick={() => setIsPreviewOn(!isPreviewOn)}
+              >
+                <p>Other Products </p>
+                <ChevronDown
+                  size={20}
+                  className={`${
+                    isPreviewOn ? "rotate-180" : ""
+                  } transition-all duration-200`}
+                />
+              </button>
+            }
           >
-           <p>Other Products</p> <ChevronDown size={20} />
-          </p> */}
+            <div className="">
+              <Image
+                ref={menuRef}
+                src="/appointments/OtherTopPrevS.png"
+                width={273}
+                height={278}
+                alt=""
+                className=" w-[577px] h-[307px] "
+                onClick={() => router.push("https://www.zikoro.com")}
+              />
+            </div>
+          </PopoverMenu> */}
+          <p
+            className="text-base font-medium cursor-pointer flex gap-2 items-center"
+            onClick={() => setIsPreviewShowing(!isPreviewShowing)}
+          >
+            <span>Other Products</span> <ChevronDown size={20} />
+          </p>
 
           <p
             onClick={() => router.push("/contact")}
@@ -72,18 +81,18 @@ const AppointmentNav = () => {
 
         {/* buttons */}
         <div className=" border-[1px] border-gray-200 rounded-[51px] hidden lg:flex gap-x-4 p-3 ">
-           <SignupBtn/>
-           <SigninBtn/>
+          <SignupBtn />
+          <SigninBtn />
         </div>
 
         <div className="lg:hidden">
           <button className="text-black" onClick={toggleMenu}>
-            {/* {isOpen ? <XCircle /> : <ThreeLineCircle />} */}
+            {isOpen ? <XCircle /> : <ThreeLineCircle />}
           </button>
         </div>
       </div>
       {/* preview modal */}
-      {/* {isPreviewOn && (
+      {isPreviewShowing && (
         <div className="absolute hidden lg:block left-96 ">
           <Image
             src="/appointments/otherPreviewB.png"
@@ -94,52 +103,48 @@ const AppointmentNav = () => {
             onClick={() => router.push("/")}
           />
         </div>
-      )} */}
+      )}
 
       {isOpen && (
-        <div className="bg-violet-100 absolute p-[30px] mt-3 w-full max-w-[92%] lg:hidden rounded-[8px]">
+        <div className="bg-violet-100 flex-col absolute p-[30px] mt-3 w-full max-w-[92%] lg:hidden rounded-[8px]">
           <ul className="">
-            <PopoverMenu
-              trigerBtn={
-                <button
-                  className="font-medium "
-                  // onClick={() => setIsPreviewOn(!isPreviewOn)}
-                >
-                  Other Products <ChevronDown size={20} />
-                </button>
-            }>
-              <div className="">
-                <Image
-                    src="/appointments/OtherTopPrevS.png"
-                    width={273}
-                    height={278}
-                    alt=""
-                    className="mt-[19px] w-[273px] h-[278px] block lg:hidden"
-                    onClick={() => router.push("https://www.zikoro.com/")}
-                  />
-                </div>
-            </PopoverMenu>
-            
-            {/* {isPreviewOn && (
+            <li
+              className="font-medium "
+              onClick={() => setIsPreviewShowing(!isPreviewShowing)}
+            >
+              Other Products <ChevronDown size={20} />{" "}
+              {isPreviewShowing && (
                 <Image
                   src="/appointments/OtherTopPrevS.png"
                   width={273}
                   height={278}
                   alt=""
                   className="mt-[19px] w-[273px] h-[278px] block lg:hidden"
-                  onClick={() => router.push("/")}
+                  onClick={() => router.push("https://www.zikoro.com")}
                 />
-              )} */}
-            <Link href={"/contact"}
+              )}
+            </li>
+            <li
               className="mt-5 font-medium "
+              onClick={() => router.push("/contact")}
             >
               Contact Us{" "}
-            </Link>
+            </li>
           </ul>
 
           <div className=" border-[1px] border-gray-300 rounded-[51px] flex gap-x-4 p-3 mt-[72px] items-center w-fit mx-auto ">
-            <SignupBtn/>
-            <SigninBtn/>
+            <button
+              onClick={() => router.push("/bookings/signup")}
+              className="text-base px-[20px] py-[10px] text-white bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end rounded-[28px]"
+            >
+              Sign Up
+            </button>
+            <button
+              onClick={() => router.push("/bookings/login")}
+              className="text-base px-[20px] py-[10px] text-indigo-700 bg-transparent border border-indigo-800 rounded-[28px]"
+            >
+              Login
+            </button>
           </div>
         </div>
       )}
@@ -151,19 +156,21 @@ export default AppointmentNav;
 
 const SignupBtn = () => {
   return (
-  <Link
-    href={"/signup"} 
-    className="text-base px-[20px] py-[10px] text-white bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end rounded-[28px]"
+    <Link
+      href={"/signup"}
+      className="text-base px-[20px] py-[10px] text-white bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end rounded-[28px]"
     >
-    Sign Up
-  </Link>)
-  }
+      Sign Up
+    </Link>
+  );
+};
 const SigninBtn = () => {
   return (
     <Link
-    href={"/login"} 
-    className="text-base px-[20px] py-[10px] text-indigo-700 bg-transparent border border-indigo-800 rounded-[28px]"
-  >
-    Login
-  </Link>
-  )}
+      href={"/login"}
+      className="text-base px-[20px] py-[10px] text-indigo-700 bg-transparent border border-indigo-800 rounded-[28px]"
+    >
+      Login
+    </Link>
+  );
+};

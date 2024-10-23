@@ -10,12 +10,15 @@ import useUserStore from "@/store/globalUserStore";
 import { createClient } from "@/utils/supabase/client";
 
 const supabase = createClient();
+
+
 export function useRegistration() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   async function register(values: z.infer<typeof loginSchema>) {
     setLoading(true);
+
     try {
       const { data, error } = await supabase.auth.signUp({
         email: values.email,

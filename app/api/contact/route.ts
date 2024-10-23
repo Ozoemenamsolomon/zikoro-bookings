@@ -1,7 +1,6 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import toast from "react-hot-toast";
+import { createClient } from "@/utils/supabase/server";
 
 type UpdateContactRequestBody = {
   formData: {
@@ -18,7 +17,8 @@ type UpdateContactRequestBody = {
 };
 
 export async function POST(req: NextRequest) {
-  const supabase = createRouteHandlerClient({ cookies });
+
+  const supabase = createClient()
 
   if (req.method === "POST") {
     const body = await req.json() as UpdateContactRequestBody | null;
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
 
       toast.success("Your message has been sent");
     } catch (error) {
-      toast.error("Error submitting form, try again later");
+      toast.error(`${error}`);
     }
   }
 }

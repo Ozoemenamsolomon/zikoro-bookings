@@ -2,10 +2,12 @@
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { useContactUs } from "@/hooks/services/contactUs";
 
 const AppointmentContactForm = () => {
   const [mailSent, setMailSent] = useState<boolean>(false);
   const root = "bookings";
+  const { submitForm } = useContactUs();
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -22,35 +24,18 @@ const AppointmentContactForm = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ formData }),
-      });
-
-      if (response.ok) {
-        toast.success("Submitted Successfully:");
-        // Optionally, reset form fields after successful submission
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          comments: "",
-          source: "",
-        });
-        setMailSent(true);
-      } else {
-        throw new Error("Message Not Sent ");
-      }
-    } catch (error) {
-      toast.error(`Error submitting contact form: ${error}`);
-    }
+    await submitForm(formData);
+    toast.success("Submitted Successfully:");
+    setFormData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      comments: "",
+      source: "",
+    });
+    setMailSent(true);
   };
 
   return (
@@ -72,7 +57,7 @@ const AppointmentContactForm = () => {
           </div>
         </div>
       ) : (
-        <form action="" className="mt-10" onSubmit={submitForm}>
+        <form action="" className="mt-10" onSubmit={handSubmitForm}>
           <div className="flex flex-col gap-y-3 ">
             <label htmlFor="">First Name</label>
             <input
