@@ -10,7 +10,7 @@ import {toast} from 'react-toastify'
 
 const LinksCard = ({data,}:{data:AppointmentLink|any}) => {
     const [item, setItem] = useState<AppointmentLink>(data)
-    const [laoding, setLoading] = useState(false) 
+    const [loading, setLoading] = useState(false) 
     const [isShare, setIsShare] = useState<number|null|bigint>(null)
     // const [isDisabled, setIsDisabled] = useState(data?.statusOn)
 
@@ -19,25 +19,23 @@ const LinksCard = ({data,}:{data:AppointmentLink|any}) => {
         setItem({...item, statusOn: newState})
         try {
             const payload = { ...item, statusOn: newState,};
-            const response = await fetch('/api/appointments/edit', {
+            const response = await fetch('/api/schedules/editstatus', {
                 method: 'PUT',
                 headers: {
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(payload),
               });
-            const result = await response.json();
-            if (response.ok) {
-                //toast.success
-                toast.success('Status changed successfully')
-                // console.log('Status changed successfully', result);
+            const {error} = await response.json();
+            if (response.ok && !error) {
+                toast.success('Status changed.')
               } else {
                 setItem({...item, statusOn: !newState})
-                console.error('Failed to complete task', result);
-                // toast.error
+                toast.error('Unsuccessful! Error occured')
               }
-      
         } catch (error) {
+            setItem({...item, statusOn: !newState})
+            toast.error('Unsuccessful! Error occured')
             console.log('Service not available')
         } finally {
             setLoading(false)
