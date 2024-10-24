@@ -30,6 +30,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.53.1",
     "react-hot-toast": "^2.4.1",
+    "react-select": "^5.8.1",
     "react-toastify": "^10.0.6",
     "react-verification-input": "^4.1.2",
     "styled-icons": "^10.47.1",
