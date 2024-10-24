@@ -1,19 +1,17 @@
 "use client";
 
 import { AppointmentLink, AppointmentUnavailability, Booking, } from "@/types/appointments";
-import { useState,   useCallback, useEffect,  } from "react";
+import { useState,   useCallback,  } from "react";
 import useUserStore from "@/store/globalUserStore";
 import { createClient } from "@/utils/supabase/client";
 import { settings } from "@/lib/settings";
 import { toast } from "react-toastify";
 import { GroupedBookings } from "@/lib/server/appointments";
 import { getRequest } from "@/utils/api";
-import { fetchCalendarData } from "@/lib/server/calendar";
-import { format } from "date-fns";
 
 const supabase = createClient();
 
-export const useGetSchedules =  (scheduleData?: { error?: string | null; schedules?: AppointmentLink[] | null; count?: number } )=> {
+export const useGetSchedules =  (scheduleData?: { error?: string | null; schedules?: AppointmentLink[] | null; count?: number; } )=> {
   const { user } = useUserStore();
   const [isError, setIsError] = useState<string>(scheduleData?.error||'');
   const [scheduleList, setScheduleList] = useState<AppointmentLink[]>(scheduleData?.schedules || []);
@@ -88,7 +86,7 @@ export const useGetBookings = ({
     setError(null);  
   
     try {
-      const  response= await fetch(`/appointments?type=${type}&userId=${user?.id}`);
+      const  response = await fetch(`/api/appointments?type=${type}&userId=${user?.id}`);
       if (response.status!==200) {
         throw new Error('Error fetching appointments');
       }
@@ -256,15 +254,15 @@ export const useGetBookingsAnalytics = ({
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/analytics/?type=${fetchType}&userId=${user?.id}`);
+      const response = await fetch(`/api/analytics/?type=${fetchType}&userId=${user?.id}`);
       if ( !response.ok) {
         throw new Error('Error fetching appointments');
       }
-      
+      // console.log({res: await response.json()})
       if (response.status===200) {
-        const { data } = await response.json()
-        setCurrent(data?.cur || []);
-        setPrevious(data?.prev || []);
+        const { cur,prev } = await response.json()
+        setCurrent(cur || []);
+        setPrevious(prev || []);
       } else {
         setError('Error fetching data!');
       }
@@ -293,7 +291,7 @@ export const useGetBookingsAnalytics = ({
   };
 };
 
-export const useGetUnavailableDates = (dayString:string, fecthedUnavailableDates?:AppointmentUnavailability[]) => {
+export const useGetUnavailableDates = (dayString:string, fecthedUnavailableDates?:AppointmentUnavailability[]) => { 
   const {user} = useUserStore()
   const [unavailableDates, setUnavailableDates] = useState<any>(fecthedUnavailableDates||[]);
   const [isLoading, setLoading] = useState<boolean>(false);

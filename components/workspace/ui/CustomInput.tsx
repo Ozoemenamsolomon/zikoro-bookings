@@ -8,7 +8,7 @@ interface InputCustomProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string | null
   className?: string
   type?: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onChange?: (e: React.ChangeEvent<HTMLInputElement| HTMLTextAreaElement>) => void
 }
 
 const CustomInput: FC<InputCustomProps> = ({

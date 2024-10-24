@@ -82,14 +82,13 @@ export const SelectInput: React.FC<SelectInputProps> = ({
     setInputValue(e.target.value);
     setIsOpen(true);
     setFormData((prev:AppointmentFormData)=>{
-      console.log({prev})
       return {
         ...prev,
         [e.target.name]: e.target.value
       }
     })
   };
-console.log({inputValue,value})
+// console.log({inputValue,value})
   return (
     <>
     <div ref={containerRef} className={cn("relative z-30", className)}>

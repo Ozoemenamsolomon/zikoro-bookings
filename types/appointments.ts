@@ -57,22 +57,22 @@ export interface AppointmentFormData {
   isPaidAppointment?: boolean;
 }
 
-// export interface FormProps {
-//   formData?: AppointmentFormData;
-//   setFormData?: React.Dispatch<React.SetStateAction<AppointmentFormData>>;
-//   errors?: any;
-//   setErrors?: React.Dispatch<React.SetStateAction<any>>;
-//   loading?: boolean;
-//   setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
-//   handleChange?:  (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-// }
+export interface FormProps {
+  formData?: AppointmentFormData;
+  setFormData?: React.Dispatch<React.SetStateAction<AppointmentFormData>>;
+  errors?: any;
+  setErrors?: React.Dispatch<React.SetStateAction<any>>;
+  loading?: boolean;
+  setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
+  handleChange?:  (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+}
 
-// export interface DetailItem {
-//   title: string;
-//   icon: JSX.Element;
-//   description: string;
-//   formComponent: React.FC<FormProps>;
-// }
+export interface DetailItem {
+  title: string;
+  icon: JSX.Element;
+  description: string;
+  formComponent: React.FC<FormProps>;
+}
 
 export interface Booking {
   id?: bigint;

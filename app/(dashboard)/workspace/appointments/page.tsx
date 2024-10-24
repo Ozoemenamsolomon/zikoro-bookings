@@ -3,15 +3,14 @@ import { fetchAppointments } from '@/lib/server/appointments';
 import React from 'react'
 
 const AppointmentsPage = async ({
-    searchParams: { s },
+    searchParams ,
   }: {
-    searchParams: { s: string };
+    searchParams: { date: string };
   }) => {
-    const {data,count,error} = await fetchAppointments()
-    // console.log({data,count,error})
+    const {data,count,error} = await fetchAppointments({date:searchParams?.date})
+    // console.log({data,count,error, searchParams})
     return ( 
-      // <Appointments data={data} searchquery={s} />
-      <Appointments groupedBookingData={data} fetchedcount={count} fetchError={error} />
+      <Appointments groupedBookingData={data} fetchedcount={count} fetchError={error} dateHash={searchParams?.date}/>
       );
   };
   

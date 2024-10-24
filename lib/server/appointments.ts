@@ -1,7 +1,7 @@
 import { Booking, BookingsContact } from "@/types/appointments";
 import { createClient } from "@/utils/supabase/server"
 import { getUserData } from ".";
-import { startOfToday } from "date-fns";
+import { endOfMonth, startOfDay, startOfMonth, startOfToday, startOfWeek } from "date-fns";
 
 export interface GroupedBookings {
   [date: string]: Booking[];
@@ -41,7 +41,6 @@ export const fetchAppointments = async (
       const {user} = await getUserData()
       id = user?.id
     }
-
     let today = startOfToday().toISOString()
   try {
     let query = supabase
@@ -50,19 +49,17 @@ export const fetchAppointments = async (
       .eq("createdBy", id)
       .order("appointmentDate", { ascending: true })
 
-      if(payload?.type==='past-appointments'){
+      if (payload?.date && !payload?.type){
+        query.gte('appointmentDate', startOfMonth(new Date(payload?.date!)).toISOString())
+             .lte('appointmentDate', endOfMonth(new Date(payload?.date!)).toISOString())
+      } else if (payload?.type==='past-appointments'){
         query.lt('appointmentDate', today)
       } else {
         query.gte('appointmentDate', today)
       }
 
-    // If 'q' is provided, add additional filtering
-    // if (date) {
-    //   query = query.eq('category', date); 
-    // }
-
     const { data, count, error } = await query;
-    // console.error({ data, count, error });
+    // console.log({date: startOfWeek(new Date(payload?.date!)).toISOString(), data, }, 'REFETCHING')
 
     if (error) {
       console.error('Error fetching appointments:', error);

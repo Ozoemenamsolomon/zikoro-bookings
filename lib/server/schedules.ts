@@ -37,3 +37,25 @@ export const fetchSchedules = async (
   }
 
 };
+
+export const fetchSchedule = async (
+  alias: string
+) => {
+    const supabase = createClient()
+    const {user} = await getUserData()
+
+    try {
+    const { data, error }  = await supabase
+      .from('appointmentLinks')
+      .select('*') 
+      .eq('createdBy', user?.id)
+      .eq('id', alias)
+      .single()
+
+    console.error({ data, error });
+    return { data, error: error?.message};
+  } catch (error) {
+    console.error('AppointmentLink Server error:', error);
+    return { data: null, error: 'Server error'};
+  }
+};

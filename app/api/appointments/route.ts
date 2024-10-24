@@ -2,7 +2,6 @@ import { fetchAppointments } from "@/lib/server/appointments";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  
     if (req.method !== "GET") {
       return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
     }
@@ -13,7 +12,7 @@ export async function GET(req: NextRequest) {
 
     try {
         const {data, count, error} = await fetchAppointments({userId, type})
-        console.error({ data, count, error });
+        // console.error({ data, count, error });
   
       if (error) {
         console.error("Error fetching bookings:", error);

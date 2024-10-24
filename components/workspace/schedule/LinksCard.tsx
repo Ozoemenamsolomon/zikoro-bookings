@@ -63,7 +63,7 @@ const LinksCard = ({data,}:{data:AppointmentLink|any}) => {
         >
         <div className="flex  justify-between gap-6 items-center">
             <h4 className="text-lg font-medium">{item?.appointmentName}</h4>
-            <Link className={item?.statusOn ? '':'opacity-20'} aria-disabled={item?.statusOn} href={`/appointments/edit?alias=${item?.appointmentAlias}`}><EditPenBoxIcon/> </Link >
+            <Link className={item?.statusOn ? '':'opacity-20'} aria-disabled={item?.statusOn} href={`/edit?alias=${item?.id}&appointmentAlias=${item?.appointmentAlias}`}><EditPenBoxIcon/> </Link >
         </div>
 
         <div className="">

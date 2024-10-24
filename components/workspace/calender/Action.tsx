@@ -26,7 +26,7 @@ const Action = ({
           <>
             <div className="flex justify-center">
               <Link
-                href={`/workspace/appointments#${appointment?.appointmentDate}?date=${appointment?.appointmentDate}&dt=${appointment?.appointmentTime}`}
+                href={`/workspace/appointments/?date=${appointment?.appointmentDate}&dt=${appointment?.appointmentTime}`}
                 className="bg-zikoroBlue flex-nowrap overflow-hidden text-[10px] xl:text-sm text-white flex items-center px-2 py-1 rounded-full justify-center gap-1"
               >
                 <p className="shrink-0 flex-nowrap">View appointments</p>

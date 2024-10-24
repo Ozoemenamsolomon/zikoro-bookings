@@ -209,10 +209,11 @@ const GroupedBookingSections = ({
 );
 
 
-const Appointments = ({groupedBookingData,fetchedcount,fetchError}:{
+const Appointments = ({groupedBookingData,fetchedcount,fetchError, dateHash}:{
   groupedBookingData: GroupedBookings | null;
   fetchError: string | null;
   fetchedcount: number;
+  dateHash?: string;
 }) => {
   const {user} = useUserStore()
 
@@ -234,16 +235,14 @@ const Appointments = ({groupedBookingData,fetchedcount,fetchError}:{
     }
   };
 
-  // useEffect(() => {
-  //   const dateHash = window.location.hash.substring(1)?.split('?')[0];
-  //   if (user) {
-  //     if (dateHash) {
-  //       getBookings(dateHash);
-  //     } else {
-  //       fetchBookings();
-  //     }
-  //   }
-  // }, [user]);
+  useEffect(() => {
+    if (dateHash) {
+      const element = document.getElementById(dateHash);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }, [dateHash]);
 
   const refresh =() => { 
     fetchBookings()
