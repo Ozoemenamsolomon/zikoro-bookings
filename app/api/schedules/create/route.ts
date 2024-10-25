@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       .select('*')
       .single()
 
-    console.log('Inserting appointmentLink result:', {data,error})
+    // console.log('Inserting appointmentLink result:', {data,error})
     if (error) {
       console.error("Error inserting AppoinmentLink:", error);
       return NextResponse.json({ data:null, error: error.message }, { status: 400 });

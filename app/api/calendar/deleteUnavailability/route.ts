@@ -24,7 +24,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Delete Error! Check network.' }, { status: 400 });
     }
     
-    console.log("Deletion successful:", { userId, data });
+    // console.log("Deletion successful:", { userId, data });
     return NextResponse.json({ message: 'Deletion successful' }, { status: 200 });
   } catch (error) {
     console.error("Unhandled error:", error);

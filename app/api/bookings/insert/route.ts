@@ -8,21 +8,21 @@ export async function POST(req: NextRequest) {
   }
   try {
     const body = await req.json();
-    const result= await supabase
-      .from('appointmentUnavailability')
+    const {data,error}= await supabase
+      .from('bookings')
       .insert(body)
       .select('*')
       .single()
 
-    if (result?.error) {
-      console.error("Error inserting data:", result?.error.message);
-      return NextResponse.json({ data:null, error: result?.error.message }, { status: 400 });
+    console.log('Inserting booking result:', {data,error})
+    if (error) {
+      console.error("Error inserting booking:", error);
+      return NextResponse.json({ data:null, error: error.message }, { status: 400 });
     }
 
-    // console.log('ADD UNAVAILABILITY RESULT:', result)
-    return NextResponse.json({ data:result?.data, error:result.error }, { status: 200 });
+    return NextResponse.json({ data, error:null }, { status: 200 });
   } catch (error) {
-    console.error("Unhandled error:", error);
+    console.error("Unhandled appointmentLink error:", error);
     return NextResponse.json(
       { error: "An error occurred while processing the request" },
       { status: 500 }

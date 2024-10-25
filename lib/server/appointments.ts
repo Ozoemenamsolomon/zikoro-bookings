@@ -75,3 +75,28 @@ export const fetchAppointments = async (
 
 };
 
+export const fetchBookings = async (
+  {appointmentDate, appointmentLinkId}:{appointmentDate:string, appointmentLinkId:string} 
+ ): Promise<{data:Booking[]|null, error:string|null}> => {
+     const supabase = createClient()
+   try {
+    const { data, error, status } = await supabase
+      .from("bookings")
+      .select("*")
+      .eq("appointmentDate", appointmentDate)
+      .eq("appointmentLinkId", appointmentLinkId)
+      .neq("bookingStatus", 'CANCELLED')
+      .order('created_at', { ascending: false });
+
+      // console.log({ data, error,status, appointmentDate, appointmentLinkId });
+     if (error) {
+       console.error('Error fetching bookings:', error);
+       return { data: null, error: error.message, };
+     }
+     return { data, error: null };
+   } catch (error) {
+     console.error('Server error:', error);
+     return { data: null, error: 'Server error',  };
+   }
+ };
+ 

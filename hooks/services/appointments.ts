@@ -1,6 +1,6 @@
 "use client";
 
-import { AppointmentLink, AppointmentUnavailability, Booking, } from "@/types/appointments";
+import { AppointmentLink, AppointmentUnavailability, Booking, BookingsContact, } from "@/types/appointments";
 import { useState,   useCallback,  } from "react";
 import useUserStore from "@/store/globalUserStore";
 import { createClient } from "@/utils/supabase/client";
@@ -393,24 +393,24 @@ export const useCalendarData = ({viewing, date, count, formattedWeekData,formatt
   };
 };
 
-// export function useBookingsContact() {
-//   const insertBookingsContact = useCallback(async (contact: BookingsContact) => {
-//     const supabase = createClient()
+export function useBookingsContact() {
+  const insertBookingsContact = useCallback(async (contact: BookingsContact) => {
+    const supabase = createClient()
 
-//     const { data, error } = await supabase
-//       .from('bookingsContact')
-//       .insert([contact])
-//       .select('*')
-//       .single();
+    const { data, error } = await supabase
+      .from('bookingsContact')
+      .insert([contact])
+      .select('*')
+      .single();
+      console.log({ data, error } )
+    if (error) { 
+      // console.error('Error inserting data:', error);
+      return null;
+    }
 
-//     if (error) { 
-//       console.error('Error inserting data:', error);
-//       return null;
-//     }
+    // console.log('Data inserted successfully:',contact, data );
+    return data;
+  }, []);
 
-//     console.log('Data inserted successfully:',contact, data );
-//     // return data;
-//   }, []);
-
-//   return { insertBookingsContact };
-// }
+  return { insertBookingsContact };
+}
