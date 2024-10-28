@@ -272,7 +272,6 @@ const CreateAppointments: React.FC<{ appointment?: AppointmentLink, serverError?
     }
   };
 
-// console.log({errors, formData})
   return (
     <main className="py-4 sm:p-8 z-50 relative bg-[#F9FAFF] ">
       <SelectType onClose={()=>setIsOpen(false)} isOpen={isOpen}/>
