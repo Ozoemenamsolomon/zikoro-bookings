@@ -22,6 +22,7 @@ import DetailsForm from './DetailsForm'
 import { Category } from '../create/CategoryForm'
 import SelectOnly from '../ui/SeectInput'
 import { useAppointmentContext } from '@/context/AppointmentContext';
+import Loading from '@/components/shared/Loader';
 
 function classNames(...classes: (string | false)[]): string {
     return classes.filter(Boolean).join(' ');
@@ -274,7 +275,7 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
 
             {
                 slotsLoading ?
-                <div className="bg-white p-4 rounded-lg w-full flex justify-center items-center max-sm:h-96">loading...</div>
+                <div className="bg-white p-4 rounded-lg w-full flex justify-center items-center h-96"><Loading/></div>
                 :
                 <Slots hasCategory={hasCategory} appointmnetLink={appointmnetLink} selectedDate={selectedDay} timeSlots={timeSlots} />
             }

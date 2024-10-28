@@ -36,7 +36,7 @@ const EditContact = () => {
     const [errors, setErrors] = useState<any>({})
     const [isSubmitting, setIsSubmitting] = useState(false)
 
-    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement| HTMLTextAreaElement>) => {
         const { name, value } = e.target
         setFormData(prev => ({ ...prev, [name]: value }))
         setErrors((prev:any) => ({ ...prev, [name]: '' }))

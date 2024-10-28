@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {  ChevronLast } from 'lucide-react'
 import {
-    LucideIcon,
     UserCircle,Link2,
     Users2, 
     } from "lucide-react";

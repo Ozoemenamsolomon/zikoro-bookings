@@ -49,6 +49,8 @@ export const fetchAppointments = async (
       .eq("createdBy", id)
       .order("appointmentDate", { ascending: true })
 
+      const {count} = await query
+
       if (payload?.date && !payload?.type){
         query.gte('appointmentDate', startOfMonth(new Date(payload?.date!)).toISOString())
              .lte('appointmentDate', endOfMonth(new Date(payload?.date!)).toISOString())
@@ -58,7 +60,7 @@ export const fetchAppointments = async (
         query.gte('appointmentDate', today)
       }
 
-    const { data, count, error } = await query;
+    const { data, error } = await query;
     // console.log({date: startOfWeek(new Date(payload?.date!)).toISOString(), data, }, 'REFETCHING')
 
     if (error) {

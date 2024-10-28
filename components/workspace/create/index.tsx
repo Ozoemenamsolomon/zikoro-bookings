@@ -1,6 +1,6 @@
 'use client'
 
-import { AtmCardIcon, BentArrowLeft, CalenderIcon, ClockIcon, SettingsIcon, ThemeIcon } from '@/constants';
+import { AtmCardIcon, BentArrowLeft, CalenderIcon, ClockIcon, SettingsIcon, ThemeIcon, urls } from '@/constants';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import Details from './Details';
@@ -259,7 +259,7 @@ const CreateAppointments: React.FC<{ appointment?: AppointmentLink, serverError?
       if (response.ok) {
         setFormData(formdata);
         toast.success(success);
-        push('/workspace/schedule');
+        push(urls.schedule);
       } else {
         setErrors({ general: result.error });
         toast.error('Form submission failed!');
@@ -281,7 +281,7 @@ console.log({errors, formData})
         <div className="fixed z-50 bg-white/5 inset-0 flex justify-center items-center" ><Loading/></div>:null
       }
 
-      <Link href={'/workspace/schedule'} type="button" className="max-sm:pl-4">
+      <Link href={urls.schedule} type="button" className="max-sm:pl-4">
         <BentArrowLeft w={20} />
       </Link>
       <section className="py-4 flex w-full justify-center items-center">

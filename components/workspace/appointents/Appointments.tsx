@@ -4,34 +4,18 @@ import { ChevronDown, RefreshCw, SquarePen, XCircle } from "lucide-react";
 import React, { Suspense, useRef, useState } from "react";
 import { useGetBookings } from "@/hooks/services/appointments";
 import { format, parseISO } from "date-fns";
-import { AppointmentLink, Booking } from "@/types/appointments";
-// import PageLoading from "../ui/Loading";
+import { Booking } from "@/types/appointments";
 import { useEffect } from "react";
 import { useClickOutside } from "@/lib/useClickOutside";
-// import { TimeDetail } from "../booking/Calender";
 
-// import Empty from "../calender/Empty";
-import useUserStore from "@/store/globalUserStore";
-// import { Reschedule } from "./Reschedule";
+import Empty from "../calender/Empty";
+import { Reschedule } from "./Reschedule";
 import { GroupedBookings } from "@/lib/server/appointments";
 import { useAppointmentContext } from "@/context/AppointmentContext";
 import { PopoverMenu } from "../../shared/PopoverMenu";
 import Loading from "@/components/shared/Loader";
-
-// export function getEnabledTimeDetails(
-//   appointmnetLink: AppointmentLink
-// ): TimeDetail[] {
-//   if (!appointmnetLink || !appointmnetLink.timeDetails) {
-//     return [];
-//   }
-//   try {
-//     const timeDetails: TimeDetail[] = JSON.parse(appointmnetLink.timeDetails);
-//     return timeDetails.filter((item) => item.enabled);
-//   } catch (error) {
-//     // console.error("Failed to parse timeDetails:", error);
-//     return [];
-//   }
-// }
+import EmptyList from "../ui/EmptyList";
+ 
 
 const BookingRow = ({ booking, showNote, setShowNote }: { booking: Booking, showNote:any, setShowNote: (any:any)=>void }) => {
   const {
@@ -215,11 +199,10 @@ const Appointments = ({groupedBookingData,fetchedcount,fetchError, dateHash}:{
   fetchedcount: number;
   dateHash?: string;
 }) => {
-  const {user} = useUserStore()
-
   const { groupedBookings, count, error, isLoading, getBookings } = useGetBookings({
     groupedBookingData,fetchedcount,fetchError
   });
+
 
   const [drop, setDrop] = useState(false);
   const [filter, setFilter] = useState("");
@@ -260,7 +243,9 @@ const Appointments = ({groupedBookingData,fetchedcount,fetchError, dateHash}:{
 
   return (
     <>
-      {/* <Reschedule refresh={refresh} /> */}
+    <Suspense>
+      <Reschedule refresh={refresh} getBookings={getBookings} setFilter={setFilter}/>
+    </Suspense>
 
       <header className="flex w-full justify-between gap-4 flex-col sm:flex-row pb-10">
         <div>
@@ -331,7 +316,11 @@ const Appointments = ({groupedBookingData,fetchedcount,fetchError, dateHash}:{
         </div>
       </header>
 
-      <Suspense fallback={<div className="p-40 text-center">Loading...</div>}>
+      <Suspense 
+          fallback={<div className="h-screen w-full flex justify-center items-center">
+            <Loading size={40}/>
+          </div>}
+      >
         {
         isLoading ? (
           <div className="h-screen w-full flex justify-center items-center">
@@ -342,11 +331,17 @@ const Appointments = ({groupedBookingData,fetchedcount,fetchError, dateHash}:{
           <section className="py-20 text-center w-full">{error}</section>
         ) 
         : !count? (
-          <>Empty list</>
-          // <Empty 
-          //   placeholder="/appointments-placeholder.PNG"
-          //   text={`You don't have any booked appointment. `}
-          // />
+          <Empty 
+            placeholder="/appointments-placeholder.PNG"
+            text={`You don't have any booked appointment.`}
+          />
+        ) 
+        :
+        groupedBookings&&!Object.keys(groupedBookings!)?.length ? (
+          <EmptyList
+            className='h-screen'
+            text={`No appointments available`}
+          />
         ) 
         : (
           groupedBookings && (

@@ -1,4 +1,4 @@
-import { AppointmentsIcon, } from '@/constants'
+import { AppointmentsIcon, urls, } from '@/constants'
 import React, { useEffect, useState } from 'react'
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
@@ -37,7 +37,7 @@ const CanceledAppointments: React.FC<SectionOneProps> = ({
     
             <h3 className="text-2xl font-bold">{cancelled?.length}</h3>
     
-            <Link href={'/workspace/appointments'} 
+            <Link href={urls.appointments} 
               type="button"
               className='underline hover:text-zikoroBlue duration-300'
             >see appointments

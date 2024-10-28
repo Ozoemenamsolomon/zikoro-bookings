@@ -1,4 +1,5 @@
 import { fetchAppointments } from "@/lib/server/appointments";
+import { fetchSchedule, fetchSchedules } from "@/lib/server/schedules";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -7,13 +8,12 @@ export async function GET(req: NextRequest) {
     }
     
     const { searchParams } = new URL(req.url);
-    const type = searchParams.get('type')!;  
+    const end = searchParams.get('end')!;  
     const userId = searchParams.get('userId')!;
-    const date = searchParams.get('date')!;
+    const start = searchParams.get('start')!;
 
     try {
-        const {data, count, error} = await fetchAppointments({userId, type, date})
-        // console.error({ data, count, error });
+        const {data, count, error} = await fetchSchedules(userId, start, end)
   
       if (error) {
         console.error("Error fetching bookings:", error);

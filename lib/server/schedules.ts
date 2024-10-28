@@ -9,21 +9,33 @@ interface FetchContactsResult {
 }
 
 export const fetchSchedules = async (
-  q?: string
+  userId?:string, start:number|string = 0, end:number|string = 19
 ): Promise<FetchContactsResult> => {
     const supabase = createClient()
-    const {user} = await getUserData()
+
+    let id 
+    if(userId){
+      id = userId
+    } else {
+      const {user} = await getUserData()
+      id = user?.id
+    }
 
   try {
     let query = supabase
       .from('appointmentLinks')
       .select('*', { count: 'exact' }) 
-      .eq('createdBy', user?.id)
-      .range(0, 19)
+      .eq('createdBy', id)
+      .range(Number(start), Number(end))
       .order('created_at', {ascending: false} ); 
 
+    // const {count } = await supabase
+    //   .from('bookings') 
+    //   .select('*', { count: 'exact' } )
+    //   .eq('createdBy', id)
+
     const { data, count, error } = await query;
-    // console.error({user, data, count, error });
+    console.log({ data, count, error, id });
 
     if (error) {
       console.error('Error fetching contacts:', error);

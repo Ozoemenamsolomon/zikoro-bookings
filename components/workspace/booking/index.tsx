@@ -10,6 +10,7 @@ import BookingLazyoader from './LazyLoader'
 import Link from 'next/link'
 import Calender from './Calender'
 import ProcessPayment from './ProcessPayment'
+import { urls } from '@/constants'
 
 const Booking =  ({appointmnetLink, error}:{appointmnetLink:AppointmentLink, error?:string}) => {
   const {bookingFormData, isFormUp} = useAppointmentContext()
@@ -96,17 +97,20 @@ const Booking =  ({appointmnetLink, error}:{appointmnetLink:AppointmentLink, err
                         </section>
                     </section>
                 }
+
+                <footer className='shrink-0 flex w-full gap-4 justify-center items-center '>
                 {
                     appointmnetLink?.zikoroBranding ? 
-                    <footer className='shrink-0 flex w-full gap-4 justify-center items-center '>
-                        
+                        <>
                         <p className="">Create your bookings with</p>
-                        <Link href='/'>
+                        <Link href={urls.root}>
                             <Image src={'/zikoro-b.png'} alt='zikoro booking' width={110} height={55} />
                         </Link>
-                    </footer> 
+                        </>
                     : null
                 }
+                </footer> 
+
             </article>
         </main>
     </Suspense>

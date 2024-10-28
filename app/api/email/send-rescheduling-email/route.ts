@@ -22,7 +22,6 @@ export async function POST(req: NextRequest) {
 
   try {
     const { bookingFormData } = await req.json();
-    console.log('Received bookingFormData:', bookingFormData);
 
     if (!bookingFormData) {
       console.error('Missing booking form data');
@@ -35,15 +34,13 @@ export async function POST(req: NextRequest) {
     delete newFormdata['timeStr'];
     delete newFormdata['type'];
 
-    console.log('Updating with data:', newFormdata);
-
     const { data, error: updatingError } = await supabase
       .from('bookings')
       .update(newFormdata)
       .eq('id', bookingFormData?.id)
       .single();
 
-    console.log({data, updatingError})
+    // console.log({data, updatingError})
 
     if (updatingError) {
       console.error('Error updating data:', updatingError);

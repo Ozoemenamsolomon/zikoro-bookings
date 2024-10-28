@@ -20,9 +20,13 @@ export const useGetSchedules =  (scheduleData?: { error?: string | null; schedul
 
   const limit = settings.schedulesLimit || 20
   const [totalPages, setTotalPages] = useState<number>(Math.ceil((scheduleData?.count || 0) / limit))
+
+
   
   const fetchSchedules = useCallback(
     async (page: number = 1) => {
+
+      
       if(!user) return
       try {
         setIsError('');
@@ -30,12 +34,18 @@ export const useGetSchedules =  (scheduleData?: { error?: string | null; schedul
 
         const offset = (page - 1) * limit;
 
-        const { data, count: newCount, error: fetchError } = await supabase
-          .from('appointmentLinks')
-          .select('*', { count: 'exact' })
-          .eq('createdBy', user?.id)
-          .range(offset, offset + limit - 1)
-          .order('created_at', { ascending: false });
+        const  response = await fetch(`/api/schedules?userId=${user?.id}&start=${offset}&end=${offset + limit - 1}`);
+        if (response.status!==200) {
+          throw new Error('Error fetching appointments');
+        }
+        const { data, error:fetchError, count:newCount} = await response.json()
+
+        // const { data, count: newCount, error: fetchError } = await supabase
+        //   .from('appointmentLinks')
+        //   .select('*', { count: 'exact' })
+        //   .eq('createdBy', user?.id)
+        //   .range(offset, offset + limit - 1)
+        //   .order('created_at', { ascending: false });
 
         if (fetchError) {
           console.error('Error fetching appointments:', fetchError);
@@ -81,12 +91,12 @@ export const useGetBookings = ({
   const [count, setCount] = useState<number>(fetchedcount);
   const [errorMessage, setError] = useState<string | null>(fetchError);
 
-  const getBookings = async (type: string = '') => {
+  const getBookings = async (type: string = '', date:string='') => {
     setLoading(true);
     setError(null);  
   
     try {
-      const  response = await fetch(`/api/appointments?type=${type}&userId=${user?.id}`);
+      const  response = await fetch(`/api/appointments?type=${type}&userId=${user?.id}&date=${date}`);
       if (response.status!==200) {
         throw new Error('Error fetching appointments');
       }

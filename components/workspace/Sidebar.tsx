@@ -8,6 +8,7 @@ import MenuBox from './ui/MenuBox';
 import useUserStore from '@/store/globalUserStore';
 import { useClickOutside } from '@/lib/useClickOutside';
 import { useLogOut } from '@/hooks';
+import { urls } from '@/constants';
 
 const navlinks = [
   // {
@@ -18,32 +19,32 @@ const navlinks = [
   {
     icon: Calendar,
     label: 'Calendar',
-    link: `/workspace/calendar`,
+    link: urls.calendar,
   },
   {
     icon: Briefcase,
     label: 'Appointments',
-    link: `/workspace/appointments`,
+    link: urls.appointments,
   },
   {
     icon: Link2,
     label: 'Schedules',
-    link: `/workspace/schedule`,
+    link: urls.schedule,
   },
   {
     icon: Users,
     label: 'Contacts',
-    link: `/workspace/contacts`,
+    link: urls.contacts,
   },
   {
     icon: BarChartBig,
     label: 'Analytics',
-    link: `/workspace/analytics`,
+    link: urls.analytics,
   },
   {
     icon: Store,
     label: 'Store Front',
-    link: `/shop-front/booking`,
+    link: urls.shopFrontBooking,
   },
   // {
   //   icon: Bell,
@@ -53,7 +54,7 @@ const navlinks = [
   {
     icon: Settings,
     label: 'Settings',
-    link: `/workspace/settings/profile`,
+    link: urls.settingsProfile,
   },
 ];
 

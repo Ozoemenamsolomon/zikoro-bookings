@@ -10,7 +10,7 @@ const Contacts = async ({
   searchParams: { s: string };
 }) => {
   const {data,count,error} = await fetchContacts()
-  console.log({data,count,error})
+  // console.log({data,count,error})
   return ( 
     <ContactLayout data={data} searchquery={s} >
       <ContactSubLayout>

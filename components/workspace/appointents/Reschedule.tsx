@@ -1,40 +1,35 @@
 import { useEffect, useState } from "react";
-import { useAppointmentContext } from "../context/AppointmentContext";
-import Calender, { generateSlots, SlotsResult } from "../booking/Calender";
-import { getEnabledTimeDetails } from "./Appointments";
+import Calender from "../booking/Calender";
 import { XCircle, Calendar,  } from "lucide-react";
-import { AntiClock, CancelX, EditPenIcon } from "@/constants";
+import { AntiClock, CancelX, EditPenIcon, urls } from "@/constants";
 import { format } from "date-fns";
-import Slots from "../booking/Slots";
-import toast from "react-hot-toast";
+import {toast} from "react-toastify";
 import { Booking } from "@/types/appointments";
 import { generateAppointmentTime } from "../booking/submitBooking";
 import { cn } from "@/lib";
+import { useAppointmentContext } from "@/context/AppointmentContext";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export const Reschedule = ({ refresh }: { refresh: () => void }) => {
+export const Reschedule = ({ refresh, getBookings, setFilter }: { refresh: () => void, getBookings: (date:string) => void, setFilter:(type:string) => void,}) => {
     const { bookingFormData, setBookingFormData, selectedItem } = useAppointmentContext();
-    const [timeSlots, setTimeSlots] = useState<SlotsResult | null>(null);
+
+    const searchParams = useSearchParams()
+    const date = searchParams.get('refetch');
+    useEffect(() => {
+      if(date) {
+        const element = document.getElementById(date);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    }, [date])
+   
+     
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
-    // const [isSelected, setIsSelected] = useState<string>('');
-    // console.log({bookingFormData})
-    useEffect(() => {
-      const fetchSlots = async () => {
-        const getTimeSlots = await generateSlots(
-          getEnabledTimeDetails(bookingFormData?.appointmentLinkId),
-          bookingFormData?.appointmentLinkId?.duration!,
-          bookingFormData?.appointmentLinkId?.sessionBreak || 1,
-          new Date(bookingFormData?.appointmentDate!)
-        );
-        setTimeSlots(getTimeSlots);
-      };
-      fetchSlots();
-    }, [bookingFormData]);
-  
-    const updatingFunc = (callback: () => void) => {
-      callback()
-    }
-  
+
+    const {replace} = useRouter()
+
     return (
       <section
         onClick={() => setBookingFormData(null)}
@@ -88,12 +83,6 @@ export const Reschedule = ({ refresh }: { refresh: () => void }) => {
             </div>
   
             <div className="h-[28rem]  border hide-scrollbar overflow-auto w-full  rounded-lg ">
-                {/* <h6 className="font-semibold">Choose time</h6> */}
-                {/* <Slots
-                    appointmnetLink={bookingFormData?.appointmentLinkId}
-                    timeSlots={timeSlots}
-                    selectedDate={new Date(selectedItem)}
-                /> */}
                 <Calender appointmnetLink={bookingFormData?.appointmentLinkId}/> 
             </div>
 
@@ -121,10 +110,12 @@ export const Reschedule = ({ refresh }: { refresh: () => void }) => {
                 onClick={() =>
                   reschedule(
                     bookingFormData,
-                    refresh,
                     setBookingFormData,
                     setIsLoading,
-                    setError
+                    setError,
+                    getBookings,
+                    setFilter,
+                    replace,
                   )
                 }
                 className="bg-basePrimary rounded-md text-white font-medium py-2 px-6 w-full flex justify-center"
@@ -198,12 +189,14 @@ export const Reschedule = ({ refresh }: { refresh: () => void }) => {
 
   const reschedule = async (
     bookingFormData: Booking,
-    refresh: any,
     setBookingFormData: any,
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-    setError: (state: string) => void
+    setError: (state: string) => void,
+    getBookings: (type:string, date:Date|string)=>void,
+    setFilter: (type:string)=>void,
+    replace: (type:string)=>void,
+    // reload: (type:string)=>void,
   ) => {
-    // console.log({ bookingFormData });
     setError("");
   
     const timeStamp = generateAppointmentTime({
@@ -228,8 +221,10 @@ export const Reschedule = ({ refresh }: { refresh: () => void }) => {
         }),
       });
       if (res.ok) {
-        toast.success("Successfully, email reminder sent");
-        refresh();
+        toast.success("Successfull, email reminder sent");
+        getBookings("upcoming-appointments", bookingFormData.appointmentDate!)
+        setFilter("upcoming-appointments")
+        replace(`${urls.appointments}?refetch=${bookingFormData.appointmentDate}`);
         setBookingFormData(null);
       } else {
         toast.error("Unsuccessfull");
@@ -238,7 +233,6 @@ export const Reschedule = ({ refresh }: { refresh: () => void }) => {
     } catch (error) {
       toast.error("Server error.");
       setError("Server error.");
-      // console.log('Error from server', error);
     } finally {
       setIsLoading(false);
     }
@@ -252,8 +246,6 @@ export const Reschedule = ({ refresh }: { refresh: () => void }) => {
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
     setError: (state: string) => void
   ) => {
-    // console.log({ bookingFormData });
-  
     setError("");
   
     const timeStamp = generateAppointmentTime({
@@ -278,18 +270,15 @@ export const Reschedule = ({ refresh }: { refresh: () => void }) => {
       });
   
       if (res.ok) {
-        // console.log('Successfully cancelled appointment, email reminder sent', await res.json());
         toast.success("Successfull, email sent.");
         refresh();
         setBookingFormData();
       } else {
         toast.error("Unsuccessful");
         setError("Error rescheduling appointment");
-        // console.log('Error cancelled appointment', await res.json());
       }
     } catch (error) {
       setError("Server error.");
-      // console.log('Error from server', error);
     } finally {
       setIsLoading(false);
     }
