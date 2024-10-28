@@ -1,14 +1,15 @@
 "use client";
 import { useState } from "react";
-// import { useForgotPassword } from "@/hooks";
+import { useForgotPassword } from "@/hooks/services/auth";
 
 const ForgotPasswordComponent = () => {
-  // const { loading, forgotPassword } = useForgotPassword();
+  const { loading, forgotPassword } = useForgotPassword();
 
   const [email, setEmail] = useState<string>("");
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
+    await forgotPassword(email);
   };
 
   return (
