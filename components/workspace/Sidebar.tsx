@@ -87,7 +87,7 @@ const Sidebar = () => {
           <h5 className="text-base font-medium">Get Started</h5>
           <p className="text-ash pb-1 text-[12px]">Creating and managing your schedules couldn’t be easier.</p>
 
-          <Link href={'/create'} className='flex justify-between gap-6 items-center py-2 px-5 text-white rounded-md'
+          <Link href={urls.create} className='flex justify-between gap-6 items-center py-2 px-5 text-white rounded-md'
           style={{background: `linear-gradient(269.83deg, #9C00FE 0.14%, #001FCB 99.85%)`
           }}
           >
