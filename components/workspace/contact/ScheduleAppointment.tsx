@@ -9,7 +9,7 @@ import { useGetSchedules } from '@/hooks/services/appointments'
 import PaginationMain from '@/components/shared/PaginationMain'
 import useUserStore from '@/store/globalUserStore'
 
-const ScheduleAppointment = ({ contact, appointmentLinks }: { contact: BookingsContact, appointmentLinks: AppointmentLink[] }) => {
+const ScheduleAppointment = ({ contact }: { contact: BookingsContact, appointmentLinks?: AppointmentLink[] }) => {
   const [show, setShow] = useState<'links' | 'date' | 'final'>('links')
   const [selectedAppointmentLink, setSelectedAppointmentLink] = useState<AppointmentLink | null>(null)
   const {user} = useUserStore()

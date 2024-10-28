@@ -1,18 +1,17 @@
 "use client";
 
-import { AppointmentLink, } from "@/types/appointments";
-// import { getRequest } from "@/utils/api";
+import { AppointmentLink, AppointmentUnavailability, Booking, BookingsContact, } from "@/types/appointments";
 import { useState,   useCallback,  } from "react";
-// import {toast} from "react-toastify";
-// import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, subWeeks, subMonths, subYears } from 'date-fns';
 import useUserStore from "@/store/globalUserStore";
 import { createClient } from "@/utils/supabase/client";
-// import { fetchAllData } from "@/lib/client";
 import { settings } from "@/lib/settings";
+import { toast } from "react-toastify";
+import { GroupedBookings } from "@/lib/server/appointments";
+import { getRequest } from "@/utils/api";
 
 const supabase = createClient();
 
-export const useGetSchedules =  (scheduleData?: { error?: string | null; schedules?: AppointmentLink[] | null; count?: number } )=> {
+export const useGetSchedules =  (scheduleData?: { error?: string | null; schedules?: AppointmentLink[] | null; count?: number; } )=> {
   const { user } = useUserStore();
   const [isError, setIsError] = useState<string>(scheduleData?.error||'');
   const [scheduleList, setScheduleList] = useState<AppointmentLink[]>(scheduleData?.schedules || []);
@@ -21,9 +20,13 @@ export const useGetSchedules =  (scheduleData?: { error?: string | null; schedul
 
   const limit = settings.schedulesLimit || 20
   const [totalPages, setTotalPages] = useState<number>(Math.ceil((scheduleData?.count || 0) / limit))
+
+
   
   const fetchSchedules = useCallback(
     async (page: number = 1) => {
+
+      
       if(!user) return
       try {
         setIsError('');
@@ -31,12 +34,18 @@ export const useGetSchedules =  (scheduleData?: { error?: string | null; schedul
 
         const offset = (page - 1) * limit;
 
-        const { data, count: newCount, error: fetchError } = await supabase
-          .from('appointmentLinks')
-          .select('*', { count: 'exact' })
-          .eq('createdBy', user?.id)
-          .range(offset, offset + limit - 1)
-          .order('created_at', { ascending: false });
+        const  response = await fetch(`/api/schedules?userId=${user?.id}&start=${offset}&end=${offset + limit - 1}`);
+        if (response.status!==200) {
+          throw new Error('Error fetching appointments');
+        }
+        const { data, error:fetchError, count:newCount} = await response.json()
+
+        // const { data, count: newCount, error: fetchError } = await supabase
+        //   .from('appointmentLinks')
+        //   .select('*', { count: 'exact' })
+        //   .eq('createdBy', user?.id)
+        //   .range(offset, offset + limit - 1)
+        //   .order('created_at', { ascending: false });
 
         if (fetchError) {
           console.error('Error fetching appointments:', fetchError);
@@ -67,89 +76,54 @@ export const useGetSchedules =  (scheduleData?: { error?: string | null; schedul
   return { fetchSchedules, handlePageChange,totalPages,loading,currentPage,scheduleList,isError };
 };
 
-// export const useGetBookings = () => {
-//   const { user } = useUserStore();
-//   // console.log({userF:user})
+export const useGetBookings = ({
+  groupedBookingData,
+  fetchedcount,
+  fetchError,
+}: {
+  groupedBookingData: GroupedBookings | null;
+  fetchedcount: number;
+  fetchError: string | null;
+}) => {
+  const { user } = useUserStore(); 
+  const [groupedBookings, setGroupedBookings] = useState<GroupedBookings | null>(groupedBookingData);
+  const [isLoading, setLoading] = useState<boolean>(false);
+  const [count, setCount] = useState<number>(fetchedcount);
+  const [errorMessage, setError] = useState<string | null>(fetchError);
 
-//   const [bookings, setBookings] = useState<Booking[]>([]);
-//   const [isLoading, setLoading] = useState<boolean>(true);
-//   const [error, setError] = useState<string | null>(null);
+  const getBookings = async (type: string = '', date:string='') => {
+    setLoading(true);
+    setError(null);  
+  
+    try {
+      const  response = await fetch(`/api/appointments?type=${type}&userId=${user?.id}&date=${date}`);
+      if (response.status!==200) {
+        throw new Error('Error fetching appointments');
+      }
+      const { data, error, count} = await response.json()
+  
+      if ( error) {
+        throw new Error('Error fetching appointments');
+      }
+  
+      // console.log({ data, error, count });
+  
+      setGroupedBookings(data);
+      setCount(count);
+  
+      return data;
+      
+    } catch (err) {
+      setError('Error fetching data! Try again');
+      toast.error('Error fetching data! Try again');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
-//   const getBookings = async (date: Date | string) => {
-//     setLoading(true);
-//     setError('')
-//     try {
-//       const response = await fetch(`/api/appointments?date=${date}&userId=${user?.id}`, {
-//         method: 'GET',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//       });
-
-//       if (!response.ok) {
-//         setError('Error fetching schedules!');
-//         toast.error('Error fetching schedules!');
-//         return;
-//       }
-
-//       const data = await response.json();
-//       // console.log('Fetched Appointments:', data);
-
-//       if (data?.error) {
-//         setError('Error fetching schedules!');
-//         toast.error('Error fetching schedules!');
-//         return;
-//       }
-
-//       setBookings(data.data);
-//       return data
-//     } catch (error) {
-//       // console.error('Error fetching schedules:', error);
-//       setError('Error fetching schedules!');
-//       toast.error('Error fetching schedules!');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const getPastBookings = async () => {
-//     setLoading(true);
-//     setError('')
-//     try {
-//       const response = await fetch(`/api/appointments/old_appointments?userId=${user?.id}`, {
-//         method: 'GET',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//       });
-
-//       if (!response.ok) {
-//         setError('Error fetching schedules!');
-//         toast.error('Error fetching schedules!');
-//         return;
-//       }
-
-//       const data = await response.json();
-//       // console.log('Fetched Appointments:', data);
-
-//       if (data?.error) {
-//         setError('Error fetching schedules!');
-//         toast.error('Error fetching schedules!');
-//         return;
-//       }
-
-//       setBookings(data.data);
-//     } catch (error) {
-//       // console.error('Error fetching schedules:', error);
-//       setError('Error fetching schedules!');
-//       toast.error('Error fetching schedules!');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return { bookings, isLoading, error, getBookings, getPastBookings };
-// };
+  return { groupedBookings, isLoading, error: errorMessage, count, getBookings };
+};
 
 
 // export const getAppointment = async (appointmentAlias:string) => {
@@ -201,7 +175,7 @@ export const useGetSchedules =  (scheduleData?: { error?: string | null; schedul
 // };
 
 // export const useGetBookingList = (appointmentAlias: string) => {
-//   const [bookings, setBookings] = useState<AppointmentLink | null>(null);
+//   const [bookings, setGroupedBookings] = useState<AppointmentLink | null>(null);
 //   const [isLoading, setLoading] = useState<boolean>(false);
 //   const [error, setError] = useState<string | null>(null);
 
@@ -214,7 +188,7 @@ export const useGetSchedules =  (scheduleData?: { error?: string | null; schedul
 //       });
 
 //       if (status === 200) {
-//         setBookings(data.data);
+//         setGroupedBookings(data.data);
 //       } else {
 //         setError(`Error: ${status}`);
 //       }
@@ -269,114 +243,184 @@ export const useGetSchedules =  (scheduleData?: { error?: string | null; schedul
 //   return { unavailableDates,setUnavailableDates, isLoading, error, getUnavailableDates };
 // };
 
-// export const useGetBookingsAnalytics = () => {
-//   const {user, setUser} = useUserStore()
+export const useGetBookingsAnalytics = ({
+  curList, 
+  prevList, 
+  typeParam
+}: {
+  curList: Booking[] | null;
+  prevList: Booking[] | null;
+  typeParam?: string;
+}) => {
+  const { user } = useUserStore();
 
-//   const [isLoading, setLoading] = useState<boolean>(true);
-//   const [type, setType] = useState<string>('weekly');
-//   const [error, setError] = useState<string | null>(null);
-//   const [current, setCurrent] = useState<Booking[]>([])
-//   const [previous, setPrevious] = useState<Booking[]>([])
+  const [isLoading, setLoading] = useState(false);
+  const [type, setType] = useState(typeParam || 'weekly');
+  const [error, setError] = useState<string | null>(null);
+  const [current, setCurrent] = useState<Booking[]>(curList ?? []);
+  const [previous, setPrevious] = useState<Booking[]>(prevList ?? []);
 
-//   const formatDateRange = (currentStart: string, currentEnd: string, previousStart: string, previousEnd: string, user:UserType): string => 
-//     `/appointments/booking/analytics?curStart=${currentStart}&curEnd=${currentEnd}&prevStart=${previousStart}&prevEnd=${previousEnd}&userId=${user?.id}`;
+  const getBookings = useCallback(async (fetchType = type) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/analytics/?type=${fetchType}&userId=${user?.id}`);
+      if ( !response.ok) {
+        throw new Error('Error fetching appointments');
+      }
+      // console.log({res: await response.json()})
+      if (response.status===200) {
+        const { cur,prev } = await response.json()
+        setCurrent(cur || []);
+        setPrevious(prev || []);
+      } else {
+        setError('Error fetching data!');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Server error occurred while fetching bookings.');
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id, type]);
 
-//     const getBookings = useCallback(async (user:UserType) => {
-//       setLoading(true);
-//       setError(null);
-//       try {
-//         let currentStart, currentEnd, previousStart, previousEnd;
-    
-//         if (type === 'weekly') {
-//           currentStart = startOfWeek(new Date()).toISOString();
-//           currentEnd = endOfWeek(new Date()).toISOString();
-//           previousStart = startOfWeek(subWeeks(new Date(), 1)).toISOString();
-//           previousEnd = endOfWeek(subWeeks(new Date(), 1)).toISOString();
-//         } else if (type === 'monthly') {
-//           currentStart = startOfMonth(new Date()).toISOString();
-//           currentEnd = endOfMonth(new Date()).toISOString();
-//           previousStart = startOfMonth(subMonths(new Date(), 1)).toISOString();
-//           previousEnd = endOfMonth(subMonths(new Date(), 1)).toISOString();
-//         } else if (type === 'yearly') {
-//           currentStart = startOfYear(new Date()).toISOString();
-//           currentEnd = endOfYear(new Date()).toISOString();
-//           previousStart = startOfYear(subYears(new Date(), 1)).toISOString();
-//           previousEnd = endOfYear(subYears(new Date(), 1)).toISOString();
-//         } else {
-//           throw new Error('Invalid type specified');
-//         }
-    
-//         const { data, status } = await getRequest<{ cur: Booking[], prev: Booking[] }>({
-//           endpoint: formatDateRange(currentStart, currentEnd, previousStart, previousEnd, user),
-//         });
+  const handleSetType = useCallback(async (typeToSet: string) => {
+    if (type === typeToSet) return;
+    setType(typeToSet);
+    await getBookings(typeToSet);
+  }, [type, getBookings]);
 
-//         if (status === 200) {
-//           setCurrent(data.cur || []);
-//           setPrevious(data.prev || []);
-//         } else {
-//           setError('Error fetching data!');
-//         }
-    
-//       } catch (err) {
-//         console.log({err})
-//         setError('Server error');
-//       } finally {
-//         setLoading(false);
-//       }
-//     }, [type]);
+  return {
+    isLoading,
+    error,
+    getBookings,
+    current,
+    previous,
+    type,
+    handleSetType
+  };
+};
 
-//     const getYearlyBooking = async () => {
-//       setLoading(true);
-//       setError(null);
-//       try {
-//         let currentStart = startOfYear(new Date()).toISOString();
-//         let currentEnd = endOfYear(new Date()).toISOString();
-//         let previousStart = startOfYear(subYears(new Date(), 1)).toISOString();
-//         let previousEnd = endOfYear(subYears(new Date(), 1)).toISOString();
-//         const { data, status } = await getRequest<{ cur: Booking[], prev: Booking[] }>({
-//           endpoint: formatDateRange(currentStart, currentEnd, previousStart, previousEnd),
-//         });
-//         if (status === 200) {
-//           setCurrent(data.cur || []);
-//           setPrevious(data.prev || []);
-//         } else {
-//           setError('Error fetching data!');
-//         }
-//       } catch (err) {
-//         console.log({err})
-//         setError('Server error');
-//       } finally {
-//         setLoading(false);
-//       }
-//     }
+export const useGetUnavailableDates = (dayString:string, fecthedUnavailableDates?:AppointmentUnavailability[]) => { 
+  const {user} = useUserStore()
+  const [unavailableDates, setUnavailableDates] = useState<any>(fecthedUnavailableDates||[]);
+  const [isLoading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [slotList, setSlotList] = useState<{ from: string, to: string, id: bigint|number }[]>([]);
 
-//     useEffect(() => {
-//       if(user) {
-//         getBookings(user)
-//       };
-//     }, [type,user]);
+  const getUnavailableDates = useCallback(async (dayString?:string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data, status } = await getRequest<any>({
+        endpoint: `/calendar/fetchUnavailability?userId=${user?.id}`,
+      });
 
-//   return {isLoading,error,getBookings,current,previous, type, setType, getYearlyBooking}
-// }
+      if (status === 200) {
+        setUnavailableDates(data.data);
+// console.log({dayString, data:data.data,})
+      } else {
+        console.log({error})
+        setError(`Error: ${error}`);
+      }
+      return {data, error} 
+    } catch (err) {
+      setError('Server error');
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id, dayString]);
 
-// export function useBookingsContact() {
-//   const insertBookingsContact = useCallback(async (contact: BookingsContact) => {
-//     const supabase = createClient()
 
-//     const { data, error } = await supabase
-//       .from('bookingsContact')
-//       .insert([contact])
-//       .select('*')
-//       .single();
 
-//     if (error) { 
-//       console.error('Error inserting data:', error);
-//       return null;
-//     }
+  return { unavailableDates,setUnavailableDates, isLoading, error, getUnavailableDates, slotList, setSlotList };
+};
 
-//     console.log('Data inserted successfully:',contact, data );
-//     // return data;
-//   }, []);
 
-//   return { insertBookingsContact };
-// }
+interface CalendarDataState {
+  formattedWeekData:  Record<string, Record<number, Booking[]>>|null,
+  formattedMonthData: Record<string, Booking[]> | null;
+  startRangeDate: Date | null;
+  endRangeDate: Date | null;
+  count: number;
+}
+interface Params {
+  viewing: 'month' | 'week';
+  date: Date;
+  count: number;
+  formattedWeekData:  Record<string, Record<number, Booking[]>>|null,
+  formattedMonthData: Record<string, Booking[]> | null;
+  startRangeDate: Date;
+  endRangeDate: Date;
+  errorMsg: string | null;
+}
+
+export const useCalendarData = ({viewing, date, count, formattedWeekData,formattedMonthData, startRangeDate, endRangeDate, errorMsg}: Params) => {
+  const {user} = useUserStore()
+  const [view, setView] = useState<'month' | 'week'>(viewing);
+  const [currentDate, setCurrentDate] = useState<Date>(date);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string|null>(errorMsg);
+  const [calendarData, setCalendarData] = useState<CalendarDataState>({
+    formattedWeekData,formattedMonthData,
+    startRangeDate: startRangeDate,
+    endRangeDate: endRangeDate,
+    count: count,
+  });
+
+  const getCalendarData = async (viewingType: "month" | "week" = viewing, date: Date = currentDate) => {
+    setError(null);
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/calendar?date=${date}&viewing=${viewingType}&userId=${user?.id}`);
+      if (!response.ok) {
+        // console.log(`Error fetching calendar data: ${response.statusText}`);
+        throw new Error(`Error fetching calendar data: ${response.statusText}`);
+      }
+      const { count, data, startRangeDate, endRangeDate, date: fetchedDate } = await response.json();
+      console.log({ count, data, startRangeDate, endRangeDate, date: fetchedDate });
+      setCalendarData({
+        formattedWeekData,formattedMonthData,
+        startRangeDate,
+        endRangeDate,
+        count,
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error fetching calendar data. Please try again later.';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  return {
+    calendarData,
+    currentDate,setCurrentDate,
+    loading,
+    error,
+    getCalendarData,
+    view,setView,setError,
+  };
+};
+
+export function useBookingsContact() {
+  const insertBookingsContact = useCallback(async (contact: BookingsContact) => {
+    const supabase = createClient()
+
+    const { data, error } = await supabase
+      .from('bookingsContact')
+      .insert([contact])
+      .select('*')
+      .single();
+      console.log({ data, error } )
+    if (error) { 
+      // console.error('Error inserting data:', error);
+      return null;
+    }
+
+    // console.log('Data inserted successfully:',contact, data );
+    return data;
+  }, []);
+
+  return { insertBookingsContact };
+}

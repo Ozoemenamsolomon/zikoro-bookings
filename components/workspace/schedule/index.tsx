@@ -1,8 +1,8 @@
 
 import React, { Suspense } from 'react'
 import { AppointmentLink } from '@/types/appointments'
-import { Loader2 } from 'lucide-react'
 import Schedules from './Schedules'
+import Loading from '@/components/shared/Loader'
 
 const SchedulesLinks = ({schedules, count, error}:{
     schedules:AppointmentLink[] |null, count:number, error:string|null
@@ -11,7 +11,7 @@ const SchedulesLinks = ({schedules, count, error}:{
   return (
     <main className='w-full'>
         <h4 className='text-xl font-semibold'>My Schedules</h4>
-        <Suspense fallback={<section className='py-40 flex justify-center'><Loader2 className='animate-spin text-basePrimary/50'/></section>}>
+        <Suspense fallback={<section className='py-40 flex justify-center'><Loading/></section>}>
             <Schedules schedules={schedules} error={error} count={count}/>
         </Suspense>
     </main>

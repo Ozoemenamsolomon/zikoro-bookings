@@ -1,5 +1,6 @@
 'use client'
 
+import { urls } from '@/constants'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React from 'react'
@@ -13,15 +14,15 @@ const TabSwitch = () => {
                 [
                     {
                         label:'Booking',
-                        link:'/shop-front/booking'
+                        link: urls.shopFrontBooking
                     },
                     {
                         label:'Profile',
-                        link:'/shop-front/profile'
+                        link: urls.shopFrontProfile
                     },
                     {
                         label:'Images',
-                        link:'/shop-front/images'
+                        link: urls.shopFrontImages
                     },
                 ].map(({label,link},idx)=>{
                     return (
