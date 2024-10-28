@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import React from 'react'
 import LinksCard from './LinksCard'
+import { urls } from '@/constants'
 //  You haven't created any schedule. Your schedule will appear here. Start creating
 const Empty = () => {
   return (
@@ -46,9 +47,9 @@ const Empty = () => {
       }}>
          You haven't created any schedule.
       </h2>
-      <p className='pb-4 font-semibold'> Your schedule will appear here.</p>
+      <p className='pb-4 font-semibold'>Your schedule will appear here</p>
 
-      <Link href={'/appointments/create'} className='py-3 px-6 font-semibold text-white rounded-md bg-basePrimary' >Start creating</Link>
+      <Link href={urls.create} className='py-3 px-6 font-semibold text-white rounded-md bg-basePrimary' >Start creating</Link>
     </div>
         
     </section>

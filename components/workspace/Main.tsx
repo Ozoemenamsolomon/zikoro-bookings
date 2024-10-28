@@ -6,16 +6,6 @@ import { useClickOutside } from '@/lib/useClickOutside'
 import Image from 'next/image'
 // import { NotifyIcon } from '@/constants'
 // import Notification from './Notification'
-import { usePathname } from 'next/navigation'
-
-const nolayoutpaths = [
-    '/appointments/shop-front',
-    '/appointments/create',
-    '/appointments/edit',
-    '/appointments/shop-front/booking',
-    '/appointments/shop-front/images',
-    '/appointments/shop-front/profile',
-  ];
 
 const Main = ({children}:{children:React.ReactNode}) => {
     const [show, setShow] = useState<boolean>(false)
@@ -23,18 +13,11 @@ const Main = ({children}:{children:React.ReactNode}) => {
     const sidebar = useRef(null)
     const ref = useRef(null)
 
-    const pathname = usePathname()
-    const noLayout = nolayoutpaths.includes(pathname)
-
     useClickOutside(sidebar,()=>setShow(false))
 
     useClickOutside(ref, ()=>setDrop(false))
 
   return (
-    <>
-    {
-        noLayout ? <>{children}</> 
-        :
         <main className="bg-baseBg min-h-screen">
             <aside ref={sidebar} className={`${show ? 'z-30 w-60':' w-0 -z-10'} transform transition-all duration-300 ease-in-out  border-r bg-white h-screen overflow-y-auto fixed top-0 left-0 lg:hidden no-scrollbar`}>
                 <div className="absolute top-6 right-6 flex justify-end w-full">
@@ -66,14 +49,10 @@ const Main = ({children}:{children:React.ReactNode}) => {
                             {/* <Notification drop={drop} setDrop={setDrop}/> */}
                         </div>
                     </header>
-
                     {children}
                 </div>
             </article>
-            
         </main>
-    }
-    </>
   )
 }
 

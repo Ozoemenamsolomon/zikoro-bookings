@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {  ChevronLast } from 'lucide-react'
 import {
-    LucideIcon,
     UserCircle,Link2,
     Users2, 
     } from "lucide-react";
@@ -65,7 +64,7 @@ const asidelinks: AsideLink[] = [
                     asidelinks?.map(({icon,label,path,alert,roles},idx) => {
                         let isActive = pathname===path
                         return (
-                            <Link href={path}
+                            <Link key={idx} href={path}
                                 className={`
                                     relative flex items-center p-2 rounded-md
                                     font- cursor-pointer

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import React from 'react'
 import TabSwitch from './TabSwitch'
 import { ArrowTopRightIcon } from '@radix-ui/react-icons'
+import { urls } from '@/constants'
 
 const ShopfrontLayout = ({children}:{children:React.ReactNode}) => {
   return (
@@ -21,8 +22,8 @@ const ShopfrontLayout = ({children}:{children:React.ReactNode}) => {
             </div>
             
             <footer className="flex flex-col sm:flex-row text-[12px] shrink-0 justify-between w-full gap-x-4 items-center">
-               <Link href={'/workspace'} ><h6>Powered by Zikoro - Bookings</h6></Link> 
-                <Link href={'/workspace/create'} className='flex items-center gap-'>Create your appointment <ArrowTopRightIcon/> </Link>
+               <Link href={urls.root} ><h6>Powered by Zikoro - Bookings</h6></Link> 
+                <Link href={urls.create} className='flex items-center gap-'>Create your appointment <ArrowTopRightIcon/> </Link>
             </footer>
         </div>
     </main>

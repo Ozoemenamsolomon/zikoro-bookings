@@ -8,6 +8,7 @@ import MenuBox from './ui/MenuBox';
 import useUserStore from '@/store/globalUserStore';
 import { useClickOutside } from '@/lib/useClickOutside';
 import { useLogOut } from '@/hooks';
+import { urls } from '@/constants';
 
 const navlinks = [
   // {
@@ -18,32 +19,32 @@ const navlinks = [
   {
     icon: Calendar,
     label: 'Calendar',
-    link: `/workspace/calendar`,
+    link: urls.calendar,
   },
   {
     icon: Briefcase,
     label: 'Appointments',
-    link: `/workspace/appointments`,
+    link: urls.appointments,
   },
   {
     icon: Link2,
     label: 'Schedules',
-    link: `/workspace/schedule`,
+    link: urls.schedule,
   },
   {
     icon: Users,
     label: 'Contacts',
-    link: `/workspace/contacts`,
+    link: urls.contacts,
   },
   {
     icon: BarChartBig,
     label: 'Analytics',
-    link: `/workspace/analytics`,
+    link: urls.analytics,
   },
   {
     icon: Store,
     label: 'Store Front',
-    link: `/shop-front/booking`,
+    link: urls.shopFrontBooking,
   },
   // {
   //   icon: Bell,
@@ -53,7 +54,7 @@ const navlinks = [
   {
     icon: Settings,
     label: 'Settings',
-    link: `/workspace/settings/profile`,
+    link: urls.settingsProfile,
   },
 ];
 
@@ -86,7 +87,7 @@ const Sidebar = () => {
           <h5 className="text-base font-medium">Get Started</h5>
           <p className="text-ash pb-1 text-[12px]">Creating and managing your schedules couldn’t be easier.</p>
 
-          <Link href={'/appointments/create'} className='flex justify-between gap-6 items-center py-2 px-5 text-white rounded-md'
+          <Link href={'/create'} className='flex justify-between gap-6 items-center py-2 px-5 text-white rounded-md'
           style={{background: `linear-gradient(269.83deg, #9C00FE 0.14%, #001FCB 99.85%)`
           }}
           >

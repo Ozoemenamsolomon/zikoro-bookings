@@ -10,7 +10,7 @@ import {toast} from 'react-toastify'
 
 const LinksCard = ({data,}:{data:AppointmentLink|any}) => {
     const [item, setItem] = useState<AppointmentLink>(data)
-    const [laoding, setLoading] = useState(false) 
+    const [loading, setLoading] = useState(false) 
     const [isShare, setIsShare] = useState<number|null|bigint>(null)
     // const [isDisabled, setIsDisabled] = useState(data?.statusOn)
 
@@ -19,25 +19,23 @@ const LinksCard = ({data,}:{data:AppointmentLink|any}) => {
         setItem({...item, statusOn: newState})
         try {
             const payload = { ...item, statusOn: newState,};
-            const response = await fetch('/api/appointments/edit', {
+            const response = await fetch('/api/schedules/editstatus', {
                 method: 'PUT',
                 headers: {
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(payload),
               });
-            const result = await response.json();
-            if (response.ok) {
-                //toast.success
-                toast.success('Status changed successfully')
-                // console.log('Status changed successfully', result);
+            const {error} = await response.json();
+            if (response.ok && !error) {
+                toast.success('Status changed.')
               } else {
                 setItem({...item, statusOn: !newState})
-                console.error('Failed to complete task', result);
-                // toast.error
+                toast.error('Unsuccessful! Error occured')
               }
-      
         } catch (error) {
+            setItem({...item, statusOn: !newState})
+            toast.error('Unsuccessful! Error occured')
             console.log('Service not available')
         } finally {
             setLoading(false)
@@ -63,7 +61,7 @@ const LinksCard = ({data,}:{data:AppointmentLink|any}) => {
         >
         <div className="flex  justify-between gap-6 items-center">
             <h4 className="text-lg font-medium">{item?.appointmentName}</h4>
-            <Link className={item?.statusOn ? '':'opacity-20'} aria-disabled={item?.statusOn} href={`/appointments/edit?alias=${item?.appointmentAlias}`}><EditPenBoxIcon/> </Link >
+            <Link className={item?.statusOn ? '':'opacity-20'} aria-disabled={item?.statusOn} href={`/edit?alias=${item?.id}&appointmentAlias=${item?.appointmentAlias}`}><EditPenBoxIcon/> </Link >
         </div>
 
         <div className="">
@@ -93,7 +91,7 @@ const LinksCard = ({data,}:{data:AppointmentLink|any}) => {
 
       <div className="flex   justify-between gap-6 items-center">
         <CopyLinkButton 
-            link={`${linkorigin}/booking/${item?.appointmentAlias}`}
+            link={`${linkorigin}/book-appointment/${item?.id}/?alias=${item?.appointmentAlias}`}
             // link={`https://zikoro.com/booking/${item?.appointmentAlias}`}
         >
             <button  disabled={!item?.statusOn} type='button' className="underline">Copy link</button>
