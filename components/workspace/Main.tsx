@@ -4,6 +4,8 @@ import React, {  useRef, useState } from 'react'
 import Sidebar from './Sidebar'
 import { useClickOutside } from '@/lib/useClickOutside'
 import Image from 'next/image'
+import Link from 'next/link'
+import { urls } from '@/constants'
 // import { NotifyIcon } from '@/constants'
 // import Notification from './Notification'
 
@@ -38,7 +40,8 @@ const Main = ({children}:{children:React.ReactNode}) => {
 
                     <header className='flex justify-between w-full gap-4  items-center pb-2 '>
                         <div></div>
-                        <Image src={'/zikoro.png'} alt={'zikro-icon'} height={180} width={100} className=''/>
+
+                        <Link href={urls.root}><Image src={'/zikoro.png'} alt={'zikro-icon'} height={180} width={100} className=''/></Link>
 
                         <div ref={ref} className="relative">
                             <button onClick={()=>setDrop(curr=>!curr)} className="hover:shadow-sm duration-300 relative">
