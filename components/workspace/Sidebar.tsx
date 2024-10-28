@@ -3,10 +3,9 @@
 import { Bell, Calendar, Grip,  Link2, Menu, Plus, Settings, BriefcaseIcon, Users, BarChartBig, Store, CircleArrowRight, Briefcase } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React, {  useRef, useState } from 'react';
+import React from 'react';
 import MenuBox from './ui/MenuBox';
 import useUserStore from '@/store/globalUserStore';
-import { useClickOutside } from '@/lib/useClickOutside';
 import { useLogOut } from '@/hooks';
 import { urls } from '@/constants';
 
@@ -61,10 +60,7 @@ const navlinks = [
 const Sidebar = () => {
   const pathanme = usePathname()
   const  {user} = useUserStore()
-  const {logOut} = useLogOut('/')
-  const [open, setOpen] = useState('')
-  const ref = useRef(null)
-  useClickOutside(ref, ()=>setOpen(''))
+  const {logOut} = useLogOut(urls.root)
 
   return (
     <nav className=" text-[12px] px-4 py-6  h-full w-full flex flex-col justify-between ">
