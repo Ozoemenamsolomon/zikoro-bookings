@@ -6,7 +6,6 @@ import { ChevronDown } from "styled-icons/bootstrap";
 import { ThreeLineCircle, XCircle } from "@/constants/icons";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { PopoverMenu } from "@/components/shared/PopoverMenu";
 import { useClickOutside } from "@/lib/useClickOutside";
 
 const AppointmentNav = () => {
@@ -133,15 +132,13 @@ const AppointmentNav = () => {
           </ul>
 
           <div className=" border-[1px] border-gray-300 rounded-[51px] flex gap-x-4 p-3 mt-[72px] items-center w-fit mx-auto ">
-            <SignupBtn/>
-            <SigninBtn/>
-            {/* <button
+            <button
               onClick={() => router.push("/signup")}
               className="text-base px-[20px] py-[10px] text-white bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end rounded-[28px]"
             >
               Sign Up
-            </button> */}
-            {/* <button
+            </button>
+            <button
               onClick={() => router.push("/login")}
               className="text-base px-[20px] py-[10px] text-indigo-700 bg-transparent border border-indigo-800 rounded-[28px]"
             >

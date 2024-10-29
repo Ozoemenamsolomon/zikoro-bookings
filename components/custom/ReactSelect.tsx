@@ -1,7 +1,7 @@
 "use client";
 
 import Select from "react-select";
-import {cn} from "@/lib"
+import {cn} from "@/lib/utils"
 import * as React from "react";
 import {
   UseControllerProps,

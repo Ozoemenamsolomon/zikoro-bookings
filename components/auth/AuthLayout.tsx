@@ -1,6 +1,6 @@
 "use client"
 
-import { cn } from "@/lib";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 export function AuthLayout({ children, className, containerClassName }: { children: React.ReactNode, className?:string, containerClassName?:string }) {
