@@ -81,7 +81,7 @@ export function useLogin() {
         await setLoggedInUser(data?.user?.email);
         //  console.log(data?.user?.email);
         toast.success("Sign In Successful");
-        router.push(redirectTo ?? "home");
+        router.push(redirectTo ?? "/workspace/appointments");
         setLoading(false);
       }
     } catch (error) {
@@ -315,7 +315,7 @@ export function useOnboarding() {
         setUser(user);
         setLoading(false);
         toast.success("Profile Updated Successfully");
-        router.push("/home");
+        router.push("/workspace/appointments");
       }
 
       return data;
