@@ -32,37 +32,7 @@ const AppointmentNav = () => {
           onClick={() => router.push("/")}
         />
 
-        {/* links */}
         <div className="gap-x-8 hidden lg:flex ">
-          {/* <PopoverMenu
-            trigerBtn={
-              <button
-                ref={menuRef}
-                className="font-medium flex items-center gap-1 "
-                onClick={() => setIsPreviewOn(!isPreviewOn)}
-              >
-                <p>Other Products </p>
-                <ChevronDown
-                  size={20}
-                  className={`${
-                    isPreviewOn ? "rotate-180" : ""
-                  } transition-all duration-200`}
-                />
-              </button>
-            }
-          >
-            <div className="">
-              <Image
-                ref={menuRef}
-                src="/appointments/OtherTopPrevS.png"
-                width={273}
-                height={278}
-                alt=""
-                className=" w-[577px] h-[307px] "
-                onClick={() => router.push("https://www.zikoro.com")}
-              />
-            </div>
-          </PopoverMenu> */}
           <p
             className="text-base font-medium cursor-pointer flex gap-2 items-center"
             onClick={() => setIsPreviewShowing(!isPreviewShowing)}
@@ -78,7 +48,6 @@ const AppointmentNav = () => {
           </p>
         </div>
 
-        {/* buttons */}
         <div className=" border-[1px] border-gray-200 rounded-[51px] hidden lg:flex gap-x-4 p-3 ">
           <SignupBtn />
           <SigninBtn />
@@ -90,6 +59,7 @@ const AppointmentNav = () => {
           </button>
         </div>
       </div>
+
       {/* preview modal */}
       {isPreviewShowing && (
         <div className="absolute hidden lg:block left-96 ">
@@ -132,7 +102,9 @@ const AppointmentNav = () => {
           </ul>
 
           <div className=" border-[1px] border-gray-300 rounded-[51px] flex gap-x-4 p-3 mt-[72px] items-center w-fit mx-auto ">
-            <button
+            <SignupBtn/>
+            <SigninBtn/>
+            {/* <button
               onClick={() => router.push("/signup")}
               className="text-base px-[20px] py-[10px] text-white bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end rounded-[28px]"
             >
@@ -143,7 +115,7 @@ const AppointmentNav = () => {
               className="text-base px-[20px] py-[10px] text-indigo-700 bg-transparent border border-indigo-800 rounded-[28px]"
             >
               Login
-            </button> */}
+            </button>   */}
           </div>
         </div>
       )}
