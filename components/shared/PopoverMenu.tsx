@@ -19,7 +19,7 @@ export const PopoverMenu = ({
       <PopoverTrigger asChild>
         {trigerBtn}
       </PopoverTrigger>
-      <PopoverContent className={cn(`w-80 p-0`, className)}>
+      <PopoverContent className={cn(`w-80 p-0`, className)} >
         {children}
       </PopoverContent>
     </Popover>

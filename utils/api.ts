@@ -13,16 +13,14 @@ Api.interceptors.response.use(
   (error) => Promise.reject(error)
 );
 
-// Define your response data interfaces here as needed
+// Define a type for the API response structure
 interface ApiResponse<T> {
   data: T;
+  error: string | null;
+  count: number;
 }
 
-interface ApiError {
-  // Define error properties as needed
-  message: string;
-}
-
+// Reusable getRequest function
 export const getRequest = async <T>({
   endpoint,
 }: {

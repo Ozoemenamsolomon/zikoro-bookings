@@ -3,11 +3,11 @@
 import { Bell, Calendar, Grip,  Link2, Menu, Plus, Settings, BriefcaseIcon, Users, BarChartBig, Store, CircleArrowRight, Briefcase } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React, {  useRef, useState } from 'react';
+import React from 'react';
 import MenuBox from './ui/MenuBox';
 import useUserStore from '@/store/globalUserStore';
-import { useClickOutside } from '@/lib/useClickOutside';
 import { useLogOut } from '@/hooks';
+import { urls } from '@/constants';
 
 const navlinks = [
   // {
@@ -18,32 +18,32 @@ const navlinks = [
   {
     icon: Calendar,
     label: 'Calendar',
-    link: `/workspace/calendar`,
+    link: urls.calendar,
   },
   {
     icon: Briefcase,
     label: 'Appointments',
-    link: `/workspace/appointments`,
+    link: urls.appointments,
   },
   {
     icon: Link2,
     label: 'Schedules',
-    link: `/workspace/schedule`,
+    link: urls.schedule,
   },
   {
     icon: Users,
     label: 'Contacts',
-    link: `/workspace/contacts`,
+    link: urls.contacts,
   },
   {
     icon: BarChartBig,
     label: 'Analytics',
-    link: `/workspace/analytics`,
+    link: urls.analytics,
   },
   {
     icon: Store,
     label: 'Store Front',
-    link: `/shop-front/booking`,
+    link: urls.shopFrontBooking,
   },
   // {
   //   icon: Bell,
@@ -53,17 +53,14 @@ const navlinks = [
   {
     icon: Settings,
     label: 'Settings',
-    link: `/workspace/settings/profile`,
+    link: urls.settingsProfile,
   },
 ];
 
 const Sidebar = () => {
   const pathanme = usePathname()
   const  {user} = useUserStore()
-  const {logOut} = useLogOut('/')
-  const [open, setOpen] = useState('')
-  const ref = useRef(null)
-  useClickOutside(ref, ()=>setOpen(''))
+  const {logOut} = useLogOut(urls.root)
 
   return (
     <nav className=" text-[12px] px-4 py-6  h-full w-full flex flex-col justify-between ">
@@ -86,7 +83,7 @@ const Sidebar = () => {
           <h5 className="text-base font-medium">Get Started</h5>
           <p className="text-ash pb-1 text-[12px]">Creating and managing your schedules couldn’t be easier.</p>
 
-          <Link href={'/appointments/create'} className='flex justify-between gap-6 items-center py-2 px-5 text-white rounded-md'
+          <Link href={urls.create} className='flex justify-between gap-6 items-center py-2 px-5 text-white rounded-md'
           style={{background: `linear-gradient(269.83deg, #9C00FE 0.14%, #001FCB 99.85%)`
           }}
           >

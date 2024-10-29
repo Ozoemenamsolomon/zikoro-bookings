@@ -38,7 +38,7 @@ const ProfileSettings = () => {
         <div className="">
         <h2 className="  font-medium pb-2">Bio</h2>
 
-        <textarea name="bio" value={'Write a short bio'} id="bio" rows={6} 
+        <textarea name="bio" placeholder={'Write a short bio'} id="bio" rows={6} 
         className='border w-full p-4 rounded-md'></textarea>
         </div>
     </div>

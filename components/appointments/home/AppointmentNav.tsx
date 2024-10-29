@@ -6,7 +6,6 @@ import { ChevronDown } from "styled-icons/bootstrap";
 import { ThreeLineCircle, XCircle } from "@/constants/icons";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { PopoverMenu } from "@/components/shared/PopoverMenu";
 import { useClickOutside } from "@/lib/useClickOutside";
 
 const AppointmentNav = () => {

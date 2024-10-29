@@ -5,7 +5,7 @@ import { useState, } from "react";
 import { toast } from "react-toastify";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
-import { getRequest, postRequest } from "@/utils/api";
+import { postRequest } from "@/utils/api";
 import useUserStore from "@/store/globalUserStore";
 import { createClient } from "@/utils/supabase/client";
 
@@ -93,6 +93,21 @@ export function useLogin() {
   return {
     logIn,
     loading,
+  };
+}
+
+export function useLogOut(redirectPath: string = "/") {
+  const router = useRouter();
+  const { setUser } = useUserStore();
+
+  async function logOut() {
+    await supabase.auth.signOut();
+    setUser(null);
+    router.push(redirectPath);
+  }
+
+  return {
+    logOut,
   };
 }
 

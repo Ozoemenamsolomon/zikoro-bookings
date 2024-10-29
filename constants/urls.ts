@@ -1,0 +1,23 @@
+export const urls = {
+    root: '/',
+    workspace: '/workspace',
+    contacts: `/workspace/contacts`,
+    contactsFavorite:'/workspace/contacts/favorite',
+    contactsTags:'/workspace/contacts/tags',
+    contactsAppointmentHistory: '/workspace/contacts/appointment-history',
+    contactsNotes: '/workspace/contacts/notes',
+    contactsMedia: '/workspace/contacts/media',
+    contactsAnalytics: '/workspace/contacts/analytics',
+    analytics: `/workspace/analytics`,
+    appointments: `/workspace/appointments`,
+    calendar: `/workspace/calendar`,
+    schedule:`/workspace/schedule`,
+    settingsProfile: `/workspace/settings/profile`,
+    create:`/workspace/create`,
+    edit:`/workspace/edit`,
+    shopFrontBooking: `/workspace/shop-front/booking`,
+    shopFrontProfile: `/workspace/shop-front/profile`,
+    shopFrontImages: `/workspace/shop-front/images`,
+    bookAppointment:`/book-appointment`,
+
+}
