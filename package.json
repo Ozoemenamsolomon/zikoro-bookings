@@ -30,12 +30,8 @@
     "react-dom": "^18",
     "react-hook-form": "^7.53.1",
     "react-hot-toast": "^2.4.1",
-<<<<<<< HEAD
-    "react-select": "^5.8.1",
-=======
     "react-paystack": "^6.0.0",
     "react-select": "^5.8.2",
->>>>>>> e382747c2b89a79a584a974a746acac01abfc3e3
     "react-toastify": "^10.0.6",
     "react-verification-input": "^4.1.2",
     "recharts": "^2.13.0",
