@@ -15,7 +15,6 @@ import { urls } from '@/constants'
 const Booking =  ({appointmnetLink, error}:{appointmnetLink:AppointmentLink, error?:string}) => {
   const {bookingFormData, isFormUp} = useAppointmentContext()
   const {refresh, push} = useRouter()
-
   return (
     <Suspense fallback={<BookingLazyoader/>} >
         <main className="bg-baseBg px-3 sm:px-6 xl:px-12">

@@ -29,7 +29,6 @@ export const Reschedule = ({ refresh, getBookings, setFilter }: { refresh: () =>
     const [error, setError] = useState<string>("");
 
     const {replace} = useRouter()
-
     return (
       <section
         onClick={() => setBookingFormData(null)}
@@ -55,7 +54,10 @@ export const Reschedule = ({ refresh, getBookings, setFilter }: { refresh: () =>
             className="w-full text-center max-w-4xl bg-white rounded-md shadow-lg max-h-full p-6 sm:p-10 space-y-2 py-12 flex flex-col justify-center relative overflow-y-auto"
           >
             <XCircle
-              onClick={() => setBookingFormData(null)}
+              onClick={() => {
+                setBookingFormData(null)
+                setError('')
+              }}
               size={20}
               className="absolute right-6 top-6 text-slate-500"
             />
@@ -83,7 +85,7 @@ export const Reschedule = ({ refresh, getBookings, setFilter }: { refresh: () =>
             </div>
   
             <div className="h-[28rem]  border hide-scrollbar overflow-auto w-full  rounded-lg ">
-                <Calender appointmnetLink={bookingFormData?.appointmentLinkId}/> 
+                <Calender appointmnetLink={{...bookingFormData?.appointmentLinkId}}/> 
             </div>
 
             <div className="w-full flex items-center gap-1">
@@ -220,6 +222,7 @@ export const Reschedule = ({ refresh, getBookings, setFilter }: { refresh: () =>
           bookingFormData: { ...bookingFormData, appointmentTime: timeStamp },
         }),
       });
+      console.log(await res.json())
       if (res.ok) {
         toast.success("Successfull, email reminder sent");
         getBookings("upcoming-appointments", bookingFormData.appointmentDate!)

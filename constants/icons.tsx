@@ -371,7 +371,7 @@ export const DeletIcon = () => (
       stroke="#717171"
       strokeWidth="2"
       strokeLinecap="round"
-      stroke-linejoin="round"
+      strokeLinejoin="round"
     />
     <path
       d="M5.1582 9.59961L5.5878 18.1784C5.6826 20.0972 7.263 21.5996 9.183 21.5996H14.817C16.7382 21.5996 18.3174 20.0972 18.4122 18.1784L18.8418 9.59961H5.1582Z"
@@ -382,7 +382,7 @@ export const DeletIcon = () => (
       stroke="#717171"
       strokeWidth="2"
       strokeLinecap="round"
-      stroke-linejoin="round"
+      strokeLinejoin="round"
     />
   </svg>
 );
@@ -1247,16 +1247,16 @@ export function FooterMail() {
         <path
           d="M13 18.6035L21.4004 23.2376C21.7741 23.4437 22.2259 23.4437 22.5996 23.2376L31 18.6035"
           stroke="#001FCC"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
         <path
           d="M15.4828 29.7754L28.5172 29.7754C29.8884 29.7754 31 28.6638 31 27.2926V17.9823C31 16.6111 29.8884 15.4995 28.5172 15.4995L15.4828 15.4995C14.1116 15.4995 13 16.6111 13 17.9823V27.2926C13 28.6638 14.1116 29.7754 15.4828 29.7754Z"
           stroke="#001FCC"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </svg>
     </div>
@@ -1305,23 +1305,23 @@ export function ThreeLineCircle() {
         <path
           d="M13 23H31.5714"
           stroke="#001FCC"
-          stroke-width="1.85714"
-          stroke-miterlimit="10"
-          stroke-linecap="round"
+          strokeWidth="1.85714"
+          strokeMiterlimit="10"
+          strokeLinecap="round"
         />
         <path
           d="M13 16.5H31.5714"
           stroke="#001FCC"
-          stroke-width="1.85714"
-          stroke-miterlimit="10"
-          stroke-linecap="round"
+          strokeWidth="1.85714"
+          strokeMiterlimit="10"
+          strokeLinecap="round"
         />
         <path
           d="M13 29.5H31.5714"
           stroke="#001FCC"
-          stroke-width="1.85714"
-          stroke-miterlimit="10"
-          stroke-linecap="round"
+          strokeWidth="1.85714"
+          strokeMiterlimit="10"
+          strokeLinecap="round"
         />
       </svg>
     </div>

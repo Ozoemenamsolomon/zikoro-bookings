@@ -211,10 +211,10 @@ const Appointments = ({groupedBookingData,fetchedcount,fetchError, dateHash}:{
   useClickOutside(dropRef, () => setDrop(false));
   
   const fetchBookings = () => {
-    if (filter === "upcoming") {
-      getBookings("upcoming-appointments");
-    } else {
+    if (filter !== "upcoming") {
       getBookings("past-appointments");
+    } else {
+      getBookings("upcoming-appointments");
     }
   };
 
