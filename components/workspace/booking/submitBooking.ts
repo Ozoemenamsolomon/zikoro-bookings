@@ -59,7 +59,7 @@ export const submitBooking = async ({
         });
         
         const result = await response.json();
-
+        console.log({result, timeStamp})
         if (response.ok) {
             bookingSuccess=true
             setBookingFormData((prevData: Booking| null) => ({
@@ -91,7 +91,7 @@ export const submitBooking = async ({
                         appointmentLink,
                 }),
             });
-            console.log({email: await res.json()})
+            // console.log({email: await res.json()})
             if(res.ok){
                 emailSuccess=true
                 console.log('==GOOD RES==')
@@ -133,10 +133,10 @@ export function generateAppointmentTime({ timeRange, selectedDate }: BookingInpu
     if (!timeRange) {
       return null;
     }
-  
     const [startTime] = timeRange.split(' - ');
-  
+    
     const appointmentDateTime = parse(startTime, 'hh:mm a', new Date(selectedDate || Date.now()));
+    console.error({timeRange, selectedDate, appointmentDateTime});
   
     if (isNaN(appointmentDateTime.getTime())) {
       console.error("Invalid startTime format:", startTime);

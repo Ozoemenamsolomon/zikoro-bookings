@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import { urls } from '@/constants'
 import Link from 'next/link'
 import React from 'react'
 
@@ -23,7 +23,7 @@ const Empty = ({
       </h2>
       <p className='pb-4 font-semibold'>Haven’t created a schedule?</p>
 
-      <Link href={'/appointments/create'} className='py-3 px-6 font-semibold text-white rounded-md bg-basePrimary' >Start creating</Link>
+      <Link href={urls.create} className='py-3 px-6 font-semibold text-white rounded-md bg-basePrimary' >Start creating</Link>
     </div>
   </section>
   )

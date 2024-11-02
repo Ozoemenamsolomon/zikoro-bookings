@@ -60,7 +60,7 @@ const Slots: React.FC<SlotsType> = ({appointmnetLink, timeSlots, selectedDate, h
     setError('')
     try {
       // fetch users unavailable dates based on user.id and selected date
-      const response = await fetch(`/api/calendar/fetchUnavailability?date=${format(selectedDate!, 'yyyy-MM-dd')}&userId=${appointmnetLink?.createdBy}`, 
+      const response = await fetch(`/api/calendar/fetchUnavailability?date=${format(selectedDate!, 'yyyy-MM-dd')}&userId=${appointmnetLink?.createdBy?.id}`, 
         {
         method: 'GET',
         headers: {
