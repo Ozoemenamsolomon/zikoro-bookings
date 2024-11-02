@@ -30,7 +30,6 @@ const ProcessPayment = ({appointmentLink}:{appointmentLink:AppointmentLink | nul
      bookingFormData
   }
 	};
-console.log({status})
   const handleSuccessfulPayment = async (reference: string) => {
     try {
       setStatus('verifying');

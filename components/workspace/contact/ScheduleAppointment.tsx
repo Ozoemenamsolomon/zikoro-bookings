@@ -75,7 +75,7 @@ const SelectAppointmentLink = ({
   }
 
   return (
-    <section className="w-full rounded-md">
+    <section className="w-full overflow-hidden rounded-md">
       <div className="bg-baseLight px-6 py-6 text-lg border-b w-full">
         <div className="max-w-lg mx-auto text-center">
           <h6>
@@ -157,7 +157,7 @@ const SelectDateTime = ({
 
       <section className="p-2 w-full">
         {/* Placeholder for Calender component */}
-        <div className="text-center">Calender Component</div>
+        {/* <div className="text-center">Calender Component</div> */}
       </section>
 
       <div className="bg-white px-6 py-4 flex justify-center border-t w-full">
