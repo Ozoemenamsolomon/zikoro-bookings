@@ -131,7 +131,7 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
   const normalizedSelectedDay = startOfDay(selectedDay!);
 
   const appointmentTypeJson: Category[] = JSON.parse(appointmnetLink?.category || `[]`);
-// console.log({appointmentTypeJson})
+// console.log({appointmentTypeJson, checking:appointmnetLink?.category})
   const appointmentTypes: { label: string, value: string }[] = appointmentTypeJson ?
     appointmentTypeJson.map((item: Category) => ({
       label: item.name || '',
@@ -147,6 +147,7 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
           appointmentType: appointmentTypeJson[0]?.name || '',
           price: selectedAppointmentType?.amount || appointmnetLink?.amount,
           currency: selectedAppointmentType?.curency || appointmnetLink?.curency || '',
+          categoryNote: selectedAppointmentType.note,
         }));
         console.log('aaaaaaa', {bookingFormData})
       } else {
@@ -156,6 +157,7 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
             ...prev,
             price: selectedAppointmentType.amount,
             currency: selectedAppointmentType.curency,
+            categoryNote: selectedAppointmentType.note,
           }));
         }
         // console.log('bbbbbbb', {bookingFormData, appointmentTypeJson})

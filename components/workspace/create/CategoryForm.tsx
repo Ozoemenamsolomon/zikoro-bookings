@@ -4,6 +4,7 @@ import { SelectInput } from '../ui/CustomSelect';
 import { PlusCircle, X } from 'lucide-react';
 import { useAppointmentContext } from '@/context/AppointmentContext';
 import CustomInput from '../ui/CustomInput';
+import { ReactSelect } from '@/components/shared/ReactSelect';
 
 export interface Category {
   name?: string;
@@ -31,9 +32,9 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ setFormData, setErrors, for
     }
   }, [selectedType])
 
-  const handleCategoryChange = (index: number, field: string, value: any) => {
+  const handleCategoryChange = (name: string, value: any, index?: number) => {
     const updatedCategories = [...categories];
-    updatedCategories[index] = { ...updatedCategories[index], [field]: value };
+    updatedCategories[index!] = { ...updatedCategories[index!], [name]: value };
     setCategories(updatedCategories);
     setFormData((prev: AppointmentFormData) => ({ ...prev, category: updatedCategories }));
     setErrors((prev: AppointmentFormData) => ({ ...prev, category: '' }));
@@ -71,7 +72,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ setFormData, setErrors, for
             value={category.name || ''}
             placeholder="Enter category name"
             className="py-2"
-            onChange={(e) => handleCategoryChange(index, 'name', e.target.value)}
+            onChange={(e) => handleCategoryChange('name', e.target.value, index, )}
           />
 
             <CustomInput
@@ -82,7 +83,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ setFormData, setErrors, for
               value={category.note || ''}
               placeholder="Add notes for appointment here"
               className="py-2 w-full"
-              onChange={(e) => handleCategoryChange(index, 'note', e.target.value)}
+              onChange={(e) => handleCategoryChange('note', e.target.value, index, )}
             />
 
           <div className="flex gap-4 justify-between items-center">
@@ -92,7 +93,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ setFormData, setErrors, for
             </div>
             <div
               className={`flex-shrink-0 ${category.isPaidAppointment ? 'bg-blue-600 ring-blue-600 ring-2' : 'bg-gray-300 ring-2 ring-gray-300'} w-14 h-6 p-1.5 relative flex items-center rounded-full cursor-pointer`}
-              onClick={() => handleCategoryChange(index, 'isPaidAppointment', !category.isPaidAppointment)}
+              onClick={() => handleCategoryChange('isPaidAppointment', !category.isPaidAppointment, index, )}
             >
               <div className="flex w-full justify-between font-semibold text-[9px] text-gray-50">
                 <p>ON</p>
@@ -106,7 +107,23 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ setFormData, setErrors, for
             <div className="max-h-screen visible transform relative z-10 transition-all duration-300 pb-">
               <p className="pb-2">Set currency and pricing</p>
               <div className="flex gap-8 items-center">
-                <SelectInput
+                <ReactSelect
+                  name="curency"
+                  options={[
+                    { label: 'USD', value: 'USD' },
+                    { label: 'CAD', value: 'CAD' },
+                    { label: 'EUR', value: 'EUR' },
+                    { label: 'NGN', value: 'NGN' },
+                    { label: 'AUD', value: 'AUD' },
+                  ]}
+                  value={category.curency || ''}
+                  onChange={handleCategoryChange}
+                  isClearable
+                  placeholder="Select"
+                  className="w-40"
+                  index={index}
+                />
+                {/* <SelectInput
                   name="curency"
                   value={category.curency || ''}
                   options={[
@@ -116,14 +133,13 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ setFormData, setErrors, for
                     { label: 'NGN', value: 'NGN' },
                     { label: 'AUD', value: 'AUD' },
                   ]}
-                  setFormData={(data: any) => handleCategoryChange(index, 'curency', data)}
+                  setFormData={(data: any) => handleCategoryChange('curency', data,index, )}
                   placeholder="Select currency"
                   className="w-40 z-50"
                   setError={() => {}}
                   error={errors?.curency}                  
-                  onChange={(name, value) => handleCategoryChange(index, name, value)}
-
-                />
+                  onChange={(name, value) => handleCategoryChange( name, value, index,)}
+                /> */}
                 <CustomInput
                   type="number"
                   error={errors?.amount}
@@ -131,7 +147,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ setFormData, setErrors, for
                   value={category.amount || ''}
                   placeholder='Enter price'
                   className=" w-40 py-2 "
-                  onChange={(e) => handleCategoryChange(index, 'amount', e.target.value)}
+                  onChange={(e) => handleCategoryChange('amount', e.target.value, index, )}
                 />
                 {/* <SelectInput
                   name="amount"

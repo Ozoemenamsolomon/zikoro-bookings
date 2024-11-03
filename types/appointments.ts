@@ -95,6 +95,7 @@ export interface Booking {
   currency?: string | null;
   feeType?: string | null;
   notes?: string | null;
+  categoryNote?: string | null;
   appointmentTimeStr?: string;
   appointmentDuration?: number;
   type?: string;

@@ -18,6 +18,8 @@ export async function PUT(req: NextRequest) {
       .eq('id', body?.id)
       .select('*')
       .single()
+      
+    // TODO: Send emails to team members
 
     if (result?.error) {
       return NextResponse.json({ data:null, error: result?.error.message }, { status: 400 });
