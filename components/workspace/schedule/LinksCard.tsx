@@ -1,6 +1,6 @@
 'use client'
 
-import { ClockIcon, EditPenBoxIcon, MapPin, ShareIcon } from '@/constants'
+import { ClockIcon, EditPenBoxIcon, MapPin, ShareIcon, urls } from '@/constants'
 import { AppointmentLink } from '@/types/appointments'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
@@ -61,7 +61,7 @@ const LinksCard = ({data,}:{data:AppointmentLink|any}) => {
         >
         <div className="flex  justify-between gap-6 items-center">
             <h4 className="text-lg font-medium">{item?.appointmentName}</h4>
-            <Link className={item?.statusOn ? '':'opacity-20'} aria-disabled={item?.statusOn} href={`/edit?alias=${item?.id}&appointmentAlias=${item?.appointmentAlias}`}><EditPenBoxIcon/> </Link >
+            <Link className={item?.statusOn ? '':'opacity-20'} aria-disabled={item?.statusOn} href={`${urls.edit}?alias=${item?.id}&appointmentAlias=${item?.appointmentAlias}`}><EditPenBoxIcon/> </Link >
         </div>
 
         <div className="">

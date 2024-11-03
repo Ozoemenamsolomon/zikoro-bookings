@@ -11,7 +11,7 @@ const EditAppointmentsPage = async ({searchParams:{alias}}:{
   } 
   const {data,error } = await fetchSchedule(alias!)
   return (
-    <CreateAppointments appointment={data} serverError={error} alias={alias}/>
+    <CreateAppointments appointment={{...data, createdBy:data?.createdBy?.id}} serverError={error} alias={alias}/>
   )
 }
 export default EditAppointmentsPage
