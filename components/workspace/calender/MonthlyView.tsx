@@ -52,7 +52,6 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ appointments, currentMonth, u
             }
         });
     };
-    
 
     // Calculate the number of empty boxes needed before the first day of the month
     const startDay = getDay(startDate);
@@ -79,7 +78,7 @@ const MonthlyView: React.FC<MonthlyViewProps> = ({ appointments, currentMonth, u
                     const list = appointments?.[dayString] || [];
                     const today = format(new Date(), 'dd MM yyyy');
                     const active = today === format(day, 'dd MM yyyy');
-
+                    
                     // Get unavailability for the current day
                     const unavailableForDay = unavailability[dayString] || [];
 

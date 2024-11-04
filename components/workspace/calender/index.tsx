@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { endOfWeek, addMonths, subMonths, addWeeks, subWeeks, format, startOfWeek, isWithinInterval, isValid } from "date-fns";
+import { endOfWeek, addMonths, subMonths, addWeeks, subWeeks, format, startOfWeek, isWithinInterval, isValid, startOfMonth, endOfMonth, getDay } from "date-fns";
 import { Booking, UnavailabilityByDay } from "@/types/appointments";
 import { useCalendarData } from "@/hooks/services/appointments";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -22,10 +22,11 @@ interface SearchParams {
     errorMsg: string | null;
     dateString: string,
     unavailableDates:UnavailabilityByDay
+    dataCount: number
   }
 
 const CalendarLayout: React.FC<SearchParams> = ({
-  viewing,date,formattedWeekData,formattedMonthData,count,startRangeDate,endRangeDate,errorMsg,dateString,unavailableDates}) => {
+  viewing,date,formattedWeekData,formattedMonthData,count,startRangeDate,endRangeDate,errorMsg,dateString,unavailableDates,}) => {
   const {
     calendarData,
     currentDate,
@@ -34,14 +35,50 @@ const CalendarLayout: React.FC<SearchParams> = ({
     error,
     getCalendarData,
     view,
-    setView, 
+    setView,  
   } = useCalendarData({viewing,date,count,formattedWeekData,formattedMonthData,startRangeDate,endRangeDate,errorMsg,});
 
   const { replace } = useRouter();
   const pathname = usePathname();
 
   const [dateDisplay, setDateDisplay] = useState<string>(dateString);
+  const [dataCount, setDataCount] = useState<number>(0);
 
+  const getAppointmentCount =  useCallback((): number => {
+      let startDate: Date;
+      let endDate: Date;
+  
+      if (view === 'month') {
+          startDate = startOfMonth(currentDate);
+          endDate = endOfMonth(currentDate);
+  
+          return Object.keys(formattedMonthData || {})
+              .filter(dayString => {
+                  const date = new Date(dayString);
+                  return date >= startDate && date <= endDate;
+              })
+              .reduce((sum, dayString) => sum + (formattedMonthData?.[dayString]?.length || 0), 0);
+  
+      } else if (view === 'week') {
+          startDate = startOfWeek(currentDate, { weekStartsOn: 0 }); // Week starts on Sunday
+          endDate = endOfWeek(currentDate, { weekStartsOn: 0 });
+  
+          return Object.keys(formattedWeekData || {})
+              .filter(dayString => {
+                  const date = new Date(dayString);
+                  return date >= startDate && date <= endDate;
+              })
+              .reduce((sum, dayString) => {
+                  // Sum appointments for each hour within this day
+                  const dailyHours = formattedWeekData?.[dayString] || {};
+                  const dailyCount = Object.values(dailyHours).reduce((hourSum, bookings) => hourSum + bookings.length, 0);
+                  return sum + dailyCount;
+              }, 0);
+      } else {
+          throw new Error("Invalid viewType. Use 'month' or 'week'.");
+      }
+  }, [currentDate,view,formattedMonthData,formattedWeekData])
+  
   const updateCalendarData = (newDate:Date, newView:"month" | "week") => {
     if(newView==='week') {
       const start = format(startOfWeek(currentDate), 'MMM d');
@@ -83,6 +120,7 @@ const CalendarLayout: React.FC<SearchParams> = ({
 
   useEffect(() => {
     updateCalendarData(currentDate, view);
+    setDataCount(getAppointmentCount())
   }, [view, currentDate]);
 
   return (
@@ -110,6 +148,14 @@ const CalendarLayout: React.FC<SearchParams> = ({
           {loading || calendarData.count ? (
             <>
               <p className="pr-2">-</p>
+              <p className="pr-2 font-semibold"
+                  style={{
+                    background: 'linear-gradient(269.83deg, #9C00FE 0.14%, #001FCB 99.85%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }}>
+                    {dataCount} of
+              </p>
               <p
                 className="font-semibold"
                 style={{
