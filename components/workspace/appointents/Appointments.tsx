@@ -97,7 +97,7 @@ const BookingRow = ({ booking, showNote, setShowNote }: { booking: Booking, show
     </td>
     <td className="py-2 px-4 relative">
       <div className="flex space-x-2">
-        <button
+        {notes && <button
           onClick={() =>{
             setBookingFormData({
               ...booking,
@@ -109,7 +109,7 @@ const BookingRow = ({ booking, showNote, setShowNote }: { booking: Booking, show
           className="text-blue-500 hover:text-blue-700"
         >
           <RefreshCw size={18} />
-        </button>
+        </button>}
         <button
           disabled={bookingStatus === "CANCELLED"}
           onClick={() =>{

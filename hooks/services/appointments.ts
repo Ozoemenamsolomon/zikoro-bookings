@@ -355,7 +355,7 @@ interface Params {
   errorMsg: string | null;
 }
 
-export const useCalendarData = ({viewing, date, count, formattedWeekData,formattedMonthData, startRangeDate, endRangeDate, errorMsg}: Params) => {
+export const useCalendarData = ({viewing, date, count, formattedWeekData,formattedMonthData, startRangeDate, endRangeDate, errorMsg,}: Params) => {
   const {user} = useUserStore()
   const [view, setView] = useState<'month' | 'week'>(viewing);
   const [currentDate, setCurrentDate] = useState<Date>(date);
@@ -378,7 +378,7 @@ export const useCalendarData = ({viewing, date, count, formattedWeekData,formatt
         throw new Error(`Error fetching calendar data: ${response.statusText}`);
       }
       const { count, data, startRangeDate, endRangeDate, date: fetchedDate } = await response.json();
-      console.log({ count, data, startRangeDate, endRangeDate, date: fetchedDate });
+      // console.log({ count, data, startRangeDate, endRangeDate, date: fetchedDate });
       setCalendarData({
         formattedWeekData,formattedMonthData,
         startRangeDate,

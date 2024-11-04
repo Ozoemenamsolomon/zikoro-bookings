@@ -46,6 +46,7 @@ export function formatAppointmentsByMonth(data: Booking[]): Record<string, Booki
     acc[date].push(appointment);
     return acc;
   }, {} as Record<string, Booking[]>);
+  // console.log({month:formatted})
 
   return formatted;
 }
@@ -61,7 +62,7 @@ export function formatAppointmentsByWeek(data: Booking[]): Record<string, Record
     acc[day][hour].push(appointment);
     return acc;
   }, {} as Record<string, Record<number, Booking[]>>);
-
+// console.log({week:formatted})
   return formatted;
 }
 
@@ -93,7 +94,7 @@ export const formatUnavailability = (data: AppointmentUnavailability[]): Unavail
 
 export async function fetchCalendarData(date: Date | string, viewingType: 'month' | 'week', userId?:string) {
   // Validate the viewing type and default to 'month' if invalid
-  const viewing = viewingType === 'month' || viewingType === 'week' ? viewingType : 'month';
+  const viewing = viewingType === 'month' || viewingType === 'week' ? viewingType : 'week';
 
   // Parse and validate the provided date
   const parsedDate = new Date(date);
@@ -138,6 +139,7 @@ export async function fetchCalendarData(date: Date | string, viewingType: 'month
       startRangeDate,
       endRangeDate,
       date: formattedDate,
+      dataCount: 0,
       count,
       error:error?.message,
       dateDisplay,
@@ -168,7 +170,8 @@ export async function fetchCalendarData(date: Date | string, viewingType: 'month
     error: null, 
     dateDisplay,
     unavailableDates, 
-    viewing
+    viewing,
+    dataCount:data?.length||0
   }
 } catch (error){
     console.error(`Error fetching appointments from ${startRangeDate} to ${endRangeDate}:`, error);
@@ -180,6 +183,7 @@ export async function fetchCalendarData(date: Date | string, viewingType: 'month
       count:0,
       error: `Error fetching appointments from ${startRangeDate} to ${endRangeDate}`,
       dateDisplay,
+      dataCount:0,
       unavailableDates:null,
     };
 }

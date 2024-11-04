@@ -10,8 +10,7 @@ const ContactSubLayout: React.FC<ContactProps> = ({children}) => {
     <>
         <ContactSubNav/>
         <div className="bg-white z-10 relative">
-        {children}
-
+          {children}
         </div>
     </>
   )
