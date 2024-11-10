@@ -39,6 +39,5 @@ export const fetchContacts = async (
     console.error('Server error:', error);
     return { data: null, error: 'Server error', count: 0 };
   }
-
 };
 
