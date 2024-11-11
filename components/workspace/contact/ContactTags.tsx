@@ -6,6 +6,7 @@ import { X } from 'lucide-react'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import EmptyList from '../ui/EmptyList'
 import { toast } from 'react-toastify'
+import { PostRequest } from '@/utils/api'
 
 const ContactTags = () => {
     const {contact, setContact,contacts, setContacts} = useAppointmentContext()
@@ -18,53 +19,39 @@ const ContactTags = () => {
     const [contactTags, setContactTags] = useState(contact?.tags ? [...contact.tags] : []);
     const [loading, setLoading] = useState('');
     const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState(false);
     const [isDisabled, setIsDisabled] = useState(true);
 
     const addNewTag = async (e: React.FormEvent) => {
         e.preventDefault();
-        // setError(null);
-        // setSuccess(false);
 
         if (!tag) {
             setError('Tag is required');
             return;
         }
-
         try {
             setLoading('inserting');
-
-            const { data, error } = await supabase
-            .from('bookingTags')
-            .insert([{ tag, createdBy: user?.id}])
-            .select()
-            .single()
-
+        // new tag
+            const { error } = await PostRequest({url:'/api/bookingsContact/addNewTag',body:{ tag, createdBy: user?.id}})
             if (error) {
             throw error;
             }
-
-            const {data:newData, error:er} = await supabase
-            .from('bookingsContact')
-            .update({tags: contact?.tags ? [...contact?.tags, {tag}] : [{tag}]})
-            .eq('id', contact?.id)
-            .select('*')
-            .single()
-
+        // updating contact
+        const {data:newData, error:er} = await PostRequest({
+            url:'/api/bookingsContact/updateContact',
+            body:{tags: contact?.tags ? [...contact?.tags, {tag}] : [{tag}], id:contact?.id}})
             if(!er) {
                 setContact(newData)
                 let list = contacts?.map((item)=>{
                     return item?.id===contact?.id ? newData : item
                 })
                 setContacts(list!)
+            } else {
+            toast.error('Failed to add tag. Please try again.')
             }
-
-            // setSuccess(true); 
             toast.success('New tag was added')
             setTag('');  
-        } catch (err) {
-            toast.success('Failed to add tag. Please try again.')
-            // setError('Failed to add tag. Please try again.');
+        } catch (error) {
+            toast.error('Failed to add tag. Please try again.')
         } finally {
             setLoading('');
         }
@@ -72,12 +59,8 @@ const ContactTags = () => {
 
     const fetchTags = async () => {
         try {
-          const { data, error } = await supabase
-            .from('bookingTags')
-            .select('tag')
-            .eq('createdBy', user?.id)
-            .range(0, 19);
-      
+          const response = await fetch(`/api/bookingsContact/fetchTags?createdBy=${user?.id}`)
+          const { data, error } = await response.json()
           if (error) throw error;
           setTags(data || []);
           setContactTags(contact?.tags ? [...contact.tags] : []);
@@ -86,9 +69,9 @@ const ContactTags = () => {
         }
       };
 
-      useMemo(()=>{
-        setContactTags(contact?.tags ? [...contact.tags] : [])
-      },[contact])
+    useMemo(()=>{
+    setContactTags(contact?.tags ? [...contact.tags] : [])
+    },[contact])
 
     useEffect(()=>{
         fetchTags()
@@ -107,12 +90,10 @@ const ContactTags = () => {
     const insertContactTags = async () => {
         try {
             setLoading('updating')
-            const {data, error} = await supabase
-            .from('bookingsContact')
-            .update({tags: contactTags})
-            .eq('id', contact?.id)
-            .select('*')
-            .single()
+        // inserting/updating contact tags
+        const {data, error} = await PostRequest({
+            url:'/api/bookingsContact/updateContact',
+            body:{tags:contactTags, id:contact?.id}})
             
             if(!error) {
                 setContact(data)
@@ -135,19 +116,17 @@ const ContactTags = () => {
         const previousContactState = contacts?.find(item => item?.id === contact?.id);
     
         setContact({ ...contact, tags: filteredTags });
-    
         try {
-            const { data, error } = await supabase
-                .from('bookingsContact')
-                .update({ tags: filteredTags })
-                .eq('id', contact?.id)
-                // .select('*')
-                // .single()
-    
+        // deleting contact tags
+        const { error} = await PostRequest({
+            url:'/api/bookingsContact/updateContact',
+            body:{tags:filteredTags, id:contact?.id}})
             if (error) {
+                if (previousContactState) {
+                    setContact(previousContactState); // Revert state on error
+                }
                 throw new Error(error.message);
             }
-    
             toast.success(`Tag - ${tagToDelete} was deleted`);
         } catch (error) {
             toast.error(`Error occurred! Tag - ${tagToDelete} not deleted`);
@@ -156,7 +135,6 @@ const ContactTags = () => {
             }
         }
     }, [contact, contacts]);
-    
 
   return (
     <div className=" border rounded-md space-y-3">

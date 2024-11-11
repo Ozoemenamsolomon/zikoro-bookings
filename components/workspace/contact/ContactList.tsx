@@ -8,7 +8,7 @@ import { useAppointmentContext } from '@/context/AppointmentContext';
 import EmptyList from '../ui/EmptyList';
 import { HeartFill } from 'styled-icons/bootstrap';
 import Image from 'next/image';
-import { createClient } from '@/utils/supabase/client';
+import { PostRequest } from '@/utils/api';
 
 type ContactProps = {
   fetchedcontacts: BookingsContact[] | null;
@@ -61,26 +61,19 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery }) =
     );
     setContacts(updatedContacts!);
 
-    const supabase = createClient();
     try {
       setLoading(id);
-      const { data, error } = await supabase
-        .from('bookingsContact')
-        .update({ favorite: updatedFavorite })
-        .eq('id', id)
-        .select()
-        .single();
-
-        // console.log( { data, error })
+      const { data, error } = await PostRequest({url:'/api/bookingsContact/updateContact',body:{favorite: updatedFavorite, id}})
+      // console.log( { data, error })
 
       if (error) {
         console.error('Error updating favorite status:', error);
         setContacts(contacts);
       }
-      const updatedContacts = contacts?.map((item) =>
-        item.id === id ? { ...item, favorite: updatedFavorite } : item
-      );
-      setContacts(updatedContacts!);
+      // const updatedContacts = contacts?.map((item) =>
+      //   item.id === id ? { ...item, favorite: updatedFavorite } : item
+      // );
+      // setContacts(updatedContacts!);
       
     } catch (error) {
       console.error('Server error:', error);

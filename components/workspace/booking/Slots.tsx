@@ -137,7 +137,6 @@ const Slots: React.FC<SlotsType> = ({appointmnetLink, timeSlots, selectedDate, h
     <div className="bg-white relative overflow-hidden w-full max-sm:h-96   rounded-lg  ">
       {loading && isBooking ? 
         <div className=" w-full flex justify-center items-center h-60 sm:h-96"><Loading/></div>
-
         : 
         <>
           <h5 className="text- bg-white px-4 pt-3 pb-2 font-semibold">Choose Time</h5>  
@@ -157,7 +156,6 @@ const Slots: React.FC<SlotsType> = ({appointmnetLink, timeSlots, selectedDate, h
                             inactiveSlots.includes(slot.value) ||
                             isNotAvailable
                           }
-
                           className={`w-full flex-shrink-0  h-12 p-0.5
                               ${bookingFormData?.appointmentTime===slot.label ? ' bg-basePrimary':'border'}  
                               ${inactiveSlots.includes(slot.value) || isNotAvailable

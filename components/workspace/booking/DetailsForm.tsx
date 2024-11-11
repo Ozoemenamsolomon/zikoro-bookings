@@ -5,11 +5,16 @@ import { submitBooking } from './submitBooking';
 import { useAppointmentContext } from '@/context/AppointmentContext';
 import CustomInput from '../ui/CustomInput';
 import { useBookingsContact } from '@/hooks/services/appointments';
+import { usePathname } from 'next/navigation';
 
 const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null}) => {
+  const pathname = usePathname()
 
-  const {bookingFormData, isFormUp, setIsFormUp, setBookingFormData, slotCounts, setSlotCounts,setInactiveSlots,} = useAppointmentContext()
+  const {bookingFormData, contact, isFormUp, setIsFormUp, setBookingFormData, slotCounts, setSlotCounts,setInactiveSlots,setShow} = useAppointmentContext()
   const {insertBookingsContact} = useBookingsContact()
+
+  // update form state with contact, if it is contact page
+  const isContactPage = pathname.includes('contacts')
 
   const maxBookingLimit = appointmentLink?.maxBooking!;
 
@@ -25,12 +30,12 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
         // appointmentType: appointmentLink?.category,
         scheduleColour: appointmentLink?.brandColour,
         feeType: appointmentLink?.isPaidAppointment ? 'Paid appointment' : 'Free',
-        firstName: '',
-        lastName:'',
-        phone:'',
-        participantEmail:'',
+        firstName: isContactPage ? contact?.firstName || '' : '',
+        lastName:isContactPage ? contact?.lastName || '' : '',
+        phone:isContactPage ? contact?.phone || '' : '',
+        participantEmail: isContactPage ? contact?.email || '' : '',
     })
-  }, [appointmentLink])
+  }, [])
   
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
@@ -79,6 +84,7 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     await submitBooking({
       setLoading,
       setErrors,
@@ -91,116 +97,123 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
       maxBookingLimit,
       setSuccess,
       appointmentLink,
-      insertBookingsContact,
+      // do not insert contact in contact page
+      insertBookingsContact:  isContactPage ? null : insertBookingsContact,
+      setShow
     });
   };
 // console.log({price:bookingFormData})
   return (
-    <div className= {`${isFormUp ? ' visible translate-x-0':' -translate-x-full '} transform transition-all duration-300 w-full relative flex flex-col bg-white h-full px-6 py-20 rounded-lg shadow-md  justify-center items-center` } >
-        <p className="pb-4 text-lg font-semibold">Enter your details</p>
-        {errors?.general ? <p className="pb-4 text-red-600 max-w-lg text-wrap">{errors?.general}</p> : null}
-        {success  ? <p className="pb-4 max-w-lg text-wrap text-blue-600">{success}</p> : null}
-      <div className="mx-auto space-y-4" >
-        <div className="flex flex-col sm:flex-row gap-4 w-full">
-            <div className="space-y-1 flex-1 w-full">
-                <div className="flex-1">
-                  <CustomInput
-                    label="First Name"
-                    type="text"
-                    error={errors?.firstName || ''}
-                    name="firstName"
-                    value={bookingFormData?.firstName || ''}
-                    placeholder="Enter your first name"
-                    className="py-2 w-full"
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="flex-1">
-                  <CustomInput
-                    label="Last Name"
-                    type="text"
-                    error={errors?.lastName || ''}
-                    name="lastName"
-                    value={bookingFormData?.lastName || ''}
-                    placeholder="Enter your last name"
-                    className="py-2 w-full"
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="flex-1">
-                  <CustomInput
-                    label="Email"
-                    type="email"
-                    error={errors?.participantEmail || ''}
-                    name="participantEmail"
-                    value={bookingFormData?.participantEmail || ''}
-                    placeholder="Enter your email"
-                    className="py-2 w-full"
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="flex-1">
-                  <CustomInput
-                    label="Phone"
-                    type="tel"
-                    error={errors?.phone || ''}
-                    name="phone"
-                    value={bookingFormData?.phone || ''}
-                    placeholder="Enter your phone number"
-                    className="py-2 w-full"
-                    onChange={handleChange}
-                  />
-                </div>
+    <div className= {`${isFormUp ? ' visible translate-x-0':' -translate-x-full '} transform transition-all duration-300 w-full relative flex flex-col bg-white h-full px-6 py-10 rounded-lg shadow-md  justify-center items-center` } >
+        <p className="pb-2 text-lg font-semibold">Enter your details</p>
+        {errors?.general ? <p className="pb-2 text-sm text-red-600 max-w-lg text-wrap">{errors?.general}</p> : null}
+        {success  ? <p className="pb-2 text-sm max-w-lg text-wrap text-blue-600">{success}</p> : null}
 
-            </div>
+        <div className="mx-auto space-y-4" >
+          <div className="flex flex-col sm:flex-row gap-4 w-ful">
+             
+              <div className="space-y-1 flex-1 w-full">
+                  <div className="flex-1">
+                    <CustomInput
+                      label="First Name"
+                      type="text"
+                      error={errors?.firstName || ''}
+                      name="firstName"
+                      value={bookingFormData?.firstName || ''}
+                      placeholder="Enter your first name"
+                      disabled={isContactPage}
+                      className="py-2 w-full disabled:opacity-50"
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <CustomInput
+                      label="Last Name"
+                      type="text"
+                      error={errors?.lastName || ''}
+                      name="lastName"
+                      value={bookingFormData?.lastName || ''}
+                      placeholder="Enter your last name"
+                      disabled={isContactPage}
+                      className="py-2 w-full disabled:opacity-50"
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <CustomInput
+                      label="Email"
+                      type="email"
+                      error={errors?.participantEmail || ''}
+                      name="participantEmail"
+                      value={bookingFormData?.participantEmail || ''}
+                      placeholder="Enter your email"
+                      disabled={isContactPage}
+                      className="py-2 w-full disabled:opacity-50"                    
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <CustomInput
+                      label="Phone"
+                      type="tel"
+                      error={errors?.phone || ''}
+                      name="phone"
+                      value={bookingFormData?.phone || ''}
+                      placeholder="Enter your phone number"
+                      disabled={isContactPage}
+                      className="py-2 w-full disabled:opacity-50"
+                      onChange={handleChange}
+                    />
+                  </div>
+              </div>
 
-            <div className="flex-1 w-96 h-full grid  flex-col">
-              <p className='pb-3 flex-nowrap'> Add a note to this appointment</p>
-                  <textarea 
-                    name="notes" id="notes"
-                    onChange={handleChange}
-                    value={bookingFormData?.notes || ''}
-                    required
-                    className={`${errors.notes ? 'ring-2 ring-red-600':''} sm:h-[17.6rem]  w-full focus:outline-none  p-3 h-24 border  rounded-xl `}
-                    >
-                  </textarea>
-            </div>
+              <div className="flex-1 sm:w-96 h-full grid  flex-col">
+                <p className='pb-3 flex-nowrap'> Add a note to this appointment</p>
+                    <textarea 
+                      name="notes" id="notes"
+                      onChange={handleChange}
+                      value={bookingFormData?.notes || ''}
+                      required
+                      className={`${errors.notes ? 'ring-2 ring-red-600':''} sm:h-[17.6rem]  w-full focus:outline-none  p-3 h-24 border  rounded-xl `}
+                      >
+                    </textarea>
+              </div>
+          </div>
+
+          <XCircle onClick={()=>setIsFormUp('')} size={20} className='text-gray-500 cursor-pointer absolute top-6 right-6'/>
+
+          <div className="w-full">
+
+            { 
+            // TODO: confirm if host should complete booking without payment
+              bookingFormData?.price && !isContactPage ?
+              // process for paid appointments
+              <button
+                onClick={()=>{
+                  setIsFormUp('pay') 
+                  // setBookingFormData({
+                  //   ...bookingFormData,
+                  //   price:appointmnetLink?.amount,
+                  //   currency:appointmnetLink?.curency,
+                  // })
+                }}
+                className={`w-full cursor-pointer py-2 px-4 bg-basePrimary text-white rounded ${loading  || isDisabled ? ' cursor-not-allowed opacity-30' : ''}`}
+                disabled={loading || isDisabled}
+              >
+                Process and pay
+              </button> 
+              :
+              <button
+                onClick={handleSubmit}
+                type="submit"
+                disabled={isDisabled}
+                className={`w-full px-4 py-3 rounded-md text-center bg-basePrimary text-white ${loading || isDisabled  ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {loading ? 'Submitting...' : 'Book Appointment'}
+              </button>
+              }
+          </div>
         </div>
-
-        <XCircle onClick={()=>setIsFormUp('')} size={20} className='text-gray-500 cursor-pointer absolute top-6 right-6'/>
-
-         <div className="w-full">
-
-           { 
-            bookingFormData?.price ?
-            // process for paid appointments
-            <button
-              onClick={()=>{
-                setIsFormUp('pay') 
-                // setBookingFormData({
-                //   ...bookingFormData,
-                //   price:appointmnetLink?.amount,
-                //   currency:appointmnetLink?.curency,
-                // })
-              }}
-              className={`w-full cursor-pointer py-2 px-4 bg-basePrimary text-white rounded ${loading  || isDisabled ? ' cursor-not-allowed opacity-30' : ''}`}
-              disabled={loading || isDisabled}
-            >
-              Process and pay
-            </button> 
-            :
-            <button
-              onClick={handleSubmit}
-              type="submit"
-              disabled={isDisabled}
-              className={`w-full px-4 py-3 rounded-md text-center bg-basePrimary text-white ${loading || isDisabled  ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              {loading ? 'Submitting...' : 'Book Appointment'}
-            </button>
-
-            }
-        </div>
-      </div>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 'use client'
 import { PopoverMenu } from '@/components/shared/PopoverMenu'
 import { useAppointmentContext } from '@/context/AppointmentContext'
+import { deleteRequest } from '@/utils/api'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
@@ -18,12 +19,13 @@ const DeleteContact = () => {
     const deleteContact = async () => {
             try {
                 setLoading(true)
-                const {data, error} = await supabase
-                    .from('bookingsContact')
-                    .update({status: 'ARCHIVED'})
-                    .eq('id', contact?.id)
-                    .select('*')
-                    .single()
+                const {data:{data,error}} = await deleteRequest({endpoint:`/bookingsContact/deleteContact?id=${contact?.id}`})
+                // const {data, error} = await supabase
+                //     .from('bookingsContact')
+                //     .update({status: 'ARCHIVED'})
+                //     .eq('id', contact?.id)
+                //     .select('*')
+                //     .single()
                 
                 if(!error) {
                     let list = contacts?.filter((item)=> item?.id !== contact?.id)
