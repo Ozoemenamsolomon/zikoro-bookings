@@ -119,6 +119,7 @@ const Slots: React.FC<SlotsType> = ({appointmnetLink, timeSlots, selectedDate, h
     setUnavailableDates(unavailableSlots)
   };
 
+// TODO: Confirm tha reschedule can still update even without changing when selectedDate change. And what is selecteditem about
   useEffect(() => {
     if(isBooking){
       updateSlots();

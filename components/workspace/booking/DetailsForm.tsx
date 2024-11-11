@@ -18,7 +18,7 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
 
   const maxBookingLimit = appointmentLink?.maxBooking!;
 
-    useEffect(() => {
+  useEffect(() => {
     setBookingFormData({
         ...bookingFormData!,
         appointmentLinkId: appointmentLink?.id,
@@ -111,7 +111,6 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
 
         <div className="mx-auto space-y-4" >
           <div className="flex flex-col sm:flex-row gap-4 w-ful">
-             
               <div className="space-y-1 flex-1 w-full">
                   <div className="flex-1">
                     <CustomInput
