@@ -41,7 +41,7 @@ const UpcomingAppointments = ({ contact }: { contact: BookingsContact }) => {
 
       if (error) {
         console.error('Error fetching appointments:', error)
-        setIsError('Failed to fetch appointments. Please try again later.')
+        setIsError('Failed to fetch appointments.')
         return
       }
 
@@ -57,9 +57,10 @@ const UpcomingAppointments = ({ contact }: { contact: BookingsContact }) => {
 
   useEffect(() => {
     if (contact) {
-      fetchAppointments(currentPage)
+      setCurrentPage(1)
+      fetchAppointments(1)
     }
-  }, [contact,])
+  }, [contact])
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)

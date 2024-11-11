@@ -3,7 +3,6 @@ import ContactInfo from "@/components/workspace/contact/ContactInfo";
 import ContactSubLayout from "@/components/workspace/contact/ContactSubLayout";
 import { fetchContacts } from "@/lib/server/contacts";
 
-
 const Contacts = async ({
   searchParams: { s },
 }: {

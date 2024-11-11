@@ -5,9 +5,17 @@ import ScheduleAppointment from './ScheduleAppointment'
 import PreviousAppointments from './PreviousAppointments'
 import UpcomingAppointments from './UpcomingAppointments'
 import { useAppointmentContext } from '@/context/AppointmentContext'
+import { Loader2Icon } from 'lucide-react'
 
 const ArticleTwo = () => {
-  const {contact} = useAppointmentContext()
+  const {contact,isfetching} = useAppointmentContext()
+  if(isfetching) return (
+    <div className="w-full h-screen  bg-white">
+        <div className="h-80 flex flex-col justify-center items-center">
+          <Loader2Icon className='animate-spin text-basePrimary/50 ' />
+        </div>
+    </div>
+)
   return (
     <div className="w-full p-6 md:px-2  h-screen overflow-auto no-scrollbar space-y-5 bg-white relative z-10">
         <div className=" border rounded-md text-center space-y-3 w-full">
@@ -18,17 +26,15 @@ const ArticleTwo = () => {
           </div>
         </div>
 
-        <div className=" border rounded-md space-y-3 w-full">
-          <div className="text-center border-b rounded-md w-full p-3 py-4   font-semibold bg-baseBg">Previuos Appointments</div>
-          <PreviousAppointments contact={contact!} />
-        </div>
-
         <div className=" border rounded-md  space-y-3 w-full">
         <div className="text-center border-b rounded-md w-full p-4  font-semibold bg-baseBg">Upcoming Appointment(s)</div>
           <UpcomingAppointments contact={contact!} />
         </div>
 
-
+        <div className=" border rounded-md space-y-3 w-full">
+          <div className="text-center border-b rounded-md w-full p-3 py-4   font-semibold bg-baseBg">Previuos Appointments</div>
+          <PreviousAppointments contact={contact!} />
+        </div>
     </div>
   )
 }
