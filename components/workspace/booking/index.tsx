@@ -11,6 +11,7 @@ import Link from 'next/link'
 import Calender from './Calender'
 import ProcessPayment from './ProcessPayment'
 import { urls } from '@/constants'
+import BookingOff from './BookingOff'
 
 const Booking =  ({appointmnetLink, error}:{appointmnetLink:AppointmentLink, error?:string}) => {
   const {bookingFormData, isFormUp} = useAppointmentContext()
@@ -41,6 +42,9 @@ const Booking =  ({appointmnetLink, error}:{appointmnetLink:AppointmentLink, err
                     }
                 </header>
                 {
+                    !appointmnetLink.statusOn ?
+                    <BookingOff/>
+                    :
                     isFormUp==='pay' ? 
                     <ProcessPayment appointmentLink={appointmnetLink}/>
                     :
