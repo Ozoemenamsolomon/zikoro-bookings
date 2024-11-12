@@ -10,7 +10,7 @@ const ContactAnalyticsPage = async ({
 }) => {
   const {data,count,error} = await fetchContacts()
   return ( 
-    <ContactLayout data={data} searchquery={s} >
+    <ContactLayout count={count}  data={data} searchquery={s} >
         <ContactSubLayout>
             <main className='text-4xl font-bold p-8'>Contact Analytics</main>
         </ContactSubLayout>
