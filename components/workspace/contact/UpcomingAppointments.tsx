@@ -81,8 +81,8 @@ const UpcomingAppointments = ({ contact }: { contact: BookingsContact }) => {
             return (
               <div key={idx} className="flex gap-3 border-b pb-3">
                 <div className="rounded-md text-center overflow-hidden border shrink-0 w-20">
-                  <div className="p-1 w-full bg-baseBg text-sm shrink-0 overflow-clip">
-                    {format(new Date(appointmentDate), 'MMMM')}
+                <div className="p-1 w-full bg-baseBg text-[11px] text-center shrink-0 truncate">
+                {format(new Date(appointmentDate), 'MMMM')}
                   </div>
                   <div className="p-2 border-t text-base font-semibold">
                     {format(new Date(appointmentDate), 'd')}

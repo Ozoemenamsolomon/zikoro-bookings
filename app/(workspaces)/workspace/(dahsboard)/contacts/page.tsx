@@ -11,7 +11,7 @@ const Contacts = async ({
   const {data,count,error} = await fetchContacts()
   // console.log({data,count,error})
   return ( 
-    <ContactLayout data={data} searchquery={s} >
+    <ContactLayout data={data} count={count} searchquery={s} >
       <ContactSubLayout>
         <ContactInfo />
       </ContactSubLayout>
