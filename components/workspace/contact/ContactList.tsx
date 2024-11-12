@@ -109,7 +109,7 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery }) =
           contacts.map((item) => {
             const { firstName, profileImg, lastName, favorite, id, email } = item
             return (
-            <div key={id} 
+              <div key={id} 
               onClick={() => setContact(item)} className="py-2 w-full cursor-pointer">
               <div
                 className={`${
@@ -129,23 +129,30 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery }) =
                     `${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}`.toUpperCase() || 'NA'
                   )}
                 </div>
-
-                <div className="w-full">
-                  <h6 className="font-medium leading-4">{firstName + ' ' + lastName}</h6>
-                  <small>{email}</small>
+            
+                {/* Contact Name and Email */}
+                <div className="flex-1 min-w-0">
+                  <h6 className="font-medium leading-4 truncate">{firstName + ' ' + lastName}</h6>
+                  <small className="truncate block text-slate-600">{email}</small>
                 </div>
-
+            
+                {/* Favorite Icon */}
                 <div
                   onClick={(e) => {
                     e.stopPropagation();
-                    makeFavorite({ favorite: favorite!, id:id! });
+                    makeFavorite({ favorite: favorite!, id: id! });
                   }}
                   className="shrink-0"
                 >
-                  {favorite ? <HeartFill size={20} className="text-basePrimary" /> : <Heart size={20} className="text" />}
+                  {favorite ? (
+                    <HeartFill size={20} className="text-basePrimary" />
+                  ) : (
+                    <Heart size={20} className="text" />
+                  )}
                 </div>
               </div>
             </div>
+            
           )})
         ) : (
           <EmptyList size="34" text="No contacts found" />

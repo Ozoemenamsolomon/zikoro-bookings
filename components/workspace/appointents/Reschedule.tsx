@@ -206,11 +206,14 @@ export const Reschedule = ({ refresh, getBookings, setFilter }: { refresh: () =>
       selectedDate: bookingFormData?.appointmentDate!,
     });
   
-    // if(!bookingFormData?.reason){
-    //   setError('Provide a reason.')
-    //   return
-    // }
-  
+    let newBookingData = {
+      ...bookingFormData,
+      appointmentTime: timeStamp ,
+      appointmentNotes: {categoryNote: bookingFormData?.categoryNote}
+  }
+
+  delete newBookingData?.['categoryNote']
+
     try {
       setIsLoading(true);
       const res = await fetch("/api/email/send-rescheduling-email", {
@@ -219,7 +222,7 @@ export const Reschedule = ({ refresh, getBookings, setFilter }: { refresh: () =>
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          bookingFormData: { ...bookingFormData, appointmentTime: timeStamp },
+          bookingFormData: newBookingData,
         }),
       });
       console.log(await res.json())
