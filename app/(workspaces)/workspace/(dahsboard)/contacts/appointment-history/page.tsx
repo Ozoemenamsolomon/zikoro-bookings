@@ -11,7 +11,7 @@ const ContactAppointmentHistory = async ({
 }) => {
   const {data,count,error} = await fetchContacts()
   return ( 
-    <ContactLayout data={data} searchquery={s} >
+    <ContactLayout count={count} data={data} searchquery={s} >
         <ContactSubLayout>
             <AppointmentHistory />
         </ContactSubLayout>
