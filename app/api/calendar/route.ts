@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
       formattedWeekData,formattedMonthData,
       count,
       error,
-      dateDisplay,
+      dateDisplay,dataCount
     } = await fetchCalendarData(date, view, userId);
 
     // Check for data fetch errors
@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
       formattedWeekData,formattedMonthData,
       count,
       error: null,
-      dateDisplay,
+      dateDisplay,dataCount
     }, { status: 200 });
 
   } catch (err) {

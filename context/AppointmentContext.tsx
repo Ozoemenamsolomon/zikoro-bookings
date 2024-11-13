@@ -26,6 +26,8 @@ export interface AppState {
   setContact:React.Dispatch<React.SetStateAction<BookingsContact | null >>;
   contacts: BookingsContact[] | null, 
   setContacts:React.Dispatch<React.SetStateAction<BookingsContact[] | null >>;
+  show: string, 
+  setShow:React.Dispatch<React.SetStateAction<string>>;
 
 }
 
@@ -49,6 +51,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   
   const [contact, setContact] = useState<BookingsContact | null>(null);
   const [contacts, setContacts] = useState<BookingsContact[] | null>(null);
+  const [show, setShow] = useState<string>('links')
 
   const contextValue: AppointmentContextProps = {
     isLoading,setLoading,isfetching, setIsFetching,
@@ -59,7 +62,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
     user, setUser,
     selectedType, setselectedType,
     selectedItem, setSelectedItem,
-    contact, setContact, contacts, setContacts,
+    contact, setContact, contacts, setContacts, show, setShow,
   };
 
   return (

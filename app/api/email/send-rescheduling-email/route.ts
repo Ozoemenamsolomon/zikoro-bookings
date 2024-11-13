@@ -38,9 +38,10 @@ export async function POST(req: NextRequest) {
       .from('bookings')
       .update(newFormdata)
       .eq('id', bookingFormData?.id)
+      .select()
       .single();
 
-    // console.log({data, updatingError})
+    console.log({data, updatingError})
 
     if (updatingError) {
       console.error('Error updating data:', updatingError);

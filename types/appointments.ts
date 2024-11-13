@@ -1,6 +1,3 @@
-// import { Category } from "@/components/appointments/create/CategoryForm";
-// import { DaySchedule } from "@/components/appointments/ui/DateTimeScheduler";
-
 export interface AppointmentLink {
     id?: bigint;
     created_at?: string;
@@ -95,11 +92,14 @@ export interface Booking {
   currency?: string | null;
   feeType?: string | null;
   notes?: string | null;
+  categoryNote?: string | null;
   appointmentTimeStr?: string;
   appointmentDuration?: number;
   type?: string;
   reason?: string;
   timeStr?: string;
+  appointmentNotes?: Record<string, any> | null; 
+  appointmentMedia?: Record<string, any> | null; 
 }
 
 export interface UserType {
@@ -170,7 +170,6 @@ export interface BookingsContact {
   profileImg?: string;
   favorite?: boolean;
 }
-
 export interface ContactTag {
   id?: number;  
   created_at?: string;  
@@ -178,14 +177,12 @@ export interface ContactTag {
   createdBy: number; 
 }
 
-
 export interface FormattedUnavailability {
   from: string; // Formatted start time (e.g., '09:00 AM')
   to: string; // Formatted end time (e.g., '10:00 AM')
   id: bigint | number; // Unavailability ID
   appointmentDate: string; // Formatted appointment date (e.g., 'Tue Oct 22 2024')
 }
-
 export interface UnavailabilityByDay {
   [dayString: string]: FormattedUnavailability[]; // Array of
 }

@@ -9,12 +9,18 @@ import useUserStore from '@/store/globalUserStore';
 import { useLogOut } from '@/hooks';
 import { urls } from '@/constants';
 
-const navlinks = [
-  // {
-  //   icon: Calendar,
-  //   label: 'Signin',
-  //   link: `/workspace/signin`,
-  // },
+type NavLink = {
+  icon: React.ElementType;
+  label: string;
+  link: string;
+  newTab?: boolean;
+};
+const navlinks:NavLink[] = [
+  {
+    icon: Link2,
+    label: 'Schedules',
+    link: urls.schedule,
+  },
   {
     icon: Calendar,
     label: 'Calendar',
@@ -25,11 +31,7 @@ const navlinks = [
     label: 'Appointments',
     link: urls.appointments,
   },
-  {
-    icon: Link2,
-    label: 'Schedules',
-    link: urls.schedule,
-  },
+
   {
     icon: Users,
     label: 'Contacts',
@@ -40,21 +42,22 @@ const navlinks = [
     label: 'Analytics',
     link: urls.analytics,
   },
-  {
-    icon: Store,
-    label: 'Store Front',
-    link: urls.shopFrontBooking,
-  },
+  // {
+  //   icon: Store,
+  //   label: 'Store Front',
+  //   link: urls.shopFrontBooking,
+  //   newTab: true,
+  // },
   // {
   //   icon: Bell,
   //   label: 'Notification',
   //   link: `/appointments/notification`,
   // },
-  {
-    icon: Settings,
-    label: 'Settings',
-    link: urls.settingsProfile,
-  },
+  // {
+  //   icon: Settings,
+  //   label: 'Settings',
+  //   link: urls.settingsProfile,
+  // },
 ];
 
 const Sidebar = () => {
@@ -93,10 +96,10 @@ const Sidebar = () => {
         </div>
 
         <div className="space-y-1 py-6">
-          {navlinks.map(({ icon, label, link }, idx) => {
+          {navlinks.map(({ icon, label, link, newTab }, idx) => {
             const Icon = icon;
             return (
-              <Link key={idx} href={link} className={`${pathanme===link?'bg-gradient-to-r from-slate-200 to-purple-200':''} flex gap-4 items-center px-3 py-2 rounded-md hover:bg-gradient-to-r hover:from-slate-200  hover:to-purple-200 duration-300 group `}>
+              <Link key={idx} href={link} target={newTab ? '_blank' : ''}  className={`${pathanme===link?'bg-gradient-to-r from-slate-200 to-purple-200':''} flex gap-4 items-center px-3 py-2 rounded-md hover:bg-gradient-to-r hover:from-slate-200  hover:to-purple-200 duration-300 group `}>
                 <div>
                   <Icon size={18} className={`${pathanme===link?'text-purple-800':''} group-hover:text-purple-800 duration-300 `}
                   />

@@ -8,7 +8,7 @@ import { useAppointmentContext } from '@/context/AppointmentContext';
 import EmptyList from '../ui/EmptyList';
 import { HeartFill } from 'styled-icons/bootstrap';
 import Image from 'next/image';
-import { createClient } from '@/utils/supabase/client';
+import { PostRequest } from '@/utils/api';
 
 type ContactProps = {
   fetchedcontacts: BookingsContact[] | null;
@@ -61,26 +61,19 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery }) =
     );
     setContacts(updatedContacts!);
 
-    const supabase = createClient();
     try {
       setLoading(id);
-      const { data, error } = await supabase
-        .from('bookingsContact')
-        .update({ favorite: updatedFavorite })
-        .eq('id', id)
-        .select()
-        .single();
-
-        // console.log( { data, error })
+      const { data, error } = await PostRequest({url:'/api/bookingsContact/updateContact',body:{favorite: updatedFavorite, id}})
+      // console.log( { data, error })
 
       if (error) {
         console.error('Error updating favorite status:', error);
         setContacts(contacts);
       }
-      const updatedContacts = contacts?.map((item) =>
-        item.id === id ? { ...item, favorite: updatedFavorite } : item
-      );
-      setContacts(updatedContacts!);
+      // const updatedContacts = contacts?.map((item) =>
+      //   item.id === id ? { ...item, favorite: updatedFavorite } : item
+      // );
+      // setContacts(updatedContacts!);
       
     } catch (error) {
       console.error('Server error:', error);
@@ -114,9 +107,10 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery }) =
           </div>
         ) : contacts?.length ? (
           contacts.map((item) => {
-            const { firstName, profileImg, lastName, favorite, id, email } = item
+            const { firstName, profileImg, lastName, favorite, id, email, tags } = item
+            console.log({tags})
             return (
-            <div key={id} 
+              <div key={id} 
               onClick={() => setContact(item)} className="py-2 w-full cursor-pointer">
               <div
                 className={`${
@@ -136,23 +130,39 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery }) =
                     `${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}`.toUpperCase() || 'NA'
                   )}
                 </div>
-
-                <div className="w-full">
-                  <h6 className="font-medium leading-4">{firstName + ' ' + lastName}</h6>
-                  <small>{email}</small>
+            
+                {/* Contact Name and Email */}
+                <div className="flex-1 min-w-0 text-sm">
+                  <h6 className="font-medium leading-4 truncate">{firstName + ' ' + lastName}</h6>
+                  <small className="truncate block text-slate-600">{email}</small>
+                  <div className="flex gap-1 w-full overflow-auto no-scrollbar">
+                    {
+                      tags?.map(({tag},i)=>{
+                        return (
+                          <small key={i} className='text-[8px] min-w-0 shrink-0  px-1 py-0 leading-3 rounded border border-pink-400 bg-pink-500/20'>{tag}</small>
+                        )
+                      })
+                    }
+                  </div>
                 </div>
-
+            
+                {/* Favorite Icon */}
                 <div
                   onClick={(e) => {
                     e.stopPropagation();
-                    makeFavorite({ favorite: favorite!, id:id! });
+                    makeFavorite({ favorite: favorite!, id: id! });
                   }}
                   className="shrink-0"
                 >
-                  {favorite ? <HeartFill size={20} className="text-basePrimary" /> : <Heart size={20} className="text" />}
+                  {favorite ? (
+                    <HeartFill size={20} className="text-basePrimary" />
+                  ) : (
+                    <Heart size={20} className="text" />
+                  )}
                 </div>
               </div>
             </div>
+            
           )})
         ) : (
           <EmptyList size="34" text="No contacts found" />

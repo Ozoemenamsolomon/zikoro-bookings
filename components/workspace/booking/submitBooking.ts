@@ -16,7 +16,8 @@ interface SubmitBookingProps {
     setSuccess: SetState<string>;
     maxBookingLimit: number;
     appointmentLink:AppointmentLink|null;
-    insertBookingsContact: (contact: BookingsContact) => void
+    insertBookingsContact:( (contact: BookingsContact) => void) | null
+    setShow: React.Dispatch<React.SetStateAction<string>>
 }
 
 export const submitBooking = async ({
@@ -31,6 +32,7 @@ export const submitBooking = async ({
     maxBookingLimit,
     appointmentLink,
     insertBookingsContact,
+    setShow,
 }: SubmitBookingProps): Promise<{ bookingSuccess?: boolean; emailSuccess?: boolean }> => {
 
     setLoading(true);
@@ -39,15 +41,18 @@ export const submitBooking = async ({
 
     let bookingSuccess=false, emailSuccess=false
 
-    // if (validate && !validate() && !pathname.includes('bookings')) {
-    //     setLoading(false);
-    //     return {bookingSuccess, emailSuccess}
-    // }
-
     const timeStamp = generateAppointmentTime({
         timeRange: bookingFormData?.appointmentTime!,
         selectedDate: bookingFormData?.appointmentDate!
     });
+
+    let newBookingData = {
+        ...bookingFormData,
+        appointmentTime: timeStamp ,
+        appointmentNotes: {categoryNote: bookingFormData?.categoryNote}
+    }
+
+    delete newBookingData?.['categoryNote']
 
     try {
         const response = await fetch('/api/bookings/insert', {
@@ -55,11 +60,11 @@ export const submitBooking = async ({
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ ...bookingFormData, appointmentTime: timeStamp }),
+            body: JSON.stringify(newBookingData),
         });
         
         const result = await response.json();
-
+       
         if (response.ok) {
             bookingSuccess=true
             setBookingFormData((prevData: Booking| null) => ({
@@ -76,7 +81,7 @@ export const submitBooking = async ({
                 lastName: bookingFormData?.lastName,
                 createdBy: appointmentLink?.createdBy?.id,
             } 
-            await insertBookingsContact(newContact)
+            insertBookingsContact && await insertBookingsContact(newContact)
 
             // send email
             const res  = await fetch('/api/email/send-bookings-email', {
@@ -85,13 +90,11 @@ export const submitBooking = async ({
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    bookingFormData:{ 
-                        ...bookingFormData, 
-                        appointmentTime: timeStamp },
-                        appointmentLink,
+                    bookingFormData: newBookingData,
+                    appointmentLink,
                 }),
             });
-            console.log({email: await res.json()})
+            // console.log({email: await res.json()})
             if(res.ok){
                 emailSuccess=true
                 console.log('==GOOD RES==')
@@ -110,6 +113,8 @@ export const submitBooking = async ({
                 setInactiveSlots((prev: string[]) => ([...prev, slot]));
             }
 
+            // Popup final stage for contact page booking
+            !insertBookingsContact && setShow('final')
         } else {
             console.error('Form submission failed', result);
             setErrors({ general: result.error });
@@ -133,10 +138,10 @@ export function generateAppointmentTime({ timeRange, selectedDate }: BookingInpu
     if (!timeRange) {
       return null;
     }
-  
     const [startTime] = timeRange.split(' - ');
-  
+    
     const appointmentDateTime = parse(startTime, 'hh:mm a', new Date(selectedDate || Date.now()));
+    console.error({timeRange, selectedDate, appointmentDateTime});
   
     if (isNaN(appointmentDateTime.getTime())) {
       console.error("Invalid startTime format:", startTime);

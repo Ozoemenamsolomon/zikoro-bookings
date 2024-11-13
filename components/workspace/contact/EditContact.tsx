@@ -10,6 +10,8 @@ import { BookingsContact,  } from '@/types/appointments'
 import {toast} from 'react-toastify'
 import { useAppointmentContext } from '@/context/AppointmentContext'
 import { CenterModal } from '@/components/shared/CenterModal'
+import { format } from 'date-fns'
+import { PostRequest } from '@/utils/api'
 
 
 const validateForm = (formData: any) => {
@@ -61,17 +63,9 @@ const EditContact = () => {
             setIsSubmitting(true);
     
             try {
-                const res = await fetch('/api/appointments/contacts/update', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData),
-                });
-    
-                console.log(res);
-                if (res.ok) {
-                    const { data } = await res.json();
+                const {data, error}  =  await PostRequest({url:'/api/bookingsContact/updateContact',body: formData}) 
+                console.log({data, error});
+                if (data) {
                     setContacts((prevContacts: BookingsContact[] | null) =>
                             prevContacts
                                 ? prevContacts.map(contact =>
@@ -81,9 +75,11 @@ const EditContact = () => {
                     );
                     setContact(data);
                     toast.success('Contact updated');
+                } else {
+                    toast.error('Server error! Check your network')
                 }
             } catch (error) {
-                toast.error('Error submitting form');
+                toast.error('Server error! Check your network')
                 console.error('Error submitting form:', error);
             } finally {
                 setIsSubmitting(false);
@@ -151,10 +147,11 @@ const EditContact = () => {
                                     label='Email'
                                     type='email'
                                     name='email'
+                                    disabled
                                     value={formData.email!}
                                     placeholder='Enter Email'
                                     error={errors?.email}
-                                    className=''
+                                    className='disabled:opacity-50'
                                     onChange={handleChange}
                                 />
                                 <CustomInput
@@ -177,13 +174,24 @@ const EditContact = () => {
                                     className=''
                                     onChange={handleChange}
                                 />
-                                <DatePicker
+                                <CustomInput
+                                    label='Created At'
+                                    type='text'
+                                    name='created_at'
+                                    value={format(new Date(formData.created_at!), 'dd MMMM yyyy, hh:mm a')}
+                                    disabled
+                                    // placeholder='Enter Phone Number'
+                                    error={errors?.created_at}
+                                    className='disabled:opacity-50 text-sm'
+                                    onChange={handleChange}
+                                />
+                                {/* <DatePicker
                                     label='Created At'
                                     name='created_at'
                                     value={formData.created_at}
                                     onChange={handleDateChange}
                                     disabled={false} // Disable or enable as needed
-                                />
+                                /> */}
                             </div>
                         </div>
 

@@ -35,7 +35,7 @@ export const fetchSchedules = async (
     //   .eq('createdBy', id)
 
     const { data, count, error } = await query;
-    console.log({ data, count, error, id });
+    // console.log({ data, count, error, id });
 
     if (error) {
       console.error('Error fetching contacts:', error);
@@ -58,11 +58,11 @@ export const fetchSchedule = async (
     try {
     const { data, error }  = await supabase
       .from('appointmentLinks')
-      .select('*') 
+      .select('*, createdBy(id, userEmail,organization,firstName,lastName,phoneNumber)') 
       .eq('id', alias)
       .single()
 
-    // console.error({ data, error });
+    console.error({ data, error });
     return { data, error: error?.message};
   } catch (error) {
     console.error('AppointmentLink Server error:', error);

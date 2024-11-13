@@ -40,94 +40,92 @@ const BookingRow = ({ booking, showNote, setShowNote }: { booking: Booking, show
   useClickOutside(notesRef, ()=>setShowNote(null))
   
   return (
-    <tr className="bg-white border-b relative">
-    <td className="py-4 px-4 ">
-      <div className="flex items-center">
-        <div
-          className="capitalize flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-gray-700 font-semibold mr-2"
-          style={{
-            background:
-              "linear-gradient(269.83deg, rgba(156, 0, 254, 0.12) 0.14%, rgba(0, 31, 203, 0.12) 99.85%)",
-          }}
-        >
-          {(firstName + " " + lastName)
-            .split(" ")
-            .map((n) => n[0])
-            .join("").toUpperCase()}
+    <tr className="bg-white border-b relative w-full flex">
+      <td className="py-4 px-4 w-3/12  ">
+        <div className="flex items-center">
+          <div
+            className="capitalize flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-gray-700 font-semibold mr-2"
+            style={{
+              background:
+                "linear-gradient(269.83deg, rgba(156, 0, 254, 0.12) 0.14%, rgba(0, 31, 203, 0.12) 99.85%)",
+            }}
+          >
+            {(firstName + " " + lastName)
+              .split(" ")
+              .map((n) => n[0])
+              .join("").toUpperCase()}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-gray-800 truncate">
+              {firstName} {lastName}
+            </p>
+            <p className="text-sm text-gray-500 truncate ">{participantEmail}</p>
+          </div>
         </div>
-        <div>
-          <p className="font-medium text-gray-800">
-            {firstName} {lastName}
-          </p>
-          <p className="text-sm text-gray-500">{participantEmail}</p>
-        </div>
-      </div>
-    </td>
-    <td className="py-2 px-4">{appointmentTimeStr}</td>
-    <td className="py-2 px-4">{appointmentName}</td>
+      </td>
+      <td className="py-2 px-4 w-2/12">{appointmentTimeStr}</td>
+      <td className="py-2 px-4 w-3/12 flex-1 min-w-0 truncate">{appointmentName}</td>
 
-    <td className="py-2 px-4  ">
-      {/* <div className="flex justify-center items-center h-full"> */}
-    {
-      notes ?
-      <PopoverMenu
-        trigerBtn={
-          <button className=" "><SquarePen className="bg-purple-50 p-1.5 rounded-full text-blue-600" /></button>
+      <td className="py-2 px-4 w-1/12 ">
+        {/* <div className="flex justify-center items-center h-full"> */}
+      {
+        notes ?
+        <PopoverMenu
+          trigerBtn={
+            <button className=" "><SquarePen className="bg-purple-50 p-1.5 rounded-full text-blue-600" /></button>
+          }
+          className="w-80 p-6"
+          >
+              {notes} 
+          </PopoverMenu>
+          : 
+          <button className="underline text-blue-600 text-sm">Add </button>
         }
-        className="w-80 p-6"
-        >
-            {notes} 
-        </PopoverMenu>
-        : 
-        <button className="underline text-blue-600 text-sm">Add </button>
-      }
-      {/* </div> */}
-    </td>
-
-    <td
-      className={`py-2 px-4 ${
-        bookingStatus === "CANCELLED"
-          ? "text-red-700"
-          : bookingStatus === "RESCHEDULED"
-          ? "text-green-700"
-          : "text-zikoroBlue"
-      }`}
-    >
-      {bookingStatus || "ACTIVE"}
-    </td>
-    <td className="py-2 px-4 relative">
-      <div className="flex space-x-2">
-        <button
-          onClick={() =>{
-            setBookingFormData({
-              ...booking,
-              type: "reschedule",
-              timeStr: booking?.appointmentTimeStr,
-            })
-            setSelectedItem(dateTime)
-          }}
-          className="text-blue-500 hover:text-blue-700"
-        >
-          <RefreshCw size={18} />
-        </button>
-        <button
-          disabled={bookingStatus === "CANCELLED"}
-          onClick={() =>{
-            setBookingFormData({
-              ...booking,
-              type: "cancel",
-              timeStr: booking?.appointmentTimeStr,
-            })
-            // setSelectedItem(dateTimeString)
-          }
-          }
-          className="text-red-500 hover:text-red-700 disabled:text-slate-300"
-        >
-          <XCircle size={18} />
-        </button>
-      </div>
-    </td>
-  </tr>
+        {/* </div> */}
+      </td>
+      <td className={`py-2 px-4 w-2/12 truncate ${
+          bookingStatus === "CANCELLED"
+            ? "text-red-700"
+            : bookingStatus === "RESCHEDULED"
+            ? "text-green-700"
+            : "text-zikoroBlue"
+        }`}
+      >
+        {bookingStatus || "ACTIVE"}
+      </td>
+      <td className="py-2 px-4 relative w-1/12">
+        <div className="flex space-x-2 ">
+          {notes && <button
+            onClick={() =>{
+              setBookingFormData({
+                ...booking,
+                type: "reschedule",
+                timeStr: booking?.appointmentTimeStr,
+              })
+              setSelectedItem(dateTime)
+            }}
+            className="text-blue-500 hover:text-blue-700"
+          >
+            <RefreshCw size={18} />
+          </button>}
+          <button
+            disabled={bookingStatus === "CANCELLED"}
+            onClick={() =>{
+              setBookingFormData({
+                ...booking,
+                type: "cancel",
+                timeStr: booking?.appointmentTimeStr,
+              })
+              // setSelectedItem(dateTimeString)
+            }
+            }
+            className="text-red-500 hover:text-red-700 disabled:text-slate-300"
+          >
+            <XCircle size={18} />
+          </button>
+        </div>
+      </td>
+    </tr>
 );
 };
 
@@ -152,20 +150,16 @@ const BookingTable = ({
       <div className="text-xs sm:text-sm xl:text-base overflow-x-auto overflow-y-visible h-full hide-scrollbar w-full">
         <table className="w-full bg-white  ">
           <thead>
-            <tr className="bg-gray-50 text-gray-700">
-              <th className="py-3 px-4 text-left text-sm font-medium">Name</th>
-              <th className="py-3 px-4 text-left text-sm font-medium">Time</th>
-              <th className="py-3 px-4 text-left text-sm font-medium">
-                Appointment Name
-              </th>
+            <tr className="bg-gray-50 text-gray-700 w-full flex">
+              <th className="py-3 px-4 text-left text-sm font-medium w-3/12">Name</th>
+              <th className="py-3 px-4 text-left text-sm font-medium w-2/12">Time</th>
+              <th className="py-3 px-4 text-left text-sm font-medium w-3/12">Appointment Name</th>
               {/* <th className="py-3 px-4 text-left text-sm font-medium">
                 Appointment Type
               </th> */}
-              <th className="py-3 px-4 text-left text-sm font-medium">Notes</th>
-              <th className="py-3 px-4 text-left text-sm font-medium">
-                Status
-              </th>
-              <th className="py-3 px-4 text-left text-sm font-medium"></th>
+              <th className="py-3 px-4 text-left text-sm font-medium w-1/12">Notes</th>
+              <th className="py-3 px-4 text-left text-sm font-medium w-2/12">Status</th>
+              <th className="py-3 px-4 text-left text-sm font-medium w-1/12"></th>
             </tr>
           </thead>
           <tbody>
@@ -211,10 +205,10 @@ const Appointments = ({groupedBookingData,fetchedcount,fetchError, dateHash}:{
   useClickOutside(dropRef, () => setDrop(false));
   
   const fetchBookings = () => {
-    if (filter === "upcoming") {
-      getBookings("upcoming-appointments");
-    } else {
+    if (filter !== "upcoming") {
       getBookings("past-appointments");
+    } else {
+      getBookings("upcoming-appointments");
     }
   };
 

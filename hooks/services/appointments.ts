@@ -9,8 +9,6 @@ import { toast } from "react-toastify";
 import { GroupedBookings } from "@/lib/server/appointments";
 import { getRequest } from "@/utils/api";
 
-const supabase = createClient();
-
 export const useGetSchedules =  (scheduleData?: { error?: string | null; schedules?: AppointmentLink[] | null; count?: number; } )=> {
   const { user } = useUserStore();
   const [isError, setIsError] = useState<string>(scheduleData?.error||'');
@@ -20,35 +18,22 @@ export const useGetSchedules =  (scheduleData?: { error?: string | null; schedul
 
   const limit = settings.schedulesLimit || 20
   const [totalPages, setTotalPages] = useState<number>(Math.ceil((scheduleData?.count || 0) / limit))
-
-
   
   const fetchSchedules = useCallback(
     async (page: number = 1) => {
-
-      
       if(!user) return
       try {
         setIsError('');
         setLoading(true);
 
         const offset = (page - 1) * limit;
-
         const  response = await fetch(`/api/schedules?userId=${user?.id}&start=${offset}&end=${offset + limit - 1}`);
         if (response.status!==200) {
           throw new Error('Error fetching appointments');
         }
         const { data, error:fetchError, count:newCount} = await response.json()
 
-        // const { data, count: newCount, error: fetchError } = await supabase
-        //   .from('appointmentLinks')
-        //   .select('*', { count: 'exact' })
-        //   .eq('createdBy', user?.id)
-        //   .range(offset, offset + limit - 1)
-        //   .order('created_at', { ascending: false });
-
         if (fetchError) {
-          console.error('Error fetching appointments:', fetchError);
           setIsError('Failed to fetch appointments. Please try again later.');
           return;
         }
@@ -120,128 +105,8 @@ export const useGetBookings = ({
       setLoading(false);
     }
   };
-  
-
   return { groupedBookings, isLoading, error: errorMessage, count, getBookings };
 };
-
-
-// export const getAppointment = async (appointmentAlias:string) => {
-//   const { data, status } = await getRequest<AppointmentLink>({
-//     endpoint: `/appointments/booking/${appointmentAlias}`,
-//   });
-//   return  data.data;
-// };
-
-// export const getBookings = async (bookingStatus?:string ) => {
-//   const { data, status } = await getRequest<Booking>({
-//     endpoint: `/appointments/booking?bookingStatus=${bookingStatus}`,
-//   });
-//   return  data.data;
-// };
-
-// export const useGetBookingAppointment = (appointmentAlias: string) => {
-//   const [appointment, setAppointment] = useState<AppointmentLink | null>(null);
-//   const [isLoading, setLoading] = useState<boolean>(false);
-//   const [error, setError] = useState<string | null>(null);
-
-//   const getAppointment = useCallback(async () => {
-//     setLoading(true);
-//     setError(null);
-//     try {
-//       const { data, status } = await getRequest<AppointmentLink>({
-//         endpoint: `/appointments/booking/${appointmentAlias}`,
-//       });
-
-//       if (status === 200) {
-//         setAppointment(data.data);
-//       } else {
-//         setError(`Error fetching data! Check Your network`);
-//       }
-//     } catch (err) {
-//       setError(`Error fetching data! Check Your network`);
-//     } finally {
-//       setLoading(false);
-//     }
-//   }, [appointmentAlias]);
-
-//   useEffect(() => {
-//     if (appointmentAlias) {
-//       getAppointment();
-//     }
-//   }, [appointmentAlias, getAppointment]);
-
-//   return { appointment, isLoading, error, getAppointment };
-// };
-
-// export const useGetBookingList = (appointmentAlias: string) => {
-//   const [bookings, setGroupedBookings] = useState<AppointmentLink | null>(null);
-//   const [isLoading, setLoading] = useState<boolean>(false);
-//   const [error, setError] = useState<string | null>(null);
-
-//   const getAppointment = useCallback(async () => {
-//     setLoading(true);
-//     setError(null);
-//     try {
-//       const { data, status } = await getRequest<AppointmentLink>({
-//         endpoint: `/appointments/booking/list/${appointmentAlias}`,
-//       });
-
-//       if (status === 200) {
-//         setGroupedBookings(data.data);
-//       } else {
-//         setError(`Error: ${status}`);
-//       }
-//     } catch (err) {
-//       setError('server error');
-//     } finally {
-//       setLoading(false);
-//     }
-//   }, [appointmentAlias]);
-
-//   useEffect(() => {
-//     if (appointmentAlias) {
-//       getAppointment();
-//     }
-//   }, [appointmentAlias, getAppointment]);
-
-//   return { bookings, isLoading, error, getAppointment };
-// };
-
-// export const useGetUnavailableDates = (userId: bigint,) => {
-//   const [unavailableDates, setUnavailableDates] = useState<AppointmentUnavailability[] | null>(null);
-//   const [isLoading, setLoading] = useState<boolean>(false);
-//   const [error, setError] = useState<string | null>(null);
-
-//   const getUnavailableDates = useCallback(async () => {
-//     setLoading(true);
-//     setError(null);
-//     try {
-//       const { data, status } = await getRequest<AppointmentUnavailability[] | null>({
-//         endpoint: `/appointments/calender/fetchUnavailability?userId=${userId}`,
-//       });
-
-//       if (status === 200) {
-//         setUnavailableDates(data.data);
-//       } else {
-//         console.log({error})
-//         setError(`Error: ${error}`);
-//       }
-//     } catch (err) {
-//       setError('Server error');
-//     } finally {
-//       setLoading(false);
-//     }
-//   }, [userId]);
-
-//   useEffect(() => {
-//     if (userId) {
-//       getUnavailableDates();
-//     }
-//   }, [userId, getUnavailableDates]);
-
-//   return { unavailableDates,setUnavailableDates, isLoading, error, getUnavailableDates };
-// };
 
 export const useGetBookingsAnalytics = ({
   curList, 
@@ -336,7 +201,6 @@ export const useGetUnavailableDates = (dayString:string, fecthedUnavailableDates
   return { unavailableDates,setUnavailableDates, isLoading, error, getUnavailableDates, slotList, setSlotList };
 };
 
-
 interface CalendarDataState {
   formattedWeekData:  Record<string, Record<number, Booking[]>>|null,
   formattedMonthData: Record<string, Booking[]> | null;
@@ -355,7 +219,7 @@ interface Params {
   errorMsg: string | null;
 }
 
-export const useCalendarData = ({viewing, date, count, formattedWeekData,formattedMonthData, startRangeDate, endRangeDate, errorMsg}: Params) => {
+export const useCalendarData = ({viewing, date, count, formattedWeekData,formattedMonthData, startRangeDate, endRangeDate, errorMsg,}: Params) => {
   const {user} = useUserStore()
   const [view, setView] = useState<'month' | 'week'>(viewing);
   const [currentDate, setCurrentDate] = useState<Date>(date);
@@ -378,7 +242,7 @@ export const useCalendarData = ({viewing, date, count, formattedWeekData,formatt
         throw new Error(`Error fetching calendar data: ${response.statusText}`);
       }
       const { count, data, startRangeDate, endRangeDate, date: fetchedDate } = await response.json();
-      console.log({ count, data, startRangeDate, endRangeDate, date: fetchedDate });
+      // console.log({ count, data, startRangeDate, endRangeDate, date: fetchedDate });
       setCalendarData({
         formattedWeekData,formattedMonthData,
         startRangeDate,
@@ -421,6 +285,7 @@ export function useBookingsContact() {
     // console.log('Data inserted successfully:',contact, data );
     return data;
   }, []);
+
 
   return { insertBookingsContact };
 }

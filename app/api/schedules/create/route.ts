@@ -14,6 +14,8 @@ export async function POST(req: NextRequest) {
       .select('*')
       .single()
 
+    // TODO: Send emails to team members
+
     // console.log('Inserting appointmentLink result:', {data,error})
     if (error) {
       console.error("Error inserting AppoinmentLink:", error);

@@ -41,6 +41,42 @@ export const postRequest = async <T>({
   return await Api.post<ApiResponse<T>>(endpoint, payload, config);
 };
 
+type RequestOptions<T> = {
+  url: string;
+  body: T;
+  responseType?: 'json' | 'text' | 'blob';
+};
+
+export async function PostRequest<T = any, R = any>({
+  url,
+  body,
+  responseType = 'json',
+}: RequestOptions<T>): Promise<R> {
+  const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+  }
+
+  switch (responseType) {
+      case 'json':
+          return response.json() as Promise<R>;
+      case 'text':
+          return response.text() as Promise<R>;
+      case 'blob':
+          return response.blob() as Promise<R>;
+      default:
+          throw new Error('Unsupported response type');
+  }
+}
+
+
 export const putRequest = async <T>({
   endpoint,
   payload,
