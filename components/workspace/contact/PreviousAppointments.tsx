@@ -2,7 +2,6 @@
 
 import useUserStore from '@/store/globalUserStore'
 import { BookingsContact } from '@/types/appointments'
-import { createClient } from '@/utils/supabase/client'
 import { format, startOfToday } from 'date-fns'
 import React, { useEffect, useState } from 'react'
 import { Loader2Icon } from 'lucide-react'
@@ -19,25 +18,12 @@ const PreviousAppointments = ({ contact }: { contact: BookingsContact }) => {
   const today = startOfToday().toISOString()
 
   const fetchAppointments = async (page: number = 1) => {
-    const supabase = createClient()
+    setIsError('')
+    setLoading(true)
     try {
-      setIsError('')
-      setLoading(true)
       const offset = (page - 1) * limit
-
-      let query = supabase
-        .from('bookings')
-        .select(
-          'id, created_at, appointmentDuration, appointmentDate, appointmentName, appointmentTimeStr, appointmentLinkId(locationDetails)', 
-          { count: 'exact' }
-        )
-        .eq('createdBy', user?.id)
-        .eq('participantEmail', contact?.email)
-        .lt('appointmentDate', today)
-        .range(offset, offset + limit - 1)
-        .order('appointmentDate', { ascending: false })
-
-      const { data, count, error } = await query
+      const response = await fetch(`/api/bookingsContact/fetchBookings?createdBy=${user?.id}&contactEmail=${contact?.email}&offset=${offset}&limit=${limit}&ltToday=${today}`)
+      const { data, count, error } = await response.json()
 
       if (error) {
         console.error('Error fetching appointments:', error)

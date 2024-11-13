@@ -9,12 +9,18 @@ import useUserStore from '@/store/globalUserStore';
 import { useLogOut } from '@/hooks';
 import { urls } from '@/constants';
 
-const navlinks = [
-  // {
-  //   icon: Calendar,
-  //   label: 'Signin',
-  //   link: `/workspace/signin`,
-  // },
+type NavLink = {
+  icon: React.ElementType;
+  label: string;
+  link: string;
+  newTab?: boolean;
+};
+const navlinks:NavLink[] = [
+  {
+    icon: Link2,
+    label: 'Schedules',
+    link: urls.schedule,
+  },
   {
     icon: Calendar,
     label: 'Calendar',
@@ -25,11 +31,7 @@ const navlinks = [
     label: 'Appointments',
     link: urls.appointments,
   },
-  {
-    icon: Link2,
-    label: 'Schedules',
-    link: urls.schedule,
-  },
+
   {
     icon: Users,
     label: 'Contacts',
@@ -40,22 +42,22 @@ const navlinks = [
     label: 'Analytics',
     link: urls.analytics,
   },
-  {
-    icon: Store,
-    label: 'Store Front',
-    link: urls.shopFrontBooking,
-    newTab: true,
-  },
+  // {
+  //   icon: Store,
+  //   label: 'Store Front',
+  //   link: urls.shopFrontBooking,
+  //   newTab: true,
+  // },
   // {
   //   icon: Bell,
   //   label: 'Notification',
   //   link: `/appointments/notification`,
   // },
-  {
-    icon: Settings,
-    label: 'Settings',
-    link: urls.settingsProfile,
-  },
+  // {
+  //   icon: Settings,
+  //   label: 'Settings',
+  //   link: urls.settingsProfile,
+  // },
 ];
 
 const Sidebar = () => {

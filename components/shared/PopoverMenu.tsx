@@ -8,18 +8,19 @@ import { cn } from "@/lib/utils";
 
 export const PopoverMenu = ({
     trigerBtn=<Button variant="outline">Open</Button>, 
-    children, className}
+    children, className, align}
     :{
     trigerBtn:React.ReactNode;
     children:React.ReactNode;
     className?:string
+    align?:"center" | "end" | "start"
 }) => {
   return (
     <Popover >
       <PopoverTrigger asChild>
         {trigerBtn}
       </PopoverTrigger>
-      <PopoverContent className={cn(`w-80 p-0`, className)} >
+      <PopoverContent align={align} className={cn(`w-80 p-0`, className)} >
         {children}
       </PopoverContent>
     </Popover>

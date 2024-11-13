@@ -41,35 +41,35 @@ export const updateSession = async (request: NextRequest) => {
   
     const path = request.nextUrl.pathname;
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // const {
+    //   data: { user },
+    // } = await supabase.auth.getUser();
   
-    // Check if the request path starts with /workspace
-    if (path.startsWith("/workspace") && !user) {
-      const redirectUrl = new URL("/login", request.url);
-      redirectUrl.searchParams.set("redirectedFrom", path);
-      return NextResponse.redirect(redirectUrl);
-    }
+    // // Check if the request path starts with /workspace
+    // if (path.startsWith("/workspace") && !user) {
+    //   const redirectUrl = new URL("/login", request.url);
+    //   redirectUrl.searchParams.set("redirectedFrom", path);
+    //   return NextResponse.redirect(redirectUrl);
+    // }
   
-    // Check if the request path is included in the protected paths
-    const isIncludedPath = includedPaths.some((includedPath) =>
-      path.startsWith(includedPath)
-    );
+    // // Check if the request path is included in the protected paths
+    // const isIncludedPath = includedPaths.some((includedPath) =>
+    //   path.startsWith(includedPath)
+    // );
   
-    if (isIncludedPath && !user) {
-      // If user is not authenticated and path is included, redirect to the login page
-      if (path.startsWith("/api")) {
-        return NextResponse.json(
-          { error: "Authorization failed" },
-          { status: 403 }
-        );
-      } else {
-        const redirectUrl = new URL("/login", request.url);
-        redirectUrl.searchParams.set("redirectedFrom", path);
-        return NextResponse.redirect(redirectUrl);
-      }
-    }
+    // if (isIncludedPath && !user) {
+    //   // If user is not authenticated and path is included, redirect to the login page
+    //   if (path.startsWith("/api")) {
+    //     return NextResponse.json(
+    //       { error: "Authorization failed" },
+    //       { status: 403 }
+    //     );
+    //   } else {
+    //     const redirectUrl = new URL("/login", request.url);
+    //     redirectUrl.searchParams.set("redirectedFrom", path);
+    //     return NextResponse.redirect(redirectUrl);
+    //   }
+    // }
 
     return response;
   } catch (e) {

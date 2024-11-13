@@ -145,10 +145,10 @@ const ContactTags = () => {
                    Array.isArray(contact?.tags) && contact?.tags.length ? contact?.tags?.map((item,idx:number)=>{
                         return (
                             <button key={idx} 
-                            className={`p-2 py-1 min-w-24 text-center bg-red-500/20 ring-1 ring-red-600 text-red-600 relative text-sm rounded-md
+                            className={`px-2 py-0.5 text-[12px]  text-center bg-pink-500/20 ring-1 ring-pink-400 text-pink-500 relative rounded-md
                                 `}>
                                     {item?.tag}
-                                    <div onClick={()=>deleteTag(item?.tag)} className='border cursor-pointer bg-white p-1  rounded-full text-gray-500 absolute -top-2 right-0'>
+                                    <div onClick={()=>deleteTag(item?.tag)} className='border cursor-pointer bg-white/50 p-1  rounded-full text-gray-500 absolute -top-2 right-0'>
                                         <X size={12} className='shrink-0'/>
                                     </div>
                             </button>
