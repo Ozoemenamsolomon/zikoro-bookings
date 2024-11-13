@@ -11,7 +11,7 @@ const BookingOff = () => {
           background: 'linear-gradient(269.83deg, #9C00FE 0.14%, #001FCB 99.85%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
-        }}>This meeting link is turned off by the host</h2>
+        }}>The host has turned off this meeting link</h2>
     </section>
   )
 }

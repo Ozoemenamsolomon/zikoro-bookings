@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useLogin } from "@/hooks/services/auth";
+import { urls } from "@/constants";
 
 const AppointmentLoginForm = () => {
   const router = useRouter();
@@ -22,7 +23,7 @@ const AppointmentLoginForm = () => {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    await logIn(formData, "/workspace/appointments");
+    await logIn(formData, urls.schedule);
   }
 
   return (

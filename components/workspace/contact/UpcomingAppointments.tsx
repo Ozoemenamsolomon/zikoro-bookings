@@ -2,7 +2,6 @@
 
 import useUserStore from '@/store/globalUserStore'
 import { BookingsContact } from '@/types/appointments'
-import { createClient } from '@/utils/supabase/client'
 import { format, startOfToday } from 'date-fns'
 import React, { useEffect, useState } from 'react'
 import { Loader2Icon } from 'lucide-react'
@@ -19,25 +18,13 @@ const UpcomingAppointments = ({ contact }: { contact: BookingsContact }) => {
   const today = startOfToday().toISOString()
 
   const fetchAppointments = async (page: number = 1) => {
-    const supabase = createClient()
+    setIsError('')
+    setLoading(true)
     try {
-      setIsError('')
-      setLoading(true)
       const offset = (page - 1) * limit
 
-      let query = supabase
-        .from('bookings')
-        .select(
-          'id, created_at, appointmentDuration, appointmentDate, appointmentName, appointmentTimeStr, appointmentLinkId(locationDetails)', 
-          { count: 'exact' }
-        )
-        .eq('createdBy', user?.id)
-        .eq('participantEmail', contact?.email)
-        .gte('appointmentDate', today)
-        .range(offset, offset + limit - 1)
-        .order('appointmentDate', { ascending: false })
-
-      const { data, count, error } = await query
+      const response = await fetch(`/api/bookingsContact/fetchBookings?createdBy=${user?.id}&contactEmail=${contact?.email}&offset=${offset}&limit=${limit}&gteToday=${today}`)
+      const { data, count, error } = await response.json()
 
       if (error) {
         console.error('Error fetching appointments:', error)
@@ -68,9 +55,9 @@ const UpcomingAppointments = ({ contact }: { contact: BookingsContact }) => {
   }
 
   return (
-    <section className="flex flex-col gap-3 w-full p-3">
+    <section className="flex flex-col gap-3 w-full p-3 min-h-">
       {loading ? (
-        <p className="flex justify-center w-full text-basePrimary/50 py-6"><Loader2Icon size={18} className='animate-spin'/></p>
+        <p className="flex justify-center w-full text-basePrimary/50 py-32"><Loader2Icon size={18} className='animate-spin'/></p>
       ) : isError ? (
         <p className="text-center text-red-500">{isError}</p>
       ) : bookings.length ? (

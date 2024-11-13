@@ -2,7 +2,6 @@
 import PaginationMain from '@/components/shared/PaginationMain'
 import { useAppointmentContext } from '@/context/AppointmentContext'
 import useUserStore from '@/store/globalUserStore'
-import { createClient } from '@/utils/supabase/client'
 import { format, startOfToday } from 'date-fns'
 import { FolderOpen, Loader2Icon, SquarePen } from 'lucide-react'
 import React, { Suspense, useCallback, useEffect, useState } from 'react'
@@ -20,27 +19,13 @@ const AppointmentHistory = () => {
     // const today = useCallback(()=>startOfToday().toISOString(),[]) 
   
     const fetchAppointments = async (page: number = 1) => {
-      const supabase = createClient()
+      setIsError('')
+      setLoading(true)
       try {
-        setIsError('')
-        setLoading(true)
         const offset = (page - 1) * limit
-  
-        let query = supabase
-          .from('bookings')
-          .select(
-            '*', 
-            { count: 'exact' }
-          )
-          .eq('createdBy', user?.id)
-          .eq('participantEmail', contact?.email)
-        //   .gte('appointmentDate', today)
-          .range(offset, offset + limit - 1)
-          
-        const {data:first}= await query
-        const { data, count, error } = await query.order('appointmentDate', { ascending: false })
-        
-        console.error(data, error)
+
+        const response = await fetch(`/api/bookingsContact/fetchBookings?createdBy=${user?.id}&contactEmail=${contact?.email}&offset=${offset}&limit=${limit}`)
+        const { data, count,first, error } = await response.json()
         if (error) {
           console.error('Error fetching appointments:', error)
           setIsError('Failed to fetch appointments. Please try again later.')
@@ -48,7 +33,7 @@ const AppointmentHistory = () => {
         }
   
         setBookings(data || [])
-        setSize({size:count, firstItem: first && first[0]?.created_at})
+        setSize({size:count, firstItem: first})
         setTotalPages(Math.ceil((count || 0) / limit))
       } catch (error) {
         console.error('Server error:', error)
@@ -60,7 +45,7 @@ const AppointmentHistory = () => {
   
     useEffect(() => {
       if (contact) {
-        fetchAppointments(currentPage)
+        fetchAppointments(1)
       }
     }, [contact,])
   

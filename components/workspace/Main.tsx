@@ -44,12 +44,12 @@ const Main = ({children}:{children:React.ReactNode}) => {
                         <Link href={urls.root}><Image src={'/zikoro.png'} alt={'zikro-icon'} height={180} width={100} className=''/></Link>
 
                         <div ref={ref} className="relative">
-                            <button onClick={()=>setDrop(curr=>!curr)} className="hover:shadow-sm duration-300 relative">
-                                {/* <NotifyIcon/> */}
+                            {/* <button onClick={()=>setDrop(curr=>!curr)} className="hover:shadow-sm duration-300 relative">
+                                <NotifyIcon/>
                                 <div className="bg-basePrimary rounded-full focus:outline-none h-6 absolute -right-1 top-0 w-6  flex justify-center items-center ring ring-white text-white text-[12px]">22</div>
                             </button >
 
-                            {/* <Notification drop={drop} setDrop={setDrop}/> */}
+                            <Notification drop={drop} setDrop={setDrop}/> */}
                         </div>
                     </header>
                     {children}

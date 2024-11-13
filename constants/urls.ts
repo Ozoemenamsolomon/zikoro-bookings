@@ -8,6 +8,7 @@ export const urls = {
     contactsNotes: '/workspace/contacts/notes',
     contactsMedia: '/workspace/contacts/media',
     contactsAnalytics: '/workspace/contacts/analytics',
+    contactsGoals: '/workspace/contacts/goals',
     analytics: `/workspace/analytics`,
     appointments: `/workspace/appointments`,
     calendar: `/workspace/calendar`,

@@ -107,7 +107,8 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery }) =
           </div>
         ) : contacts?.length ? (
           contacts.map((item) => {
-            const { firstName, profileImg, lastName, favorite, id, email } = item
+            const { firstName, profileImg, lastName, favorite, id, email, tags } = item
+            console.log({tags})
             return (
               <div key={id} 
               onClick={() => setContact(item)} className="py-2 w-full cursor-pointer">
@@ -131,9 +132,18 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery }) =
                 </div>
             
                 {/* Contact Name and Email */}
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 text-sm">
                   <h6 className="font-medium leading-4 truncate">{firstName + ' ' + lastName}</h6>
                   <small className="truncate block text-slate-600">{email}</small>
+                  <div className="flex gap-1 w-full overflow-auto no-scrollbar">
+                    {
+                      tags?.map(({tag},i)=>{
+                        return (
+                          <small key={i} className='text-[8px] min-w-0 shrink-0  px-1 py-0 leading-3 rounded border border-pink-400 bg-pink-500/20'>{tag}</small>
+                        )
+                      })
+                    }
+                  </div>
                 </div>
             
                 {/* Favorite Icon */}

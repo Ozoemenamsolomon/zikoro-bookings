@@ -5,14 +5,14 @@ import { urls } from "@/constants";
       label: 'All',
       link: urls.contacts,
     },
-    {
-      label: 'Favorite',
-      link: urls.contactsFavorite
-    },
-    {
-      label: 'Tags',
-      link: urls.contactsTags
-    },
+    // {
+    //   label: 'Favorite',
+    //   link: urls.contactsFavorite
+    // },
+    // {
+    //   label: 'Tags',
+    //   link: urls.contactsTags
+    // },
   ]
 
   export const contactNavSub = [
@@ -24,18 +24,22 @@ import { urls } from "@/constants";
       label: 'Appointment History',
       link: urls.contactsAppointmentHistory,
     },
-    {
-      label: 'Notes',
-      link: urls.contactsNotes,
-    },
-    {
-      label: 'Media',
-      link: urls.contactsMedia,
-    },
-    {
-      label: 'Analytics',
-      link: urls.contactsAnalytics,
-    },
+    // {
+    //   label: 'Notes',
+    //   link: urls.contactsNotes,
+    // },
+    // {
+    //   label: 'Media',
+    //   link: urls.contactsMedia,
+    // },
+    // {
+    //   label: 'Analytics',
+    //   link: urls.contactsAnalytics,
+    // },
+    // {
+    //   label: 'Goals',
+    //   link: urls.contactsGoals,
+    // },
   ]
   
 
