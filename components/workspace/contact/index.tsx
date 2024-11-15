@@ -18,9 +18,9 @@ const ContactLayout: React.FC<ContactProps> = async ({ children, data,count, sea
       <h4 className="text-lg font-semibold pb-4">Contacts</h4>
       <div className="sm:border rounded-lg bg-white ">
           {
-            // count === 0  ?
-            // <EmptyContact/>
-            // :
+            count === 0  ?
+            <EmptyContact/>
+            :
             <>
               <div className="w-full">
                 <ContactNav/>

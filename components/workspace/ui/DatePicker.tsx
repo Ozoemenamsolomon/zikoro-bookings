@@ -51,6 +51,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           {label}
         </label>
       )}
+      
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -77,7 +78,8 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           />
         </PopoverContent>
       </Popover>
-      {error && <small className="mt-1 text-[12px] text-red-500">{error}</small>}
+
+      {error && <p className="mt-1 text-[12px] text-red-500">{error}</p>}
     </div>
   )
 }

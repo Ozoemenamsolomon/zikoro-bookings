@@ -1365,3 +1365,21 @@ export function FileStroke() {
 </svg>
   )
 }
+
+export function OneTwoThree() {
+  return <svg width="33" height="32" viewBox="0 0 33 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M4.5 9H6.5V23M6.5 23H4.5M6.5 23H8.5M10.5 9H18.5V16H11.5V23H19.5M21.5 9H28.5V16M28.5 16H22.5M28.5 16V23H21.5" stroke="#1F1F1F" stroke-width="1.5"/>
+  </svg>
+}
+
+export function ListView() {
+  return <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M3 5L4.5 6.5L7.5 3.5M3 12L4.5 13.5L7.5 10.5M3 19L4.5 20.5L7.5 17.5M11 12H22M11 19H22M11 5H22" stroke="#1F1F1F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+}
+
+export function LikeIcon() {
+  return <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M18.5 21H7.5V8L14.5 1L15.75 2.25C15.8667 2.36667 15.9627 2.525 16.038 2.725C16.1133 2.925 16.1507 3.11667 16.15 3.3V3.65L15.05 8H21.5C22.0333 8 22.5 8.2 22.9 8.6C23.3 9 23.5 9.46667 23.5 10V12C23.5 12.1167 23.4833 12.2417 23.45 12.375C23.4167 12.5083 23.3833 12.6333 23.35 12.75L20.35 19.8C20.2 20.1333 19.95 20.4167 19.6 20.65C19.25 20.8833 18.8833 21 18.5 21ZM9.5 19H18.5L21.5 12V10H12.5L13.85 4.5L9.5 8.85V19ZM7.5 8V10H4.5V19H7.5V21H2.5V8H7.5Z" fill="black"/>
+  </svg>
+}

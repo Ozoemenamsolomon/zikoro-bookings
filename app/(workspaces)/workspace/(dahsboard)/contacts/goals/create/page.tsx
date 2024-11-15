@@ -10,7 +10,7 @@ const CreateNewGoal = () => {
   return (
     <ContactLayout data={[]} count={0} >
       <ContactSubLayout>
-        <section className='bg-white sm:p-3 min-h-screen'>
+        <section className='bg-white sm:p-3 min-h-96'>
             <header className="flex justify-between gap-3 pb-3 border-b w-full">
                 <Link href={urls.contactsGoals} className='bg-white border flex justify-center items-center h-8 w-8 rounded-full'>
                     <ArrowLeft size={18}/>
