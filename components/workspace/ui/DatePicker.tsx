@@ -16,20 +16,24 @@ import {
 // Props interface for DatePicker
 interface DatePickerProps {
   label?: string
+  error?: string
   name: string
   value?: Date | string
-  onChange: (date: Date | undefined) => void
+  onChange: (date: Date | undefined, field?:string) => void
   disabled?: boolean
   placeholder?: string
+  className?: string
 }
 
 export const DatePicker: React.FC<DatePickerProps> = ({
   label,
   name,
+  error,
   value,
   onChange,
   disabled = false,
-  placeholder = "Pick a date"
+  placeholder = "Pick a date",
+  className,
 }) => {
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
     value ? new Date(value) : undefined
@@ -41,19 +45,20 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   }
 
   return (
-    <div className="space-y-2">
+    <div className=" w-full">
       {label && (
-        <label htmlFor={name} className="block text-sm font-medium">
+        <label htmlFor={name} className="block text-sm mb-1 font-">
           {label}
         </label>
       )}
+      
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant={"outline"}
             className={cn(
-              "w-full max-w-md h-14 items-center py-3 px-4 justify-start text-left font-normal focus:ring-1 focus:ring-purple-200 focus:outline-none",
-              !selectedDate && "text-muted-foreground"
+              "w-full items-center h-12 py-2 px-4 justify-start text-left font-normal focus:ring-1 focus:ring-purple-200 focus:outline-none",
+              !selectedDate && "text-muted-foreground",className
             )}
             disabled={disabled}
           >
@@ -73,6 +78,8 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           />
         </PopoverContent>
       </Popover>
+
+      {error && <p className="mt-1 text-[12px] text-red-500">{error}</p>}
     </div>
   )
 }

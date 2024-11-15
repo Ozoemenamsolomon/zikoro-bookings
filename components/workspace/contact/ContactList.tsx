@@ -108,7 +108,6 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery }) =
         ) : contacts?.length ? (
           contacts.map((item) => {
             const { firstName, profileImg, lastName, favorite, id, email, tags } = item
-            console.log({tags})
             return (
               <div key={id} 
               onClick={() => setContact(item)} className="py-2 w-full cursor-pointer">

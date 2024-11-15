@@ -36,10 +36,10 @@ import { urls } from "@/constants";
     //   label: 'Analytics',
     //   link: urls.contactsAnalytics,
     // },
-    // {
-    //   label: 'Goals',
-    //   link: urls.contactsGoals,
-    // },
+    {
+      label: 'Goals',
+      link: urls.contactsGoals,
+    },
   ]
   
 

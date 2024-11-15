@@ -3,7 +3,7 @@ import React from 'react'
 
 const EmptyContact = () => {
   return (
-    <section className="  h-screen w-full  flex justify-center items-center gap-4 flex-col">
+    <section className="  h-screen w-full  flex pt-32 items-center gap-4 flex-col">
     <div className="bg-baseLight rounded-full h-24 w-24 flex items-center justify-center text-purple-700/50">
       <FolderOpen size={60}  />
     </div>

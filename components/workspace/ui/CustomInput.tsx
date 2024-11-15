@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import React, { InputHTMLAttributes, FC } from 'react'
+import React, { InputHTMLAttributes, TextareaHTMLAttributes, FC } from 'react'
 
 interface InputCustomProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string
@@ -8,7 +8,9 @@ interface InputCustomProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string | null
   className?: string
   type?: string
-  onChange?: (e: React.ChangeEvent<HTMLInputElement| HTMLTextAreaElement >) => void
+  isTextarea?: boolean // Toggle between input and textarea
+  isRequired?: boolean // New prop for compulsory fields
+  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
 }
 
 const CustomInput: FC<InputCustomProps> = ({
@@ -20,28 +22,44 @@ const CustomInput: FC<InputCustomProps> = ({
   type = 'text',
   placeholder,
   onChange,
+  isTextarea = false,
+  isRequired = false, // Default to false for non-compulsory
   ...props
 }) => {
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={name} className="block text-sm font-mediu text-gray-600 mb-1">
-          {label}
+        <label htmlFor={name} className="block text-sm font- text-gray-600 mb-1">
+          {label} {isRequired && <span className="text-red-500">*</span>}
         </label>
       )}
-      <input
-        id={name}
-        name={name}
-        type={type}
-        value={value}
-        placeholder={placeholder}
-        className={cn(`px-4 py-3 w-full border rounded-md bg-transparent focus:outline-none focus:ring-1 focus:ring-purple-200 ${
-          error ? 'border-red-500' : 'border-gray-300'
-        }`, className)}
-        onChange={onChange}
-        {...props} // Spread any additional props like disabled, maxLength, etc.
-      />
-      {error && <small className="mt-1 text-sm text-red-500">{error}</small>}
+      {isTextarea ? (
+        <textarea
+          id={name}
+          name={name}
+          value={value as string | number}
+          placeholder={placeholder}
+          className={cn(`px-4 py-3 w-full border rounded-md bg-transparent focus:outline-none focus:ring-1 focus:ring-purple-200 ${
+            error ? 'border-red-500' : 'border-gray-300'
+          }`, className)}
+          onChange={onChange}
+          {...(props as TextareaHTMLAttributes<HTMLTextAreaElement>)} // Cast props for textarea
+        />
+      ) : (
+        <input
+          id={name}
+          name={name}
+          type={type}
+          value={value}
+          placeholder={placeholder}
+          className={cn(`px-4 py-3 w-full border rounded-md bg-transparent focus:outline-none focus:ring-1 focus:ring-purple-200 ${
+            error ? 'border-red-500' : 'border-gray-300'
+          }`, className)}
+          onChange={onChange}
+          {...props} // Spread additional props like disabled, maxLength, etc.
+        />
+      )}
+      {error && <small className="mt-1 text-[12px] text-red-500">{error}</small>}
     </div>
   )
 }
