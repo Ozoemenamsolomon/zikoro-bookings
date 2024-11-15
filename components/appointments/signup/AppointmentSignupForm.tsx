@@ -8,8 +8,6 @@ import { useRegistration } from "@/hooks/services/auth";
 const AppointmentSignupForm = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [firstName, setFirstName] = useState<string>("");
-  const [lastName, setLastName] = useState<string>("");
   const { loading, register } = useRegistration();
   const [formData, setFormData] = useState({
     email: "",
@@ -46,7 +44,7 @@ const AppointmentSignupForm = () => {
       </p>
 
       <form action="" className="mt-10" onSubmit={onSubmit}>
-        <div className="flex flex-col gap-y-3 ">
+        {/* <div className="flex flex-col gap-y-3 ">
           <label htmlFor="">First Name</label>
           <input
             type="text"
@@ -69,7 +67,7 @@ const AppointmentSignupForm = () => {
             placeholder="Enter Last Name"
             className="border-[1px] border-gray-200 px-[10px] py-4 w-full text-base rounded-[6px] outline-none"
           />
-        </div>
+        </div> */}
         <div className="flex flex-col gap-y-3 mt-6">
           <label htmlFor="">Email Address</label>
           <input

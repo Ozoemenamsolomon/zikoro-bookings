@@ -30,7 +30,7 @@ export default function AppointmentFooter() {
       {isPreviewUp && (
         <div
           className="absolute bottom-32 right-64 hidden lg:block cursor-pointer "
-          onClick={() => router.push("https://www.zikoro.com/pricing")}
+          onClick={() => router.push("https://www.zikoro.com")}
         >
           <Image
             src="/appointments/otherPreviewB.png"
@@ -50,7 +50,8 @@ export default function AppointmentFooter() {
           width={115}
           height={40}
           alt=""
-          className="w-[115px] h-[40px]"
+          className="w-[115px] h-[40px] cursor-pointer"
+          onClick={() => router.push("/")}
         />
 
         {/* right */}

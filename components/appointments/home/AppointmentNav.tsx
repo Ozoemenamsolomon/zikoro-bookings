@@ -91,14 +91,14 @@ const AppointmentNav = () => {
 
       {/* preview modal */}
       {isPreviewShowing && (
-        <div className="absolute hidden lg:block left-96 ">
+        <div className="absolute cursor-pointer hidden lg:block left-96 ">
           <Image
             src="/appointments/otherPreviewB.png"
             className="w-[577px] h-[307px]"
             alt=""
             height={307}
             width={577}
-            onClick={() => router.push("/")}
+            onClick={() => router.push("https://www.zikoro.com/")}
           />
         </div>
       )}

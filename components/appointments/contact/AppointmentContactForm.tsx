@@ -112,7 +112,7 @@ const AppointmentContactForm = () => {
             type="submit"
             className="py-4 px-3 text-base w-full rounded-[8px] font-semibold mt-10 mb-6 text-white bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end"
           >
-            Get Started
+            Submit
           </button>
         </form>
       )}
