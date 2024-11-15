@@ -1,5 +1,7 @@
 "use client"
 
+import useUserStore from '@/store/globalUserStore';
+import { Goal } from '@/types/goal';
 import React, { createContext, useContext, useState, ReactNode, } from 'react';
 
 export interface MetricValueType {
@@ -31,8 +33,8 @@ export interface GoalFormData {
 export interface AppState {
     isSubmitting: boolean;
     setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>
-    goalData:GoalFormData;
-    setGoalData: React.Dispatch<React.SetStateAction<GoalFormData>>;
+    goalData:Goal;
+    setGoalData: React.Dispatch<React.SetStateAction<Goal>>;
     keyResultData:KeyResultsType;
     setKeyResultData: React.Dispatch<React.SetStateAction<KeyResultsType>>;
     metricValue:MetricValueType;
@@ -58,16 +60,6 @@ const keyResult: KeyResultsType = {
     status: 'DRAFT',
   };
   
-  const initialFormData: GoalFormData = {
-    name: '',
-    description: '',
-    owner: '',
-    startDate: null,
-    endDate: null,
-    keyResult: [keyResult],
-    status: 'DRAFT',
-};
-
 const initialMetricValue:MetricValueType = {
   startValue:0,
   targetValue:0,
@@ -75,7 +67,21 @@ const initialMetricValue:MetricValueType = {
 }
 
 export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [goalData, setGoalData] = useState<GoalFormData>(initialFormData);
+  const {user} = useUserStore()
+  const initialFormData: Goal = {
+    organization: user?.id,
+    createdBy: user?.id,
+    goalName: '',
+    description: '',
+    goalOwner: user?.id,
+    goalOwnerName: user?.firstName +' '+user?.lastName,
+    startDate: null,
+    endDate: null,
+    progress: null,
+    lastUpdated: null,
+    // status: 'DRAFT',
+};
+    const [goalData, setGoalData] = useState<Goal>(initialFormData);
     const [keyResultData, setKeyResultData] = useState<KeyResultsType>(keyResult);
     const [metricValue, setMetricValue] = useState<MetricValueType>(initialMetricValue);
     const [errors, setErrors] = useState<{ [key: string]: string | null }>({})

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 
 interface Option {
-  value: string;
+  value: any;
   label: string;
 }
 
@@ -22,9 +22,10 @@ interface OptionGroup {
 interface CustomSelectProps {
   label?: string;
   error?: string;
+  value: string;
   placeholder?: string;
   options: Option[] | OptionGroup[];
-  onChange?: (value: string, field?:string) => void;
+  onChange?: (value: any, field?:string) => void;
 }
 
 export const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -33,13 +34,14 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   placeholder = "Select an option",
   options,
   onChange,
+  value,
 }) => {
   const isGrouped = Array.isArray(options) && typeof options[0] === "object" && "options" in options[0];
 
   return (
     <div className="w-full">
       {label && <label className="block text-sm mb-1 font-">{label}</label>}
-      <Select onValueChange={onChange}>
+      <Select value={value}  onValueChange={onChange}>
         <SelectTrigger className="w-full h-12 px-4 py-2 border rounded-lg focus:outline-none">
           <SelectValue placeholder={placeholder} className="focus:outline-none"/>
         </SelectTrigger>

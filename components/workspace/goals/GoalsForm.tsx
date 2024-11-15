@@ -6,10 +6,12 @@ import { CustomSelect } from '@/components/shared/CustomSelect'
 import { DatePicker } from '../ui/DatePicker'
 import KeyResultForm from './KeyResultForm'
 import { useGoalContext } from '@/context/GoalContext'
+import useUserStore from '@/store/globalUserStore'
 
 
 const GoalsForm = ({ goal }: { goal?: any }) => {
   const {goalData,keyResultData, setGoalData, isSubmitting, setIsSubmitting,} = useGoalContext()
+  const {user}=useUserStore()
 
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({})
 
@@ -19,8 +21,19 @@ const GoalsForm = ({ goal }: { goal?: any }) => {
   
   // Owner options for the select dropdown
   const ownerOptions = [
-    { value: 'owner1', label: 'Owner 1' },
-    { value: 'owner2', label: 'Owner 2' },
+    { value: {
+      id:user?.id, 
+      name: `${user?.firstName} ${user?.lastName}`}, 
+      label: `${user?.firstName} ${user?.lastName}` },
+    { value: {
+      id:122, name:'Ebuka Johnson'}, 
+      label: 'Ebuka Johnson' },
+    { value: {
+      id:102, name:'Smart Udoka'}, 
+      label: 'Smart Udoka' },
+    { value: {
+      id:87, name:'Bodu Joel'}, 
+      label: 'Bodu Joel' },
   ]
 
   // Handle change for inputs
@@ -33,23 +46,23 @@ const GoalsForm = ({ goal }: { goal?: any }) => {
     setGoalData((prevData) => ({ ...prevData, [field]: date }));
   };
 
-  const handleSelectChange = (value: string, field?:string) => {
+  const handleSelectChange = (value: {id:number,name:string}, field?:string) => {
     if(field)
-        setGoalData((prevData) => ({ ...prevData, [field]: value }));
+        setGoalData((prevData) => ({ 
+        ...prevData, goalOwner: value.id, goalOwnerName: value.name }));
   };
 
   // Basic form validation
   const validateForm = () => {
     const newErrors: { [key: string]: string | null } = {}
-    if (!goalData.name) newErrors.name = 'Goal name is required.'
+    if (!goalData.goalName) newErrors.goalName = 'Goal name is required.'
     if (!goalData.description) newErrors.description = 'Description is required.'
-    if (!goalData.owner) newErrors.owner = 'Please select an owner.'
+    if (!goalData.goalOwner) newErrors.goalOwner = 'Please select an owner.'
     if (!goalData.startDate) newErrors.startDate = 'Start date is required.'
     if (!goalData.endDate) newErrors.endDate = 'End date is required.'
     setErrors(newErrors)
     return Object.values(newErrors).every(error => !error)
   }
-
 
   return (
     <>
@@ -57,9 +70,9 @@ const GoalsForm = ({ goal }: { goal?: any }) => {
       {/* Goal Name */}
       <CustomInput
         label="Goal Name"
-        name="name"
-        value={goalData.name}
-        error={errors.name}
+        name="goalName"
+        value={goalData.goalName!}
+        error={errors.goalName}
         placeholder="Enter Goal name"
         isTextarea
         isRequired
@@ -70,7 +83,7 @@ const GoalsForm = ({ goal }: { goal?: any }) => {
       <CustomInput
         label="Description"
         name="description"
-        value={goalData.description}
+        value={goalData.description!}
         error={errors.description}
         placeholder="Enter detailed description of the goal"
         isTextarea
@@ -83,6 +96,7 @@ const GoalsForm = ({ goal }: { goal?: any }) => {
         label="Owner"
         placeholder="Select an owner"
         options={ownerOptions}
+        value={goalData.goalOwnerName!}
         error={errors?.ownerOptions!}
         onChange={handleSelectChange}
       />
