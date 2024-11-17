@@ -16,10 +16,10 @@ const GoalDetails = ({goalId}:{goalId:string}) => {
                   <ArrowLeft size={18}/>
                 </Link >
                 <h3 className="font-bold text-xl">Goal</h3>
-                <button type="button" className='flex gap-1 items-center text-sm'>
+                <Link href={`${urls.contactsGoalsEdit}/${goalId}`} type="button" className='flex gap-1 items-center text-sm'>
                   <PenLine size={16}/>
                   Edit
-                </button>
+                </Link >
             </header>
 
             <Goal goalId={goalId}/>

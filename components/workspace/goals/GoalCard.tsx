@@ -2,14 +2,10 @@
 
 import React, { useEffect, useState } from 'react'
 import ProgressMetrics from './ProgressMetrics'
-import { PopoverMenu } from '@/components/shared/PopoverMenu'
-import { MoreVertical } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { format } from 'date-fns'
 import { Goal } from '@/types/goal'
-import Link from 'next/link'
-import { urls } from '@/constants'
 import { useGoalContext } from '@/context/GoalContext'
+import DropDownGoalAction from './DropDownGoalAction'
 
 const GoalCard = ({goal,goalId}:{goal:Goal,goalId?:string}) => {
     const {setGoalData} = useGoalContext()
@@ -29,24 +25,12 @@ const GoalCard = ({goal,goalId}:{goal:Goal,goalId?:string}) => {
     
   return (
     <div className='space-y-5'>
-        <Link href={`${urls.contactsGoals}/details/${goal.id}`} className='block'>
-            <ProgressMetrics/>
-        </Link>
+        <ProgressMetrics/>
 
-        {!goalId && <PopoverMenu
-        className='w-44' 
-        align='end'
-            trigerBtn={
-                <Button className='rounded-full h-5 w-5 text-white p-1 absolute right-3 top-3'><MoreVertical/></Button>
-            }
-        >
-            <div className="bg-white shadow rounded-md  p-4 h-36">
-                Drop down
-            </div>
-        </PopoverMenu>}
+        {!goalId && <DropDownGoalAction goal={goal}/>}
         
         <div className="space-y- pb-6 border-b ">
-            <h4 className="font-semibold">{goal?.goalOwnerName}</h4>
+            <h4 className="font-semibold">{goal?.goalName}</h4>
             <p className="text-sm w-full">{goal?.description}</p>
         </div>
 

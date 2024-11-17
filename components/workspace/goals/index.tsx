@@ -30,7 +30,7 @@ const Goals = ({data,count,error}:{
             <Suspense fallback={
                 <div className='h-screen pt-32 flex justify-center'><Loader2Icon className='animate-spin'/></div>
             }>
-                <div className="space-y-6">
+                <div className="space-y-6 mx-auto max-w-4xl">
                     {/* loading state */}
                     {
                         data?.map((goal,i)=>

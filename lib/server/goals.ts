@@ -37,7 +37,6 @@ export const fetchGoalsByUserId = async (
   }
 };
 
-
 export const fetchGoalsByGoalId = async (
     goalId: string
   ): Promise<{goal:Goal|null,error:string|null}> => {

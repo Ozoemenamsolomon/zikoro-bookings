@@ -11,7 +11,7 @@ export const urls = {
     contactsGoals: '/workspace/contacts/goals',
     contactsGoalsCreate: '/workspace/contacts/goals/create',
     contactsGoalsEdit: '/workspace/contacts/goals/edit',
-    // contactsGoalsDetails: '/workspace/contacts/goals/details',
+    contactsGoalsDetails: '/workspace/contacts/goals/details',
     analytics: `/workspace/analytics`,
     appointments: `/workspace/appointments`,
     calendar: `/workspace/calendar`,

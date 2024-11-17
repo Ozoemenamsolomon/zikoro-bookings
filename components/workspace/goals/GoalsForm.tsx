@@ -9,9 +9,10 @@ import { useGoalContext } from '@/context/GoalContext'
 import useUserStore from '@/store/globalUserStore'
 import { Goal } from '@/types/goal'
 import AddKeyResult from './AddKeyResult'
+import KeyResultList from './KeyResultList'
 
 
-const GoalsForm = ({ goal }: { goal?: any }) => {
+const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children?:React.ReactNode }) => {
   const {goalData,setGoalData,setKeyResultData,} = useGoalContext()
 
   const {user} = useUserStore()
@@ -156,7 +157,9 @@ const GoalsForm = ({ goal }: { goal?: any }) => {
       </div>
       </form>
 
-      <AddKeyResult isActive={isValidated!} />
+      {children}
+
+      <AddKeyResult isActive={isValidated!} mode={mode} />
     </>
   )
 }
