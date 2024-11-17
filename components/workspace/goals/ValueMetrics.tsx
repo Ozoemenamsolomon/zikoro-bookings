@@ -2,21 +2,34 @@ import React, { useCallback } from 'react'
 import CustomInput from '../ui/CustomInput'
 import { useGoalContext } from '@/context/GoalContext'
 
-const ValueMetrics = () => {
-    const {metricValue, setMetricValue,} = useGoalContext()
+const ValueMetrics = ({errors}:{errors:{[key:string]: string|null}}) => {
+    const {metricValue, setMetricValue, setKeyResultData} = useGoalContext()
       // Handle change for inputs
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setMetricValue(prev => ({ ...prev, [name]: value }))
   }, [])
+  
+  const removeMetric = () => {
+    setKeyResultData((prev)=>{
+      return {
+        ...prev,
+        measurementType: null,
+        currentValue: null,
+        targetValue: null,
+        unit: null
+      }
+    })
+
+  }
   return (
     <div className='space-y-3'>
         <div className="grid sm:grid-cols-2 gap-x-2 gap-y-4">
         <CustomInput
                 label="Start Value"
                 name="startValue"
-                value={metricValue.startValue}
-                // error={errors.startValue}
+                value={metricValue?.startValue}
+                error={errors.startValue}
                 placeholder="0.0"
                 type='number'
                 isRequired
@@ -26,7 +39,7 @@ const ValueMetrics = () => {
                 label="Target Value"
                 name="targetValue"
                 value={metricValue.targetValue}
-                // error={errors.targetValue}
+                error={errors.targetValue}
                 placeholder="0.0"
                 type='number'
                 isRequired
@@ -38,12 +51,13 @@ const ValueMetrics = () => {
                 label="Unit"
                 name="unit"
                 value={metricValue.unit}
-                // error={errors.unit}
+                error={errors.unit}
                 placeholder="Enter unit"
                 type='text'
                 onChange={handleChange}
             />
-            <button type="button" className='text-red text-sm font-semibold'>Remove unit</button>
+
+            <button onClick={removeMetric} type="button" className='text-red-600 text-sm font-medium'>Remove unit</button>
         </div>
         
     </div>

@@ -1368,13 +1368,13 @@ export function FileStroke() {
 
 export function OneTwoThree() {
   return <svg width="33" height="32" viewBox="0 0 33 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M4.5 9H6.5V23M6.5 23H4.5M6.5 23H8.5M10.5 9H18.5V16H11.5V23H19.5M21.5 9H28.5V16M28.5 16H22.5M28.5 16V23H21.5" stroke="#1F1F1F" stroke-width="1.5"/>
+  <path d="M4.5 9H6.5V23M6.5 23H4.5M6.5 23H8.5M10.5 9H18.5V16H11.5V23H19.5M21.5 9H28.5V16M28.5 16H22.5M28.5 16V23H21.5" stroke="#1F1F1F" strokeWidth="1.5"/>
   </svg>
 }
 
 export function ListView() {
   return <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M3 5L4.5 6.5L7.5 3.5M3 12L4.5 13.5L7.5 10.5M3 19L4.5 20.5L7.5 17.5M11 12H22M11 19H22M11 5H22" stroke="#1F1F1F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M3 5L4.5 6.5L7.5 3.5M3 12L4.5 13.5L7.5 10.5M3 19L4.5 20.5L7.5 17.5M11 12H22M11 19H22M11 5H22" stroke="#1F1F1F" stroke-width="1.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 }
 

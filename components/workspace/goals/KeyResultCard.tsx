@@ -1,48 +1,45 @@
 import { PopoverMenu } from '@/components/shared/PopoverMenu'
 import { Button } from '@/components/ui/button'
-import { CirclePointer } from '@/constants'
-import { Menu } from 'lucide-react'
+import { KeyResult } from '@/types/goal'
+import { ChevronRight, MoreVertical } from 'lucide-react'
+import Link from 'next/link'
 import React from 'react'
 
-const KeyResultCard = () => {
+const KeyResultCard = ({keyResult}:{keyResult:KeyResult}) => {
   return (
-    <div className='space-y-4'>
-        <div className="flex gap-2 items-center w-full">
-            <div className="shrink-0">
-                <CirclePointer/>
+        <div className="p-2 pb-5 space-y-2 rounded-md border bg-white relative">
+            <div className="bg-baseBg text-center w-full border rounded-md p-2 py-20">
+                metric
             </div>
-            <div className="flex-1 min-w-0 truncate">
-                <h5 className="font-bold text-lg">Key results</h5>
-                <p className="text-sm">Targets and objectives assigned to this goal</p>
+
+            <div className="px-4">
+                <h6 className="font-bold">{keyResult?.keyResultTitle}</h6>
+                <p className="text-sm">{keyResult?.description}</p>
             </div>
+
+            <PopoverMenu
+            className='w-40 ' 
+            align='end'
+                trigerBtn={
+                    <Button className='rounded-full h-5 w-5 text-white p-1 absolute right-3 top-3'><MoreVertical/></Button>
+                }
+            >
+                <div className="bg-white shadow rounded-md  p-4 space-y-3 text-sm w-full text-gray-800">
+                    <button type="button" className='hover:text-gray-950 duration-300 block'>Open key result</button>
+
+                    <button type="button" className='hover:text-gray-950 duration-300  block'>Edit</button>
+
+                    <div className=' '>
+                        <button type="button" className='flex items-center gap-3 w-full justify-between hover:text-gray-950 duration-300 '>
+                            <p>Swith View</p>
+                            <ChevronRight size={16}/>
+                        </button>
+                    </div>
+
+                    <button type="button" className=' text-red-600 duration-300'>Delete key result</button>
+                </div>
+            </PopoverMenu>
         </div>
-        <div className="p-2 space-y-2 rounded-md border bg-white relative">
-
-
-
-            <div className="bg-baseBg border rounded-md p-2 h-44">
-
-            </div>
-
-            <h6 className="font-bold">
-            Increase knee flexion: Achieve 90 degrees of knee flexion within 3 weeks, progressing to 110 degrees by 6 weeks.
-            </h6>
-            <p className="text-sm">Hipster ipsum tattooed brunch I'm baby. Ascot plaid unicorn axe jianbing pop-up selvage sold intelligentsia. Roof mumblecore sold fanny out Read more
-            portland shabby vinyl ugh kogi. Praxis vinegar irony street cray goth. Lumbersexual truck book 8-bit selfies yuccie you small yuccie. Wolf pok try-hard xoxo sartorial. Celiac booth yes bun heard bag. </p>
-        </div>
-
-        <PopoverMenu
-        className='w-44' 
-        align='end'
-            trigerBtn={
-                <Button className='rounded-full h-4 w-4 text-white p-1 absolute right-3 top-3'><Menu/></Button>
-            }
-        >
-            <div className="bg-white shadow rounded-md  p-4 h-36">
-                Drop down
-            </div>
-        </PopoverMenu>
-    </div>
   )
 }
 

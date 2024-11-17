@@ -1,7 +1,7 @@
 "use client"
 
 import useUserStore from '@/store/globalUserStore';
-import { Goal } from '@/types/goal';
+import { Goal, KeyResult } from '@/types/goal';
 import React, { createContext, useContext, useState, ReactNode, } from 'react';
 
 export interface MetricValueType {
@@ -35,8 +35,8 @@ export interface AppState {
     setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>
     goalData:Goal;
     setGoalData: React.Dispatch<React.SetStateAction<Goal>>;
-    keyResultData:KeyResultsType;
-    setKeyResultData: React.Dispatch<React.SetStateAction<KeyResultsType>>;
+    keyResultData:KeyResult;
+    setKeyResultData: React.Dispatch<React.SetStateAction<KeyResult>>;
     metricValue:MetricValueType;
     setMetricValue: React.Dispatch<React.SetStateAction<MetricValueType>>;
     errors:{ [key: string]: string | null };
@@ -49,15 +49,19 @@ export interface GoalContextProp extends AppState {
 
 const GoalContext = createContext<GoalContextProp | undefined>(undefined);
 
-const keyResult: KeyResultsType = {
-    name: '',
+const initialFormData: Goal = {
+  goalName: '',
+  // status: 'DRAFT',
+};
+
+const keyResult: KeyResult = {
+    keyResultTitle: '',
     description: '',
-    owner: '',
     startDate: null,
     endDate: null,
-    metricType:'value',
-    metric: [],
-    status: 'DRAFT',
+    measurementType:'value',
+    keyResultOwner:null
+    // status: 'DRAFT',
   };
   
 const initialMetricValue:MetricValueType = {
@@ -67,22 +71,9 @@ const initialMetricValue:MetricValueType = {
 }
 
 export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const {user} = useUserStore()
-  const initialFormData: Goal = {
-    organization: user?.id,
-    createdBy: user?.id,
-    goalName: '',
-    description: '',
-    goalOwner: user?.id,
-    goalOwnerName: user?.firstName +' '+user?.lastName,
-    startDate: null,
-    endDate: null,
-    progress: null,
-    lastUpdated: null,
-    // status: 'DRAFT',
-};
+
     const [goalData, setGoalData] = useState<Goal>(initialFormData);
-    const [keyResultData, setKeyResultData] = useState<KeyResultsType>(keyResult);
+    const [keyResultData, setKeyResultData] = useState<KeyResult>(keyResult);
     const [metricValue, setMetricValue] = useState<MetricValueType>(initialMetricValue);
     const [errors, setErrors] = useState<{ [key: string]: string | null }>({})
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -101,7 +92,6 @@ export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     </GoalContext.Provider>
   );
 };
-
 export const useGoalContext = (): GoalContextProp => {
   const context = useContext(GoalContext);
   if (!context) {
