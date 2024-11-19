@@ -4,12 +4,20 @@ import { ChevronRight, MoreVertical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PopoverMenu } from '@/components/shared/PopoverMenu'
 import { useClickOutside } from '@/lib'
+import Link from 'next/link'
+import { urls } from '@/constants'
+import { useAppointmentContext } from '@/context/AppointmentContext'
+import { useParams } from 'next/navigation'
 
-const DropDownKeyResultAction = () => {
+const DropDownKeyResultAction = ({keyId}:{keyId:number}) => {
   const [selectedView, setSelectedView] = useState<'Default' | 'Chart'>('Default');
   const [drop, setDrop] = useState<boolean>(false);
   const ref = useRef(null)
   useClickOutside( ref, ()=>setDrop(false))
+  const {contact} = useAppointmentContext()
+
+  const params = useParams()
+  // console.log(params)
   return (
     <PopoverMenu
         className="w-40 "
@@ -21,9 +29,12 @@ const DropDownKeyResultAction = () => {
         }
       >
         <div className="bg-white shadow rounded-md p-4 space-y-3 text-sm w-full text-gray-800">
-          <button type="button" className="hover:text-gray-950 duration-300 block">
+          
+          <Link href={`${urls.contacts}/${contact?.email}/goals/details/${params?.goalId}/${keyId}/?id=${contact?.id}&name=${contact?.firstName}`} 
+          // href={`/${keyId}/?id=${contact?.id}&name=${contact?.firstName}`} 
+          type="button" className="hover:text-gray-950 duration-300 block">
             Open key result
-          </button>
+          </Link>
 
           <button type="button" className="hover:text-gray-950 duration-300 block">
             Edit

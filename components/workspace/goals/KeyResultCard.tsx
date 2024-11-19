@@ -1,5 +1,5 @@
 import { KeyResult } from '@/types/goal'
-import React from 'react'
+import React, { Suspense } from 'react'
 import DropDownKeyResultAction from './DropDownKeyResultAction'
 
 const KeyResultCard = ({keyResult}:{keyResult:KeyResult}) => {
@@ -13,7 +13,9 @@ const KeyResultCard = ({keyResult}:{keyResult:KeyResult}) => {
                 <h6 className="font-bold">{keyResult?.keyResultTitle}</h6>
                 <p className="text-sm">{keyResult?.description}</p>
             </div>
-            <DropDownKeyResultAction/>
+            <Suspense>
+                <DropDownKeyResultAction keyId={keyResult?.id!}/>
+            </Suspense>
         </div>
   )
 }

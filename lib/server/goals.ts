@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server"
 import { getUserData } from ".";
-import { Goal, KeyResult } from "@/types/goal";
+import { Goal, KeyResult, KeyResultsTimeline } from "@/types/goal";
+import { MetricValueType } from "@/context/GoalContext";
 
 interface FetchContactsResult {
   data: Goal[] | null;
@@ -79,5 +80,43 @@ export const fetchGoalsByGoalId = async (
     } catch (error) {
       console.error('Server error:', error);
       return { keyResults: null, error: 'Server error, check your network' };
+    }
+  };
+
+
+  export const fetchKeyResultById = async (
+    keyId: string
+  ): Promise<{keyResult:KeyResult |null, error:string|null}> => {
+      const supabase = createClient()
+    try {
+    const { data, error }  = await supabase
+        .from('keyResults')
+        .select('*') 
+        .eq('id', keyId)
+        .single()
+  
+  // console.log({ data, error })
+      return { keyResult:data, error: error?.message||null,};
+    } catch (error) {
+      console.error('Server error:', error);
+      return { keyResult: null, error: 'Server error, check your network' };
+    }
+  };
+
+  export const fetchMetricsByKeyResultId = async (
+    keyId: number
+  ): Promise<{data:KeyResultsTimeline[] |null, error:string|null}> => {
+      const supabase = createClient()
+    try {
+    const { data, error }  = await supabase
+        .from('keyResultsTimeline')
+        .select('*') 
+        .eq('keyResultId', keyId)
+        .order('created_at', {ascending: false} ); 
+  
+      return { data, error: error?.message||null,};
+    } catch (error) {
+      console.error('Server error:', error);
+      return { data: null, error: 'Server error, check your network' };
     }
   };
