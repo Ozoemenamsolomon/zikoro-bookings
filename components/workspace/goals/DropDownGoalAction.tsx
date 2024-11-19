@@ -1,5 +1,4 @@
-// 'use client'
-// import React, { useRef, useState } from 'react'
+'use client'
 import { ChevronRight, MoreVertical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PopoverMenu } from '@/components/shared/PopoverMenu'
@@ -7,8 +6,10 @@ import { PopoverMenu } from '@/components/shared/PopoverMenu'
 import Link from 'next/link'
 import { urls } from '@/constants'
 import { Goal } from '@/types/goal'
+import { useAppointmentContext } from '@/context/AppointmentContext'
 
 const DropDownGoalAction = ({goal,}:{goal:Goal})  => {
+  const {contact} = useAppointmentContext()
   // const [selectedView, setSelectedView] = useState<'Default' | 'Chart'>('Default');
   // const [drop, setDrop] = useState<boolean>(false);
   // const ref = useRef(null)
@@ -18,16 +19,16 @@ const DropDownGoalAction = ({goal,}:{goal:Goal})  => {
         className="w-40 "
         align="end"
         trigerBtn={
-          <Button className="rounded-full h-5 w-5 text-white p-1 absolute right-3 top-3">
+          <Button className="rounded-full h-5 w-5 text-white p-1 absolute right-7 top-2">
             <MoreVertical />
           </Button>
         }
       >
         <div className="bg-white shadow rounded-md p-4 space-y-3 text-sm w-full text-gray-800">
-          <Link href={`${urls.contactsGoalsDetails}/${goal.id}`} className='block hover:text-gray-950 duration-300 '>
+          <Link href={`${urls.contacts}/${contact?.email}/goals/details/${goal.id}?id=${contact?.id}&name=${contact?.firstName}`} className='block hover:text-gray-950 duration-300 '>
             Preview Goal
           </Link>
-          <Link href={`${urls.contactsGoalsEdit}/${goal.id}`} className='block hover:text-gray-950 duration-300 '>
+          <Link href={`${urls.contacts}/${contact?.email}/goals/edit/${goal.id}?id=${contact?.id}&name=${contact?.firstName}`} className='block hover:text-gray-950 duration-300 '>
             Edit Goal
           </Link>
 

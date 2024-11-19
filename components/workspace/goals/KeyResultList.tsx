@@ -32,10 +32,6 @@ const KeyResultList = async ({goalId}:{goalId:string}) => {
                 }
             </div>
         </Suspense>
-        
-
-
-        
     </section>
   )
 }

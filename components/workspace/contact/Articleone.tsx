@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { Copy, Loader2Icon, Mail, PhoneCall, X } from 'lucide-react'
 import Link from 'next/link'
 import { Whatsapp } from 'styled-icons/fa-brands'
@@ -13,8 +13,12 @@ import ContactTags from './ContactTags'
 import DeleteContact from './DeleteContact'
 import Image from 'next/image'
 
-const Articleone = () => {
-    const {contact, isfetching, } = useAppointmentContext()
+const Articleone = ({searchquery}:{searchquery?:string}) => {
+    const {contact, isfetching,setSearchTerm, setContact} = useAppointmentContext()
+
+    useEffect(() => {
+        if(searchquery) setSearchTerm(searchquery);
+    }, [searchquery]);
 
     if(isfetching) return (
         <div className="w-full h-screen  bg-white">
@@ -27,7 +31,7 @@ const Articleone = () => {
     if(!contact) return (
         <div className="w-full h-screen bg-white">
             <div className="h-80 flex flex-col justify-center items-center">
-            <EmptyList size='34' text='No Contact Available' />
+            <EmptyList size='34' text='No Contact Found' />
             </div>
         </div>
     )

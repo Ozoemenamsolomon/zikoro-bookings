@@ -10,18 +10,18 @@ const ValueMetrics = ({errors}:{errors:{[key:string]: string|null}}) => {
     setMetricValue(prev => ({ ...prev, [name]: value }))
   }, [])
   
-  const removeMetric = () => {
-    setKeyResultData((prev)=>{
-      return {
-        ...prev,
-        measurementType: null,
-        currentValue: null,
-        targetValue: null,
-        unit: null
-      }
-    })
+  // const removeMetric = () => {
+  //   setKeyResultData((prev)=>{
+  //     return {
+  //       ...prev,
+  //       measurementType: null,
+  //       currentValue: null,
+  //       targetValue: null,
+  //       unit: null
+  //     }
+  //   })
 
-  }
+  // }
   return (
     <div className='space-y-3'>
         <div className="grid sm:grid-cols-2 gap-x-2 gap-y-4">
@@ -57,7 +57,7 @@ const ValueMetrics = ({errors}:{errors:{[key:string]: string|null}}) => {
                 onChange={handleChange}
             />
 
-            <button onClick={removeMetric} type="button" className='text-red-600 text-sm font-medium'>Remove unit</button>
+            {/* <button onClick={removeMetric} type="button" className='text-red-600 text-sm font-medium'>Remove unit</button> */}
         </div>
         
     </div>

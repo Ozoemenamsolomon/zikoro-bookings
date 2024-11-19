@@ -1,6 +1,5 @@
 
 import ContactLayout from '@/components/workspace/contact'
-import { fetchContacts } from '@/lib/server/contacts';
 import React from 'react'
 
 const Tags = async ({
@@ -8,9 +7,8 @@ const Tags = async ({
 }: {
   searchParams: { s: string };
 }) => {
-  const {data,count,error} = await fetchContacts()
   return ( 
-    <ContactLayout count={count}  data={data} searchquery={s} >
+    <ContactLayout  searchquery={s} >
           <main className='text-4xl font-bold p-8'>Contact Tags</main>
       </ContactLayout>
     )

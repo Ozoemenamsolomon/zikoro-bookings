@@ -2,14 +2,17 @@
 
 import { Button } from '@/components/ui/button'
 import { urls } from '@/constants'
+import { useAppointmentContext } from '@/context/AppointmentContext'
 import { useGoalContext } from '@/context/GoalContext'
 import { PostRequest } from '@/utils/api'
+import { revalidatePath } from 'next/cache'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
 
 const SaveGoalBtn = () => {
     const {push} = useRouter()
+    const {contact} = useAppointmentContext()
     const {goalData} = useGoalContext()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const handleSave = async () => {
@@ -24,9 +27,10 @@ const SaveGoalBtn = () => {
                     // setErrors({general:error})
                 } else {
                     // console.log(data)
-                    toast.success('Goal created')
+                    toast.success('Goal was editted')
                     // setSuccess('Goal created successfully')
-                    push(`${urls.contactsGoalsDetails}/${data.id}`)
+                    // revalidatePath(`${urls.contacts}/${contact?.email}/goals/details/${data.id}?id=${contact?.id}&name=${contact?.firstName}`)
+                    push(`${urls.contacts}/${contact?.email}/goals/details/${data.id}?id=${contact?.id}&name=${contact?.firstName}`)
                 }
             } catch (error) {
               console.error('Submission failed:', error)

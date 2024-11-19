@@ -12,9 +12,11 @@ import { LikeIcon, ListView, OneTwoThree, urls } from '@/constants'
 import { PostRequest } from '@/utils/api'
 import { toast } from 'react-toastify'
 import { useRouter } from 'next/navigation'
+import { useAppointmentContext } from '@/context/AppointmentContext'
 
 const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
   const {push,refresh} = useRouter()
+  const {contact} =useAppointmentContext()
   const {keyResultData, setKeyResultData, goalData, metricValue, isSubmitting, setIsSubmitting,} = useGoalContext()
 
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({})
@@ -105,7 +107,7 @@ const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
             } else {
                 const { data, error } = await PostRequest({url:'/api/goals/create', 
                     body:{ 
-                        goalData,
+                        goalData:{...goalData, contactId:contact?.id},
                         keyResultData:{
                             ...keyResultData,
                             organization: goalData.organization,
@@ -127,7 +129,7 @@ const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
                     // console.log(data)
                     toast.success('Goal created')
                     setSuccess('Goal created successfully')
-                    push(`${urls.contactsGoals}/details/${data.id}`)
+                    push(`${urls.contacts}/${contact?.email}/goals/details/${data.id}?id=${contact?.id}&name=${contact?.firstName}`)
                 }
             }
         } catch (error) {

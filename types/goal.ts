@@ -1,6 +1,7 @@
 export interface Goal {
     id?: number; // bigint
     createdAt?: string; // ISO 8601 format for timestamp with time zone
+    contactId?: string
     organization?: number| bigint | null; // bigint or null
     createdBy?: number| bigint | null; // bigint or null
     goalName?: string | null; // text or null

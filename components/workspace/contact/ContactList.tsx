@@ -2,55 +2,93 @@
 
 import { Heart, Loader2Icon, Search } from 'lucide-react';
 import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, } from 'next/navigation';
 import { BookingsContact } from '@/types/appointments';
 import { useAppointmentContext } from '@/context/AppointmentContext';
 import EmptyList from '../ui/EmptyList';
 import { HeartFill } from 'styled-icons/bootstrap';
 import Image from 'next/image';
 import { PostRequest } from '@/utils/api';
+import { urls } from '@/constants';
 
 type ContactProps = {
   fetchedcontacts: BookingsContact[] | null;
   searchquery?: string;
 };
 
-const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery }) => {
-  const { replace } = useRouter();
-  const { contact, setContact, contacts, setContacts, isfetching, setIsFetching } = useAppointmentContext();
-  const [searchTerm, setSearchTerm] = useState(searchquery || '');
+/**
+ * This code handles filtering and managing the contact list:
+ * - Filters contacts based on the search term (`searchTerm`) or resets to the initial fetched contacts (`fetchedcontacts`).
+ * - Updates the selected contact (`contact`) based on the provided email (`contactEmail`) or defaults to the first contact in the list.
+ * - Ensures the state (`contacts`, `contact`) reflects the latest data after filtering or resetting.
+ * - Optimizes filtering logic with a reusable `filterContacts` function.
+ * - Avoids unnecessary state updates and ensures fallback values are used for undefined cases.
+ */
+
+const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
+  const { replace, push } = useRouter();
+  const pathname = usePathname()
+
+  // eg: /workspace/contacts/[contactEmail]/goals
+  const contactEmail = pathname?.split('/')?.[3] || ''
+  const fourthPath = pathname?.split('/')?.[4] || ''
+  const { contact, setContact, contacts, setContacts, isfetching, searchTerm, setSearchTerm, setIsFetching,activePath, setActivePath } = useAppointmentContext();
   const [loading, setLoading] = useState<number | null>(null);
 
-  // console.log({fetchedcontacts})
-
-  // Function to filter contacts based on search term
-  const filterContacts = useCallback(() => {
-    if (!contacts) return;
-    const filtered = contacts.filter((item) =>
-      `${item.firstName} ${item.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setContacts(filtered);
-  }, [searchTerm, contacts, setContacts]);
-
-  // Effect to filter contacts or reset to initial fetched contacts
+  // console.log({fetchedcontacts, contactEmail, pats:pathname?.split('/')})
+  const filterContacts = useCallback(
+    (term: string) => {
+      if (!contacts) return [];
+      return contacts.filter((item) =>
+        `${item.firstName} ${item.lastName}`.toLowerCase().includes(term.toLowerCase())
+      );
+    },
+    [contacts]
+  );
+  
   useEffect(() => {
-    if (searchTerm) {
-      filterContacts();
-    } else {
-      setContacts(fetchedcontacts || []);
-      setContact(fetchedcontacts?.[0] || null);
-    }
-    setIsFetching(false);
-  }, [fetchedcontacts, searchTerm, ]);
-
+    const updateContactsAndSelected = () => {
+      if (!fetchedcontacts) return; // Avoid processing if no contacts fetched
+  
+      // If a search term exists, filter contacts
+      if (searchTerm) {
+        const filtered = filterContacts(searchTerm);
+        setContacts((prevContacts) => {
+          // Avoid unnecessary updates if filtered contacts are the same
+          return JSON.stringify(prevContacts) === JSON.stringify(filtered) ? prevContacts : filtered;
+        });
+      } else {
+        // Reset to fetched contacts
+        setContacts(fetchedcontacts);
+  
+        // Update selected contact
+        if (contactEmail) {
+          const filteredContact = fetchedcontacts.find((item) => item.email === contactEmail);
+          setContact((prevContact) =>
+            prevContact?.email === filteredContact?.email ? prevContact : filteredContact || null
+          );
+        } else {
+          setContact((prevContact) =>
+            prevContact?.email === fetchedcontacts?.[0]?.email ? prevContact : fetchedcontacts?.[0] || null
+          );
+        }
+      }
+    };
+  
+    updateContactsAndSelected();
+    setIsFetching(false)
+  }, [fetchedcontacts, searchTerm, contactEmail, filterContacts]); // Keep dependencies concise
+  
+  useEffect(() => {
+    if(fourthPath) setActivePath(fourthPath)
+  }, [fourthPath])
+  
   // Handle search input changes
   const handleChange = 
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       setSearchTerm(value);
-      setTimeout(() => {
-        replace(`/workspace/contacts/?s=${value}`);
-      }, 500);
+      replace(`/workspace/contacts/?s=${value}`);
     }
 
   // Function to toggle the favorite status
@@ -110,7 +148,11 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery }) =
             const { firstName, profileImg, lastName, favorite, id, email, tags } = item
             return (
               <div key={id} 
-              onClick={() => setContact(item)} className="py-2 w-full cursor-pointer">
+              onClick={() => {
+                setContact(item)
+                push(`${urls.contacts}/${email}/${fourthPath}?id=${id}&name=${firstName}`)
+                setActivePath(fourthPath)
+                }} className="py-2 w-full cursor-pointer">
               <div
                 className={`${
                   contact?.id === id ? 'bg-baseBg ring-1 ring-slate-300' : ''

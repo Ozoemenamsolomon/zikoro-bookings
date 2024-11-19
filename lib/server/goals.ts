@@ -9,7 +9,7 @@ interface FetchContactsResult {
 }
 
 export const fetchGoalsByUserId = async (
-  q?: string
+  contactId: string
 ): Promise<FetchContactsResult> => {
     const supabase = createClient()
     const {user} = await getUserData()
@@ -18,10 +18,9 @@ export const fetchGoalsByUserId = async (
       .from('goals')
       .select('*', { count: 'exact' }) 
       .eq('createdBy', user?.id)
+      .eq('contactId', contactId)
     //   .or('status.is.null,status.neq.ARCHIVED')
       .order('created_at', {ascending: false} ); 
-
-    // TODO: function to format goals with progress metric
 
     const { data, count, error } = await query;
 // console.log({ data, count, error })

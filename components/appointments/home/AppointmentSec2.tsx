@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { urls } from "@/constants";
 
 export default function AppointmentSec2() {
   return (
@@ -23,7 +24,7 @@ export default function AppointmentSec2() {
           <div>
             <div className=" flex items-center justify-center mx-auto">
               <Link
-                href="/workspace/appointments"
+                href={urls.schedule}
                 className="text-white font-semibold text-base bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end py-[10px] px-[64px] rounded-lg"
               >
                 Get Started For Free!
