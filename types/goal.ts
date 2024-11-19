@@ -32,6 +32,7 @@ export interface Goal {
   }
   export interface KeyResultsTimeline {
     id?: number; // bigint
+    created_at?: string
     createdAt?: string; // ISO 8601 format for timestamp with time zone
     organizationId?: number | null; // bigint or null
     keyResultId?: number | null; // bigint or null
