@@ -22,7 +22,7 @@ const Contacts = async ({
     .range(0, limit - 1)
     .order('created_at', {ascending:false})
 
-  console.log({ data, count, error })
+  // console.log({ data, count, error })
 
   return ( 
     <Goals goalsData={data} countSize={count!} errorString={error?.message||''}  />
