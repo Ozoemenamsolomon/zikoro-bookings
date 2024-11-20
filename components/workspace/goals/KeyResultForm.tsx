@@ -17,7 +17,7 @@ import { useAppointmentContext } from '@/context/AppointmentContext'
 const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
   const {push,refresh} = useRouter()
   const {contact} =useAppointmentContext()
-  const {keyResultData, setKeyResultData, goalData, metricValue, isSubmitting, setIsSubmitting,} = useGoalContext()
+  const {keyResultData, setKeyResultData, goalData, setGoalData, metricValue, setMetricValue, isSubmitting, setIsSubmitting,} = useGoalContext()
 
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({})
   const [success, setSuccess] = useState<string>('')
@@ -53,18 +53,14 @@ const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
    const validateForm = () => {
     const newErrors: { [key: string]: string | null } = {}
     if (!keyResultData.keyResultTitle) newErrors.keyResultTitle = 'Goal name is required.'
-    if (!keyResultData.description) newErrors.description = 'Description is required.'
+    // if (!keyResultData.description) newErrors.description = 'Description is required.'
     if (!keyResultData.keyResultOwner) newErrors.keyResultOwner = 'Please select an owner.'
     if (!keyResultData.startDate) newErrors.startDate = 'Start date is required.'
     if (!keyResultData.endDate) newErrors.endDate = 'End date is required.'
+    if (!keyResultData.unit) newErrors.endDate = 'The Unit of measurement is required.'
     if (goalData.startDate && goalData.endDate && new Date(goalData.startDate) > new Date(goalData.endDate)) {
         newErrors.endDate = 'End date must be after start date.';
       }
-    //   TODO: add metricValue errors
-    // if (keyResultData?.measurementType && !metricValue.endDate) newErrors.endDate = 'End date is required.'
-    // if (keyResultData?.measurementType && !metricValue.endDate) newErrors.endDate = 'End date is required.'
-    // if (keyResultData?.measurementType && !metricValue.endDate) newErrors.endDate = 'End date is required.'
-
     setErrors(newErrors)
     return Object.values(newErrors).every(error => !error)
   }
@@ -101,7 +97,9 @@ const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
                 } else {
                     // console.log(data)
                     toast.success('New key result added')
-                    // setSuccess('Goal created successfully')
+                    // setSuccess('New key result added')
+                    setKeyResultData({})
+                    setGoalData({})
                     refresh()
                 }
             } else {
@@ -129,6 +127,8 @@ const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
                     // console.log(data)
                     toast.success('Goal created')
                     setSuccess('Goal created successfully')
+                    setKeyResultData({})
+                    setGoalData({})
                     push(`${urls.contacts}/${contact?.email}/goals/details/${data.id}?id=${contact?.id}&name=${contact?.firstName}`)
                 }
             }
@@ -178,7 +178,7 @@ const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
                 error={errors.description}
                 placeholder="Enter detailed description of the goal"
                 isTextarea
-                isRequired
+                // isRequired
                 onChange={handleChange}
             />
 
