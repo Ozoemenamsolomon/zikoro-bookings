@@ -177,7 +177,7 @@ body {
 .quill {
   width: 100%;
   /* border-radius: 8px; */
-  margin-bottom: 3rem;
+  /* margin-bottom: 3rem; */
 }
 
 .quill .ql-editor {
@@ -190,7 +190,7 @@ body {
 
 .ql-container.ql-snow {
   border: 1px solid #f3f3f3 !important;
-  height: 400px;
+  height: 30vh;
   border-top: none;
   font-size: 14px;
   border-radius: 0px 0px 8px 8px;
@@ -214,4 +214,32 @@ body {
 
 .ql-container.ql-snow .ql-editor {
   border: 1px solid #001FCC19 !important;
+}
+
+/* React Quil style */
+.editor-content .ql-editor {
+  font-size: 18px; /* Set your desired font size */
+}
+.editor-content .ql-editor p {
+  margin-bottom: 16px; /* Adjust this for paragraph spacing */
+  line-height: 1.6; /* Improve readability with line-height */
+}
+.editor-content .ql-editor h1,
+.editor-content .ql-editor h2,
+.editor-content .ql-editor h3,
+.editor-content .ql-editor h4,
+.editor-content .ql-editor h5,
+.editor-content .ql-editor h6 {
+  margin-bottom: 10px; /* Add spacing for headers */
+}
+
+.editor-content .ql-editor ul,
+.editor-content .ql-editor ol {
+  margin-bottom: 10px; /* Add spacing for lists */
+}
+
+.editor-content .ql-editor blockquote {
+  margin-bottom: 24px; /* Add spacing for blockquotes */
+  padding-left: 10px;
+  border-left: 3px solid #ccc; /* Optional blockquote styling */
 }

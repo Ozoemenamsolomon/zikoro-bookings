@@ -8,8 +8,10 @@ import Link from 'next/link'
 import { urls } from '@/constants'
 import { useAppointmentContext } from '@/context/AppointmentContext'
 import { useParams } from 'next/navigation'
+import EditKeyResultDetails from './EditKeyResultDetails'
+import { KeyResult } from '@/types/goal'
 
-const DropDownKeyResultAction = ({keyId}:{keyId:number}) => {
+const DropDownKeyResultAction = ({keyResult}:{keyResult:KeyResult}) => {
   const [selectedView, setSelectedView] = useState<'Default' | 'Chart'>('Default');
   const [drop, setDrop] = useState<boolean>(false);
   const ref = useRef(null)
@@ -30,15 +32,13 @@ const DropDownKeyResultAction = ({keyId}:{keyId:number}) => {
       >
         <div className="bg-white shadow rounded-md p-4 space-y-3 text-sm w-full text-gray-800">
           
-          <Link href={`${urls.contacts}/${contact?.email}/goals/details/${params?.goalId}/${keyId}/?id=${contact?.id}&name=${contact?.firstName}`} 
+          <Link href={`${urls.contacts}/${contact?.email}/goals/details/${params?.goalId}/${keyResult.id}/?id=${contact?.id}&name=${contact?.firstName}`} 
           // href={`/${keyId}/?id=${contact?.id}&name=${contact?.firstName}`} 
           type="button" className="hover:text-gray-950 duration-300 block">
             Open key result
           </Link>
 
-          <button type="button" className="hover:text-gray-950 duration-300 block">
-            Edit
-          </button>
+          <EditKeyResultDetails keyResult={keyResult!} text={'Edit details'}/>
 
           <div ref={ref}>
             <button

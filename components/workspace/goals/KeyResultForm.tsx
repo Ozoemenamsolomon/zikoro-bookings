@@ -263,7 +263,7 @@ const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
 export default KeyResultForm
 
 
-const metricsTypes:{
+export const metricsTypes:{
         icon: React.ReactNode,
         type: 'value' | 'milestone' | 'boolean',
         label: string,

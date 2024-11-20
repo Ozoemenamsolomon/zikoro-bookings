@@ -14,7 +14,7 @@ const KeyResultCard = ({keyResult}:{keyResult:KeyResult}) => {
                 <p className="text-sm">{keyResult?.description}</p>
             </div>
             <Suspense>
-                <DropDownKeyResultAction keyId={keyResult?.id!}/>
+                <DropDownKeyResultAction keyResult={keyResult}/>
             </Suspense>
         </div>
   )
