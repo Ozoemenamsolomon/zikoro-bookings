@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useRegistration } from "@/hooks/services/auth";
+import { LoaderAlt } from "styled-icons/boxicons-regular";
 
 const AppointmentSignupForm = () => {
   const router = useRouter();
@@ -104,7 +105,7 @@ const AppointmentSignupForm = () => {
           type="submit"
           className="py-4 px-3 text-base w-full rounded-[8px] font-semibold mt-10 mb-6 text-white bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end"
         >
-          {/* {loading && <LoaderAlt size={22} className="animate-spin" />} */}
+          {loading && <LoaderAlt size={22} className="animate-spin" />}
           Get Started
         </button>
       </form>
