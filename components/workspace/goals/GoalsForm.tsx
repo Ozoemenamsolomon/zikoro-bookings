@@ -7,36 +7,52 @@ import { DatePicker } from '../ui/DatePicker'
 import KeyResultForm from './KeyResultForm'
 import { useGoalContext } from '@/context/GoalContext'
 import useUserStore from '@/store/globalUserStore'
+import { Goal } from '@/types/goal'
+import AddKeyResult from './AddKeyResult'
+import KeyResultList from './KeyResultList'
 
 
-const GoalsForm = ({ goal }: { goal?: any }) => {
-  const {goalData,keyResultData, setGoalData, isSubmitting, setIsSubmitting,} = useGoalContext()
-  const {user}=useUserStore()
+const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children?:React.ReactNode }) => {
+  const {goalData,setGoalData,setKeyResultData,} = useGoalContext()
+
+  const {user} = useUserStore()
 
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({})
+  const [isValidated, setIsValid] = useState<boolean>()
 
   useEffect(() => {
-    if(goal) setGoalData(goal)
-  }, [])
+    const initialFormData: Goal = {
+      organization: user?.id,
+      createdBy: user?.id,
+      goalName: '',
+      description: '',
+      goalOwner: user?.id,
+      goalOwnerName: user?.firstName +' '+user?.lastName,
+      startDate: null,
+      endDate: null,
+      progress: null,
+      // status: 'DRAFT',
+  };
+    if(goal){
+      setGoalData({ ...initialFormData, ...goal });
+      // TODO: Edit mode ...
+      // setKeyResultData({ ...initialFormData, ...goal }); // fetched list of key results associated with gaolId
+    }else{
+      setGoalData(initialFormData)
+    }
+  }, [user,goal])
   
-  // Owner options for the select dropdown
   const ownerOptions = [
-    { value: {
-      id:user?.id, 
-      name: `${user?.firstName} ${user?.lastName}`}, 
+    { value:user?.id,  
       label: `${user?.firstName} ${user?.lastName}` },
-    { value: {
-      id:122, name:'Ebuka Johnson'}, 
+    { value: 122,  
       label: 'Ebuka Johnson' },
-    { value: {
-      id:102, name:'Smart Udoka'}, 
+    { value:102,
       label: 'Smart Udoka' },
-    { value: {
-      id:87, name:'Bodu Joel'}, 
+    { value:87, 
       label: 'Bodu Joel' },
   ]
 
-  // Handle change for inputs
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setGoalData(prev => ({ ...prev, [name]: value }))
@@ -46,12 +62,19 @@ const GoalsForm = ({ goal }: { goal?: any }) => {
     setGoalData((prevData) => ({ ...prevData, [field]: date }));
   };
 
-  const handleSelectChange = (value: {id:number,name:string}, field?:string) => {
-    if(field)
-        setGoalData((prevData) => ({ 
-        ...prevData, goalOwner: value.id, goalOwnerName: value.name }));
+  const handleSelectChange = (value: number | string) => {
+    const selectedOption = ownerOptions.find(option => option.value === Number(value));
+    if (!selectedOption) {
+      return;
+    }
+  
+    setGoalData(prevData => ({
+      ...prevData,
+      goalOwner: selectedOption.value,
+      goalOwnerName: selectedOption.label,
+    }));
   };
-
+  
   // Basic form validation
   const validateForm = () => {
     const newErrors: { [key: string]: string | null } = {}
@@ -60,13 +83,20 @@ const GoalsForm = ({ goal }: { goal?: any }) => {
     if (!goalData.goalOwner) newErrors.goalOwner = 'Please select an owner.'
     if (!goalData.startDate) newErrors.startDate = 'Start date is required.'
     if (!goalData.endDate) newErrors.endDate = 'End date is required.'
+    if (goalData.startDate && goalData.endDate && new Date(goalData.startDate) > new Date(goalData.endDate)) {
+      newErrors.endDate = 'End date must be after start date.';
+    }
+
+  // console.log({goalData, user})
+    
     setErrors(newErrors)
     return Object.values(newErrors).every(error => !error)
   }
 
+  useMemo(() => setIsValid(validateForm()), [goalData])
   return (
     <>
-    <form className="py-8 space-y-4 max-w-lg mx-auto" >
+    <form className="py-8 border-b mb-4 space-y-4 max-w-lg mx-auto" >
       {/* Goal Name */}
       <CustomInput
         label="Goal Name"
@@ -96,10 +126,11 @@ const GoalsForm = ({ goal }: { goal?: any }) => {
         label="Owner"
         placeholder="Select an owner"
         options={ownerOptions}
-        value={goalData.goalOwnerName!}
-        error={errors?.ownerOptions!}
+        value={goalData.goalOwner!}
+        error={errors?.goalOwner!}
         onChange={handleSelectChange}
       />
+
 
       <div className="flex flex-col sm:flex-row items-center w-full gap-3">
             {/* Start Date */}
@@ -126,10 +157,9 @@ const GoalsForm = ({ goal }: { goal?: any }) => {
       </div>
       </form>
 
-      <div className="border-t w-full pt-4 flex flex-col items-center">
-        <KeyResultForm  isActive={validateForm}/>
-        <small>Define a method for measuring this goal</small>
-      </div>
+      {children}
+
+      <AddKeyResult isActive={isValidated!} mode={mode} />
     </>
   )
 }

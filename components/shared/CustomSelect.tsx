@@ -22,7 +22,7 @@ interface OptionGroup {
 interface CustomSelectProps {
   label?: string;
   error?: string;
-  value: string;
+  value: any;
   placeholder?: string;
   options: Option[] | OptionGroup[];
   onChange?: (value: any, field?:string) => void;
@@ -50,15 +50,15 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
             ? (options as OptionGroup[]).map((group, index) => (
                 <SelectGroup key={index}>
                   <SelectLabel>{group.label}</SelectLabel>
-                  {group.options.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
+                  {group.options.map((item, idx) => (
+                    <SelectItem key={idx} value={item.value}>
                       {item.label}
                     </SelectItem>
                   ))}
                 </SelectGroup>
               ))
-            : (options as Option[]).map((item) => (
-                <SelectItem key={item.value} value={item.value}>
+            : (options as Option[]).map((item, idx) => (
+                <SelectItem key={idx} value={item.value}>
                   {item.label}
                 </SelectItem>
               ))}

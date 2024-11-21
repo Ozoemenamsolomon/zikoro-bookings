@@ -28,6 +28,10 @@ export interface AppState {
   setContacts:React.Dispatch<React.SetStateAction<BookingsContact[] | null >>;
   show: string, 
   setShow:React.Dispatch<React.SetStateAction<string>>;
+  searchTerm: string, 
+  setSearchTerm:React.Dispatch<React.SetStateAction<string>>;
+  activePath: string, 
+  setActivePath:React.Dispatch<React.SetStateAction<string>>;
 
 }
 
@@ -42,6 +46,8 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [isfetching, setIsFetching] = useState<boolean>(true);
   const [isFormUp, setIsFormUp] = useState<string>('');
   const [user, setUser] = useState<UserType|null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [activePath, setActivePath] = useState<string>('');
 
   const [bookingFormData, setBookingFormData] = useState<Booking|null>(null)
   const [inactiveSlots, setInactiveSlots] = useState<string[]>([]);
@@ -63,6 +69,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
     selectedType, setselectedType,
     selectedItem, setSelectedItem,
     contact, setContact, contacts, setContacts, show, setShow,
+    searchTerm, setSearchTerm,activePath, setActivePath,
   };
 
   return (
