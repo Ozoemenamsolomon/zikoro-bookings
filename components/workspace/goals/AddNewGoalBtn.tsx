@@ -10,7 +10,7 @@ const AddNewGoalBtn = ({text='Add Goal'}:{text?:string}) => {
   const {contact} = useAppointmentContext()
 
   return (
-    <Link href={`${urls.contacts}/${contact?.email}/goals/create?id=${contact?.id}`}><Button className='bg-basePrimary'>{text}</Button>
+    <Link href={`${urls.contacts}/${contact?.id}/goals/create`}><Button className='bg-basePrimary'>{text}</Button>
         </Link>
   )
 }

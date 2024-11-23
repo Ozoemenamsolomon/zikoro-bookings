@@ -2,16 +2,16 @@ import ContactInfo from "@/components/workspace/contact/ContactInfo";
 import { fetchContact } from "@/lib/server/contacts";
 
 const Contacts = async ({
-  params: { contactEmail },
+  params: { contactId },
   searchParams: { s },
 }: {
-  params: { contactEmail: string };
+  params: { contactId: string };
   searchParams: { s: string };
 }) => {
-  // const decodedEmail = decodeURIComponent(contactEmail);
+  // const decodedEmail = decodeURIComponent(contactId);
   // const { data, error } = await fetchContact(decodedEmail);
   // console.log({
-  //   contactEmail, // Original URI-encoded email
+  //   contactId, // Original URI-encoded email
   //   decodedEmail, // Decoded email string
   //   data, // Response data
   //   error, // Response error (if any)

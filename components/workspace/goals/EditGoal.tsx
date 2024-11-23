@@ -1,8 +1,6 @@
-import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import React, { Suspense } from 'react'
 import GoalsForm from './GoalsForm'
-import { urls } from '@/constants'
 import SaveGoalBtn from './SaveGoalBtn'
 import Loading from '@/components/shared/Loader'
 import { fetchGoalsByGoalId } from '@/lib/server/goals'

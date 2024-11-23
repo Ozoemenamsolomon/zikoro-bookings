@@ -1,12 +1,9 @@
 import React, { Suspense } from 'react'
 import GoalCard from './GoalCard'
-import { fetchGoalsByGoalId } from '@/lib/server/goals'
-import { redirect } from 'next/navigation'
-import { urls } from '@/constants'
+ 
+import { Goal as GoalType } from '@/types/goal'
 
-const Goal =async({goalId}:{goalId:string}) => {
-    const {goal, error} = await fetchGoalsByGoalId(goalId)
-    if (!goal ) redirect(urls.contactsGoals)
+const Goal =async({goal,goalId}:{goal:GoalType, goalId:string}) => {
   return (
     <Suspense>
       <GoalCard goal={goal} goalId={goalId} />

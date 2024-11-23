@@ -19,7 +19,7 @@ type ContactProps = {
 /**
  * This code handles filtering and managing the contact list:
  * - Filters contacts based on the search term (`searchTerm`) or resets to the initial fetched contacts (`fetchedcontacts`).
- * - Updates the selected contact (`contact`) based on the provided email (`contactEmail`) or defaults to the first contact in the list.
+ * - Updates the selected contact (`contact`) based on the provided id (`contactId`) or defaults to the first contact in the list.
  * - Ensures the state (`contacts`, `contact`) reflects the latest data after filtering or resetting.
  * - Optimizes filtering logic with a reusable `filterContacts` function.
  * - Avoids unnecessary state updates and ensures fallback values are used for undefined cases.
@@ -29,13 +29,13 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
   const { replace, push } = useRouter();
   const pathname = usePathname()
 
-  // eg: /workspace/contacts/[contactEmail]/goals
-  const contactEmail = pathname?.split('/')?.[3] || ''
+  // eg: /workspace/contacts/[contactId]/goals
+  const contactId = pathname?.split('/')?.[3] || ''
   const fourthPath = pathname?.split('/')?.[4] || ''
   const { contact, setContact, contacts, setContacts, isfetching, searchTerm, setSearchTerm, setIsFetching,activePath, setActivePath } = useAppointmentContext();
   const [loading, setLoading] = useState<number | null>(null);
 
-  // console.log({fetchedcontacts, contactEmail, pats:pathname?.split('/')})
+  // console.log({fetchedcontacts, contactId, pats:pathname?.split('/')})
   const filterContacts = useCallback(
     (term: string) => {
       if (!contacts) return [];
@@ -62,14 +62,19 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
         setContacts(fetchedcontacts);
   
         // Update selected contact
-        if (contactEmail) {
-          const filteredContact = fetchedcontacts.find((item) => item.email === contactEmail);
-          setContact((prevContact) =>
-            prevContact?.email === filteredContact?.email ? prevContact : filteredContact || null
-          );
+        if (contactId) {
+          const filteredContact = fetchedcontacts.find((item) => item.id === Number(contactId));
+          if(filteredContact){
+
+              setContact((prevContact) =>
+                prevContact?.id === filteredContact?.id ? prevContact : filteredContact || null
+            );
+          } else {
+            setContact(fetchedcontacts?.[0])
+          }
         } else {
           setContact((prevContact) =>
-            prevContact?.email === fetchedcontacts?.[0]?.email ? prevContact : fetchedcontacts?.[0] || null
+            prevContact?.id === fetchedcontacts?.[0]?.id ? prevContact : fetchedcontacts?.[0] || null
           );
         }
       }
@@ -77,7 +82,7 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
   
     updateContactsAndSelected();
     setIsFetching(false)
-  }, [fetchedcontacts, searchTerm, contactEmail, filterContacts]); // Keep dependencies concise
+  }, [fetchedcontacts, searchTerm, contactId, filterContacts]); // Keep dependencies concise
   
   useEffect(() => {
     if(fourthPath) setActivePath(fourthPath)
@@ -150,7 +155,7 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
               <div key={id} 
               onClick={() => {
                 setContact(item)
-                push(`${urls.contacts}/${email}/${fourthPath}?id=${id}&name=${firstName}`)
+                push(`${urls.contacts}/${id}/${fourthPath}`)
                 setActivePath(fourthPath)
                 }} className="py-2 w-full cursor-pointer">
               <div

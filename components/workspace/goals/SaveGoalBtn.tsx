@@ -13,24 +13,40 @@ import { toast } from 'react-toastify'
 const SaveGoalBtn = () => {
     const {push} = useRouter()
     const {contact} = useAppointmentContext()
-    const {goalData} = useGoalContext()
+    const {goalData, setGoalData, errors, setErrors} = useGoalContext()
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    const validateForm = () => {
+      const newErrors: { [key: string]: string | null } = {}
+      if (!goalData.goalName) newErrors.goalName = 'Goal name is required.'
+      if (!goalData.goalOwner) newErrors.goalOwner = 'Please select an owner.'
+      if (!goalData.startDate) newErrors.startDate = 'Start date is required.'
+      if (!goalData.endDate) newErrors.endDate = 'End date is required.'
+      if (goalData.startDate && goalData.endDate && new Date(goalData.startDate) > new Date(goalData.endDate)) {
+        newErrors.endDate = 'End date must be after start date.';
+      }
+
+      setErrors(newErrors)
+      return Object.values(newErrors).every(error => !error)
+    }
+
     const handleSave = async () => {
-            // setErrors({})
+            setErrors({})
             // setSuccess('')
-            // if (!validateForm()) return
+            if (!validateForm()) return
     
             setIsSubmitting(true)
             try {
                 const { data, error } = await PostRequest({url:'/api/goals/editGoal', body:{goalData}})
                 if (error) {
-                    // setErrors({general:error})
+                    setErrors({general:error})
                 } else {
                     // console.log(data)
                     toast.success('Goal was editted')
+                    setGoalData({})
                     // setSuccess('Goal created successfully')
-                    // revalidatePath(`${urls.contacts}/${contact?.email}/goals/details/${data.id}?id=${contact?.id}&name=${contact?.firstName}`)
-                    push(`${urls.contacts}/${contact?.email}/goals/details/${data.id}?id=${contact?.id}&name=${contact?.firstName}`)
+                    // revalidatePath(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`)
+                    push(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`)
                 }
             } catch (error) {
               console.error('Submission failed:', error)
@@ -40,7 +56,7 @@ const SaveGoalBtn = () => {
     
     }
   return (
-    <Button onClick={handleSave} type='button' className='block bg-basePrimary'>
+    <Button disabled={isSubmitting} onClick={handleSave} type='button' className='block bg-basePrimary'>
         {isSubmitting ? 'Saving...':'Save'}
     </Button>
   )

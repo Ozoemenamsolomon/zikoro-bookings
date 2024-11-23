@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "/zikoro-og.jpeg",
-    title: "Zikoro - Effortless Appointment Scheduling & Booking",
+    title: "Zikoro - Appointment Scheduling & Booking",
     description: "Simplify appointment scheduling and booking with Zikoro. Whether you're organizing events, teaching classes, or managing appointments, our platform offers smooth and reliable tools to coordinate and manage your appointments.",
     images: [
       {

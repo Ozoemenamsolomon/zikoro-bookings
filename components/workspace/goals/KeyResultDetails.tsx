@@ -19,7 +19,7 @@ const KeyResultDetails = async({keyResultId}:{keyResultId:string}) => {
             <header className="flex justify-between gap-3 pb-3 border-b w-full">
                 <BackToGoalDetailsBtn goalId={keyResult?.goalId!}/>
                 <h3 className="font-bold text-xl">Key Result - {keyResultId}</h3>
-                <KeyResultForm editDetails={<><p>Edit</p> <PenLine size={18} /></> } keyResult={keyResult!}/>
+                <EditKeyResultDetails keyResult={keyResult!} />
             </header>
 
             <div className="px-4">

@@ -10,7 +10,7 @@ const BackToGoalDetailsBtn = ({goalId}:{goalId:number}) => {
   const {contact} = useAppointmentContext()
 
   return (
-    <Link href={`${urls.contacts}/${contact?.email}/goals/details/${goalId}/?id=${contact?.id}&name=${contact?.firstName}`} className='bg-white border flex justify-center items-center h-8 w-8 rounded-full'>
+    <Link href={`${urls.contacts}/${contact?.id}/goals/details/${goalId}/`} className='bg-white border flex justify-center items-center h-8 w-8 rounded-full'>
         <ArrowLeft size={18}/>
     </Link >  )
 }

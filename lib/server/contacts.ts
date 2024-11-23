@@ -42,14 +42,14 @@ export const fetchContacts = async (
 };
 
 export const fetchContact = async (
-  contactEmail: string
+  contactId: string
 ): Promise<{data:BookingsContact|null, error: string | null;}> => {
     const supabase = createClient()
   try {
     const { data,  error } = await supabase
       .from('bookingsContact')
       .select('*') 
-      .eq('email', contactEmail)
+      .eq('id', contactId)
       .or('status.is.null,status.neq.ARCHIVED')
       .single()
 

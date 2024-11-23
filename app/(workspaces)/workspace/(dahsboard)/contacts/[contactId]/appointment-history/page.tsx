@@ -1,19 +1,23 @@
 import AppointmentHistory from '@/components/workspace/contact/AppointmentHistory';
+import { urls } from '@/constants';
 import { getUserData } from '@/lib/server';
+import { fetchContact } from '@/lib/server/contacts';
 import { createClient } from '@/utils/supabase/server';
+import { redirect } from 'next/navigation';
 import React from 'react'
 
 const ContactAppointmentHistory = async ({
   searchParams: { s },
-  params: {contactEmail },
+  params: {contactId },
 }: {
   searchParams: { s: string };
-  params: { contactEmail: string };
+  params: { contactId: string };
 }) => {
   const supabase = createClient()
   const {user} = await getUserData()
-  const decodedEmail = decodeURIComponent(contactEmail);
   let limit=10
+  const {data:contact, error:contactErr} = await fetchContact(contactId)
+  if(!contact) redirect(`${urls.contacts}/?notFound=The contact does not exist`)
   let query = supabase
           .from('bookings')
           .select(
@@ -21,14 +25,14 @@ const ContactAppointmentHistory = async ({
             { count: 'exact' }
           )
           .eq('createdBy', user?.id)
-          .eq('participantEmail', decodedEmail)
+          .eq('participantEmail', contact?.email)
           .range(0, limit-1)
 
           const {data:initialData}= await query
           const { data, count, error } = await query.order('appointmentDate', { ascending: false })
 
   // console.log({
-  //   contactEmail, // Original URI-encoded email
+  //   contactId, // Original URI-encoded email
   //   decodedEmail, // Decoded email string
   //   d:{ data, count, first:initialData?.[0]?.created_at, error } 
   // });
