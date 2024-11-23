@@ -1,9 +1,11 @@
-import { Button } from '@/components/ui/button'
-import { FileStroke, urls } from '@/constants'
+import { FileStroke,  } from '@/constants'
+import { useAppointmentContext } from '@/context/AppointmentContext'
 import Link from 'next/link'
 import React from 'react'
+import AddNewGoalBtn from './AddNewGoalBtn'
 
 const EmptyGoal = () => {
+  const {contact} = useAppointmentContext()
   return (
     <section className="h-screen bg-white w-full flex pt-24  items-center flex-col gap-3 text-center">
         <FileStroke/>
@@ -12,8 +14,7 @@ const EmptyGoal = () => {
         </h4>
         <p>Add Goals to this contact.</p>
 
-        <Link href={urls.contactsGoalsCreate}><Button className='bg-basePrimary'>Add Goal</Button>
-        </Link>
+        <AddNewGoalBtn/>
     </section>
   )
 }

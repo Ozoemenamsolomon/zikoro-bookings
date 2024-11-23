@@ -1,25 +1,38 @@
+'use client'
+
 import { CenterModal } from '@/components/shared/CenterModal'
 import React, { useCallback, useState } from 'react'
 import CustomInput from '../ui/CustomInput'
-import { KeyResultsType, useGoalContext } from '@/context/GoalContext'
+import {  useGoalContext } from '@/context/GoalContext'
 import { CustomSelect } from '@/components/shared/CustomSelect'
 import { DatePicker } from '../ui/DatePicker'
 import { Button } from '@/components/ui/button'
 import ValueMetrics from './ValueMetrics'
-import { LikeIcon, ListView, OneTwoThree } from '@/constants'
+import { LikeIcon, ListView, OneTwoThree, urls } from '@/constants'
+import { PostRequest } from '@/utils/api'
+import { toast } from 'react-toastify'
+import { useRouter } from 'next/navigation'
+import { useAppointmentContext } from '@/context/AppointmentContext'
 
-const KeyResultForm = ({isActive}:{isActive:()=>void}) => {
-  const {keyResultData, setKeyResultData, isSubmitting, setIsSubmitting,} = useGoalContext()
+const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
+  const {push,refresh} = useRouter()
+  const {contact} =useAppointmentContext()
+  const {keyResultData, setKeyResultData, goalData, setGoalData, metricValue, setMetricValue, isSubmitting, setIsSubmitting,} = useGoalContext()
 
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({})
+  const [success, setSuccess] = useState<string>('')
   
-  // Owner options for the select dropdown
   const ownerOptions = [
-    { value: 'owner1', label: 'Owner 1' },
-    { value: 'owner2', label: 'Owner 2' },
+    // { value:user?.id,  
+    //   label: `${user?.firstName} ${user?.lastName}` },
+    { value: 122,  
+      label: 'Ebuka Johnson' },
+    { value:102,
+      label: 'Smart Udoka' },
+    { value:87, 
+      label: 'Bodu Joel' },
   ]
 
-  // Handle change for inputs
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setKeyResultData(prev => ({ ...prev, [name]: value }))
@@ -29,48 +42,110 @@ const KeyResultForm = ({isActive}:{isActive:()=>void}) => {
     setKeyResultData((prevData) => ({ ...prevData, [field]: date }));
   };
 
-  const handleSelectChange = (value: string, field?:string) => {
-    if(field)
-        setKeyResultData((prevData) => ({ ...prevData, [field]: value }));
+  const handleSelectChange = (value: number) => {
+    const selectedOption = ownerOptions.find(option => option.value === Number(value));
+    if (!selectedOption) {
+      return;
+    }
+        setKeyResultData((prevData) => ({ ...prevData, keyResultOwner: selectedOption?.value }));
   };
 
-   // Basic form validation
    const validateForm = () => {
     const newErrors: { [key: string]: string | null } = {}
-    if (!keyResultData.name) newErrors.name = 'Goal name is required.'
-    if (!keyResultData.description) newErrors.description = 'Description is required.'
-    if (!keyResultData.owner) newErrors.owner = 'Please select an owner.'
+    if (!keyResultData.keyResultTitle) newErrors.keyResultTitle = 'Goal name is required.'
+    // if (!keyResultData.description) newErrors.description = 'Description is required.'
+    if (!keyResultData.keyResultOwner) newErrors.keyResultOwner = 'Please select an owner.'
     if (!keyResultData.startDate) newErrors.startDate = 'Start date is required.'
     if (!keyResultData.endDate) newErrors.endDate = 'End date is required.'
+    if (!keyResultData.unit) newErrors.endDate = 'The Unit of measurement is required.'
+    if (goalData.startDate && goalData.endDate && new Date(goalData.startDate) > new Date(goalData.endDate)) {
+        newErrors.endDate = 'End date must be after start date.';
+      }
     setErrors(newErrors)
     return Object.values(newErrors).every(error => !error)
   }
 
-    // Handle submit with simulated async API call
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        // setErrors({})
-        // if (!validateForm()) return
-        validateForm()
+        setErrors({})
+        setSuccess('')
+        if (!validateForm()) return
+
         setIsSubmitting(true)
         try {
-          // Simulate API call
-          await new Promise(res => setTimeout(res, 1000))
-          console.log('Goal submitted successfully!', errors, keyResultData)
+            if(mode==='edit'){
+                const { data, error } = await PostRequest({url:'/api/goals/createKeyResult', 
+                    body:{ 
+                        keyResultData:{
+                            ...keyResultData,
+                            goalId:goalData.id,
+                            organization: goalData.organization,
+                            createdBy: goalData.createdBy,
+                            currentValue: metricValue.startValue,
+                            targetValue: metricValue.targetValue,
+                            unit: metricValue.unit ,
+                        },
+                        timeLineData: {
+                            organizationId: goalData.organization,
+                            createdBy: goalData.createdBy,
+                            value: keyResultData?.currentValue
+                        },
+                    }
+                })
+                if (error) {
+                    setErrors({general:error})
+                } else {
+                    // console.log(data)
+                    toast.success('New key result added')
+                    // setSuccess('New key result added')
+                    setKeyResultData({})
+                    setGoalData({})
+                    refresh()
+                }
+            } else {
+                const { data, error } = await PostRequest({url:'/api/goals/create', 
+                    body:{ 
+                        goalData:{...goalData, contactId:contact?.id},
+                        keyResultData:{
+                            ...keyResultData,
+                            organization: goalData.organization,
+                            createdBy: goalData.createdBy,
+                            currentValue: metricValue.startValue,
+                            targetValue: metricValue.targetValue,
+                            unit: metricValue.unit ,
+                        },
+                        timeLineData: {
+                            organizationId: goalData.organization,
+                            createdBy: goalData.createdBy,
+                            value: keyResultData?.currentValue
+                        },
+                    }
+                })
+                if (error) {
+                    setErrors({general:error})
+                } else {
+                    // console.log(data)
+                    toast.success('Goal created')
+                    setSuccess('Goal created successfully')
+                    setKeyResultData({})
+                    setGoalData({})
+                    push(`${urls.contacts}/${contact?.email}/goals/details/${data.id}?id=${contact?.id}&name=${contact?.firstName}`)
+                }
+            }
         } catch (error) {
           console.error('Submission failed:', error)
         } finally {
           setIsSubmitting(false)
         }
       }
-    
+
   return (
     <CenterModal
         className='rounded-md bg-white max-w-2xl w-full px-4 py-8 overflow-auto sm:max-h-[95vh] hide-scrollbar'
+        disabled={!isActive}
         trigerBtn={
             <button
-                type="submit"
-                // disabled={!isActive()}
+                type="button"
                 className="text-basePrimary underline px-4"
                 > Add Key Result
             </button>
@@ -79,17 +154,17 @@ const KeyResultForm = ({isActive}:{isActive:()=>void}) => {
         <section className="">
             <div className="border-b pb-3 w-full">
                 <h4 className="text-lg font-bold">New Key Result</h4>
-                <p className="pt-3 font-semibold">Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat iure dolorem adipisci saepe molestias.</p>
+                <p className="pt-3 font-semibold">{goalData?.goalName}</p>
             </div>
 
 
             <form className="pt-8 space-y-3 max-w-lg mx-auto" onSubmit={handleSubmit} >
             <CustomInput
-                label="Goal Name"
-                name="name"
-                value={keyResultData.name}
-                error={errors.name}
-                placeholder="Enter Goal name"
+                label="Key result title"
+                name="keyResultTitle"
+                value={keyResultData?.keyResultTitle || ''}
+                error={errors.keyResultTitle}
+                placeholder="Enter title"
                 isTextarea
                 isRequired
                 onChange={handleChange}
@@ -99,11 +174,11 @@ const KeyResultForm = ({isActive}:{isActive:()=>void}) => {
             <CustomInput
                 label="Description"
                 name="description"
-                value={keyResultData.description}
+                value={keyResultData?.description || ''}
                 error={errors.description}
                 placeholder="Enter detailed description of the goal"
                 isTextarea
-                isRequired
+                // isRequired
                 onChange={handleChange}
             />
 
@@ -112,7 +187,8 @@ const KeyResultForm = ({isActive}:{isActive:()=>void}) => {
                 label="Owner"
                 placeholder="Select an owner"
                 options={ownerOptions}
-                error={errors?.ownerOptions!}
+                error={errors?.keyResultOwner!}
+                value={keyResultData?.keyResultOwner || ''}
                 onChange={handleSelectChange}
             />
 
@@ -121,7 +197,7 @@ const KeyResultForm = ({isActive}:{isActive:()=>void}) => {
                     <DatePicker
                         label="Start Date"
                         name="startDate"
-                        value={keyResultData.startDate!}
+                        value={keyResultData?.startDate!}
                         onChange={(date) => handleDateChange(date!, 'startDate')}
                         placeholder="Pick a start date"
                         error={errors?.startDate!}
@@ -132,7 +208,7 @@ const KeyResultForm = ({isActive}:{isActive:()=>void}) => {
                     <DatePicker
                         label="End Date"
                         name="endDate"
-                        value={keyResultData.endDate!}
+                        value={keyResultData?.endDate!}
                         onChange={(date) => handleDateChange(date!,'endDate')}
                         placeholder="Pick an end date"
                         className='py- '
@@ -151,11 +227,11 @@ const KeyResultForm = ({isActive}:{isActive:()=>void}) => {
                                     (prev)=>{
                                     return {
                                         ...prev,
-                                        metricType: type
+                                        measurementType: type
                                     }
                                 })}
                                 className={`
-                                ${keyResultData.metricType===type ? 'border-purple-300 border-2':''} w-24 h-24 flex flex-col rounded-md items-center justify-center border hover:shadow duration-300 text-sm`}>
+                                ${keyResultData?.measurementType===type ? 'border-purple-300 border-2':''} w-24 h-24 flex flex-col rounded-md items-center justify-center border hover:shadow duration-300 text-sm`}>
                                     {icon}
                                     {label}
                                 </div>
@@ -167,13 +243,15 @@ const KeyResultForm = ({isActive}:{isActive:()=>void}) => {
             </div>
 
             {
-                keyResultData.metricType==='value' &&
-                <ValueMetrics/>
+                keyResultData?.measurementType==='value' &&
+                <ValueMetrics errors={errors}/>
             }
 
             <div className=" w-full pt-4 flex flex-col items-center">
-                <Button type='submit' className='bg-basePrimary'>
-                    Save
+                {errors?.general && <small className="text-[12px] text-center text-red-600">{errors.general}</small>}
+                {success && <small className="text-[12px] text-center text-basePrimary">{success}</small>}
+                <Button type='submit' disabled={isSubmitting} className='bg-basePrimary'>
+                    {isSubmitting ? 'submitting...' : 'Save'}
                 </Button>
             </div>
             </form>
@@ -185,7 +263,7 @@ const KeyResultForm = ({isActive}:{isActive:()=>void}) => {
 export default KeyResultForm
 
 
-const metricsTypes:{
+export const metricsTypes:{
         icon: React.ReactNode,
         type: 'value' | 'milestone' | 'boolean',
         label: string,

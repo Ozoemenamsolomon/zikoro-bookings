@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 
 const page = () => {
-    redirect('/workspace/appointments')
+    redirect('/workspace/schedule')
 }
 
 export default page

@@ -1,22 +1,25 @@
 'use client'
+import ErrorHandler from '@/components/shared/ErrorHandler'
 import PaginationMain from '@/components/shared/PaginationMain'
+import { limit } from '@/constants'
 import { useAppointmentContext } from '@/context/AppointmentContext'
 import useUserStore from '@/store/globalUserStore'
+import { Booking } from '@/types/appointments'
 import { format, startOfToday } from 'date-fns'
 import { FolderOpen, Loader2Icon, SquarePen } from 'lucide-react'
 import React, { Suspense, useCallback, useEffect, useState } from 'react'
 
-const AppointmentHistory = () => {
+const AppointmentHistory = ({bookingsData,countSize,errorString,initialItem}:{
+    bookingsData:Booking[]|null,countSize:number,errorString:string|null,initialItem?:string
+}) => {
     const {contact} = useAppointmentContext()
     const { user } = useUserStore()
-    const [bookings, setBookings] = useState<any[]>([])
-    const [totalPages, setTotalPages] = useState<number>(0)
+    const [bookings, setBookings] = useState<Booking[]|null>(bookingsData||[])
+    const [totalPages, setTotalPages] = useState<number>(Math.ceil((countSize || 0) / limit))
     const [loading, setLoading] = useState(false)
-    const [isError, setIsError] = useState<string>('')
+    const [isError, setIsError] = useState<string|null>(errorString)
     const [currentPage, setCurrentPage] = useState(1)
-    const [size, setSize] = useState<{size:number|null,firstItem:string|null}>({size:null,firstItem:''})
-    const limit = 10
-    // const today = useCallback(()=>startOfToday().toISOString(),[]) 
+    const [size, setSize] = useState<{size:number|null, firstItem:string|null}> ({size:countSize, firstItem: initialItem||''})
   
     const fetchAppointments = async (page: number = 1) => {
       setIsError('')
@@ -43,12 +46,6 @@ const AppointmentHistory = () => {
       }
     }
   
-    useEffect(() => {
-      if (contact) {
-        fetchAppointments(1)
-      }
-    }, [contact,])
-  
     const handlePageChange = (page: number) => {
       setCurrentPage(page)
       fetchAppointments(page)
@@ -60,13 +57,14 @@ const AppointmentHistory = () => {
                 <header className=" w-full py-4 text-center border-b bg-baseBg font-medium">
                     Appointment History
                 </header>
-
+                
                 <section className="flex flex-col gap-3 w-full min-h-screen p-3">
                     {loading ? (
                         <div className="flex justify-center w-full h-full text-basePrimary/50 py-20"><Loader2Icon className='animate-spin'/></div>
                     ) : isError ? (
-                        <p className="text-center py-20 w-full text-red-500">{isError}</p>
-                    ) : bookings.length ? (
+                        // <p className="text-center py-20 w-full text-red-500">{isError}</p>
+                        <ErrorHandler/>
+                    ) : bookings?.length ? (
                         <>
                         <div className="w-full text-center py-4 font">
                             Booked {size?.size} times since {size?.firstItem ? format(new Date(size?.firstItem), 'dd MMMM, yyyy') : null}
@@ -79,10 +77,10 @@ const AppointmentHistory = () => {
                                 <div className="flex gap-3 items-center">
                                     <div className="rounded-md text-center overflow-hidden border shrink-0 w-24">
                                         <div className="p-1 w-full bg-baseBg text-sm shrink-0 overflow-clip">
-                                            {format(new Date(appointmentDate), 'MMMM')}
+                                            {format(new Date(appointmentDate!), 'MMMM')}
                                         </div>
                                         <div className="p-2 border-t text-base font-semibold">
-                                            {format(new Date(appointmentDate), 'd')}
+                                            {format(new Date(appointmentDate!), 'd')}
                                         </div>
                                     </div>
 

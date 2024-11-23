@@ -3,7 +3,7 @@ import { urls } from "@/constants";
   export const contactNav = [
     {
       label: 'All',
-      link: urls.contacts,
+      link: '',
     },
     // {
     //   label: 'Favorite',
@@ -18,11 +18,11 @@ import { urls } from "@/constants";
   export const contactNavSub = [
     {
       label: 'Contact Info',
-      link: urls.contacts,
+      link: '',
     },
     {
       label: 'Appointment History',
-      link: urls.contactsAppointmentHistory,
+      link: 'appointment-history',
     },
     // {
     //   label: 'Notes',
@@ -38,7 +38,7 @@ import { urls } from "@/constants";
     // },
     {
       label: 'Goals',
-      link: urls.contactsGoals,
+      link: 'goals',
     },
   ]
   
