@@ -10,11 +10,9 @@ const ContactNotesPage = async ({
   searchParams: { s: string };
 }) => {
   return ( 
-    <ContactLayout searchquery={s} >
-        <ContactSubLayout>
+
             <ContactNotes/>
-        </ContactSubLayout>
-    </ContactLayout>
+
   )
 }
 

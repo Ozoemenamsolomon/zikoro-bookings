@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
       }
     const supabase = createClient()
-    const {goalData,keyResultData,timeLineData} = await req.json()
+    const {goalData,keyResultData} = await req.json()
     // console.log({goalData,keyResultData,timeLineData} )
     try {
       const { data, error } = await supabase
@@ -31,16 +31,6 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ data:null, error:keyResultErr.message }, { status: 200 });
       }
 
-      const { data:timeline, error:timelineError } = await supabase
-        .from('keyResultsTimeline')
-        .insert({...timeLineData, keyResultId:keyResult.id })
-        .select()
-        .single()
-        
-      if(timelineError) {
-        console.error("Error inserting TIMELINE:", timelineError.message);
-        return NextResponse.json({ data:null, error:timelineError.message }, { status: 200 });
-      }
     // console.log('GOAL CREATED:', {data,keyResult,timeline})
     return NextResponse.json({ data, error}, { status: 200 });
     } catch (error) {

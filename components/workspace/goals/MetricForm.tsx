@@ -83,6 +83,7 @@ const MetricForm = ({ keyResult }: { keyResult: KeyResult }) => {
     if (!validate()) return;
 
     try {
+      setLoading(true)
         if(false){
             // const { data, error } = await PostRequest({url:'/api/goals/submitMetric', 
             //     body:{ 

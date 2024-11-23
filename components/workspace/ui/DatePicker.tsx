@@ -21,6 +21,7 @@ interface DatePickerProps {
   value?: Date | string
   onChange: (date: Date | undefined, field?:string) => void
   disabled?: boolean
+  isRequired?: boolean
   placeholder?: string
   className?: string
 }
@@ -32,6 +33,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   value,
   onChange,
   disabled = false,
+  isRequired = false,
   placeholder = "Pick a date",
   className,
 }) => {
@@ -48,7 +50,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     <div className=" w-full">
       {label && (
         <label htmlFor={name} className="block text-sm mb-1 font-">
-          {label}
+          {label} {isRequired && <span className="text-red-500">*</span>}
         </label>
       )}
       
