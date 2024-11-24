@@ -3,13 +3,12 @@
 import { PenLine } from 'lucide-react';
 import { CenterModal } from '@/components/shared/CenterModal';
 import { Button } from '@/components/ui/button';
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import 'react-quill/dist/quill.snow.css';  
 import { toast } from 'react-toastify';
 import { PostRequest } from '@/utils/api';
 import { useAppointmentContext } from '@/context/AppointmentContext';
 import { useGoalContext } from '@/context/GoalContext';
-import { urls } from '@/constants';
 import { KeyResult } from '@/types/goal';
 import { useRouter } from 'next/navigation';
 import ValueMetrics from './ValueMetrics';
@@ -17,30 +16,25 @@ import CustomInput from '../ui/CustomInput';
 import { CustomSelect } from '@/components/shared/CustomSelect';
 import { DatePicker } from '../ui/DatePicker';
 import { metricsTypes } from './KeyResultForm';
+import useUserStore from '@/store/globalUserStore';
 
 const EditKeyResultDetails = ({ keyResult, text }: { keyResult: KeyResult, text?:string }) => {
   
-  const {push,refresh} = useRouter()
-  const {contact} =useAppointmentContext()
-  const {metricValue, setMetricValue, isSubmitting, setIsSubmitting,} = useGoalContext()
+  const {refresh} = useRouter()
+  const {user} = useUserStore()
+  const {metricValue,  isSubmitting, setIsSubmitting,} = useGoalContext()
   const [keyResultData, setKeyResultData] = useState<KeyResult>()
 
   useEffect(() => {
         setKeyResultData(keyResult)
-        setMetricValue((prev)=>{
-            return {
-                ...prev,
-                targetValue: keyResult?.targetValue || 0,
-                startValue: keyResult?.currentValue || 0,
-                unit: keyResult?.unit || '',
-            }
-        })
   }, [keyResult])
 
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({})
   const [success, setSuccess] = useState<string>('')
 
   const ownerOptions = [
+    { value:user?.id,  
+      label: `${user?.firstName} ${user?.lastName}` },
     { value: 122,  
       label: 'Ebuka Johnson' },
     { value:102,
@@ -52,10 +46,12 @@ const EditKeyResultDetails = ({ keyResult, text }: { keyResult: KeyResult, text?
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setKeyResultData(prev => ({ ...prev, [name]: value }))
+    setErrors(prev => ({ ...prev, [name]: '' }))
   }, [])
 
   const handleDateChange = (date: Date | null, field:string) => {
     setKeyResultData((prevData) => ({ ...prevData, [field]: date }));
+    setErrors(prev => ({ ...prev, [field]: '' }))
   };
 
   const handleSelectChange = (value: number) => {
@@ -63,18 +59,21 @@ const EditKeyResultDetails = ({ keyResult, text }: { keyResult: KeyResult, text?
     if (!selectedOption) {
       return;
     }
-        setKeyResultData((prevData) => ({ ...prevData, keyResultOwner: selectedOption?.value }));
+        setKeyResultData((prevData) => ({ ...prevData, keyResultOwner: Number(selectedOption?.value!)}));
   };
 
    const validateForm = () => {
     const newErrors: { [key: string]: string | null } = {}
     if (!keyResultData?.keyResultTitle) newErrors.keyResultTitle = 'Goal name is required.'
-    // if (!keyResultData.description) newErrors.description = 'Description is required.'
-    if (!keyResultData?.keyResultOwner) newErrors.keyResultOwner = 'Please select an owner.'
+    // if (!keyResultData?.keyResultOwner) newErrors.keyResultOwner = 'Please select an owner.'
     if (!keyResultData?.startDate) newErrors.startDate = 'Start date is required.'
     if (!keyResultData?.endDate) newErrors.endDate = 'End date is required.'
     if (!keyResultData?.unit) newErrors.endDate = 'Unit is required.'
-
+    if (!String(keyResultData?.targetValue)) newErrors.targetValue = 'Target value is required.'
+    if (!String(keyResultData?.currentValue)) newErrors.currentValue = 'Start value is required.'
+    if (keyResultData?.startDate && keyResultData?.endDate && new Date(keyResultData?.startDate) > new Date(keyResultData?.endDate)) {
+        newErrors.endDate = 'End date must be after start date.';
+      }
     setErrors(newErrors)
     return Object.values(newErrors).every(error => !error)
   }
@@ -91,9 +90,6 @@ const EditKeyResultDetails = ({ keyResult, text }: { keyResult: KeyResult, text?
             body:{ 
                 keyResultData:{
                     ...keyResultData,
-                    currentValue: metricValue.startValue,
-                    targetValue: metricValue.targetValue,
-                    unit: metricValue.unit ,
                 },
             }
         })
@@ -149,7 +145,6 @@ const EditKeyResultDetails = ({ keyResult, text }: { keyResult: KeyResult, text?
                 error={errors?.description}
                 placeholder="Enter detailed description of the goal"
                 isTextarea
-                isRequired
                 onChange={handleChange}
             />
 
@@ -172,6 +167,7 @@ const EditKeyResultDetails = ({ keyResult, text }: { keyResult: KeyResult, text?
                         onChange={(date) => handleDateChange(date!, 'startDate')}
                         placeholder="Pick a start date"
                         error={errors?.startDate!}
+                isRequired
                         className='w- '
                     />
 
@@ -183,7 +179,8 @@ const EditKeyResultDetails = ({ keyResult, text }: { keyResult: KeyResult, text?
                         onChange={(date) => handleDateChange(date!,'endDate')}
                         placeholder="Pick an end date"
                         className='py- '
-                        error={errors?.endDate!}
+                isRequired
+                error={errors?.endDate!}
                     />
             </div>
 
@@ -200,7 +197,7 @@ const EditKeyResultDetails = ({ keyResult, text }: { keyResult: KeyResult, text?
 
             {
                 keyResultData?.measurementType==='value' &&
-                <ValueMetrics errors={errors}/>
+                <ValueMetrics keyResultData={keyResultData} handleChange={handleChange} errors={errors}/>
             }
 
             <div className=" w-full pt-4 flex flex-col items-center">

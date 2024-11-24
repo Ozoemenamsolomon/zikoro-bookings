@@ -4,20 +4,18 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import CustomInput from '../ui/CustomInput'
 import { CustomSelect } from '@/components/shared/CustomSelect'
 import { DatePicker } from '../ui/DatePicker'
-import KeyResultForm from './KeyResultForm'
 import { useGoalContext } from '@/context/GoalContext'
 import useUserStore from '@/store/globalUserStore'
 import { Goal } from '@/types/goal'
 import AddKeyResult from './AddKeyResult'
-import KeyResultList from './KeyResultList'
+import { useAppointmentContext } from '@/context/AppointmentContext'
 
 
 const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children?:React.ReactNode }) => {
-  const {goalData,setGoalData,setKeyResultData,} = useGoalContext()
-
+  const {goalData,setGoalData,errors, setErrors,} = useGoalContext()
+  const {contact} = useAppointmentContext()
   const {user} = useUserStore()
 
-  const [errors, setErrors] = useState<{ [key: string]: string | null }>({})
   const [isValidated, setIsValid] = useState<boolean>()
 
   useEffect(() => {
@@ -31,12 +29,11 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
       startDate: null,
       endDate: null,
       progress: null,
+      contactId: String(contact?.id!),
       // status: 'DRAFT',
   };
     if(goal){
       setGoalData({ ...initialFormData, ...goal });
-      // TODO: Edit mode ...
-      // setKeyResultData({ ...initialFormData, ...goal }); // fetched list of key results associated with gaolId
     }else{
       setGoalData(initialFormData)
     }
@@ -56,10 +53,12 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setGoalData(prev => ({ ...prev, [name]: value }))
+    setErrors(prev => ({ ...prev, [name]: '' }))
   }, [])
 
   const handleDateChange = (date: Date | null, field:string) => {
     setGoalData((prevData) => ({ ...prevData, [field]: date }));
+    setErrors(prev => ({ ...prev, [field]: '' }))
   };
 
   const handleSelectChange = (value: number | string) => {
@@ -79,7 +78,6 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
   const validateForm = () => {
     const newErrors: { [key: string]: string | null } = {}
     if (!goalData.goalName) newErrors.goalName = 'Goal name is required.'
-    if (!goalData.description) newErrors.description = 'Description is required.'
     if (!goalData.goalOwner) newErrors.goalOwner = 'Please select an owner.'
     if (!goalData.startDate) newErrors.startDate = 'Start date is required.'
     if (!goalData.endDate) newErrors.endDate = 'End date is required.'
@@ -117,7 +115,6 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
         error={errors.description}
         placeholder="Enter detailed description of the goal"
         isTextarea
-        isRequired
         onChange={handleChange}
       />
 
@@ -141,6 +138,7 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
                 onChange={(date) => handleDateChange(date!, 'startDate')}
                 placeholder="Pick a start date"
                 error={errors?.startDate!}
+                isRequired
                 className='w- '
             />
 
@@ -153,6 +151,7 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
                 placeholder="Pick an end date"
                 className='py- '
                 error={errors?.endDate!}
+                isRequired
             />
       </div>
       </form>

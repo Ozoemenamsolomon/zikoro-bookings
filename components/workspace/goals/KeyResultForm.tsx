@@ -1,7 +1,7 @@
 'use client'
 
 import { CenterModal } from '@/components/shared/CenterModal'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import CustomInput from '../ui/CustomInput'
 import {  useGoalContext } from '@/context/GoalContext'
 import { CustomSelect } from '@/components/shared/CustomSelect'
@@ -13,18 +13,26 @@ import { PostRequest } from '@/utils/api'
 import { toast } from 'react-toastify'
 import { useRouter } from 'next/navigation'
 import { useAppointmentContext } from '@/context/AppointmentContext'
+import useUserStore from '@/store/globalUserStore'
+import { revalidatePath } from 'next/cache'
+import { Goal } from '@/types/goal'
 
-const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
+const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, mode?:string}) => {
   const {push,refresh} = useRouter()
+  const {user} = useUserStore()
   const {contact} =useAppointmentContext()
-  const {keyResultData, setKeyResultData, goalData, setGoalData, metricValue, setMetricValue, isSubmitting, setIsSubmitting,} = useGoalContext()
+  const {keyResultData, setKeyResultData, goalData, setGoalData, isSubmitting, setIsSubmitting,} = useGoalContext()
 
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({})
   const [success, setSuccess] = useState<string>('')
+
+  useEffect(() => {
+    if(goal) setGoalData(goal)
+  }, [goal])
   
   const ownerOptions = [
-    // { value:user?.id,  
-    //   label: `${user?.firstName} ${user?.lastName}` },
+    { value:user?.id,  
+      label: `${user?.firstName} ${user?.lastName}` },
     { value: 122,  
       label: 'Ebuka Johnson' },
     { value:102,
@@ -36,10 +44,12 @@ const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setKeyResultData(prev => ({ ...prev, [name]: value }))
+    setErrors(prev => ({ ...prev, [name]: '' }))
   }, [])
 
   const handleDateChange = (date: Date | null, field:string) => {
     setKeyResultData((prevData) => ({ ...prevData, [field]: date }));
+    setErrors(prev => ({ ...prev, [field]: '' }))
   };
 
   const handleSelectChange = (value: number) => {
@@ -47,18 +57,20 @@ const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
     if (!selectedOption) {
       return;
     }
-        setKeyResultData((prevData) => ({ ...prevData, keyResultOwner: selectedOption?.value }));
+        setKeyResultData((prevData) => ({ ...prevData, keyResultOwner: Number(selectedOption?.value!) }));
   };
 
    const validateForm = () => {
     const newErrors: { [key: string]: string | null } = {}
-    if (!keyResultData.keyResultTitle) newErrors.keyResultTitle = 'Goal name is required.'
+    if (!keyResultData.keyResultTitle) newErrors.keyResultTitle = 'Key result title is required.'
     // if (!keyResultData.description) newErrors.description = 'Description is required.'
-    if (!keyResultData.keyResultOwner) newErrors.keyResultOwner = 'Please select an owner.'
+    // if (!keyResultData.keyResultOwner) newErrors.keyResultOwner = 'Please select an owner.'
     if (!keyResultData.startDate) newErrors.startDate = 'Start date is required.'
     if (!keyResultData.endDate) newErrors.endDate = 'End date is required.'
-    if (!keyResultData.unit) newErrors.endDate = 'The Unit of measurement is required.'
-    if (goalData.startDate && goalData.endDate && new Date(goalData.startDate) > new Date(goalData.endDate)) {
+    if (!keyResultData.unit) newErrors.unit = 'The Unit of measurement is required.'
+    if (!keyResultData.targetValue) newErrors.targetValue = 'Target value is required.'
+    if (!keyResultData.currentValue) newErrors.currentValue = 'Start value is required.'
+    if (keyResultData.startDate && keyResultData.endDate && new Date(keyResultData.startDate) > new Date(keyResultData.endDate)) {
         newErrors.endDate = 'End date must be after start date.';
       }
     setErrors(newErrors)
@@ -81,14 +93,6 @@ const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
                             goalId:goalData.id,
                             organization: goalData.organization,
                             createdBy: goalData.createdBy,
-                            currentValue: metricValue.startValue,
-                            targetValue: metricValue.targetValue,
-                            unit: metricValue.unit ,
-                        },
-                        timeLineData: {
-                            organizationId: goalData.organization,
-                            createdBy: goalData.createdBy,
-                            value: keyResultData?.currentValue
                         },
                     }
                 })
@@ -110,26 +114,18 @@ const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
                             ...keyResultData,
                             organization: goalData.organization,
                             createdBy: goalData.createdBy,
-                            currentValue: metricValue.startValue,
-                            targetValue: metricValue.targetValue,
-                            unit: metricValue.unit ,
-                        },
-                        timeLineData: {
-                            organizationId: goalData.organization,
-                            createdBy: goalData.createdBy,
-                            value: keyResultData?.currentValue
+                            contactId: contact?.id,
                         },
                     }
                 })
                 if (error) {
                     setErrors({general:error})
                 } else {
-                    // console.log(data)
                     toast.success('Goal created')
                     setSuccess('Goal created successfully')
                     setKeyResultData({})
                     setGoalData({})
-                    push(`${urls.contacts}/${contact?.email}/goals/details/${data.id}?id=${contact?.id}&name=${contact?.firstName}`)
+                    push(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`)
                 }
             }
         } catch (error) {
@@ -202,6 +198,7 @@ const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
                         placeholder="Pick a start date"
                         error={errors?.startDate!}
                         className='w- '
+                        isRequired
                     />
 
                     {/* End Date */}
@@ -213,6 +210,7 @@ const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
                         placeholder="Pick an end date"
                         className='py- '
                         error={errors?.endDate!}
+                        isRequired
                     />
             </div>
 
@@ -244,7 +242,7 @@ const KeyResultForm = ({isActive, mode}:{isActive?:boolean, mode?:string}) => {
 
             {
                 keyResultData?.measurementType==='value' &&
-                <ValueMetrics errors={errors}/>
+                <ValueMetrics keyResultData={keyResultData} handleChange={handleChange} errors={errors}/>
             }
 
             <div className=" w-full pt-4 flex flex-col items-center">

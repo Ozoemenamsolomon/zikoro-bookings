@@ -25,10 +25,10 @@ const DropDownGoalAction = ({goal,}:{goal:Goal})  => {
         }
       >
         <div className="bg-white shadow rounded-md p-4 space-y-3 text-sm w-full text-gray-800">
-          <Link href={`${urls.contacts}/${contact?.email}/goals/details/${goal.id}?id=${contact?.id}&name=${contact?.firstName}`} className='block hover:text-gray-950 duration-300 '>
+          <Link href={`${urls.contacts}/${contact?.id}/goals/details/${goal.id}`} className='block hover:text-gray-950 duration-300 '>
             Preview Goal
           </Link>
-          <Link href={`${urls.contacts}/${contact?.email}/goals/edit/${goal.id}?id=${contact?.id}&name=${contact?.firstName}`} className='block hover:text-gray-950 duration-300 '>
+          <Link href={`${urls.contacts}/${contact?.id}/goals/edit/${goal.id}`} className='block hover:text-gray-950 duration-300 '>
             Edit Goal
           </Link>
 

@@ -1,31 +1,31 @@
 import Goals from "@/components/workspace/goals";
-import { limit } from "@/constants";
+import { limit, urls } from "@/constants";
 import { getUserData } from "@/lib/server";
 import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 
 const Contacts = async ({
-  searchParams: { id },
-  params: {contactEmail },
+  params: {contactId },
 }: {
-  searchParams: { s: string, id:string, name:string };
-  params: { contactEmail: string };
+  searchParams: { s: string,};
+  params: { contactId: string };
 }) => {
   const supabase = createClient()
   const {user} = await getUserData()
-  // const decodedEmail = decodeURIComponent(contactEmail);
 
   const { data, count, error } = await supabase
     .from('goals')
     .select('*', { count: 'exact' })
     .eq('createdBy', user?.id)
-    .eq('contactId', id)
+    .eq('contactId', contactId)
     .range(0, limit - 1)
     .order('created_at', {ascending:false})
 
-  // console.log({ data, count, error })
+  if(!data) redirect(urls.contacts+'?notFound=The contact was not found')
+
 
   return ( 
-    <Goals goalsData={data} countSize={count!} errorString={error?.message||''}  />
+    <Goals goalsData={data} countSize={count!} errorString={error || ''}  />
     );
 };
 

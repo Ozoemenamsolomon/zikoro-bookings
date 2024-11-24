@@ -132,7 +132,6 @@ const handleFileUpload = async () => {
   }
 };
 
-
   const removeItem = (url: string) => {
     setPreviewUrls((prev) => prev.filter((item) => item.url !== url));
     setFiles?.(files?.filter((file) => URL.createObjectURL(file) !== url) || []);

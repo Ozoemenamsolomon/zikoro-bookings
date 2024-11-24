@@ -1,35 +1,18 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import CustomInput from '../ui/CustomInput'
-import { useGoalContext } from '@/context/GoalContext'
+import { KeyResult } from '@/types/goal'
 
-const ValueMetrics = ({errors}:{errors:{[key:string]: string|null}}) => {
-    const {metricValue, setMetricValue, setKeyResultData} = useGoalContext()
-      // Handle change for inputs
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setMetricValue(prev => ({ ...prev, [name]: value }))
-  }, [])
-  
-  // const removeMetric = () => {
-  //   setKeyResultData((prev)=>{
-  //     return {
-  //       ...prev,
-  //       measurementType: null,
-  //       currentValue: null,
-  //       targetValue: null,
-  //       unit: null
-  //     }
-  //   })
-
-  // }
+const ValueMetrics = ({errors, keyResultData, handleChange}:
+  {errors:{[key:string]: string|null}, handleChange:(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=>void, keyResultData:KeyResult}) => {
+     console.log({keyResultData})
   return (
     <div className='space-y-3'>
         <div className="grid sm:grid-cols-2 gap-x-2 gap-y-4">
         <CustomInput
                 label="Start Value"
-                name="startValue"
-                value={metricValue?.startValue}
-                error={errors.startValue}
+                name="currentValue"
+                value={keyResultData?.currentValue!}
+                error={errors.currentValue}
                 placeholder="0.0"
                 type='number'
                 isRequired
@@ -38,7 +21,7 @@ const ValueMetrics = ({errors}:{errors:{[key:string]: string|null}}) => {
             <CustomInput
                 label="Target Value"
                 name="targetValue"
-                value={metricValue.targetValue}
+                value={keyResultData?.targetValue!}
                 error={errors.targetValue}
                 placeholder="0.0"
                 type='number'
@@ -50,10 +33,11 @@ const ValueMetrics = ({errors}:{errors:{[key:string]: string|null}}) => {
         <CustomInput
                 label="Unit"
                 name="unit"
-                value={metricValue.unit}
+                value={keyResultData?.unit!}
                 error={errors.unit}
                 placeholder="Enter unit"
                 type='text'
+                isRequired
                 onChange={handleChange}
             />
 
