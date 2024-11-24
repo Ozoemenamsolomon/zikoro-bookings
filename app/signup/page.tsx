@@ -7,7 +7,7 @@ const AppointmentSignupPage = () => {
     <div className="bg-[#f9faff] min-h-screen">
       {/* banner */}
       <Image
-        src="/appointments/signupBanner.png"
+        src="/signupBanner.png"
         alt="banner"
         width={1140}
         height={377}
@@ -15,7 +15,7 @@ const AppointmentSignupPage = () => {
       />
 
       <Image
-        src="/appointments/signupBannerS.png"
+        src="/signupBannerS.png"
         alt="banner"
         width={375}
         height={215}

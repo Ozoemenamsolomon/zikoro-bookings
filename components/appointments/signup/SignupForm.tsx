@@ -276,10 +276,22 @@ const industryList = [
 ];
 
 export default function SignupForm() {
-  const [isRefferalCode, setIsReferralCode] = useState(false);
+  const [isRefferalCode, setIsReferralCode] = useState<boolean>(false);
+  const [refferalCode, setRefferalCode] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [city, setCity] = useState<string>("");
+  const [country, setCountry] = useState<string>("");
+  const [firstName, setFirstname] = useState<string>("");
+  const [lastName, setLastname] = useState<string>("");
+  const [industry, setIndustry] = useState<string>("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
   const handleChange = (e: any) => {
     const { name, value } = e.target;
-    // setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [name]: value });
   };
   const stages = ["stage1", "stage2", "stage3", "stage4", "stage5"];
 
@@ -348,14 +360,16 @@ export default function SignupForm() {
 
             {/* ref code */}
             {isRefferalCode && (
-              <div className="mt-6">
+              <div className="mt-6 w-full md:w-[458px] mx-auto">
                 <p>Referral</p>
                 <input
                   type="text"
                   placeholder="Enter Referral Code "
                   className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none border-[1px] border-gray-200 hover:border-indigo-600 w-full pl-[10px] py-4 rounded-[6px] mt-3"
+                  value={refferalCode}
                   name=""
                   id=""
+                  onChange={(e) => setRefferalCode(e.target.value)}
                 />
               </div>
             )}
