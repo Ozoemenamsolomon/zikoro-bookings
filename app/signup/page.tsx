@@ -1,29 +1,23 @@
-import SignupForm from "@/components/appointments/signup/SignupForm";
-import Image from "next/image";
 import React from "react";
+import AppointmentSignupForm from "@/components/appointments/signup/AppointmentSignupForm";
 
 const AppointmentSignupPage = () => {
   return (
-    <div className="bg-[#f9faff] min-h-screen">
-      {/* banner */}
-      <Image
-        src="/appointments/signupBanner.webp"
-        alt="banner"
-        width={1140}
-        height={377}
-        className="w-full h-full object-cover hidden lg:block "
-      />
-
-      <Image
-        src="/appointments/signupBannerS.webp"
-        alt="banner"
-        width={375}
-        height={215}
-        className="w-full h-full object-cover block lg:hidden"
-      />
-
-      {/* dynamic components */}
-        <SignupForm />
+    <div className="flex items-center lg:items-start  bg-white w-full h-screen lg:justify-between justify-center lg:bg-[url('/appointments/bgImg.webp')] lg:bg-cover lg:bg-center lg:bg-no-repeat lg:h-fit xl:h-screen py-1 px-5 lg:py-[50px] lg:px-[50px] xl:px-[91px] xl:py-[50px] max-w-full  ">
+      <div className="mt-[34px] hidden lg:block">
+        <p className=" bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end gradient-text text-[32px] font-extrabold leading-none">
+          Get started with{" "}
+          <span className="leading-none text-[40px] inline lg:block">
+            Zikoro Bookings
+          </span>{" "}
+        </p>
+        <p className="text-base p-2 text-white bg-blue-500 font-medium opacity-50 mt-[10px] rounded-[8px]">
+          Simplify Scheduling for a Seamless Client Experience.
+        </p>
+      </div>
+      <div>
+        <AppointmentSignupForm />
+      </div>
     </div>
   );
 };

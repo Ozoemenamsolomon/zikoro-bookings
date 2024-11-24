@@ -275,15 +275,15 @@ const industryList = [
   "Charity",
 ];
 
-export default function SignupForm() {
+export default function OnboardingForm() {
   const [isRefferalCode, setIsReferralCode] = useState<boolean>(false);
   const [refferalCode, setRefferalCode] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [city, setCity] = useState<string>("");
-  const [country, setCountry] = useState<string>("");
-  const [firstName, setFirstname] = useState<string>("");
-  const [lastName, setLastname] = useState<string>("");
-  const [industry, setIndustry] = useState<string>("");
+  const [selectCountry, setSelectCountry] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [selectIndustry, setSelectIndustry] = useState<string>("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -309,6 +309,15 @@ export default function SignupForm() {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
     }
+  };
+
+  const handleSelectCountry = (e: any) => {
+    const selectedValue = e.target.value; // This is the selected value
+    setSelectCountry(selectedValue);
+  };
+  const handleSelectIndustry = (e: any) => {
+    const selectedValue = e.target.value; // This is the selected value
+    setSelectCountry(selectedValue);
   };
 
   return (
@@ -411,11 +420,13 @@ export default function SignupForm() {
                 <div className="flex gap-x-[10px] items-center border-[1px] border-gray-200 hover:border-indigo-600 w-full pl-[10px] py-4 rounded-[6px] mt-3">
                   <p>+234</p>
                   <input
-                    type="text"
+                    type="tel"
                     placeholder="Enter Phone Number "
                     className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none "
                     name=""
                     id=""
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
                   />
                 </div>
               </div>
@@ -429,6 +440,8 @@ export default function SignupForm() {
                     className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none "
                     name=""
                     id=""
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
                   />
                 </div>
               </div>
@@ -438,8 +451,8 @@ export default function SignupForm() {
                 <div className=" border-[1px] border-gray-200 hover:border-indigo-600 w-full px-[9px] py-[16px] rounded-[6px] mt-3">
                   <select
                     name="country"
-                    value=""
-                    onChange={handleChange}
+                    value={selectCountry}
+                    onChange={handleSelectCountry}
                     id=""
                     className="w-full  bg-transparent rounded-md border-[1px] text-black text-base border-none  outline-none "
                   >
@@ -505,6 +518,8 @@ export default function SignupForm() {
                     className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none "
                     name=""
                     id=""
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
                   />
                 </div>
               </div>
@@ -518,6 +533,8 @@ export default function SignupForm() {
                     className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none "
                     name=""
                     id=""
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
                   />
                 </div>
               </div>
@@ -564,8 +581,8 @@ export default function SignupForm() {
                 <div className=" border-[1px] border-gray-200 hover:border-indigo-600 w-full px-[9px] py-[16px] rounded-[6px] mt-3">
                   <select
                     name="country"
-                    value=""
-                    onChange={handleChange}
+                    value={selectIndustry}
+                    onChange={handleSelectIndustry}
                     id=""
                     className="w-full  bg-transparent rounded-md border-[1px] text-black text-base border-none  outline-none "
                   >
@@ -620,7 +637,7 @@ export default function SignupForm() {
               <SpCheck />
             </div>
             <p className="text-black text-[20px] font-semibold text-center mt-6 ">
-              Congratulations Emma{" "}
+              Congratulations {firstName}{" "}
             </p>
 
             <p className="text-black font-medium text-center mt-3">
