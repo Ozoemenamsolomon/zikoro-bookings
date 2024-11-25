@@ -10,10 +10,10 @@ import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
 
-const SaveGoalBtn = () => {
+const SaveGoalBtn = ({mode}:{mode?:string}) => {
     const {push} = useRouter()
     const {contact} = useAppointmentContext()
-    const {goalData, setGoalData, errors, setErrors} = useGoalContext()
+    const {goalData, setGoalData, keyResultData, setKeyResultData, errors, setErrors} = useGoalContext()
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     const validateForm = () => {
@@ -37,6 +37,23 @@ const SaveGoalBtn = () => {
     
             setIsSubmitting(true)
             try {
+              if(mode==='create'){
+                const { data, error } = await PostRequest({url:'/api/goals/create', 
+                  body:{
+                  goalData, keyResultData,
+                }})
+                if (error) {
+                    setErrors({general:error})
+                } else {
+                    // console.log(data)
+                    toast.success('You created a new gaol')
+                    setGoalData({})
+                    setKeyResultData({})
+                    // setSuccess('Goal created successfully')
+                    // revalidatePath(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`)
+                    push(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`)
+                }
+              } else {
                 const { data, error } = await PostRequest({url:'/api/goals/editGoal', body:{goalData}})
                 if (error) {
                     setErrors({general:error})
@@ -44,10 +61,13 @@ const SaveGoalBtn = () => {
                     // console.log(data)
                     toast.success('Goal was editted')
                     setGoalData({})
+                    setKeyResultData({})
                     // setSuccess('Goal created successfully')
                     // revalidatePath(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`)
                     push(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`)
                 }
+              }
+
             } catch (error) {
               console.error('Submission failed:', error)
             } finally {

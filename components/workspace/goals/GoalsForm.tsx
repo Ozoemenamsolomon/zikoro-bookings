@@ -94,7 +94,7 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
   useMemo(() => setIsValid(validateForm()), [goalData])
   return (
     <>
-    <form className="py-8 border-b mb-4 space-y-4 max-w-lg mx-auto" >
+      <form className="py-8 border-b mb-4 space-y-4 max-w-lg mx-auto" >
       {/* Goal Name */}
       <CustomInput
         label="Goal Name"
