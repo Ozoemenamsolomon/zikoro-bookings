@@ -278,6 +278,7 @@ const industryList = [
   "Festivals",
   "Charity",
 ];
+
 type SearchParamsType = {
   email: string;
   createdAt: string;
@@ -285,6 +286,7 @@ type SearchParamsType = {
 
 type FormData = {
   referralCode: string;
+  referredBy: string;
   phoneNumber: string;
   city: string;
   country: string;
@@ -292,6 +294,20 @@ type FormData = {
   lastName: string;
   industry: string;
 };
+
+export function generateAlphanumericHash(length?: number): string {
+  const characters =
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  const hashLength = length || 18;
+  let hash = "";
+
+  for (let i = 0; i < hashLength; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    hash += characters.charAt(randomIndex);
+  }
+
+  return hash;
+}
 
 export default function OnboardingForm({
   searchParams: { email, createdAt },
@@ -303,6 +319,7 @@ export default function OnboardingForm({
 
   const [formData, setFormData] = useState({
     referralCode: "",
+    referredBy: "",
     phoneNumber: "",
     city: "",
     country: "",
@@ -343,6 +360,8 @@ export default function OnboardingForm({
       phoneNumber: values.phoneNumber
         ? `+234${values.phoneNumber.replace(/^(\+234)?/, "")}`
         : "",
+      referralCode: generateAlphanumericHash(10).toUpperCase(),
+      referredBy: values.referredBy.toUpperCase(),
     };
     try {
       await registration(payload, email, createdAt);
@@ -407,8 +426,8 @@ export default function OnboardingForm({
                   type="text"
                   placeholder="Enter Referral Code "
                   className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none border-[1px] border-gray-200 hover:border-indigo-600 w-full pl-[10px] py-4 rounded-[6px] mt-3"
-                  value={formData.referralCode}
-                  name="referralCode"
+                  value={formData.referredBy}
+                  name="referredBy"
                   id=""
                   onChange={handleChange}
                 />

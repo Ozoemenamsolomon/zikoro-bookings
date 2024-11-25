@@ -296,6 +296,7 @@ export function useOnboarding() {
   };
   type FormData = {
     referralCode: string,
+    referredBy:string;
     phoneNumber: string,
     city: string,
     country: string,

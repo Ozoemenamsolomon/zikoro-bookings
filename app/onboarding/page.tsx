@@ -1,12 +1,3 @@
-// import Onboarding from "@/components/auth/Onboarding";
-// type SearchParamsType = {
-//   email: string,
-//   createdAt: string
-// }
-// export default function Page({searchParams}:{searchParams:SearchParamsType}) {
-//   return <Onboarding searchParams={searchParams}/>
-// }
-
 import Onboarding from "@/components/appointments/onboarding/Onboarding";
 import Image from "next/image";
 import React from "react";
