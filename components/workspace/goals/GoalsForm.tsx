@@ -90,7 +90,7 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
     setErrors(newErrors)
     return Object.values(newErrors).every(error => !error)
   }
-
+console.log({goalData})
   useMemo(() => setIsValid(validateForm()), [goalData])
   return (
     <>

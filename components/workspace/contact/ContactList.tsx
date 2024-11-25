@@ -127,7 +127,7 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
   };
 
   return (
-    <div className="w-full md:w-1/4 p-4 md:px-2 h-full sticky top-0 bg-white">
+    <div className="w-full md:w-1/4 p-4 md:px-2 h-full max-h-screen overflow-auto hide-scrollbar sticky top-0 bg-white">
       {/* Search input */}
       <div className="bg-baseBg rounded-md border p-1 px-2 w-full flex items-center">
         <Search size={20} className="text-slate-400 shrink-0" />
