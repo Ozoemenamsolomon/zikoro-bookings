@@ -8,6 +8,10 @@ import {
   SProgress5,
 } from "@/constants";
 import React, { useState } from "react";
+import { useOnboarding } from "@/hooks";
+import { LoaderAlt } from "styled-icons/boxicons-regular";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const countryList = [
   "Afghanistan",
@@ -274,21 +278,40 @@ const industryList = [
   "Festivals",
   "Charity",
 ];
+type SearchParamsType = {
+  email: string;
+  createdAt: string;
+};
 
-export default function OnboardingForm() {
+type FormData = {
+  referralCode: string;
+  phoneNumber: string;
+  city: string;
+  country: string;
+  firstName: string;
+  lastName: string;
+  industry: string;
+};
+
+export default function OnboardingForm({
+  searchParams: { email, createdAt },
+}: {
+  searchParams: SearchParamsType;
+}) {
   const [isRefferalCode, setIsReferralCode] = useState<boolean>(false);
-  const [refferalCode, setRefferalCode] = useState<string>("");
-  const [phone, setPhone] = useState<string>("");
-  const [city, setCity] = useState<string>("");
-  const [selectCountry, setSelectCountry] = useState<string>("");
-  const [firstName, setFirstName] = useState<string>("");
-  const [lastName, setLastName] = useState<string>("");
-  const [selectIndustry, setSelectIndustry] = useState<string>("");
+  const { loading, registration } = useOnboarding();
+
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    referralCode: "",
+    phoneNumber: "",
+    city: "",
+    country: "",
+    firstName: "",
+    lastName: "",
+    industry: "",
   });
 
+  const router = useRouter();
   const handleChange = (e: any) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -298,33 +321,42 @@ export default function OnboardingForm() {
   // State to track the current paragraph index
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
-  // Handlers for next and previous
+  // Handlers for next
+
   const handleNext = () => {
     if (currentIndex < stages.length - 1) {
       setCurrentIndex(currentIndex + 1);
     }
   };
-
+  //Handlers for previous
   const handlePrev = () => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
     }
   };
 
-  const handleSelectCountry = (e: any) => {
-    const selectedValue = e.target.value; // This is the selected value
-    setSelectCountry(selectedValue);
-  };
-  const handleSelectIndustry = (e: any) => {
-    const selectedValue = e.target.value; // This is the selected value
-    setSelectCountry(selectedValue);
-  };
+  //create user
+  async function handleCreateUser(e: React.FormEvent, values: FormData) {
+    e.preventDefault();
+    const payload = {
+      ...values,
+      phoneNumber: values.phoneNumber
+        ? `+234${values.phoneNumber.replace(/^(\+234)?/, "")}`
+        : "",
+    };
+    try {
+      await registration(payload, email, createdAt);
+      handleNext();
+    } catch (error) {
+      console.error("Registration failed:", error);
+    }
+  }
 
   return (
     <div>
       {/* 1st */}
       {currentIndex === 0 && (
-        <div className="px-3 lg:px-0 max-w-full lg:max-w-[835px] mt-6 lg:mt-10 mx-auto pb-[100px] ">
+        <div className="px-3 lg:px-0 max-w-full lg:max-w-[835px] mt-6 lg:mt-10 mx-auto pb-[100px]">
           <div className="flex mx-auto justify-center">
             <SProgress1 />
           </div>
@@ -375,10 +407,10 @@ export default function OnboardingForm() {
                   type="text"
                   placeholder="Enter Referral Code "
                   className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none border-[1px] border-gray-200 hover:border-indigo-600 w-full pl-[10px] py-4 rounded-[6px] mt-3"
-                  value={refferalCode}
-                  name=""
+                  value={formData.referralCode}
+                  name="referralCode"
                   id=""
-                  onChange={(e) => setRefferalCode(e.target.value)}
+                  onChange={handleChange}
                 />
               </div>
             )}
@@ -399,7 +431,7 @@ export default function OnboardingForm() {
 
       {/* 2nd */}
       {currentIndex === 1 && (
-        <div className="px-3 lg:px-0 max-w-full lg:max-w-[835px] mt-6 lg:mt-10 mx-auto pb-[100px]  ">
+        <div className="px-3 lg:px-0 max-w-full lg:max-w-[835px] mt-6 lg:mt-10 mx-auto pb-[100px]">
           <p className="w-full lg:w-[835px] font-medium text-center hidden lg:block">
             We need this information to personalize your experience, tailor
             services to your location, and ensure secure account setup.
@@ -423,10 +455,12 @@ export default function OnboardingForm() {
                     type="tel"
                     placeholder="Enter Phone Number "
                     className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none "
-                    name=""
+                    name="phoneNumber"
                     id=""
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    required
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
+                    autoComplete="off"
                   />
                 </div>
               </div>
@@ -438,10 +472,12 @@ export default function OnboardingForm() {
                     type="text"
                     placeholder="Enter Your City"
                     className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none "
-                    name=""
+                    name="city"
                     id=""
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
+                    value={formData.city}
+                    onChange={handleChange}
+                    autoComplete="off"
+                    required
                   />
                 </div>
               </div>
@@ -451,8 +487,8 @@ export default function OnboardingForm() {
                 <div className=" border-[1px] border-gray-200 hover:border-indigo-600 w-full px-[9px] py-[16px] rounded-[6px] mt-3">
                   <select
                     name="country"
-                    value={selectCountry}
-                    onChange={handleSelectCountry}
+                    value={formData.country}
+                    onChange={handleChange}
                     id=""
                     className="w-full  bg-transparent rounded-md border-[1px] text-black text-base border-none  outline-none "
                   >
@@ -485,7 +521,13 @@ export default function OnboardingForm() {
                   Prev
                 </button>{" "}
                 <button
-                  onClick={handleNext}
+                  onClick={() => {
+                    if (!formData.phoneNumber || !formData.city) {
+                      toast.error("Please fill out all required fields!");
+                    } else {
+                      handleNext();
+                    }
+                  }}
                   disabled={currentIndex === stages.length - 1}
                   className="text-white font-semibold text-base bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end py-3 px-4 rounded-lg"
                 >
@@ -516,10 +558,12 @@ export default function OnboardingForm() {
                     type="text"
                     placeholder="Enter First Name "
                     className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none "
-                    name=""
+                    name="firstName"
                     id=""
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                    autoComplete="off"
                   />
                 </div>
               </div>
@@ -531,10 +575,12 @@ export default function OnboardingForm() {
                     type="text"
                     placeholder="Enter Last Name"
                     className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none "
-                    name=""
+                    name="lastName"
                     id=""
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                    autoComplete="off"
                   />
                 </div>
               </div>
@@ -548,7 +594,13 @@ export default function OnboardingForm() {
                   Prev
                 </button>{" "}
                 <button
-                  onClick={handleNext}
+                  onClick={() => {
+                    if (!formData.firstName || !formData.lastName) {
+                      toast.error("Please fill out all required fields!");
+                    } else {
+                      handleNext();
+                    }
+                  }}
                   disabled={currentIndex === stages.length - 1}
                   className="text-white font-semibold text-base bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end py-3 px-4 rounded-lg"
                 >
@@ -562,7 +614,7 @@ export default function OnboardingForm() {
 
       {/* 4th */}
       {currentIndex === 3 && (
-        <div className="px-3 lg:px-0 max-w-full lg:max-w-[835px] mt-6 lg:mt-10 mx-auto  ">
+        <div className="px-3 lg:px-0 max-w-full lg:max-w-[835px] mt-6 lg:mt-10 mx-auto pb-[100px]">
           <p className=" w-full xl:w-[835px] text-[14px] lg:text-base font-medium text-center">
             Understanding your industry helps us provide features, resources,
             and updates that align with your professional needs.
@@ -580,9 +632,9 @@ export default function OnboardingForm() {
                 </p>
                 <div className=" border-[1px] border-gray-200 hover:border-indigo-600 w-full px-[9px] py-[16px] rounded-[6px] mt-3">
                   <select
-                    name="country"
-                    value={selectIndustry}
-                    onChange={handleSelectIndustry}
+                    name="industry"
+                    value={formData.industry}
+                    onChange={handleChange}
                     id=""
                     className="w-full  bg-transparent rounded-md border-[1px] text-black text-base border-none  outline-none "
                   >
@@ -615,10 +667,13 @@ export default function OnboardingForm() {
                   Prev
                 </button>{" "}
                 <button
-                  onClick={handleNext}
+                  onClick={(e) => {
+                    handleCreateUser(e, formData);
+                  }}
                   disabled={currentIndex === stages.length - 1}
                   className="text-white font-semibold text-base bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end py-3 px-4 rounded-lg"
                 >
+                  {loading && <LoaderAlt size={22} className="animate-spin" />}
                   Create Profile
                 </button>{" "}
               </div>
@@ -628,7 +683,7 @@ export default function OnboardingForm() {
       )}
       {/* 5th */}
       {currentIndex === 4 && (
-        <div className="px-3 lg:px-0 max-w-full lg:max-w-[603px] mt-6 lg:mt-10 mx-auto ">
+        <div className="px-3 lg:px-0 max-w-full lg:max-w-[603px] mt-6 lg:mt-10 mx-auto pb-[100px]">
           <div className="flex mx-auto justify-center">
             <SProgress5 />
           </div>
@@ -637,7 +692,7 @@ export default function OnboardingForm() {
               <SpCheck />
             </div>
             <p className="text-black text-[20px] font-semibold text-center mt-6 ">
-              Congratulations {firstName}{" "}
+              Congratulations {formData.firstName}{" "}
             </p>
 
             <p className="text-black font-medium text-center mt-3">
@@ -647,7 +702,10 @@ export default function OnboardingForm() {
 
             {/* buttons */}
             <div className="flex justify-center gap-x-4 mx-auto mt-[52px] ">
-              <button className="text-white font-semibold text-base bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end py-3 px-4 rounded-lg">
+              <button
+                onClick={() => router.push("/workspace/appointments")}
+                className="text-white font-semibold text-base bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end py-3 px-4 rounded-lg"
+              >
                 Start Exploring
               </button>{" "}
             </div>

@@ -7,12 +7,16 @@
 //   return <Onboarding searchParams={searchParams}/>
 // }
 
-
 import Onboarding from "@/components/appointments/onboarding/Onboarding";
 import Image from "next/image";
 import React from "react";
 
-const AppointmentSignupPage = () => {
+type SearchParamsType = {
+  email: string;
+  createdAt: string;
+};
+
+const AppointmentSignupPage = ({searchParams}:{searchParams:SearchParamsType}) => {
   return (
     <div className="bg-[#f9faff] min-h-screen">
       {/* banner */}
@@ -33,7 +37,7 @@ const AppointmentSignupPage = () => {
       />
 
       {/* dynamic components */}
-        <Onboarding />
+      <Onboarding  searchParams={searchParams}/>
     </div>
   );
 };

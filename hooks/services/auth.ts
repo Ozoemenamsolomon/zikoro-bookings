@@ -294,8 +294,18 @@ export function useOnboarding() {
     email: string | null;
     createdAt: string | null;
   };
+  type FormData = {
+    referralCode: string,
+    phoneNumber: string,
+    city: string,
+    country: string,
+    firstName: string,
+    lastName: string,
+    industry: string,
+  };
+
   async function registration(
-    values: z.infer<typeof onboardingSchema>,
+    values: FormData,
     email: string | null,
     createdAt: string | null
   ) {
@@ -315,7 +325,6 @@ export function useOnboarding() {
         setUser(user);
         setLoading(false);
         toast.success("Profile Updated Successfully");
-        router.push("/workspace/appointments");
       }
 
       return data;
