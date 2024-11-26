@@ -44,6 +44,7 @@ const SaveGoalBtn = ({mode}:{mode?:string}) => {
                 }})
                 if (error) {
                     setErrors({general:error})
+                    toast.error('An error occurred. ')
                 } else {
                     // console.log(data)
                     toast.success('You created a new gaol')
