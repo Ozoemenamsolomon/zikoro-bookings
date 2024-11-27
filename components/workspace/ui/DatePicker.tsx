@@ -42,7 +42,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   )
 
   const handleDateChange = (date: Date | undefined) => {
-    setSelectedDate(date)
+    // setSelectedDate(date)
     onChange(date)
   }
 
@@ -60,20 +60,20 @@ export const DatePicker: React.FC<DatePickerProps> = ({
             variant={"outline"}
             className={cn(
               "w-full items-center h-12 py-2 px-4 justify-start text-left font-normal focus:ring-1 focus:ring-purple-200 focus:outline-none",
-              !selectedDate && "text-muted-foreground",className
+              !value && "text-muted-foreground",className
             )}
             disabled={disabled}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {selectedDate
-              ? format(selectedDate, "PPP")
+            {value
+              ? format(new Date(value), "PPP")
               : <span>{placeholder}</span>}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-full p-0">
           <Calendar
             mode="single"
-            selected={selectedDate}
+            selected={value ? new Date(value) : undefined}
             onSelect={handleDateChange}
             initialFocus
             disabled={disabled}
