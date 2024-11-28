@@ -152,9 +152,8 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
         onChange={handleSelectChange}
       />
 
-
+{/* 
       <div className="flex flex-col sm:flex-row items-center w-full gap-3">
-            {/* Start Date */}
             <DatePicker
                 label="Start Date"
                 name="startDate"
@@ -166,7 +165,6 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
                 className='w- '
             />
 
-            {/* End Date */}
             <DatePicker
                 label="End Date"
                 name="endDate"
@@ -177,39 +175,39 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
                 error={errors?.endDate!}
                 isRequired
             />
-      </div>
+      </div> */}
 
-      <div className="flex flex-col sm:flex-row items-center w-full gap-3">
-        <GoalDatePicker
-            label="Start Date"
-            name="startDate"
-            value={goalData.startDate!}
-            onChange={(date) =>{ 
-              handleDateChange(date!, 'startDate')
-              setGoalData((prev)=>{
-                return {
-                  ...prev,
-                  endDate: '',
-                }
-              })
-            }}
-            placeholder="Pick a start date"
-            error={errors?.startDate!}
-            isRequired
-            isDayDisabled={isDayDisabled}
-         />
-         <GoalDatePicker
-            label="End Date"
-            name="endDate"
-            value={goalData.endDate!}
-            onChange={(date) => handleDateChange(date!,'endDate')}
-            placeholder="Pick an end date"
-            className='py- '
-            error={errors?.endDate!}
-            isRequired
-            isDayDisabled={isEndDayDisabled}
-         />
-      </div>
+        <div className="flex flex-col sm:flex-row items-center w-full gap-3">
+          <GoalDatePicker
+              label="Start Date"
+              name="startDate"
+              value={goalData.startDate!}
+              onChange={(date) =>{ 
+                handleDateChange(date!, 'startDate')
+                setGoalData((prev)=>{
+                  return {
+                    ...prev,
+                    endDate: '',
+                  }
+                })
+              }}
+              placeholder="Pick a start date"
+              error={errors?.startDate!}
+              isRequired
+              isDayDisabled={isDayDisabled}
+          />
+          <GoalDatePicker
+              label="End Date"
+              name="endDate"
+              value={goalData.endDate!}
+              onChange={(date) => handleDateChange(date!,'endDate')}
+              placeholder="Pick an end date"
+              className='py- '
+              error={errors?.endDate!}
+              isRequired
+              isDayDisabled={isEndDayDisabled}
+          />
+        </div>
       </form>
 
       {children}
