@@ -16,6 +16,8 @@ import { useAppointmentContext } from '@/context/AppointmentContext'
 import useUserStore from '@/store/globalUserStore'
 import { revalidatePath } from 'next/cache'
 import { Goal } from '@/types/goal'
+import { GoalDatePicker } from './GoalDatePicker'
+import { isAfter, isBefore, startOfDay, startOfToday } from 'date-fns'
 
 const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, mode?:string}) => {
   const {push,refresh} = useRouter()
@@ -135,6 +137,44 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
         }
       }
 
+      const isStartDayDisabled = (day: Date) => {
+        // Disable days before today
+        const startOfDayToCheck = startOfDay(day);
+        if (isBefore(startOfDayToCheck, startOfToday())) {
+          return true
+        }
+        if (goalData?.startDate && 
+            isBefore(startOfDayToCheck, startOfDay(goalData.startDate!))) {
+            return true
+          }
+          if (goalData?.endDate && 
+            isAfter(startOfDayToCheck, startOfDay(goalData.endDate!))) {
+            return true
+          }
+         return false  
+        };
+  
+      const isEndDayDisabled = (day: Date) => {
+        // Disable days before today
+        const startOfDayToCheck = startOfDay(day);
+        if (isBefore(startOfDayToCheck, startOfToday())) {
+          return true
+        }
+        if (goalData?.startDate && 
+            isBefore(startOfDayToCheck, startOfDay(goalData.startDate!))) {
+            return true
+          }
+          if (goalData?.endDate && 
+            isAfter(startOfDayToCheck, startOfDay(goalData.endDate!))) {
+            return true
+          }
+          if (keyResultData?.startDate && 
+            isBefore(startOfDayToCheck, startOfDay(keyResultData.startDate!))) {
+            return true
+          }
+         return false  
+        };
+
   return (
     <CenterModal
         className='rounded-md bg-white max-w-2xl w-full px-4 py-8 overflow-auto sm:max-h-[95vh] hide-scrollbar'
@@ -188,8 +228,7 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
                 onChange={handleSelectChange}
             />
 
-            <div className="flex flex-col sm:flex-row items-center w-full gap-3">
-                    {/* Start Date */}
+            {/* <div className="flex flex-col sm:flex-row items-center w-full gap-3">
                     <DatePicker
                         label="Start Date"
                         name="startDate"
@@ -201,7 +240,6 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
                         isRequired
                     />
 
-                    {/* End Date */}
                     <DatePicker
                         label="End Date"
                         name="endDate"
@@ -212,6 +250,38 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
                         error={errors?.endDate!}
                         isRequired
                     />
+            </div> */}
+
+            <div className="flex flex-col sm:flex-row items-center w-full gap-3">
+                <GoalDatePicker
+                    label="Start Date"
+                    name="startDate"
+                    value={keyResultData?.startDate!}
+                    onChange={(date) =>{ 
+                        handleDateChange(date!, 'startDate')
+                        setKeyResultData((prev)=>{
+                        return {
+                            ...prev,
+                            endDate: '',
+                        }
+                        })
+                    }}
+                    placeholder="Pick a start date"
+                    error={errors?.startDate!}
+                    isRequired
+                    isDayDisabled={isStartDayDisabled}
+                />
+                <GoalDatePicker
+                    label="End Date"
+                    name="endDate"
+                    value={keyResultData?.endDate!}
+                    onChange={(date) => handleDateChange(date!,'endDate')}
+                    placeholder="Pick an end date"
+                    className='py- '
+                    error={errors?.endDate!}
+                    isRequired
+                    isDayDisabled={isEndDayDisabled}
+                />
             </div>
 
             <div className="">
