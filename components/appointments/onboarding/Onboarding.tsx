@@ -266,17 +266,36 @@ const countryList = [
 ];
 
 const industryList = [
-  "Conferences",
-  "Tradeshows & Exhibitions",
-  "Seminars & Workshops",
-  "Careers",
-  "Education",
-  "Culture & Arts",
-  "Celebrations",
-  "Sports",
-  "Job Fairs",
-  "Festivals",
+  "Medical Clinics",
+  "Dentists",
+  "Psychologists",
+  "Physiologist",
+  "Acupuncure",
+  "Chiropractor",
+  "Physical Therapists",
+  "Prosthectics and Orthotics",
+  "Coaching",
   "Charity",
+  "Professional Services",
+  "Government and Public Sector",
+  "Fitness and Sports",
+  "Beauty, Hair and Nair Salons",
+  "Barber",
+  "Spa",
+  "Personal Trainers",
+  "Design Constations",
+  "Counselling",
+  "Cleaning Services",
+  "Religious Consultations",
+  "Interview Scheduling",
+  "Financial Services",
+  "Business Advisory",
+  "Legal Services",
+  "City Councils",
+  "Equipment Rentals",
+  "Restuarants",
+  "Tutoring services",
+  "Education and Non-Profits",
 ];
 
 type SearchParamsType = {
@@ -358,7 +377,7 @@ export default function OnboardingForm({
     const payload = {
       ...values,
       phoneNumber: values.phoneNumber
-        ? `+234${values.phoneNumber.replace(/^(\+234)?/, "")}`
+        ? `+${values.phoneNumber.replace(/^(\+)?/, "")}`
         : "",
       referralCode: generateAlphanumericHash(10).toUpperCase(),
       referredBy: values.referredBy.toUpperCase(),
@@ -469,17 +488,19 @@ export default function OnboardingForm({
               <div>
                 <p className="text-black text-[14px] ">Phone Nuber</p>
                 <div className="flex gap-x-[10px] items-center border-[1px] border-gray-200 hover:border-indigo-600 w-full pl-[10px] py-4 rounded-[6px] mt-3">
-                  <p>+234</p>
+                  <p>+</p>
                   <input
                     type="tel"
-                    placeholder="Enter Phone Number "
-                    className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none "
+                    placeholder="234 001 002 0003"
+                    className=" text-[#1f1f1f] placeholder-gray-500 bg-transparent outline-none "
                     name="phoneNumber"
                     id=""
                     required
                     value={formData.phoneNumber}
                     onChange={handleChange}
                     autoComplete="off"
+                    min={11}
+                    max={13}
                   />
                 </div>
               </div>
@@ -490,7 +511,7 @@ export default function OnboardingForm({
                   <input
                     type="text"
                     placeholder="Enter Your City"
-                    className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none "
+                    className=" text-[#1f1f1f] placeholder-gray-500 bg-transparent outline-none "
                     name="city"
                     id=""
                     value={formData.city}
@@ -509,20 +530,20 @@ export default function OnboardingForm({
                     value={formData.country}
                     onChange={handleChange}
                     id=""
-                    className="w-full  bg-transparent rounded-md border-[1px] text-black text-base border-none  outline-none "
+                    className="w-full  bg-transparent rounded-md border-[1px] text-gray-500 text-base border-none  outline-none "
                   >
                     <option
                       disabled
                       selected
                       value=""
-                      className="bg-transparent text-black"
+                      className="bg-transparent text-gray-500"
                     >
                       Select Your Country
                     </option>
                     {countryList.map((country) => (
                       <option
                         value={country}
-                        className="bg-transparent text-black"
+                        className="bg-transparent text-gray-500"
                       >
                         {country}
                       </option>
@@ -541,7 +562,7 @@ export default function OnboardingForm({
                 </button>{" "}
                 <button
                   onClick={() => {
-                    if (!formData.phoneNumber || !formData.city) {
+                    if (!formData.city) {
                       toast.error("Please fill out all required fields!");
                     } else {
                       handleNext();

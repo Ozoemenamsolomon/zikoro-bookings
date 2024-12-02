@@ -7,12 +7,16 @@ type SearchParamsType = {
   createdAt: string;
 };
 
-const AppointmentSignupPage = ({searchParams}:{searchParams:SearchParamsType}) => {
+const AppointmentSignupPage = ({
+  searchParams,
+}: {
+  searchParams: SearchParamsType;
+}) => {
   return (
     <div className="bg-[#f9faff] min-h-screen">
       {/* banner */}
       <Image
-        src="/appointments/signupBanner.webp"
+        src="/appointments/signupBanner.png"
         alt="banner"
         width={1140}
         height={377}
@@ -28,7 +32,7 @@ const AppointmentSignupPage = ({searchParams}:{searchParams:SearchParamsType}) =
       />
 
       {/* dynamic components */}
-      <Onboarding  searchParams={searchParams}/>
+      <Onboarding searchParams={searchParams} />
     </div>
   );
 };
