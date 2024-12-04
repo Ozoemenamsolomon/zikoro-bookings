@@ -279,7 +279,9 @@ const Appointments = ({
 
   useEffect(() => {
     if (!user?.referralCode) {
-      router.push(`/onboarding`);
+      router.push(
+        `/onboarding?email=${user?.userEmail}&createdAt=${user?.created_at}`
+      );
     }
   }, []);
 
