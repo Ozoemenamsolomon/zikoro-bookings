@@ -22,7 +22,9 @@ import DetailsForm from './DetailsForm'
 import { Category } from '../create/CategoryForm'
 import SelectOnly from '../ui/SeectInput'
 import { useAppointmentContext } from '@/context/AppointmentContext';
-import Loading from '@/components/shared/Loader';
+import Loading, { BookingSlotSkeleton } from '@/components/shared/Loader';
+import MessageModal from '@/components/shared/MessageModal'
+import { CheckCircle, XCircle } from 'lucide-react'
 
 function classNames(...classes: (string | false)[]): string {
     return classes.filter(Boolean).join(' ');
@@ -49,7 +51,7 @@ interface CalendarProps {
 const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
     const [slotsLoading, setSlotsLoading] = useState(true)
     const [hasCategory, setHasCategory] = useState(false)
-    const {bookingFormData, isFormUp, setBookingFormData} = useAppointmentContext()
+    const {bookingFormData, isFormUp, setIsFormUp, setBookingFormData} = useAppointmentContext()
 
     let today = startOfToday();
     let [selectedDay, setSelectedDay] = useState<Date>();
@@ -170,6 +172,7 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
   return (
     <>
     {
+       
         isFormUp==='details' ?
         <DetailsForm appointmentLink={appointmnetLink}/>
         :
@@ -232,7 +235,7 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
                                 key={day.toString()}
                                 className={classNames(
                                     dayIdx === 0 && colStartClasses[getDay(day)],
-                                    'py-1.5',
+                                    'py-1.5 lg:p-2',
                                 )}>
                                 <button
                                     type="button"
@@ -277,7 +280,9 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
 
             {
                 slotsLoading ?
-                <div className="bg-white p-4 rounded-lg w-full flex justify-center items-center h-96"><Loading/></div>
+                <div className="bg-white p-4 rounded-lg w-full"><div className='px-4'>
+                <h5 className=" pt-3 pb-2 font-semibold">Choose Time</h5>  
+                <BookingSlotSkeleton/></div></div>
                 :
                 <Slots hasCategory={hasCategory} appointmnetLink={appointmnetLink} selectedDate={selectedDay} timeSlots={timeSlots} />
             }
