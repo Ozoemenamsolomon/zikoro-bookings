@@ -5,7 +5,7 @@ import {format,parse, isWithinInterval} from 'date-fns';
 import { SlotsResult } from './Calender';
 import { usePathname } from 'next/navigation';
 import { useAppointmentContext } from '@/context/AppointmentContext';
-import Loading from '@/components/shared/Loader';
+import Loading, { BookingSlotSkeleton } from '@/components/shared/Loader';
 
 interface SlotsType {
   selectedDate: Date | string |undefined;
@@ -137,7 +137,10 @@ const Slots: React.FC<SlotsType> = ({appointmnetLink, timeSlots, selectedDate, h
   return (
     <div className="bg-white relative overflow-hidden w-full max-sm:h-96   rounded-lg  ">
       {loading && isBooking ? 
-        <div className=" w-full flex justify-center items-center h-60 sm:h-96"><Loading/></div>
+      <div className='px-4'>
+          <h5 className="text- bg-white  pt-3 pb-2 font-semibold">Choose Time</h5>  
+
+        <BookingSlotSkeleton/></div>
         : 
         <>
           <h5 className="text- bg-white px-4 pt-3 pb-2 font-semibold">Choose Time</h5>  
