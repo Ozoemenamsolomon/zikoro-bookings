@@ -1,7 +1,6 @@
-import { Button } from '@/components/ui/button'
-import { FileStroke, urls } from '@/constants'
-import Link from 'next/link'
+import { FileStroke,  } from '@/constants'
 import React from 'react'
+import AddNewGoalBtn from './AddNewGoalBtn'
 
 const EmptyGoal = () => {
   return (
@@ -12,8 +11,7 @@ const EmptyGoal = () => {
         </h4>
         <p>Add Goals to this contact.</p>
 
-        <Link href={urls.contactsGoalsCreate}><Button className='bg-basePrimary'>Add Goal</Button>
-        </Link>
+        <AddNewGoalBtn/>
     </section>
   )
 }

@@ -2,19 +2,21 @@
 
 import React from 'react'
 import { contactNavSub } from './constants'
-import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAppointmentContext } from '@/context/AppointmentContext';
+import { urls } from '@/constants';
 
 const ContactSubNav = () => {
-    const pathname = usePathname();
+    const {contact,activePath, setActivePath} = useAppointmentContext()
   return (
     <div className="w-full flex overflow-auto no-scrollbar gap-1 items-center px-6 py-3 border-b border-slate-200   sticky top-0 bg-white z-20">
         {contactNavSub.map(({ label, link }) => (
             <Link
-            href={link}
+            href={`${urls.contacts}/${contact?.id}/${link}`}
+            onClick={()=>setActivePath(link)}
             key={label}
             className={`px-3 py-1 rounded text-nowrap  hover:ring-1 hover:ring-gray-200 duration-300 ${
-                pathname === link ? "bg-blue-600 text-white" : ""
+              activePath === link ? "bg-blue-600 text-white" : ""
             }`}
             >
             {label}

@@ -4,62 +4,127 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import CustomInput from '../ui/CustomInput'
 import { CustomSelect } from '@/components/shared/CustomSelect'
 import { DatePicker } from '../ui/DatePicker'
-import KeyResultForm from './KeyResultForm'
 import { useGoalContext } from '@/context/GoalContext'
+import useUserStore from '@/store/globalUserStore'
+import { Goal } from '@/types/goal'
+import AddKeyResult from './AddKeyResult'
+import { useAppointmentContext } from '@/context/AppointmentContext'
+import { GoalDatePicker } from './GoalDatePicker'
+import { isBefore, startOfDay, startOfToday } from 'date-fns'
 
 
-const GoalsForm = ({ goal }: { goal?: any }) => {
-  const {goalData,keyResultData, setGoalData, isSubmitting, setIsSubmitting,} = useGoalContext()
+const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children?:React.ReactNode }) => {
+  const {goalData, setGoalData, errors, setErrors,} = useGoalContext()
+  const {contact} = useAppointmentContext()
+  const {user} = useUserStore()
 
-  const [errors, setErrors] = useState<{ [key: string]: string | null }>({})
+  const [isValidated, setIsValid] = useState<boolean>()
 
   useEffect(() => {
-    if(goal) setGoalData(goal)
-  }, [])
+    const initialFormData: Goal = {
+      organization: user?.id,
+      createdBy: user?.id,
+      goalName: '',
+      description: '',
+      goalOwner: user?.id,
+      goalOwnerName: user?.firstName +' '+user?.lastName,
+      startDate: null,
+      endDate: null,
+      progress: null,
+      contactId: String(contact?.id!),
+      // status: 'DRAFT',
+  };
+    if(goal){
+      setGoalData({ ...initialFormData, ...goal });
+    }else{
+      setGoalData(initialFormData)
+    }
+  }, [user,goal])
   
-  // Owner options for the select dropdown
   const ownerOptions = [
-    { value: 'owner1', label: 'Owner 1' },
-    { value: 'owner2', label: 'Owner 2' },
+    { value:user?.id,  
+      label: `${user?.firstName} ${user?.lastName}` },
+    { value: 122,  
+      label: 'Ebuka Johnson' },
+    { value:102,
+      label: 'Smart Udoka' },
+    { value:87, 
+      label: 'Bodu Joel' },
   ]
 
-  // Handle change for inputs
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setGoalData(prev => ({ ...prev, [name]: value }))
+    setErrors(prev => ({ ...prev, [name]: '' }))
   }, [])
 
   const handleDateChange = (date: Date | null, field:string) => {
     setGoalData((prevData) => ({ ...prevData, [field]: date }));
+    setErrors(prev => ({ ...prev, [field]: '' }))
   };
 
-  const handleSelectChange = (value: string, field?:string) => {
-    if(field)
-        setGoalData((prevData) => ({ ...prevData, [field]: value }));
+  const handleSelectChange = (value: number | string) => {
+    const selectedOption = ownerOptions.find(option => option.value === Number(value));
+    if (!selectedOption) {
+      return;
+    }
+  
+    setGoalData(prevData => ({
+      ...prevData,
+      goalOwner: selectedOption.value,
+      goalOwnerName: selectedOption.label,
+    }));
   };
-
+  
   // Basic form validation
   const validateForm = () => {
     const newErrors: { [key: string]: string | null } = {}
-    if (!goalData.name) newErrors.name = 'Goal name is required.'
-    if (!goalData.description) newErrors.description = 'Description is required.'
-    if (!goalData.owner) newErrors.owner = 'Please select an owner.'
+    if (!goalData.goalName) newErrors.goalName = 'Goal name is required.'
+    if (!goalData.goalOwner) newErrors.goalOwner = 'Please select an owner.'
     if (!goalData.startDate) newErrors.startDate = 'Start date is required.'
     if (!goalData.endDate) newErrors.endDate = 'End date is required.'
+    if (goalData.startDate && goalData.endDate && new Date(goalData.startDate) > new Date(goalData.endDate)) {
+      newErrors.endDate = 'End date must be after start date.';
+    }
+
+  // console.log({goalData, user})
+    
     setErrors(newErrors)
     return Object.values(newErrors).every(error => !error)
   }
+ 
+ 
+    const isDayDisabled = (day: Date) => {
+      // Disable days before today
+      const startOfDayToCheck = startOfDay(day);
+      if (isBefore(startOfDayToCheck, startOfToday())) {
+        return true
+      }
+       return false  
+	  };
 
+    const isEndDayDisabled = (day: Date) => {
+      // Disable days before today
+      const startOfDayToCheck = startOfDay(day);
+      if (isBefore(startOfDayToCheck, startOfToday())) {
+        return true
+      }
+      if (goalData?.startDate && isBefore(startOfDayToCheck, startOfDay(goalData.startDate!))) {
+        return true
+      }
+       return false  
+	  };
 
+  useMemo(() => setIsValid(validateForm()), [goalData])
   return (
     <>
-    <form className="py-8 space-y-4 max-w-lg mx-auto" >
+      <form className="py-8 border-b mb-4 space-y-4 max-w-lg mx-auto" >
       {/* Goal Name */}
       <CustomInput
         label="Goal Name"
-        name="name"
-        value={goalData.name}
-        error={errors.name}
+        name="goalName"
+        value={goalData.goalName!}
+        error={errors.goalName}
         placeholder="Enter Goal name"
         isTextarea
         isRequired
@@ -70,11 +135,10 @@ const GoalsForm = ({ goal }: { goal?: any }) => {
       <CustomInput
         label="Description"
         name="description"
-        value={goalData.description}
+        value={goalData.description!}
         error={errors.description}
         placeholder="Enter detailed description of the goal"
         isTextarea
-        isRequired
         onChange={handleChange}
       />
 
@@ -83,12 +147,13 @@ const GoalsForm = ({ goal }: { goal?: any }) => {
         label="Owner"
         placeholder="Select an owner"
         options={ownerOptions}
-        error={errors?.ownerOptions!}
+        value={goalData.goalOwner!}
+        error={errors?.goalOwner!}
         onChange={handleSelectChange}
       />
 
+{/* 
       <div className="flex flex-col sm:flex-row items-center w-full gap-3">
-            {/* Start Date */}
             <DatePicker
                 label="Start Date"
                 name="startDate"
@@ -96,10 +161,10 @@ const GoalsForm = ({ goal }: { goal?: any }) => {
                 onChange={(date) => handleDateChange(date!, 'startDate')}
                 placeholder="Pick a start date"
                 error={errors?.startDate!}
+                isRequired
                 className='w- '
             />
 
-            {/* End Date */}
             <DatePicker
                 label="End Date"
                 name="endDate"
@@ -108,14 +173,46 @@ const GoalsForm = ({ goal }: { goal?: any }) => {
                 placeholder="Pick an end date"
                 className='py- '
                 error={errors?.endDate!}
+                isRequired
             />
-      </div>
+      </div> */}
+
+        <div className="flex flex-col sm:flex-row items-center w-full gap-3">
+          <GoalDatePicker
+              label="Start Date"
+              name="startDate"
+              value={goalData.startDate!}
+              onChange={(date) =>{ 
+                handleDateChange(date!, 'startDate')
+                setGoalData((prev)=>{
+                  return {
+                    ...prev,
+                    endDate: '',
+                  }
+                })
+              }}
+              placeholder="Pick a start date"
+              error={errors?.startDate!}
+              isRequired
+              isDayDisabled={isDayDisabled}
+          />
+          <GoalDatePicker
+              label="End Date"
+              name="endDate"
+              value={goalData.endDate!}
+              onChange={(date) => handleDateChange(date!,'endDate')}
+              placeholder="Pick an end date"
+              className='py- '
+              error={errors?.endDate!}
+              isRequired
+              isDayDisabled={isEndDayDisabled}
+          />
+        </div>
       </form>
 
-      <div className="border-t w-full pt-4 flex flex-col items-center">
-        <KeyResultForm  isActive={validateForm}/>
-        <small>Define a method for measuring this goal</small>
-      </div>
+      {children}
+
+      <AddKeyResult isActive={isValidated!} mode={mode} />
     </>
   )
 }

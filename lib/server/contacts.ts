@@ -41,3 +41,23 @@ export const fetchContacts = async (
   }
 };
 
+export const fetchContact = async (
+  contactId: string
+): Promise<{data:BookingsContact|null, error: string | null;}> => {
+    const supabase = createClient()
+  try {
+    const { data,  error } = await supabase
+      .from('bookingsContact')
+      .select('*') 
+      .eq('id', contactId)
+      .or('status.is.null,status.neq.ARCHIVED')
+      .single()
+
+    // console.error({ data, error });
+    return { data, error: error?.message||null, };
+  } catch (error) {
+    console.error('Server error:', error);
+    return { data: null, error: 'Server error', };
+  }
+};
+

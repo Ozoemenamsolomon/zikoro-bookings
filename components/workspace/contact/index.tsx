@@ -1,18 +1,19 @@
-import React from "react";
+import React, { Suspense } from "react";
 import ContactList from "./ContactList";
 import ContactNav from "./ContactNav";
 import { BookingsContact } from "@/types/appointments";
 import EmptyContact from "./EmptyContact";
+import { fetchContacts } from "@/lib/server/contacts";
+import Loading from "@/components/shared/Loader";
 
 type ContactProps = {
   children: React.ReactNode;
-  data: BookingsContact[] | null
   searchquery?: string;
-  count:number
 };
 
-const ContactLayout: React.FC<ContactProps> = async ({ children, data,count, searchquery }) => {
-  
+const ContactLayout: React.FC<ContactProps> = async ({ children,  }) => {
+  const {data,count,error} = await fetchContacts()
+  // console.log({data,count,error})
   return (
     <div className=" ">
       <h4 className="text-lg font-semibold pb-4">Contacts</h4>
@@ -27,11 +28,14 @@ const ContactLayout: React.FC<ContactProps> = async ({ children, data,count, sea
               </div>
 
               <div className="flex flex-col md:flex-row md:divide-x">
-                <ContactList fetchedcontacts={data} searchquery={searchquery} />
+                <Suspense fallback={<div className="pt-20 w-full flex justify-center"><Loading/></div>}>
+                  <ContactList fetchedcontacts={data} />
+                </Suspense>
 
-                <div className="w-full md:w-3/4 h-full">
-                    {children}
-                </div>
+                  <div className="w-full md:w-3/4 h-full">
+                      {children}
+                  </div>
+
               </div>
             </>
           }

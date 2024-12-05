@@ -1,5 +1,4 @@
 "use client";
-
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -54,7 +53,7 @@ export default function Onboarding({
 
       phoneNumber: phoneCountryCode + values.phoneNumber,
     };
-    await registration(payload, email, createdAt);
+    // await registration(payload, email, createdAt);
   }
 
   return (

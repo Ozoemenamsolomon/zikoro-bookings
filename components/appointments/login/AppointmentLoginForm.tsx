@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useLogin } from "@/hooks/services/auth";
 import { urls } from "@/constants";
+import { LoaderAlt } from "styled-icons/boxicons-regular";
 
 const AppointmentLoginForm = () => {
   const router = useRouter();
@@ -27,7 +28,7 @@ const AppointmentLoginForm = () => {
   }
 
   return (
-    <div className="bg-white py-0 lg:py-[20px] px-3 lg:px-[42px] rounded-[8px] w-full max-w-full lg:max-w-[542px] ">
+    <div className="bg-white py-0 sm:py-[16px] lg:py-[20px] px-3 sm:px-[42px] lg:px-[42px] rounded-[8px] w-full max-w-full sm:max-w-md md:max-w-[542px] mx-auto lg:max-w-[542px] ">
       <div className="flex justify-center ">
         <Image
           src="/appointments/logoFooter.png"
@@ -89,7 +90,7 @@ const AppointmentLoginForm = () => {
           type="submit"
           className="py-4 px-3 text-base w-full rounded-[8px] font-semibold mt-10 mb-6 text-white bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end"
         >
-          {/* {loading && <LoaderAlt size={22} className="animate-spin" />} */}
+          {loading && <LoaderAlt size={22} className="animate-spin" />}
           Get Started
         </button>
       </form>

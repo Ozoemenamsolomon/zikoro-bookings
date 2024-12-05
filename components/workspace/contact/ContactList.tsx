@@ -2,55 +2,98 @@
 
 import { Heart, Loader2Icon, Search } from 'lucide-react';
 import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, } from 'next/navigation';
 import { BookingsContact } from '@/types/appointments';
 import { useAppointmentContext } from '@/context/AppointmentContext';
 import EmptyList from '../ui/EmptyList';
 import { HeartFill } from 'styled-icons/bootstrap';
 import Image from 'next/image';
 import { PostRequest } from '@/utils/api';
+import { urls } from '@/constants';
 
 type ContactProps = {
   fetchedcontacts: BookingsContact[] | null;
   searchquery?: string;
 };
 
-const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery }) => {
-  const { replace } = useRouter();
-  const { contact, setContact, contacts, setContacts, isfetching, setIsFetching } = useAppointmentContext();
-  const [searchTerm, setSearchTerm] = useState(searchquery || '');
+/**
+ * This code handles filtering and managing the contact list:
+ * - Filters contacts based on the search term (`searchTerm`) or resets to the initial fetched contacts (`fetchedcontacts`).
+ * - Updates the selected contact (`contact`) based on the provided id (`contactId`) or defaults to the first contact in the list.
+ * - Ensures the state (`contacts`, `contact`) reflects the latest data after filtering or resetting.
+ * - Optimizes filtering logic with a reusable `filterContacts` function.
+ * - Avoids unnecessary state updates and ensures fallback values are used for undefined cases.
+ */
+
+const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
+  const { replace, push } = useRouter();
+  const pathname = usePathname()
+
+  // eg: /workspace/contacts/[contactId]/goals
+  const contactId = pathname?.split('/')?.[3] || ''
+  const fourthPath = pathname?.split('/')?.[4] || ''
+  const { contact, setContact, contacts, setContacts, isfetching, searchTerm, setSearchTerm, setIsFetching,activePath, setActivePath } = useAppointmentContext();
   const [loading, setLoading] = useState<number | null>(null);
 
-  // console.log({fetchedcontacts})
-
-  // Function to filter contacts based on search term
-  const filterContacts = useCallback(() => {
-    if (!contacts) return;
-    const filtered = contacts.filter((item) =>
-      `${item.firstName} ${item.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setContacts(filtered);
-  }, [searchTerm, contacts, setContacts]);
-
-  // Effect to filter contacts or reset to initial fetched contacts
+  // console.log({fetchedcontacts, contactId, pats:pathname?.split('/')})
+  const filterContacts = useCallback(
+    (term: string) => {
+      if (!contacts) return [];
+      return contacts.filter((item) =>
+        `${item.firstName} ${item.lastName}`.toLowerCase().includes(term.toLowerCase())
+      );
+    },
+    [contacts]
+  );
+  
   useEffect(() => {
-    if (searchTerm) {
-      filterContacts();
-    } else {
-      setContacts(fetchedcontacts || []);
-      setContact(fetchedcontacts?.[0] || null);
-    }
-    setIsFetching(false);
-  }, [fetchedcontacts, searchTerm, ]);
+    const updateContactsAndSelected = () => {
+      if (!fetchedcontacts) return; // Avoid processing if no contacts fetched
+  
+      // If a search term exists, filter contacts
+      if (searchTerm) {
+        const filtered = filterContacts(searchTerm);
+        setContacts((prevContacts) => {
+          // Avoid unnecessary updates if filtered contacts are the same
+          return JSON.stringify(prevContacts) === JSON.stringify(filtered) ? prevContacts : filtered;
+        });
+      } else {
+        // Reset to fetched contacts
+        setContacts(fetchedcontacts);
+  
+        // Update selected contact
+        if (contactId) {
+          const filteredContact = fetchedcontacts.find((item) => item.id === Number(contactId));
+          if(filteredContact){
 
+              setContact((prevContact) =>
+                prevContact?.id === filteredContact?.id ? prevContact : filteredContact || null
+            );
+          } else {
+            setContact(fetchedcontacts?.[0])
+          }
+        } else {
+          setContact((prevContact) =>
+            prevContact?.id === fetchedcontacts?.[0]?.id ? prevContact : fetchedcontacts?.[0] || null
+          );
+        }
+      }
+    };
+  
+    updateContactsAndSelected();
+    setIsFetching(false)
+  }, [fetchedcontacts, searchTerm, contactId, filterContacts]); // Keep dependencies concise
+  
+  useEffect(() => {
+    if(fourthPath) setActivePath(fourthPath)
+  }, [fourthPath])
+  
   // Handle search input changes
   const handleChange = 
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       setSearchTerm(value);
-      setTimeout(() => {
-        replace(`/workspace/contacts/?s=${value}`);
-      }, 500);
+      replace(`/workspace/contacts/?s=${value}`);
     }
 
   // Function to toggle the favorite status
@@ -84,7 +127,7 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery }) =
   };
 
   return (
-    <div className="w-full md:w-1/4 p-4 md:px-2 h-full sticky top-0 bg-white">
+    <div className="w-full md:w-1/4 p-4 md:px-2 h-full max-h-screen overflow-auto hide-scrollbar sticky top-0 bg-white">
       {/* Search input */}
       <div className="bg-baseBg rounded-md border p-1 px-2 w-full flex items-center">
         <Search size={20} className="text-slate-400 shrink-0" />
@@ -110,7 +153,11 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery }) =
             const { firstName, profileImg, lastName, favorite, id, email, tags } = item
             return (
               <div key={id} 
-              onClick={() => setContact(item)} className="py-2 w-full cursor-pointer">
+              onClick={() => {
+                setContact(item)
+                push(`${urls.contacts}/${id}/${fourthPath}`)
+                setActivePath(fourthPath)
+                }} className="py-2 w-full cursor-pointer">
               <div
                 className={`${
                   contact?.id === id ? 'bg-baseBg ring-1 ring-slate-300' : ''
