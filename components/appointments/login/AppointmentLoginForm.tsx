@@ -27,7 +27,7 @@ const AppointmentLoginForm = () => {
   }
 
   return (
-    <div className="bg-white py-0 lg:py-[20px] px-3 lg:px-[42px] rounded-[8px] w-full max-w-full lg:max-w-[542px] ">
+    <div className="auth-form">
       <div className="flex justify-center ">
         <Image
           src="/appointments/logoFooter.png"

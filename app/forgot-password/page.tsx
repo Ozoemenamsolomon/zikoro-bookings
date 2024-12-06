@@ -4,7 +4,7 @@ import ForgotPasswordComponent from "@/components/appointments/forgot/ForgotPass
 
 const ForgotPasswordPage = () => {
   return (
-    <div className="flex h-screen items-center justify-center bg-[#f9faff]">
+    <div className="flex h-screen overflow-auto no-scrollbar items-center justify-center bg-[#f9faff]">
       <ForgotPasswordComponent/>
     </div>
   );
