@@ -29,7 +29,7 @@ const CustomInput: FC<InputCustomProps> = ({
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={name} className="block text-sm font- text-gray-600 mb-1">
+        <label htmlFor={name} className="block text-sm   text-gray-600 mb-1">
           {label} {isRequired && <span className="text-red-500">*</span>}
         </label>
       )}

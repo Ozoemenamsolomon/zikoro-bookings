@@ -8,6 +8,7 @@ import MenuBox from './ui/MenuBox';
 import useUserStore from '@/store/globalUserStore';
 import { useLogOut } from '@/hooks';
 import { urls } from '@/constants';
+import { useAppointmentContext } from '@/context/AppointmentContext';
 
 type NavLink = {
   icon: React.ElementType;
@@ -64,6 +65,13 @@ const Sidebar = () => {
   const pathanme = usePathname()
   const  {user} = useUserStore()
   const {logOut} = useLogOut(urls.root)
+  const {setActivePath} = useAppointmentContext()
+
+  // control the activePath for contacts
+  const handleClick = () => {
+    if (pathanme.includes(urls.contacts)) setActivePath('')
+      console.log({check:pathanme.includes(urls.contacts)})
+  }
 
   return (
     <nav className=" text-[12px] px-4 py-6  h-full w-full flex flex-col justify-between ">
@@ -99,7 +107,7 @@ const Sidebar = () => {
           {navlinks.map(({ icon, label, link, newTab }, idx) => {
             const Icon = icon;
             return (
-              <Link key={idx} href={link} target={newTab ? '_blank' : ''}  className={`${pathanme===link?'bg-gradient-to-r from-slate-200 to-purple-200':''} flex gap-4 items-center px-3 py-2 rounded-md hover:bg-gradient-to-r hover:from-slate-200  hover:to-purple-200 duration-300 group `}>
+              <Link key={idx} href={link} onClick={handleClick} target={newTab ? '_blank' : ''}  className={`${pathanme===link?'bg-gradient-to-r from-slate-200 to-purple-200':''} flex gap-4 items-center px-3 py-2 rounded-md hover:bg-gradient-to-r hover:from-slate-200  hover:to-purple-200 duration-300 group `}>
                 <div>
                   <Icon size={18} className={`${pathanme===link?'text-purple-800':''} group-hover:text-purple-800 duration-300 `}
                   />
