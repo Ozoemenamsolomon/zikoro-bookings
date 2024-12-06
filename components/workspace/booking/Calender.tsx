@@ -123,12 +123,11 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
             setSelectedDay(nextAvailableDate);
         } else if(selectedDay) {
             const selectedTimeSlots = generateSlots(
-                getEnabledTimeDetails(), appointmnetLink?.duration!, appointmnetLink?.sessionBreak!, selectedDay)
-                console.log({selectedTimeSlots, timeDetails:getEnabledTimeDetails()})
+                getEnabledTimeDetails(), appointmnetLink?.duration!, appointmnetLink?.sessionBreak||0, selectedDay)
+                // console.log({selectedTimeSlots, timeDetails:getEnabledTimeDetails()})
 
                 setTimeSlots(selectedTimeSlots)
                 setSlotsLoading(false)
-                // testingSlots()
         }
     }, [selectedDay, appointmnetLink]);
 
