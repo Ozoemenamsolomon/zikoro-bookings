@@ -64,12 +64,12 @@ const Booking =  ({appointmnetLink, error}:{appointmnetLink:AppointmentLink, err
                                     </div>
                                     <div className="flex gap-1 pb-2 w-full items-start">
                                         <p className="font-medium w-1/3 sm:w-1/5 md:w-1/8 lg:w-2/5 ">Location Type</p>
-                                        <p className=" w-2/3 sm:w-4/5 md:w-7/8 lg:w-3/5">{appointmnetLink?.loctionType}</p>
+                                        <p className=" w-2/3 sm:w-4/5 md:w-7/8 lg:w-3/5">{ appointmnetLink?.loctionType}</p>
                                     </div>
                                     <div className="flex gap-1 pb-2 w-full items-start">
                                         <p className="font-medium w-1/3 sm:w-1/5 md:w-1/8 lg:w-2/5 ">Location</p>
                                         <p className=" w-2/3 sm:w-4/5 md:w-7/8 lg:w-3/5  line-clamp-6">
-                                        {appointmnetLink?.locationDetails}
+                                            {appointmnetLink?.loctionType === 'Virtual' ? '' : appointmnetLink?.locationDetails }
                                         </p>
                                     </div>
                                     {
@@ -87,14 +87,14 @@ const Booking =  ({appointmnetLink, error}:{appointmnetLink:AppointmentLink, err
                                         <p className=" w-2/3 sm:w-4/5 md:w-7/8 lg:w-3/5 flex "> {appointmnetLink?.maxBooking}</p>
                                     </div>
                                     {
-                                        // appointmnetLink?.note || bookingFormData?.categoryNote ? 
-                                        // <div className="flex pb-2 w-full items-start">
-                                        //     <p className="font-medium w-1/3 sm:w-1/5 md:w-1/8 lg:w-2/5 ">Desc</p>
-                                        //     <div className=" w-2/3 sm:w-4/5 md:w-7/8 lg:w-3/5">
-                                        //         <p className="">{appointmnetLink?.note}</p>
-                                        //         {bookingFormData?.categoryNote&&<p className="font-semibold">{bookingFormData?.categoryNote}</p>}
-                                        //     </div>
-                                        // </div> : null
+                                        appointmnetLink?.note || bookingFormData?.categoryNote ? 
+                                        <div className="flex pb-2 w-full items-start">
+                                            <p className="font-medium w-1/3 sm:w-1/5 md:w-1/8 lg:w-2/5 ">Desc</p>
+                                            <div className="line-clamp-5 w-2/3 sm:w-4/5 md:w-7/8 lg:w-3/5">
+                                                <p className="">{appointmnetLink?.note}</p>
+                                                {bookingFormData?.categoryNote&&<p className="font-medium">{bookingFormData?.categoryNote}</p>}
+                                            </div>
+                                        </div> : null
                                     }
                                 </div>
                             </div>

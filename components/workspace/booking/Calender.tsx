@@ -13,7 +13,7 @@ import {
 	isEqual,
 	isSameMonth,
 	isToday,
-	parse,
+	parse,addMinutes,
 	isBefore,
 	startOfToday,startOfDay,  addDays, 
 } from 'date-fns';
@@ -22,31 +22,48 @@ import DetailsForm from './DetailsForm'
 import { Category } from '../create/CategoryForm'
 import SelectOnly from '../ui/SeectInput'
 import { useAppointmentContext } from '@/context/AppointmentContext';
-import Loading, { BookingSlotSkeleton } from '@/components/shared/Loader';
-import MessageModal from '@/components/shared/MessageModal'
-import { CheckCircle, XCircle } from 'lucide-react'
+import { BookingSlotSkeleton } from '@/components/shared/Loader';
+
 
 function classNames(...classes: (string | false)[]): string {
     return classes.filter(Boolean).join(' ');
 }
+// export interface TimeDetail {
+//     day: string;
+//     from: string;
+//     to: string;
+//     enabled: boolean;
+// }
+// interface Slot {
+//     label: string;
+//     value: string;
+//   }
+// export interface SlotsResult {
+// selectDay: string;
+// slots: Slot[];
+// }
+
 export interface TimeDetail {
-    day: string;
-    from: string;
-    to: string;
-    enabled: boolean;
+  day: string;
+  from: string;
+  to: string;
+  enabled?: boolean; // Optional for flexibility in handling disabled days
 }
+
 interface Slot {
-    label: string;
-    value: string;
-  }
+  label: string;
+  value: string;
+}
+
 export interface SlotsResult {
-selectDay: string;
-slots: Slot[];
+  selectDay: string;
+  slots: Slot[];
 }
 
 interface CalendarProps {
   appointmnetLink: AppointmentLink | null;
 }
+
   
 const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
     const [slotsLoading, setSlotsLoading] = useState(true)
@@ -54,9 +71,10 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
     const {bookingFormData, isFormUp, setIsFormUp, setBookingFormData} = useAppointmentContext()
 
     let today = startOfToday();
+
     let [selectedDay, setSelectedDay] = useState<Date>();
     let [timeSlots, setTimeSlots] = useState<SlotsResult | null >(null);
-	
+
     function getEnabledTimeDetails(): TimeDetail[] {
         if (!appointmnetLink || !appointmnetLink.timeDetails) {
           return [];
@@ -105,7 +123,8 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
             setSelectedDay(nextAvailableDate);
         } else if(selectedDay) {
             const selectedTimeSlots = generateSlots(
-                getEnabledTimeDetails(), appointmnetLink?.duration!, appointmnetLink?.sessionBreak || 1, selectedDay)
+                getEnabledTimeDetails(), appointmnetLink?.duration!, appointmnetLink?.sessionBreak||0, selectedDay)
+                // console.log({selectedTimeSlots, timeDetails:getEnabledTimeDetails()})
 
                 setTimeSlots(selectedTimeSlots)
                 setSlotsLoading(false)
@@ -151,7 +170,6 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
           currency: selectedAppointmentType?.curency || appointmnetLink?.curency || '',
           categoryNote: selectedAppointmentType?.note,
         }));
-        console.log('aaaaaaa', {bookingFormData})
       } else {
         if (Array.isArray(appointmentTypeJson) && appointmentTypeJson.length) {
           const selectedAppointmentType = appointmentTypeJson.find((item: Category) => item.name === bookingFormData?.appointmentType) || appointmentTypeJson[0];
@@ -294,6 +312,7 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
 
 export default Calender
 
+
 // Convert time in "HH:MM AM/PM" format to minutes since midnight
 const convertTimeToMinutes = (time: string): number => {
   const [hoursMinutes, period] = time.split(' ');
@@ -322,13 +341,148 @@ const convertMinutesToTime = (minutes: number): string => {
 };
 
 // Format a time string to 'HH:mm:ss' using a selected date
-function formatTimeString(startTime: string, selectedDate: Date): string {
-  const parsedTime = parse(startTime, 'h:mm a', new Date(selectedDate));
-  const formattedTime = format(parsedTime, 'HH:mm:ss');
-  return formattedTime;
-}
+const formatTimeString = (startTime: string, selectedDate: Date): string => {
+  const parsedTime = parse(startTime, 'h:mm a', selectedDate);
+  return format(parsedTime, 'HH:mm:ss');
+};
 
-// Generate slots for a given day, time range, duration, and session break
+// const parseTime = (time: string, baseDate: Date): Date =>
+//   parse(time, 'h:mm a', baseDate);
+
+// const addTime = (baseDate: Date, minutesToAdd: number): Date =>
+//   addMinutes(baseDate, minutesToAdd);
+
+// export const generateSlots = (
+//   timeRanges: TimeDetail[],
+//   duration: number,
+//   sessionBreak: number,
+//   selectedDay: Date
+// ): SlotsResult | null => {
+//   const slots: Slot[] = [];
+//   const daysOfTheWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+//   const dayName = daysOfTheWeek[selectedDay.getDay()];
+
+//   // Match the time range for the selected day
+//   const selectedRange = timeRanges.find(
+//     (range) => range.day.toLowerCase() === dayName.toLowerCase() && range.enabled
+//   );
+
+//   if (!selectedRange) {
+//     return null;
+//   }
+
+//   const startTime = parseTime(selectedRange.from, selectedDay);
+//   const endTime = parseTime(selectedRange.to, selectedDay);
+//   let currentTime = startTime;
+
+//   while (currentTime.getTime() + duration * 60000 <= endTime.getTime()) {
+//     // Format current slot's start and end times
+//     const slotStart = format(currentTime, 'h:mm a');
+//     const slotEnd = format(addTime(currentTime, duration), 'h:mm a');
+
+//     slots.push({
+//       label: `${slotStart} - ${slotEnd}`,
+//       value: format(currentTime, 'hh:mm a'),
+//     });
+
+//     // Increment by the total time of duration + break
+//     currentTime = addTime(currentTime, duration + sessionBreak);
+//   }
+
+//   return {
+//     selectDay: format(selectedDay, 'yyyy-MM-dd'),
+//     slots,
+//   };
+// };
+
+// const testingSlots = () => {
+//   const selectedTimeSlots = generateSlots(
+//     [
+//       {
+//         "day": "Monday",
+//         "from": "08:00 AM",
+//         "to": "07:00 PM",
+//         "enabled": true
+//       },
+//       {
+//         "day": "Tuesday",
+//         "from": "08:30 AM",
+//         "to": "02:30 PM",
+//         "enabled": true
+//       },
+//       {
+//         "day": "Wednesday",
+//         "from": "",
+//         "to": "",
+//         "enabled": false
+//       },
+//       {
+//         "day": "Thursday",
+//         "from": "",
+//         "to": "",
+//         "enabled": false
+//       },
+//       {
+//         "day": "Friday",
+//         "from": "",
+//         "to": "",
+//         "enabled": false
+//       },
+//       {
+//         "day": "Saturday",
+//         "from": "",
+//         "to": "",
+//         "enabled": false
+//       },
+//       {
+//         "day": "Sunday",
+//         "from": "",
+//         "to": "",
+//         "enabled": false
+//       }
+//     ],
+//     60, // Set valid duration (e.g., 60 minutes)
+//     0,  // Session break, you can leave it at 0 if no break is needed
+//     new Date("2024-12-09T00:00:00.000Z")
+//   );
+//   console.log({ selectedTimeSlots });
+// };
+
+// // Convert time in "HH:MM AM/PM" format to minutes since midnight
+// const convertTimeToMinutes = (time: string): number => {
+//   const [hoursMinutes, period] = time.split(' ');
+//   let [hours, minutes] = hoursMinutes.split(':').map(Number);
+
+//   if (period === 'PM' && hours !== 12) {
+//     hours += 12;
+//   }
+//   if (period === 'AM' && hours === 12) {
+//     hours = 0;
+//   }
+
+//   return hours * 60 + minutes;
+// };
+
+// // Convert minutes since midnight to "HH:MM AM/PM" format
+// const convertMinutesToTime = (minutes: number): string => {
+//   const hours = Math.floor(minutes / 60);
+//   const mins = minutes % 60;
+//   const period = hours >= 12 ? 'PM' : 'AM';
+
+//   const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
+//   const formattedMinutes = mins < 10 ? `0${mins}` : mins;
+
+//   return `${formattedHours}:${formattedMinutes} ${period}`;
+// };
+
+// // Format a time string to 'HH:mm:ss' using a selected date
+// function formatTimeString(startTime: string, selectedDate: Date): string {
+//   const parsedTime = parse(startTime, 'h:mm a', new Date(selectedDate));
+//   const formattedTime = format(parsedTime, 'HH:mm:ss');
+//   return formattedTime;
+// }
+
+// // Generate slots for a given day, time range, duration, and session break
 export const generateSlots = (
   timeRanges: TimeDetail[],
   duration: number,
@@ -342,6 +496,7 @@ export const generateSlots = (
 
   const selectedRange = timeRanges.find(range => range.day.toLowerCase() === dayName.toLowerCase() && range.enabled);
 
+  // if date/day is disabled, return empty slot
   if (!selectedRange) {
     return null;
   }
@@ -369,7 +524,6 @@ export const generateSlots = (
     slots,
   };
 };
-
 
 interface Schedule {
   day: string;

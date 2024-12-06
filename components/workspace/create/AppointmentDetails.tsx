@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AppointmentFormData, FormProps } from '@/types/appointments'; 
-import { MapPin} from 'lucide-react';
+import { Link, MapPin} from 'lucide-react';
 import { GoogleMeetIcon, ZoomIcon } from '@/constants';
 import RadioButtons from '../ui/RadioButtons';
 import { SelectInput } from '../ui/CustomSelect';
@@ -58,70 +58,83 @@ const AppointmentDetails: React.FC<FormProps> = ({
           pattern="^(\d*|0|5|[1-9]\d*0|[1-9]\d*5)$"        
         />
       </div>
-      
-      <div>
-        <label htmlFor="loctionType" className='pb-3'>Location type</label>
-        <RadioButtons 
-          formData={formData} 
-          handleChange={handleChange!} 
-          label1={'Onsite'} 
-          label2={'Virtual'} 
-          value1={'Onsite'} 
-          value2={'Virtual'} 
-          name='loctionType'
-          />
-      </div>
-      
-      {
-        formData?.loctionType==='Onsite' ? 
-          <div className={` flex gap-2 items- `}>
-              <MapPin size={24} className='mt-2 flex-shrink-0 text-gray-600'/>
-              <div className="w-full">
-              <CustomInput
-                type='text'
-                error={errors?.locationDetails}
-                name='locationDetails'
-                value={formData?.locationDetails || ''}
-                placeholder='Enter Location'
-                className=' w-full'
-                onChange={handleChange}
-              />
-              </div>
-          </div>
-            :
-            <div className={`space-y-`}>
-              
-              <div className="pb-2 flex gap-4 items-center ">
-                <div 
-                onClick={ () => {
-                  if(setFormData){
-                    setFormData((prev:AppointmentFormData) => ({
-                      ...prev,
-                      locationDetails: 'Google Meet',
-                    }))}
-                  }}
-                className={`${formData?.locationDetails==='Google Meet' ? 'border-gray-400 border-2':'border'}  cursor-pointer p-4 rounded-md flex items-center gap-4 text-xl `}>
-                  <GoogleMeetIcon/>
-                  <p>Google Meet</p>
-                </div>
-                <div 
-                onClick={ () => {
-                  if(setFormData){
-                    setFormData((prev:AppointmentFormData) => ({
-                      ...prev,
-                      locationDetails: 'Zoom',
-                    }))}
-                  }}
-                className={`${formData?.locationDetails==='Zoom' ? 'border-gray-400 border-2':'border'} border cursor-pointer p-4 rounded-md flex items-center gap-4 text-xl `} >
-                    <ZoomIcon/>
-                    <p>Zoom</p>
-                </div>
-              </div>
 
-              <p className="">You haven’t configured your online meeting yet,</p>
-              <p className="cursor-pointer text-zikoroBlue">Click here to do that now.</p>
+      <div className="pb-3">
+          <div className='pb-3'>
+            <label htmlFor="loctionType" className='pb-3'>Location type</label>
+            <RadioButtons 
+              formData={formData} 
+              handleChange={handleChange!} 
+              label1={'Onsite'} 
+              label2={'Virtual'} 
+              value1={'Onsite'} 
+              value2={'Virtual'} 
+              name='loctionType'
+              />
+          </div>
+          {
+            formData?.loctionType==='Virtual' ? 
+            <label className='pl-8 pb-1 block'>Add meeting link</label> :
+            <label className='pl-8 pb-1 block'>Add meeting location address</label>
+          }
+          
+          {
+          // formData?.loctionType==='Onsite' ? 
+            <div className={` flex gap-2 items- `}>
+                {
+                  formData?.loctionType==='Onsite'?
+                  <MapPin size={24} className='mt-2 flex-shrink-0 text-gray-600'/> : 
+                  <Link size={24} className='mt-2 flex-shrink-0 text-gray-600'/>
+                }
+                <div className="w-full">
+                  
+                  <CustomInput
+                    type='text'
+                    error={errors?.locationDetails}
+                    name='locationDetails'
+                    value={formData?.locationDetails || ''}
+                    placeholder='Enter Location'
+                    className=' w-full'
+                    onChange={handleChange}
+                  />
+                </div>
             </div>
-        }
+              // :
+              // <div className={`space-y-`}>
+                
+              //   <div className="pb-2 flex gap-4 items-center ">
+              //     <div 
+              //     onClick={ () => {
+              //       if(setFormData){
+              //         setFormData((prev:AppointmentFormData) => ({
+              //           ...prev,
+              //           locationDetails: 'Google Meet',
+              //         }))}
+              //       }}
+              //     className={`${formData?.locationDetails==='Google Meet' ? 'border-gray-400 border-2':'border'}  cursor-pointer p-4 rounded-md flex items-center gap-4 text-xl `}>
+              //       <GoogleMeetIcon/>
+              //       <p>Google Meet</p>
+              //     </div>
+              //     <div 
+              //     onClick={ () => {
+              //       if(setFormData){
+              //         setFormData((prev:AppointmentFormData) => ({
+              //           ...prev,
+              //           locationDetails: 'Zoom',
+              //         }))}
+              //       }}
+              //     className={`${formData?.locationDetails==='Zoom' ? 'border-gray-400 border-2':'border'} border cursor-pointer p-4 rounded-md flex items-center gap-4 text-xl `} >
+              //         <ZoomIcon/>
+              //         <p>Zoom</p>
+              //     </div>
+              //   </div>
+
+              //   <p className="">You haven’t configured your online meeting yet,</p>
+              //   <p className="cursor-pointer text-zikoroBlue">Click here to do that now.</p>
+              // </div>
+          }
+      </div>
+
 
         { selectedType==='single' ?
           <>
@@ -135,6 +148,7 @@ const AppointmentDetails: React.FC<FormProps> = ({
                 placeholder='Add notes for appointment here'
                 className=' w-full'
                 onChange={handleChange}
+                isTextarea
               />
             </div>
 
