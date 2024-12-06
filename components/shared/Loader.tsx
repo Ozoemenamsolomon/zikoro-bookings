@@ -18,8 +18,6 @@ export const BookingSlotSkeleton = ({size=8}:{size?:number}) => {
   )
 }
 
-import React from 'react';
-
 interface BookingSlotSkeletonProps {
   size?: number; // Adjusts the size of the skeleton cells
 }

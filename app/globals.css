@@ -156,6 +156,10 @@ body {
   background-color: #888;
 }
 
+.auth-form {
+  @apply bg-white overflow-auto no-scrollbar py-0 lg:py-[20px] px-3 lg:px-[42px] rounded-[8px] w-full  max-w-[542px] 
+}
+
 .pulse {
   animation: blink 1s infinite;
 }

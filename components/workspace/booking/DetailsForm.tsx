@@ -113,7 +113,7 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
             setSuccess('')
             setIsFormUp('')
            }}>
-               <CheckCircle className='text-blue-600' size={48} />
+               <CheckCircle className='text-zikoroBlue' size={48} />
                <p className="text-blue-60">{success}</p>
            </MessageModal> 
         }
