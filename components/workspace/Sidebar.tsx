@@ -33,11 +33,11 @@ const navlinks:NavLink[] = [
     link: urls.appointments,
   },
 
-  // {
-  //   icon: Users,
-  //   label: 'Contacts',
-  //   link: urls.contacts,
-  // },
+  {
+    icon: Users,
+    label: 'Contacts',
+    link: urls.contacts,
+  },
   {
     icon: BarChartBig,
     label: 'Analytics',
