@@ -3,6 +3,7 @@ import { limit, urls } from "@/constants";
 import { getUserData } from "@/lib/server";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import { unstable_noStore } from "next/cache";
 
 const Contacts = async ({
   params: {contactId },
@@ -12,7 +13,7 @@ const Contacts = async ({
 }) => {
   const supabase = createClient()
   const {user} = await getUserData()
-
+  unstable_noStore();
   const { data, count, error } = await supabase
     .from('goals')
     .select('*', { count: 'exact' })
