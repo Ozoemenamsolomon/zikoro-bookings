@@ -20,19 +20,19 @@ const Main = ({children}:{children:React.ReactNode}) => {
     useClickOutside(ref, ()=>setDrop(false))
 
   return (
-        <main className="bg-baseBg min-h-screen">
-            <aside ref={sidebar} className={`${show ? 'z-30 w-60':' w-0 -z-10'} transform transition-all duration-300 ease-in-out  border-r bg-white h-screen overflow-y-auto fixed top-0 left-0 lg:hidden no-scrollbar`}>
+        <main className="bg-baseBg min-h-screen flex">
+            <aside ref={sidebar} className={`${show ? 'z-30 w-60':' w-0 -z-10'} transform transition-all duration-300 ease-in-out  border-r bg-white h-screen overflow-y-auto fixed top-0 left-0 lg:hidden no-scrollbar `}>
                 <div className="absolute top-6 right-6 flex justify-end w-full">
                     <button type="button" onClick={()=>setShow(false)}><ChevronFirst size={18} className='text-gray-600'/></button>
                 </div>
                 <Sidebar/>
             </aside>
 
-            <aside className={`max-lg:hidden z-30 flex-shrink-0 w-60 border-r bg-white h-screen overflow-auto no-scrollbar fixed top-0 left-0 `}>
+            <aside className={`max-lg:hidden z-30 flex-shrink-0 w-60 border-r bg-white  h-screen overflow-auto no-scrollbar sticky top-0 `}>
                 <Sidebar/>
             </aside>
 
-            <article className="lg:pl-60 w-full  h-full">
+            <article className="flex-1 max-w-7xl mx-auto min-h-screen">
                 <div className="p-4 relative" >
                     <button className='lg:hidden absolute left-4 top-6' type="button" onClick={()=>setShow(true)}>
                         <ChevronLast size={18} className='text-gray-600'/>

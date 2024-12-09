@@ -59,7 +59,7 @@ const BookingRow = ({
             }}
           >
             {(firstName + " " + lastName)
-              .split(" ")
+              .split(" ").slice(0,2)
               .map((n) => n[0])
               .join("")
               .toUpperCase()}
@@ -93,7 +93,8 @@ const BookingRow = ({
             {notes}
           </PopoverMenu>
         ) : (
-          <button className="underline text-blue-600 text-sm">Add </button>
+          null
+          // <button className="underline text-blue-600 text-sm">Add </button>
         )}
         {/* </div> */}
       </td>
@@ -110,7 +111,6 @@ const BookingRow = ({
       </td>
       <td className="py-2 px-4 relative w-1/12">
         <div className="flex space-x-2 ">
-          {notes && (
             <button
               onClick={() => {
                 setBookingFormData({
@@ -124,7 +124,6 @@ const BookingRow = ({
             >
               <RefreshCw size={18} />
             </button>
-          )}
           <button
             disabled={bookingStatus === "CANCELLED"}
             onClick={() => {

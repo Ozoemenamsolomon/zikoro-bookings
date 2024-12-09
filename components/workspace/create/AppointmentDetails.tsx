@@ -192,22 +192,14 @@ const AppointmentDetails: React.FC<FormProps> = ({
                     ]}
                     setFormData={setFormData!}
                     placeholder='Select'
-                    className='w-40 z-50 '
+                    className='w-44 z-50 '
                     setError={setErrors}
                     error={errors?.currency }
                   />
-                  <SelectInput
+                  <CustomInput
                     name='amount'
                     value={formData?.amount || ''}
-                    options={[
-                      {label:'20',value:20},
-                      {label:'40',value:40},
-                      {label:'60',value:60},
-                      {label:'80',value:80},
-                      {label:'100',value:100},
-                    ]}
-                    setFormData={setFormData!}
-                    setError={setErrors}
+                    onChange={handleChange}
                     placeholder='Enter price'
                     className='w-40 z-50 '
                     error={errors?.amount }

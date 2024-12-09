@@ -10,18 +10,20 @@ import PaginationMain from '@/components/shared/PaginationMain'
 import useUserStore from '@/store/globalUserStore'
 import Calender from '../booking/Calender'
 import { useAppointmentContext } from '@/context/AppointmentContext'
-import { useRouter } from 'next/navigation'
 
 const ScheduleAppointment = ({ contact }: { contact: BookingsContact, appointmentLinks?: AppointmentLink[] }) => {
-  const {setShow, show} = useAppointmentContext()
+  const {setShow,setIsFormUp, show} = useAppointmentContext()
   const [selectedBookingLink, setSelectedBookingLink] = useState<AppointmentLink | null>(null)
   const {user} = useUserStore()
   // Fetching schedule data using custom hook
   const { fetchSchedules, handlePageChange, totalPages, loading, currentPage, scheduleList, isError } = useGetSchedules()
 
   useEffect(() => {
-    fetchSchedules() // Fetch schedules when component mounts
-  }, [user])
+    if (show==='links') fetchSchedules()
+    if (show==='final') {
+      setIsFormUp('')
+    };
+  }, [user, show])
 
   return (
     <CenterModal
@@ -156,7 +158,7 @@ const SelectDateTime = ({
       </div>
 
       <section className="p-2 w-full ">
-        <Calender appointmnetLink={{...selectedBookingLink, 
+        <Calender appointmentLink={{...selectedBookingLink, 
           createdBy:{
               id: user?.id, 
               userEmail: user?.userEmail,
@@ -177,11 +179,7 @@ const SelectDateTime = ({
 }
 
 const Successful = ({ attendee }: { attendee: string }) => {
-  const {refresh} = useRouter()
 
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
   return (
     <section className="max-w-3xl w-full rounded-md bg-white">
       <div className="bg-baseLight h-20 w-full border-b"></div>

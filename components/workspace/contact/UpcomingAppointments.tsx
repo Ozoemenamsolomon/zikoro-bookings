@@ -6,9 +6,11 @@ import { format, startOfToday } from 'date-fns'
 import React, { useEffect, useState } from 'react'
 import { Loader2Icon } from 'lucide-react'
 import PaginationMain from '@/components/shared/PaginationMain'
+import { useAppointmentContext } from '@/context/AppointmentContext'
 
 const UpcomingAppointments = ({ contact }: { contact: BookingsContact }) => {
   const { user } = useUserStore()
+  const {show} = useAppointmentContext()
   const [bookings, setBookings] = useState<any[]>([])
   const [totalPages, setTotalPages] = useState<number>(0)
   const [loading, setLoading] = useState(false)
@@ -43,11 +45,11 @@ const UpcomingAppointments = ({ contact }: { contact: BookingsContact }) => {
   }
 
   useEffect(() => {
-    if (contact) {
+    if (contact||show==='final') {
       setCurrentPage(1)
       fetchAppointments(1)
     }
-  }, [contact])
+  }, [contact,show])
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)

@@ -11,17 +11,17 @@ interface SlotsType {
   selectedDate: Date | string |undefined;
   maxBookingLimit?:number;
   timeSlots: SlotsResult | null;
-  appointmnetLink: AppointmentLink | null,
+  appointmentLink: AppointmentLink | null,
   reschedule?: any
   hasCategory?:boolean,
 }
 
-const Slots: React.FC<SlotsType> = ({appointmnetLink, timeSlots, selectedDate, hasCategory }) => {
+const Slots: React.FC<SlotsType> = ({appointmentLink, timeSlots, selectedDate, hasCategory }) => {
   const {bookingFormData, setBookingFormData, slotCounts, setSlotCounts,inactiveSlots, setInactiveSlots, setIsFormUp, selectedItem} = useAppointmentContext()
 
   const [loading, setLoading] = useState(true);
   const [unavailbleDates, setUnavailableDates] = useState(null);
-  const maxBookingLimit = appointmnetLink?.maxBooking;
+  const maxBookingLimit = appointmentLink?.maxBooking;
 
   const [error, setError] = useState('')
   const pathname = usePathname()
@@ -32,7 +32,7 @@ const Slots: React.FC<SlotsType> = ({appointmnetLink, timeSlots, selectedDate, h
     setError('')
     try {
       // fetch slots based on appointmentLink.id and date 
-      const response = await fetch(`/api/bookings/bookingsByAppointmentLink/?appointmentDate=${format(selectedDate!, 'yyyy-MM-dd')}&appointmentLinkId=${appointmnetLink?.id}`, 
+      const response = await fetch(`/api/bookings/bookingsByAppointmentLink/?appointmentDate=${format(selectedDate!, 'yyyy-MM-dd')}&appointmentLinkId=${appointmentLink?.id}`, 
         {
         method: 'GET',
         headers: {
@@ -60,7 +60,7 @@ const Slots: React.FC<SlotsType> = ({appointmnetLink, timeSlots, selectedDate, h
     setError('')
     try {
       // fetch users unavailable dates based on user.id and selected date
-      const response = await fetch(`/api/calendar/fetchUnavailability?date=${format(selectedDate!, 'yyyy-MM-dd')}&userId=${appointmnetLink?.createdBy?.id}`, 
+      const response = await fetch(`/api/calendar/fetchUnavailability?date=${format(selectedDate!, 'yyyy-MM-dd')}&userId=${appointmentLink?.createdBy?.id}`, 
         {
         method: 'GET',
         headers: {
@@ -171,8 +171,8 @@ const Slots: React.FC<SlotsType> = ({appointmnetLink, timeSlots, selectedDate, h
                                   appointmentTime: slot.label,
                                   appointmentDate: format(selectedDate!, 'yyyy-MM-dd'),
                                   appointmentTimeStr:  slot.label,
-                                  appointmentDuration: appointmnetLink?.duration!,
-                                  createdBy: appointmnetLink?.createdBy?.id!,
+                                  appointmentDuration: appointmentLink?.duration!,
+                                  createdBy: appointmentLink?.createdBy?.id!,
                               }) 
                               :
                               ()=>setBookingFormData({

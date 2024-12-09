@@ -71,9 +71,9 @@ const DateTimeScheduler = ({setFormData,errors,formData}:DateTimeScheduler) => {
         />
       </div>
       
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid ">
         {formData.timeDetails.map((schedule, idx) => (
-            <div key={idx}  className="grid grid-cols-3 gap-6 mb-2">
+            <div key={idx}  className="grid sm:grid-cols-3 gap-y-2  gap-x-6 mb-4 sm:mb-2">
                 <div className="col-span-1 flex w-full gap-2 items-center">
                     <div
                         className={` flex-shrink-0 ${schedule.enabled ? 'bg-blue-600 ring-blue-600 ring-2 ' : 'bg-gray-300 ring-2 ring-gray-300'} mr- w-14 h-6 p-1.5  relative flex items-center  rounded-full  cursor-pointer `}

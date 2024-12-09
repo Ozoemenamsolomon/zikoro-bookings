@@ -60,7 +60,7 @@ export const fetchSchedule = async (
     const { data, error }  = await supabase
       .from('appointmentLinks')
       .select('*, createdBy(id, userEmail,organization,firstName,lastName,phoneNumber)') 
-      .eq('id', alias)
+      .eq('appointmentAlias', alias)
       .single()
 
     console.error({ data, error });
