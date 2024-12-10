@@ -4,6 +4,7 @@ import Image from 'next/image'
 
 const ContactName = () => {
     const {contact} = useAppointmentContext()
+  if(contact){
   return (
     <div className="md:hidden flex w-full pb-2 gap-2 items-center justify-center">
         <div className="h-12 w-12 rounded-full bg-baseLight uppercase font-semibold shrink-0 flex items-center justify-center">
@@ -24,8 +25,7 @@ const ContactName = () => {
             <small>{contact?.email}</small>
         </div >
     </div>
-
-  )
+  )} else null
 }
 
 export default ContactName
