@@ -16,15 +16,6 @@ type ContactProps = {
   searchquery?: string;
 };
 
-/**
- * This code handles filtering and managing the contact list:
- * - Filters contacts based on the search term (`searchTerm`) or resets to the initial fetched contacts (`fetchedcontacts`).
- * - Updates the selected contact (`contact`) based on the provided id (`contactId`) or defaults to the first contact in the list.
- * - Ensures the state (`contacts`, `contact`) reflects the latest data after filtering or resetting.
- * - Optimizes filtering logic with a reusable `filterContacts` function.
- * - Avoids unnecessary state updates and ensures fallback values are used for undefined cases.
- */
-
 const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
   const { replace, push } = useRouter();
   const pathname = usePathname()
@@ -32,7 +23,7 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
   // eg: /workspace/contacts/[contactId]/goals
   const contactId = pathname?.split('/')?.[3] || ''
   const fourthPath = pathname?.split('/')?.[4] || ''
-  const { contact, setContact, contacts, setContacts, isfetching, searchTerm, setSearchTerm, setIsFetching,activePath, setActivePath } = useAppointmentContext();
+  const { contact, setContact, contacts, setContacts, isfetching, searchTerm, setSearchTerm, setIsFetching,activePath, setActivePath, setIsOpen } = useAppointmentContext();
   const [loading, setLoading] = useState<number | null>(null);
 
   // console.log({fetchedcontacts, contactId, pats:pathname?.split('/')})
@@ -127,7 +118,7 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
   };
 
   return (
-    <div className="w-full md:w-1/4 p-4 md:px-2 h-full max-h-screen overflow-auto hide-scrollbar sticky top-0 bg-white">
+    <>
       {/* Search input */}
       <div className="bg-baseBg rounded-md border p-1 px-2 w-full flex items-center">
         <Search size={20} className="text-slate-400 shrink-0" />
@@ -157,6 +148,7 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
                 setContact(item)
                 push(`${urls.contacts}/${id}/${fourthPath}`)
                 setActivePath(fourthPath)
+                setIsOpen(true)
                 }} className="py-2 w-full cursor-pointer">
               <div
                 className={`${
@@ -214,7 +206,7 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
           <EmptyList size="34" text="No contacts found" />
         )}
       </div>
-    </div>
+    </ >
   );
 };
 
