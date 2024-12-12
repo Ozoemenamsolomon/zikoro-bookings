@@ -14,7 +14,7 @@ const AppointmentContactForm = () => {
     lastName: "",
     email: "",
     comments: "",
-    phone: "",
+    phoneNumber: "",
     source: root,
   });
 
@@ -35,7 +35,7 @@ const AppointmentContactForm = () => {
       email: "",
       comments: "",
       source: "",
-      phone: "",
+      phoneNumber: "",
     });
     setMailSent(true);
   };
@@ -102,8 +102,8 @@ const AppointmentContactForm = () => {
             <input
               required
               type="tel"
-              name="phone"
-              value={formData.phone}
+              name="phoneNumber"
+              value={formData.phoneNumber}
               onChange={handleChange}
               placeholder="Enter Phone number"
               className="border-[1px] border-gray-200 px-[10px] py-4 w-full text-base rounded-[6px] outline-none"
