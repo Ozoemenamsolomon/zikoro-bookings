@@ -13,9 +13,9 @@ export async function GET(req: NextRequest) {
     const contactEmail = searchParams.get('contactEmail')!;
     const offset = Number(searchParams.get('offset')!);
     const limit = Number(searchParams.get('limit')!);
-    const ltToday = Number(searchParams.get('ltToday')!);
-    const gteToday = Number(searchParams.get('gteToday')!);
-
+    const ltToday = searchParams.get('ltToday');
+    const gteToday = searchParams.get('gteToday');
+// console.log({ltToday,gteToday, searchParams})
     try {
       let query = supabase
           .from('bookings')

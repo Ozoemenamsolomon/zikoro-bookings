@@ -1,6 +1,7 @@
 import { AppointmentLink, } from "@/types/appointments";
 import { createClient } from "@/utils/supabase/server"
 import { getUserData } from ".";
+import { randomInt } from "crypto";
 
 interface FetchContactsResult {
   data: AppointmentLink[] | null;
@@ -27,8 +28,8 @@ export const fetchSchedules = async (
       .select('*', { count: 'exact' }) 
       .eq('createdBy', id)
       .range(Number(start), Number(end))
-      .order('created_at', {ascending: false} ); 
-
+      .order('created_at', {ascending: false} )
+      .neq("id", randomInt(1000000000))
     // const {count } = await supabase
     //   .from('bookings') 
     //   .select('*', { count: 'exact' } )
@@ -59,7 +60,7 @@ export const fetchSchedule = async (
     const { data, error }  = await supabase
       .from('appointmentLinks')
       .select('*, createdBy(id, userEmail,organization,firstName,lastName,phoneNumber)') 
-      .eq('id', alias)
+      .eq('appointmentAlias', alias)
       .single()
 
     console.error({ data, error });

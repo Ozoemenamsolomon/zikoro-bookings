@@ -37,7 +37,7 @@ const Articleone = ({searchquery}:{searchquery?:string}) => {
     )
 
     return (
-        <div className="w-full p-6 md:px-2  h-screen overflow-auto no-scrollbar space-y-5 bg-white relative z-10">
+        <div className="w-full p-6 md:px-2 md:pb-20 md:h-screen overflow-auto no-scrollbar space-y-5 bg-white relative z-10">
             <div className="border bg-baseBg rounded-md w-full relative">
                 <div className="flex flex-col text-center justify-center items-center p-3 py-5 w-full h-full">
                     <div className="h-16 w-16 rounded-full bg-baseLight uppercase font-semibold shrink-0 flex items-center text-2xl justify-center">

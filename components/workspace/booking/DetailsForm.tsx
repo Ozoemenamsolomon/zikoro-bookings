@@ -1,11 +1,12 @@
 import React, {  useEffect, useState } from 'react';
 import { AppointmentLink,  } from '@/types/appointments';
-import { XCircle } from 'lucide-react';
+import { CheckCircle, XCircle } from 'lucide-react';
 import { submitBooking } from './submitBooking';
 import { useAppointmentContext } from '@/context/AppointmentContext';
 import CustomInput from '../ui/CustomInput';
 import { useBookingsContact } from '@/hooks/services/appointments';
 import { usePathname } from 'next/navigation';
+import MessageModal from '@/components/shared/MessageModal';
 
 const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null}) => {
   const pathname = usePathname()
@@ -99,20 +100,40 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
       appointmentLink,
       // do not insert contact in contact page
       insertBookingsContact:  isContactPage ? null : insertBookingsContact,
-      setShow
+      setShow,
+      setIsFormUp,
     });
   };
 // console.log({price:bookingFormData})
   return (
     <div className= {`${isFormUp ? ' visible translate-x-0':' -translate-x-full '} transform transition-all duration-300 w-full relative flex flex-col bg-white h-full px-6 py-10 rounded-lg shadow-md  justify-center items-center` } >
-        <p className="pb-2 text-lg font-semibold">Enter your details</p>
-        {errors?.general ? <p className="pb-2 text-sm text-red-600 max-w-lg text-wrap">{errors?.general}</p> : null}
-        {success  ? <p className="pb-2 text-sm max-w-lg text-wrap text-blue-600">{success}</p> : null}
+        {
+           success && 
+           <MessageModal onClose={()=>{
+            setSuccess('')
+            setIsFormUp('')
+           }}>
+               <CheckCircle className='text-zikoroBlue' size={48} />
+               <p className="text-blue-60">{success}</p>
+           </MessageModal> 
+        }
+        {
+           errors?.general &&
+           <MessageModal onClose={()=>{
+            setErrors({})
+            // setIsFormUp('')
+           }}>
+               <XCircle size={48} className='text-red-600' />
+               <p className="text-red-60">{'Unexpected error occured. Try again'}</p>
+               {/* <small className="text-red-60">{errors?.general}</small> */}
+           </MessageModal> 
+        }
+        <p className="pb-6 text-lg font-semibold">Enter your details</p>
 
-        <div className="mx-auto space-y-4" >
-          <div className="flex flex-col sm:flex-row gap-4 w-ful">
-              <div className="space-y-1 flex-1 w-full">
-                  <div className="flex-1">
+        <div className="mx-auto w-full max-w-2xl space-y-4" >
+          <div className="grid sm:grid-cols-2 gap-4 w-full">
+              <div className="flex flex-col gap-2 justify-between h-full w-full">
+                  <div className="">
                     <CustomInput
                       label="First Name"
                       type="text"
@@ -121,11 +142,11 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
                       value={bookingFormData?.firstName || ''}
                       placeholder="Enter your first name"
                       disabled={isContactPage}
-                      className="py-2 w-full disabled:opacity-50"
+                      className="py-2.5 w-full disabled:opacity-50"
                       onChange={handleChange}
                     />
                   </div>
-                  <div className="flex-1">
+                  <div className="">
                     <CustomInput
                       label="Last Name"
                       type="text"
@@ -134,11 +155,11 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
                       value={bookingFormData?.lastName || ''}
                       placeholder="Enter your last name"
                       disabled={isContactPage}
-                      className="py-2 w-full disabled:opacity-50"
+                      className="py-2.5  w-full disabled:opacity-50"
                       onChange={handleChange}
                     />
                   </div>
-                  <div className="flex-1">
+                  <div className="">
                     <CustomInput
                       label="Email"
                       type="email"
@@ -147,11 +168,11 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
                       value={bookingFormData?.participantEmail || ''}
                       placeholder="Enter your email"
                       disabled={isContactPage}
-                      className="py-2 w-full disabled:opacity-50"                    
+                      className="py-2.5  w-full disabled:opacity-50"                    
                       onChange={handleChange}
                     />
                   </div>
-                  <div className="flex-1">
+                  <div className="">
                     <CustomInput
                       label="Phone"
                       type="tel"
@@ -160,29 +181,28 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
                       value={bookingFormData?.phone || ''}
                       placeholder="Enter your phone number"
                       disabled={isContactPage}
-                      className="py-2 w-full disabled:opacity-50"
+                      className="py-2.5  w-full disabled:opacity-50"
                       onChange={handleChange}
                     />
                   </div>
               </div>
 
-              <div className="flex-1 sm:w-96 h-full grid  flex-col">
-                <p className='pb-3 flex-nowrap'> Add a note to this appointment</p>
-                    <textarea 
-                      name="notes" id="notes"
-                      onChange={handleChange}
-                      value={bookingFormData?.notes || ''}
-                      required
-                      className={`${errors.notes ? 'ring-2 ring-red-600':''} sm:h-[17.6rem]  w-full focus:outline-none  p-3 h-24 border  rounded-xl `}
-                      >
-                    </textarea>
+              <div className="flex flex-col w-full h-full">
+                  <p className='pb-1 text-sm flex-1 shrink-0 text-nowrap'> Add a note to this appointment</p>
+                  <textarea 
+                    name="notes" id="notes"
+                    onChange={handleChange}
+                    value={bookingFormData?.notes || ''}
+                    required
+                    className={`${errors.notes ? 'ring-2 ring-red-600':''} sm:h-full  w-full focus:outline-none  p-3 h-32 border  rounded-xl `}
+                    >
+                  </textarea>
               </div>
           </div>
 
           <XCircle onClick={()=>setIsFormUp('')} size={20} className='text-gray-500 cursor-pointer absolute top-6 right-6'/>
 
           <div className="w-full">
-
             { 
             // TODO: confirm if host should complete booking without payment
               bookingFormData?.price && !isContactPage ?

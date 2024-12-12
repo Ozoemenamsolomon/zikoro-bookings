@@ -1,5 +1,5 @@
 import ContactInfo from "@/components/workspace/contact/ContactInfo";
-import { fetchContact } from "@/lib/server/contacts";
+import { unstable_noStore } from "next/cache";
 
 const Contacts = async ({
   params: { contactId },
@@ -16,7 +16,7 @@ const Contacts = async ({
   //   data, // Response data
   //   error, // Response error (if any)
   // });
-
+  unstable_noStore();
   return <ContactInfo searchquery={s} />;
 };
 

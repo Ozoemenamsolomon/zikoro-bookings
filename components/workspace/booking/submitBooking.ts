@@ -17,7 +17,8 @@ interface SubmitBookingProps {
     maxBookingLimit: number;
     appointmentLink:AppointmentLink|null;
     insertBookingsContact:( (contact: BookingsContact) => void) | null
-    setShow: React.Dispatch<React.SetStateAction<string>>
+    setShow: React.Dispatch<React.SetStateAction<string>>;
+    setIsFormUp: (type:string)=>void
 }
 
 export const submitBooking = async ({
@@ -32,7 +33,7 @@ export const submitBooking = async ({
     maxBookingLimit,
     appointmentLink,
     insertBookingsContact,
-    setShow,
+    setShow, setIsFormUp,
 }: SubmitBookingProps): Promise<{ bookingSuccess?: boolean; emailSuccess?: boolean }> => {
 
     setLoading(true);
@@ -48,6 +49,7 @@ export const submitBooking = async ({
 
     let newBookingData = {
         ...bookingFormData,
+        // appointmentTime: '' ,
         appointmentTime: timeStamp ,
         appointmentNotes: {categoryNote: bookingFormData?.categoryNote}
     }
@@ -95,13 +97,15 @@ export const submitBooking = async ({
                 }),
             });
             // console.log({email: await res.json()})
+            setSuccess('Booking was successful')
             if(res.ok){
                 emailSuccess=true
                 console.log('==GOOD RES==')
-                setSuccess('Booking was successful, email reminder sent')
+                
+                // setSuccess('Booking was successful, email reminder sent')
             } else {
                 console.log('==BAD RES==')
-                setSuccess(`Booking successful, some emails could not send`)
+                // setSuccess(`Booking successful, some emails could not send`)
             }
             const slot: string = result?.data?.appointmentTime;
             // update slot booking count
@@ -117,7 +121,8 @@ export const submitBooking = async ({
             !insertBookingsContact && setShow('final')
         } else {
             console.error('Form submission failed', result);
-            setErrors({ general: result.error });
+            // setErrors({ general: 'An unexpected error occurred, Try again' });
+                setErrors({ general: result.error });
         }
     } catch (error) {
         console.error('An error occurred:', error);

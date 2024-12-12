@@ -15,7 +15,7 @@ const ForgotPasswordComponent = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full max-w-full lg:max-w-2xl xl:max-w-3xl px-3 lg:px-0"
+      className="w-full  max-w-2xl xl:max-w-3xl px-3 lg:px-0"
     >
       <p className="font-medium text-lg sm:text-xl text-center ">
         Forgot Password

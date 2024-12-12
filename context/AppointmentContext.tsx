@@ -32,7 +32,7 @@ export interface AppState {
   setSearchTerm:React.Dispatch<React.SetStateAction<string>>;
   activePath: string, 
   setActivePath:React.Dispatch<React.SetStateAction<string>>;
-
+  isOpen:boolean, setIsOpen:React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface AppointmentContextProps extends AppState {
@@ -58,6 +58,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [contact, setContact] = useState<BookingsContact | null>(null);
   const [contacts, setContacts] = useState<BookingsContact[] | null>(null);
   const [show, setShow] = useState<string>('links')
+  const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const contextValue: AppointmentContextProps = {
     isLoading,setLoading,isfetching, setIsFetching,
@@ -70,6 +71,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
     selectedItem, setSelectedItem,
     contact, setContact, contacts, setContacts, show, setShow,
     searchTerm, setSearchTerm,activePath, setActivePath,
+    isOpen, setIsOpen,
   };
 
   return (

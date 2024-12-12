@@ -13,9 +13,10 @@ import ProcessPayment from './ProcessPayment'
 import { urls } from '@/constants'
 import BookingOff from './BookingOff'
 
-const Booking =  ({appointmnetLink, error}:{appointmnetLink:AppointmentLink, error?:string}) => {
-  const {bookingFormData, isFormUp} = useAppointmentContext()
-  const {refresh, push} = useRouter()
+const Booking =  ({appointmentLink, error}:{appointmentLink:AppointmentLink, error?:string}) => {
+  const {bookingFormData,  isFormUp} = useAppointmentContext()
+  const {refresh,  } = useRouter()
+//   console.log(appointmentLink)
   return (
     <Suspense fallback={<BookingLazyoader/>} >
         <main className="bg-baseBg px-3 sm:px-6 xl:px-12">
@@ -31,9 +32,9 @@ const Booking =  ({appointmnetLink, error}:{appointmnetLink:AppointmentLink, err
 
                 <header className=' shrink-0'>
                     {
-                        appointmnetLink?.logo ?
+                        appointmentLink?.logo ?
                         <div className='h-14 w-36'>
-                            <Image src={appointmnetLink?.logo } alt='brand logo' width={120} height={85} className='h-full w-full object-contain' />
+                            <Image src={appointmentLink?.logo } alt='brand logo' width={120} height={85} className='h-full w-full object-contain' />
                         </div>
                         :
                         <div className=''>
@@ -42,68 +43,68 @@ const Booking =  ({appointmnetLink, error}:{appointmnetLink:AppointmentLink, err
                     }
                 </header>
                 {
-                    !appointmnetLink.statusOn ?
+                    !appointmentLink.statusOn ?
                     <BookingOff/>
                     :
                     isFormUp==='pay' ? 
-                    <ProcessPayment appointmentLink={appointmnetLink}/>
+                    <ProcessPayment appointmentLink={appointmentLink}/>
                     :
                     <section className="h-full w-full flex items-center justify-center">
                         
-                        <section className="w-full max-w-7xl mx-auto grid lg:flex gap-6 lg:justify-center ">
+                        <section className="w-full max-w-7xl mx-auto grid lg:flex gap-6 lg:justify-center md:max-h-[30rem] 2xl:max-h-[33rem]">
 
-                            <div className="bg-white shadow w-full lg:w-80 overflow-auto xl:w-96  flex-shrink-0 p-6 rounded-lg   title ">
+                            <div className="bg-white shadow w-full lg:w-80 overflow-auto hide-scrollbar xl:w-96  flex-shrink-0 p-6 rounded-lg ">
 
-                                <h4 className="text-lg font-semibold ">{appointmnetLink?.appointmentName}</h4> 
+                                <h4 className="text-lg font-semibold ">{appointmentLink?.appointmentName}</h4> 
 
                                 <div className="pt-24  pb-8">
-                                    <div className="flex pb-2 w-full items-start">
+                                    <div className="flex gap-1 pb-2 w-full items-start">
                                         <p className="font-medium w-1/3 sm:w-1/5 md:w-1/8 lg:w-2/5 ">Duration</p>
-                                        <p className=" w-2/3 sm:w-4/5 md:w-7/8 lg:w-3/5">{appointmnetLink?.duration ? appointmnetLink?.duration + 'mins':''}</p>
+                                        <p className=" w-2/3 sm:w-4/5 md:w-7/8 lg:w-3/5">{appointmentLink?.duration ? appointmentLink?.duration + 'mins':''}</p>
                                     </div>
-                                    <div className="flex pb-2 w-full items-start">
+                                    <div className="flex gap-1 pb-2 w-full items-start">
                                         <p className="font-medium w-1/3 sm:w-1/5 md:w-1/8 lg:w-2/5 ">Location Type</p>
-                                        <p className=" w-2/3 sm:w-4/5 md:w-7/8 lg:w-3/5">{appointmnetLink?.loctionType}</p>
+                                        <p className=" w-2/3 sm:w-4/5 md:w-7/8 lg:w-3/5">{ appointmentLink?.loctionType}</p>
                                     </div>
-                                    <div className="flex pb-2 w-full items-start">
+                                    {appointmentLink?.loctionType === 'Virtual' ? null : <div className="flex gap-1 pb-2 w-full items-start">
                                         <p className="font-medium w-1/3 sm:w-1/5 md:w-1/8 lg:w-2/5 ">Location</p>
-                                        <p className=" w-2/3 sm:w-4/5 md:w-7/8 lg:w-3/5">{appointmnetLink?.locationDetails}</p>
-                                    </div>
+                                        <p className=" w-2/3 sm:w-4/5 md:w-7/8 lg:w-3/5  line-clamp-6">{ appointmentLink?.locationDetails }</p>
+                                    </div>}
                                     {
-                                        appointmnetLink?.amount || bookingFormData?.price ? 
-                                        <div className="flex  pb-2 w-full items-start">
+                                        appointmentLink?.amount || bookingFormData?.price ? 
+                                        <div className="flex  gap-1 pb-2 w-full items-start">
                                             <p className="font-medium w-1/3 sm:w-1/5 md:w-1/8 lg:w-2/5 ">Price</p>
                                             <p className=" w-2/3 sm:w-4/5 md:w-7/8 lg:w-3/5 flex ">
-                                                {bookingFormData?.currency ? bookingFormData?.currency : appointmnetLink?.curency} {bookingFormData?.price ? bookingFormData?.price  : appointmnetLink?.amount}
+                                                {bookingFormData?.currency ? bookingFormData?.currency : appointmentLink?.curency} {bookingFormData?.price ? bookingFormData?.price  : appointmentLink?.amount}
                                             </p>
                                         </div> 
                                         : null
                                     }
                                     <div className="flex  pb-2 w-full items-start">
                                         <p className="font-medium w-1/3 sm:w-1/5 md:w-1/8 lg:w-2/5 ">Max booking</p>
-                                        <p className=" w-2/3 sm:w-4/5 md:w-7/8 lg:w-3/5 flex "> {appointmnetLink?.maxBooking}</p>
+                                        <p className=" w-2/3 sm:w-4/5 md:w-7/8 lg:w-3/5 flex "> {appointmentLink?.maxBooking}</p>
                                     </div>
                                     {
-                                        appointmnetLink?.note || bookingFormData?.categoryNote ? 
+                                        appointmentLink?.note || bookingFormData?.categoryNote ? 
                                         <div className="flex pb-2 w-full items-start">
                                             <p className="font-medium w-1/3 sm:w-1/5 md:w-1/8 lg:w-2/5 ">Desc</p>
-                                            <div className=" w-2/3 sm:w-4/5 md:w-7/8 lg:w-3/5">
-                                                <p className="">{appointmnetLink?.note}</p>
-                                                {bookingFormData?.categoryNote&&<p className="font-semibold">{bookingFormData?.categoryNote}</p>}
+                                            <div className="line-clamp-5 w-2/3 sm:w-4/5 md:w-7/8 lg:w-3/5">
+                                                <p className="">{appointmentLink?.note}</p>
+                                                {bookingFormData?.categoryNote&&<p className="font-medium">{bookingFormData?.categoryNote}</p>}
                                             </div>
                                         </div> : null
                                     }
                                 </div>
                             </div>
                         
-                            <Calender appointmnetLink={appointmnetLink}/>
+                            <Calender appointmentLink={appointmentLink}/>
                         </section>
                     </section>
                 }
 
                 <footer className='shrink-0 flex w-full gap-4 justify-center items-center '>
                 {
-                    appointmnetLink?.zikoroBranding ? 
+                    appointmentLink?.zikoroBranding ? 
                         <>
                         <p className="">Create your bookings with</p>
                         <Link href={urls.root}>
