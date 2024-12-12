@@ -14,6 +14,7 @@ const AppointmentContactForm = () => {
     lastName: "",
     email: "",
     comments: "",
+    phone: "",
     source: root,
   });
 
@@ -34,6 +35,7 @@ const AppointmentContactForm = () => {
       email: "",
       comments: "",
       source: "",
+      phone: "",
     });
     setMailSent(true);
   };
@@ -91,6 +93,19 @@ const AppointmentContactForm = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter Email Address"
+              className="border-[1px] border-gray-200 px-[10px] py-4 w-full text-base rounded-[6px] outline-none"
+            />
+          </div>
+
+          <div className="flex flex-col gap-y-3 mt-6">
+            <label htmlFor="">Phone Number</label>
+            <input
+              required
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="Enter Phone number"
               className="border-[1px] border-gray-200 px-[10px] py-4 w-full text-base rounded-[6px] outline-none"
             />
           </div>
