@@ -22,11 +22,11 @@ const Contacts = async ({
     .range(0, limit - 1)
     .order('created_at', {ascending:false})
 
-  if(!data) redirect(urls.contacts+'?notFound=The contact was not found')
+  // if(!data) redirect(urls.contacts+'?notFound=The contact was not found')
 
 
   return ( 
-    <Goals goalsData={data} countSize={count!} errorString={error || ''}  />
+    <Goals goalsData={data} countSize={count!} errorString={null}  />
     );
 };
 
