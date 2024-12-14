@@ -99,9 +99,9 @@ export async function POST(req: NextRequest) {
                
               <tr><th>Reason for cancellation</th><td>${reason}</td></tr>
               <tr><th>Appointment Location</th><td>${locationDetails}</td></tr>
-              <tr><th>Appointment Duration</th><td>${appointmentDuration}mins</td></tr>
+              <tr><th>Appointment Duration</th><td></td></tr>
               <tr><th>Appointment Date</th><td>${appointmentDate}</td></tr>
-              <tr><th>Appointment Time</th><td>${appointmentTimeStr}</td></tr>
+              <tr><th>Appointment Time</th><td>${appointmentTimeStr} (${appointmentDuration}mins) </td></tr>
               
               ${note&&`<tr><th>Note from Host</th><td>${note}</td></tr>`}
               <tr><th>Participant Email</th><td>${participantEmail}</td></tr>

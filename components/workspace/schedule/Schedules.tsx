@@ -32,7 +32,7 @@ const Schedules = ({schedules, count, error}:{
         :
         <>
         <section className="py-8 min-h-screen  ">
-            <div className="grid max-[420px]:px-10  min-[420px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 min-[1700px]:grid-cols-5  gap-6">
+            <div className="grid justify-center min-[520px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 min-[1700px]:grid-cols-5  gap-6">
                 {
                     scheduleList?.map((item,idx)=>{
                         return (

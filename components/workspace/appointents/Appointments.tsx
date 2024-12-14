@@ -157,15 +157,14 @@ const BookingTable = ({
   return (
     <section
       id={format(parseISO(date), "yyyy-MM-dd")}
-      className="w-full bg-white rounded-lg px-2 sm:px-6 py-8"
+      className="grid overflow-auto no-scrollbar shadow bg-white rounded-lg px-2 sm:px-6 py-8"
     >
-      <div className="flex gap-4 items-center pb-6">
-        <h5 className="font-semibold">{formattedDate}</h5>
-        <p>–</p>
+      <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 sm:items-center max-sm:px-4 pb-4">
+        <h5 className="font-semibold">{formattedDate} - </h5>
         <p className="text-purple-600">{bookings.length} appointment(s)</p>
       </div>
 
-      <div className="text-xs sm:text-sm xl:text-base overflow-x-auto overflow-y-visible h-full hide-scrollbar w-full">
+      <div className="w-full  text-xs sm:text-sm xl:text-base overflow-x-auto overflow-y-visible h-full hide-scrollbar">
         <table className="w-full bg-white  ">
           <thead>
             <tr className="bg-gray-50 text-gray-700 w-full flex">

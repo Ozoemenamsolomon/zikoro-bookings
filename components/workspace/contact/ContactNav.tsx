@@ -13,10 +13,10 @@ const ContactNav = () => {
   return (
     <div className="w-full sticky top-0 overflow-auto no-scrollbar flex gap-3 items-center px-4 md:px-6 py-3 border-b ">
 
-        <button id='toggle button' aria-label='toggle button' onClick={()=>setIsOpen(cur=>!cur)} 
+        {/* <button id='toggle button' aria-label='toggle button' onClick={()=>setIsOpen(cur=>!cur)} 
         className='md:hidden h-8 w-8 flex justify-center items-center border rounded-md text-gray-500 hover:bg-purple-50 duration-300' >
           <ChevronRight size={24} className={`${isOpen ? 'rotate-0':'rotate-180'} transform transition-all duration-300`}/>
-        </button>
+        </button> */}
 
         {contactNav.map(({ label, link }) => (
         <Link
