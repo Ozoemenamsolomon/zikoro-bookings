@@ -3,9 +3,10 @@ import { fetchSchedule } from '@/lib/server/schedules'
 import { redirect } from 'next/navigation'
 import React from 'react'
 
-const EditAppointmentsPage = async ({searchParams:{appointmentAlias}}:{
+const EditAppointmentsPage = async ({searchParams}:{
   searchParams:{appointmentAlias?:string}
 }) => {
+  const appointmentAlias = (await searchParams).appointmentAlias
   if(!appointmentAlias) {
     redirect('/create')
   } 
