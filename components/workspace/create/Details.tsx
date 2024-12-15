@@ -47,7 +47,7 @@ const Details: React.FC<DetailsProps> = ({
             <div
           className={`transition-all duration-300  ${drop ? 'max-h-[1000rem] ease-in hide-scrollbar overflow-aut' : 'max-h-0 ease-out overflow-hidden'} `}
         >
-          <div className="px-4 py-8">
+          <div className="sm:px-4 py-8">
             {formComponent}
           </div>
             </div>

@@ -85,7 +85,7 @@ export const Reschedule = ({ refresh, getBookings, setFilter }: { refresh: () =>
             </div>
   
             <div className="h-[28rem]  border hide-scrollbar overflow-auto w-full  rounded-lg ">
-                <Calender appointmnetLink={{...bookingFormData?.appointmentLinkId}}/> 
+                <Calender appointmentLink={{...bookingFormData?.appointmentLinkId}}/> 
             </div>
 
             <div className="w-full flex items-center gap-1">

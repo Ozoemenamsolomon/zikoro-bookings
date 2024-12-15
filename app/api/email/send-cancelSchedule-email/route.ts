@@ -93,22 +93,25 @@ export async function POST(req: NextRequest) {
                 <th>Host Organization</th>
                 <td>
                   ${businessName}
-                  <img src=${logo} alt="logo">
+                   
                 </td>
               </tr>
-              <tr><th>Host Details</th><td>${hostFirstName} ${hostLastName} ${hostPhone}</td></tr>
+               
               <tr><th>Reason for cancellation</th><td>${reason}</td></tr>
               <tr><th>Appointment Location</th><td>${locationDetails}</td></tr>
-              <tr><th>Appointment Duration</th><td>${appointmentDuration}mins</td></tr>
+              <tr><th>Appointment Duration</th><td></td></tr>
               <tr><th>Appointment Date</th><td>${appointmentDate}</td></tr>
-              <tr><th>Appointment Time</th><td>${appointmentTimeStr}</td></tr>
-              <tr><th>Note from Host</th><td>${note}</td></tr>
-              <tr><th>Host Email</th><td>${hostEmail}</td></tr>
+              <tr><th>Appointment Time</th><td>${appointmentTimeStr} (${appointmentDuration}mins) </td></tr>
+              
+              ${note&&`<tr><th>Note from Host</th><td>${note}</td></tr>`}
               <tr><th>Participant Email</th><td>${participantEmail}</td></tr>
               <tr><th>Participant Details</th><td>${firstName} ${lastName} ${phone}</td></tr>
-              <tr><th>Note from Participant</th><td>${notes}</td></tr>
+              ${notes&&`<tr><th>Note from Participant</th><td>${notes}</td></tr>`}
             </table>
-            <p>Thank you for using our scheduling service.</p>
+            <br/>
+                  <p>Thank you for using our scheduling service.</p>
+                  <p>If you want to cancel or reschedule this appointment, reach out to the host with this detail.</p>
+                  <p>Email: ${hostEmail}</p>
             <p>Best Regards,<br>Zikoro<br><br>
               <img src="https://www.zikoro.com/_next/image?url=%2Fzikoro.png&w=128&q=75" alt="zikoro">
             </p>

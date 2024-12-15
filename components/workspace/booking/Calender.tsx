@@ -61,11 +61,11 @@ export interface SlotsResult {
 }
 
 interface CalendarProps {
-  appointmnetLink: AppointmentLink | null;
+  appointmentLink: AppointmentLink | null;
 }
 
   
-const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
+const Calender: React.FC<CalendarProps> = ({ appointmentLink, }) => {
     const [slotsLoading, setSlotsLoading] = useState(true)
     const [hasCategory, setHasCategory] = useState(false)
     const {bookingFormData, isFormUp, setIsFormUp, setBookingFormData} = useAppointmentContext()
@@ -76,11 +76,11 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
     let [timeSlots, setTimeSlots] = useState<SlotsResult | null >(null);
 
     function getEnabledTimeDetails(): TimeDetail[] {
-        if (!appointmnetLink || !appointmnetLink.timeDetails) {
+        if (!appointmentLink || !appointmentLink.timeDetails) {
           return [];
         }
         try {
-          const timeDetails: TimeDetail[] = JSON.parse(appointmnetLink.timeDetails);
+          const timeDetails: TimeDetail[] = JSON.parse(appointmentLink.timeDetails);
           const enabledItems: TimeDetail[] = timeDetails.filter(item => item.enabled);
           return enabledItems;
         } catch (error) {
@@ -117,19 +117,19 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
 
     // mount booked slots for the selected date
     useEffect(() => {
-        if(!selectedDay && appointmnetLink){
-            const nextAvailableDay = findNextAvailableDay(appointmnetLink?.timeDetails);
+        if(!selectedDay && appointmentLink){
+            const nextAvailableDay = findNextAvailableDay(appointmentLink?.timeDetails);
             const nextAvailableDate = new Date(nextAvailableDay.date);
             setSelectedDay(nextAvailableDate);
         } else if(selectedDay) {
             const selectedTimeSlots = generateSlots(
-                getEnabledTimeDetails(), appointmnetLink?.duration!, appointmnetLink?.sessionBreak||0, selectedDay)
+                getEnabledTimeDetails(), appointmentLink?.duration!, appointmentLink?.sessionBreak||0, selectedDay)
                 // console.log({selectedTimeSlots, timeDetails:getEnabledTimeDetails()})
 
                 setTimeSlots(selectedTimeSlots)
                 setSlotsLoading(false)
         }
-    }, [selectedDay, appointmnetLink]);
+    }, [selectedDay, appointmentLink]);
 
   let [currentMonth, setCurrentMonth] = useState(format(today, 'MMM-yyyy'));
 	let firstDayCurrentMonth = parse(currentMonth, 'MMM-yyyy', new Date());
@@ -151,8 +151,8 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
 
   const normalizedSelectedDay = startOfDay(selectedDay!);
 
-  const appointmentTypeJson: Category[] = JSON.parse(appointmnetLink?.category || `[]`);
-// console.log({appointmentTypeJson, checking:appointmnetLink?.category})
+  const appointmentTypeJson: Category[] = JSON.parse(appointmentLink?.category || `[]`);
+// console.log({appointmentTypeJson, checking:appointmentLink?.category})
   const appointmentTypes: { label: string, value: string }[] = appointmentTypeJson ?
     appointmentTypeJson.map((item: Category) => ({
       label: item.name || '',
@@ -166,8 +166,8 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
         setBookingFormData((prev) => ({
           ...prev,
           appointmentType: appointmentTypeJson[0]?.name || '',
-          price: selectedAppointmentType?.amount || appointmnetLink?.amount,
-          currency: selectedAppointmentType?.curency || appointmnetLink?.curency || '',
+          price: selectedAppointmentType?.amount || appointmentLink?.amount,
+          currency: selectedAppointmentType?.curency || appointmentLink?.curency || '',
           categoryNote: selectedAppointmentType?.note,
         }));
       } else {
@@ -192,12 +192,12 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
     {
        
         isFormUp==='details' ?
-        <DetailsForm appointmentLink={appointmnetLink}/>
+        <DetailsForm appointmentLink={appointmentLink}/>
         :
-        <div className="w-full max-md:pb-4 rounded-lg bg-white shadow md:max-h-[33rem] max-sm:space-y-6 sm:flex ">
+        <div className="w-full max-md:pb-4 rounded-lg bg-white shadow  max-sm:space-y-6 sm:flex md:max-h-[30rem] 2xl:max-h-[33rem]">
             <div className=" bg-white   sm:w-3/5 p-4 rounded-lg  flex-shrink-0 ">
 
-                {appointmnetLink?.category && Array.isArray(appointmentTypeJson) && appointmentTypeJson.length ? 
+                {appointmentLink?.category && Array.isArray(appointmentTypeJson) && appointmentTypeJson.length ? 
                 <div className="w-full pb-6 px-4 space-y-1 flex flex-col justify-center items-center">
                     <h5  className='font-semibold text- '>Select meeting category</h5  >
                     <SelectOnly
@@ -302,7 +302,7 @@ const Calender: React.FC<CalendarProps> = ({ appointmnetLink, }) => {
                 <h5 className=" pt-3 pb-2 font-semibold">Choose Time</h5>  
                 <BookingSlotSkeleton/></div></div>
                 :
-                <Slots hasCategory={hasCategory} appointmnetLink={appointmnetLink} selectedDate={selectedDay} timeSlots={timeSlots} />
+                <Slots hasCategory={hasCategory} appointmentLink={appointmentLink} selectedDate={selectedDay} timeSlots={timeSlots} />
             }
         </div>
     }

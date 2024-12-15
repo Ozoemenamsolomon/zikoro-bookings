@@ -125,8 +125,9 @@ const CalendarLayout: React.FC<SearchParams> = ({
 
   return (
     <div className="flex flex-col gap-8 h-full">
-      <section className="flex w-full flex-shrink-0 justify-between gap-1 flex-col sm:flex-row pb-">
-        <div className="flex gap-x- items-center">
+      <section className="flex w-full flex-shrink-0 justify-between gap-4 flex-col sm:flex-row pb-">
+        <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+          <div className="flex gap-2 ">
           <button
             onClick={previous}
             type="button"
@@ -135,7 +136,7 @@ const CalendarLayout: React.FC<SearchParams> = ({
             <ChevronLeft />
           </button>
 
-          <h4 className="text-xl font-semibold">{dateDisplay}</h4>
+          <h4 className="sm:text-xl  font-semibold">{dateDisplay}</h4>
 
           <button
             onClick={next}
@@ -144,11 +145,13 @@ const CalendarLayout: React.FC<SearchParams> = ({
           >
             <ChevronRight />
           </button>
+          </div>
+          
 
           {loading || calendarData.count ? (
-            <>
-              <p className="pr-2">-</p>
-              <p className="pr-2 font-semibold"
+            <div className="flex gap-2 max-sm:pl-2">
+              <p className="max-sm:hidden">-</p>
+              <p className="font-semibold"
                   style={{
                     background: 'linear-gradient(269.83deg, #9C00FE 0.14%, #001FCB 99.85%)',
                     WebkitBackgroundClip: 'text',
@@ -166,11 +169,11 @@ const CalendarLayout: React.FC<SearchParams> = ({
               >
                 {loading ? null : `${calendarData.count} meetings`}
               </p>
-            </>
+            </div>
           ) : null}
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex max-sm:pl-2 justify-end">
           <div className="bg-white p-1 flex rounded-xl border-2">
             <button
               onClick={() => handleSelectView("week")}

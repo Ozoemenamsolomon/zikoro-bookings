@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import { PostRequest } from '@/utils/api';
 import { useAppointmentContext } from '@/context/AppointmentContext';
 import { useGoalContext } from '@/context/GoalContext';
-import { urls } from '@/constants';
+// import { urls } from '@/constants';
 import { KeyResult } from '@/types/goal';
 import { useRouter } from 'next/navigation';
 
@@ -19,18 +19,18 @@ const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 interface FormData  {
   value: number | null;
   Note?: string;
-  attachments?: { url: string; type: string }[];
+  attachments: { url: string; type: string }[];
 }
 
 const MetricForm = ({ keyResult }: { keyResult: KeyResult }) => {
   const {contact,} = useAppointmentContext()
-  const {refresh,push} = useRouter()
+  const {refresh} = useRouter()
   const [errors, setErrors] = useState<{
     value?: string;
     attachments?: string;
     gen?: string;
   } | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<string>('');
 
   const [formData, setFormData] = useState<FormData>({
     value: null,
@@ -39,6 +39,7 @@ const MetricForm = ({ keyResult }: { keyResult: KeyResult }) => {
   });
 
   const [files, setFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<{ type: string; url: string }[]>([]);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -55,74 +56,108 @@ const MetricForm = ({ keyResult }: { keyResult: KeyResult }) => {
     []
   );
 
-  const handleFileUpload = useCallback((uploadedFiles: { url: string; type: string }[]) => {
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      attachments: '',
-    }));
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      attachments: [...(prevFormData.attachments || []), ...uploadedFiles],
-    }));
-  }, []);
+  const handleFileUpload = async () => {
+    if (!files?.length) {
+      return;
+    }
+  
+    setLoading('Uploading files');
+    try {
+      const uploadedFiles = await Promise.all(
+        files.map(async (file) => {
+          const formDataToSend = new FormData();
+          formDataToSend.append('file', file);
+          formDataToSend.append('upload_preset', 'w5xbik6z');
+          formDataToSend.append('folder', 'ZIKORO');
+  
+          const res = await fetch(`https://api.cloudinary.com/v1_1/zikoro/image/upload`, {
+            method: 'POST',
+            body: formDataToSend,
+          });
+  
+          if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error?.message || 'Image upload failed.');
+          }
+  
+          const data = await res.json();
+          return { url: data.secure_url, type: file.type };
+        })
+      );
+  
+      setFiles([]);
+      return uploadedFiles;
+    } catch (error) {
+      console.error('File upload failed:', error);
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        attachments: 'File upload failed.',
+      }));
+    }  
+  };
+  
 
   const validate = useCallback(() => {
     const newErrors: Record<string, string> = {};
     if (formData.value === null || formData.value <= 0) {
       newErrors.value = 'Value is required and must be greater than 0';
     }
-    if (files.length && !formData.attachments?.length) {
-      newErrors.attachments = 'You have not saved the files';
-    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [formData, files]);
+  }, [formData]);
 
   const handleSubmit = async () => {
     setErrors(null);
     if (!validate()) return;
 
     try {
-      setLoading(true)
-        if(false){
-            // const { data, error } = await PostRequest({url:'/api/goals/submitMetric', 
-            //     body:{ 
-            //         timeLineData: {
-            //             ...formData,
-            //             organizationId: goalData.organization,
-            //             createdBy: goalData.createdBy,
-            //         },
-            //     }
-            // })
-            // if (error) {
-            //     setErrors({gen:error})
-            // } else {
-            //     toast.success('Metric value was updated')
-            //     refresh()
-            // }
-        } else {
-            const { data, error } = await PostRequest({url:'/api/goals/submitMetric', 
-                body:{ 
-                    timeLineData: {
-                        ...formData,
-                        keyResultId: keyResult?.id,
-                        organizationId: keyResult.organization,
-                        createdBy: keyResult.createdBy,
-                    },
-                }
+      // handle file upload first
+      const uploadedFiles = await handleFileUpload( )
+      console.log({uploadedFiles})
+      if(errors?.attachments&&errors?.attachments?.length>0){ return}
+      setLoading('Submiting values')
+      const { data: metricResponse, error: metricError } = await PostRequest({
+        url: '/api/goals/submitMetric',
+        body: {
+          timeLineData: {
+            ...formData,
+            attachments:uploadedFiles,
+            keyResultId: keyResult?.id,
+            organizationId: keyResult?.organization,
+            createdBy: keyResult?.createdBy,
+          },
+        },
+      });
+  
+      const { data: keyResultResponse, error: keyResultError } = await PostRequest({
+        url: '/api/goals/editKeyResult',
+        body: {
+          keyResultData: {
+            ...keyResult,
+            currentValue: formData.value,
+          },
+        },
+      });
+      if (metricError || keyResultError) {
+        setErrors({
+          gen: metricError || keyResultError || 'Error occurred while submitting values',
+        });
+        return;
+      } else {
+          toast.success('Timeline updated successfull')
+            refresh()
+            setFormData({
+              value: null,
+              Note: '',
+              attachments: [],
             })
-            if (error) {
-                setErrors({gen:error})
-            } else {
-                toast.success('Timeline updated successfull')
-                 refresh()
-                // push(`${urls.contacts}/${contact?.email}/goals/details/${data.id}?id=${contact?.id}&name=${contact?.firstName}`)
-            }
-        }
+            setPreviewUrls([])
+      }
     } catch (error) {
       console.error('Submission failed:', error)
+      setErrors({gen:'Submission failed:'})
     } finally {
-      setLoading(false)
+      setLoading('')
     }
   };
 
@@ -163,6 +198,12 @@ const MetricForm = ({ keyResult }: { keyResult: KeyResult }) => {
       >
         <h4 className="text-lg font-bold pb-8">Update Value</h4>
 
+        <div className="text-sm pb-4 mb-4 border-b flex justify-between gap-2 flex-wrap w-full font-semibold">
+          <p className="">Start value: <span>{0}</span></p>
+          <p className="">Target value: <span>{keyResult?.targetValue}</span></p>
+          <p className="">Current value: <span>{keyResult?.currentValue}</span></p>
+        </div>
+
         <div className="flex justify-center items-center gap-2">
           <label htmlFor="value" className="text-gray-600 font-semibold text-sm">
             Update Value:
@@ -199,16 +240,19 @@ const MetricForm = ({ keyResult }: { keyResult: KeyResult }) => {
             files={files}
             setFiles={setFiles}
             onChange={handleFileUpload}
+            previewUrls={previewUrls}
+            setPreviewUrls={setPreviewUrls}
           />
           {errors?.attachments && <small className="text-red-500">{errors.attachments}</small>}
         </div>
 
         <div className="flex flex-col gap-1 items-center justify-center">
           {errors?.gen && <small className="text-red-500">{errors.gen}</small>}
-          <Button type='submit' className="bg-basePrimary" disabled={loading}>
+          <small>{loading}</small>
+          <Button type='submit' className="bg-basePrimary" disabled={loading.length>0}>
             {loading ? 'Updating...' : 'Update'}
           </Button>
-          <small>Last updated: Just now</small>
+          {/* <small>Last updated: Just now</small> */}
         </div>
       </form>
     </CenterModal>

@@ -20,7 +20,7 @@ const AppointmentHistory = ({bookingsData,countSize,errorString,initialItem}:{
     const [isError, setIsError] = useState<string|null>(errorString)
     const [currentPage, setCurrentPage] = useState(1)
     const [size, setSize] = useState<{size:number|null, firstItem:string|null}> ({size:countSize, firstItem: initialItem||''})
-  
+  console.log(contact?.email)
     const fetchAppointments = async (page: number = 1) => {
       setIsError('')
       setLoading(true)

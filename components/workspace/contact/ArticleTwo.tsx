@@ -17,7 +17,7 @@ const ArticleTwo = () => {
     </div>
 )
   return (
-    <div className="w-full p-6 md:px-2  h-screen overflow-auto no-scrollbar space-y-5 bg-white relative z-10">
+    <div className="w-full p-6 md:px-2  md:h-screen md:pb-20 overflow-auto no-scrollbar space-y-5 bg-white relative z-10">
         <div className=" border rounded-md text-center space-y-3 w-full">
           <div className="text-center  rounded-md w-full p-4 bg-baseBg border-b font-semibold">Schedule Appointment</div>
           <div className="p-3">

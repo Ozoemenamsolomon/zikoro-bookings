@@ -280,25 +280,21 @@ const CreateAppointments: React.FC<{ appointment?: AppointmentLink, serverError?
         <div className="fixed z-50 bg-white/5 inset-0 flex justify-center items-center" ><Loading/></div>:null
       }
 
-      <Link href={urls.schedule} type="button" className="max-sm:pl-4">
+      <Link href={urls.schedule} type="button" className="max-sm:pl-4 inline-block">
         <BentArrowLeft w={20} />
       </Link>
-      <section className="py-4 flex w-full justify-center items-center">
-        <form onSubmit={handleSubmit} className="w-full max-w-2xl bg-white rounded-[6px] p-6 sm:p-[60px] grid gap-0.5 overflow-hidden">
+
+      <section className="py-4 flex flex-col w-full justify-center items-center">
+        <h4 className="text-center font-semibold text-xl pb-6">Schedule Appointment</h4>
+        <form onSubmit={handleSubmit} className="w-full max-w-2xl bg-white rounded-[6px] p-6 sm:p-[60px] flex flex-col gap-0.5 overflow-auto">
           {errors && Object.keys(errors).length > 0 && (
-            <div className='grid overflow-hidden -96'>
-              {errors.general ? (
-                <div className="flex flex-wrap">
-                  <p className="text-red-600 text-[12px] text-wrap">{errors.general}</p>
-                </div>
+            errors.general ? (
+                  <p className="text-red-600 pb-2 px-2 text-[12px] text-wrap">{errors.general}</p>
               ) : (
-                <div className="flex flex-wrap">
-                  <p className="text-red-600 text-[12px] text-wrap">
+                  <p className="text-red-600 pb-2 px-2 text-[12px] text-wrap">
                     {Object.values(errors).filter(error => error).join(', ')}
                   </p>
-                </div>
-              )}
-            </div>
+              )
           )}
 
 

@@ -100,6 +100,20 @@ const config: Config = {
 		mobile: "13px",
 		desktop: "15px",
 		},
+		keyframes: {
+			'slide-in-right': {
+				'0%': { transform: 'translateX(-100%)', opacity: '0', },
+				'100%': { transform: 'translateX(0)', opacity: '1' },
+			},
+			'slide-out-left': {
+				'0%': { transform: 'translateX(0)', opacity: '1' },
+				'100%': { transform: 'translateX(-100%)', opacity: '0', visibility: 'hidden' },
+			},
+			},
+		animation: {
+			'slide-in-right': 'slide-in-right 0.5s ease-in-out forwards',
+			'slide-out-left': 'slide-out-left 0.5s ease-in-out forwards',
+			},
   	}
   },
   plugins: [require("tailwindcss-animate")],

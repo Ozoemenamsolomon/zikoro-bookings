@@ -17,28 +17,28 @@ export default function AppointmentSec1() {
         width={122}
         height={92}
         alt=""
-        className="w-[122px] h-[92px] absolute bottom-16 lg:bottom-0  right-2 lg:right-16 xl:right-32"
+        className="w-[122px] h-[92px] [@media(max-width:320px)]:hidden absolute bottom-16 lg:bottom-0  right-2 lg:right-16 xl:right-32"
       />{" "}
       <Image
         src="/appointments/AppointmentClock.png"
         width={138}
         height={138}
         alt=""
-        className="w-[138px] h-[px] absolute bottom-12 lg:bottom-0 left-2 lg:left-4 xl:left-16"
+        className="w-[138px] h-[138px] [@media(max-width:320px)]:hidden absolute bottom-12 lg:bottom-0 left-2 lg:left-4 xl:left-16"
       />
       <div className="max-w-full lg:max-w-[1019px] mx-auto">
         <p className=" text-[30px] lg:text-[90px] xl:text-[90px] font-extrabold gradient-text bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end text-center leading-none">
           Effortless Bookings, <span className="">Happier Clients</span>
         </p>
-        <p className="max-w-full lg:max-w-[698px] mx-auto text-center text-[14px] text-base font-normal mt-5 lg:mt-10">
+        <p className="max-w-full lg:max-w-[698px] mx-auto text-center text-[14px] lg:text-base font-normal mt-5 lg:mt-10">
           Simplify your appointments,{" "}
           <span className="font-medium">improve </span>
-          clients interactions, and run an
+          clients interactions and run an
           <span className="font-medium"> effecient </span> business.
           <br className="block lg:hidden" /> Whether you&apos;re a
-          <span className="font-medium"> freelancer </span> small
+          <span className="font-medium"> freelancer, </span> small
           <span className="font-medium"> business owner </span>
-          or a<span className="font-medium"> large enterprise, </span>
+          or a<span className="font-medium"> large enterprise. </span>
           Zikoro Bookings has the features you need to manage your appointments
           effortlessly.
         </p>
@@ -47,8 +47,8 @@ export default function AppointmentSec1() {
         <div>
           <div className=" flex items-center justify-center mx-auto">
             <Link
-                href={urls.appointments}
-              className="text-white font-semibold text-base bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end py-[10px] px-[64px] rounded-lg"
+              href={urls.appointments}
+              className=" text-white font-semibold [@media(max-width:320px)]:text-[12px] text-base bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end py-[10px] px-[64px] rounded-lg"
             >
               Get Started For Free!
             </Link>

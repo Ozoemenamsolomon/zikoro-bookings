@@ -98,21 +98,25 @@ console.log( { bookingFormData, appointmentLink })
                       <th>Host Organization</th>
                       <td>
                         ${appointmentLink?.businessName}
-                        <img src=${appointmentLink?.logo} alt=logo>
                       </td>
                     </tr>
-                    <tr><th>Host Details</th><td>${hostfName} ${hostlName} ${hostPhone}</td></tr>
+                    
                     <tr><th>Appointment Location</th><td>${appointmentLink?.locationDetails}</td></tr>
-                    <tr><th>Appointment Duration</th><td>${appointmentDuration}mins</td></tr>
                     <tr><th>Appointment Date</th><td>${appointmentDate}</td></tr>
-                    <tr><th>Appointment Time</th><td>${appointmentTimeStr}</td></tr>
-                    <tr><th>Note from Host</th><td>${appointmentLink?.note}</td></tr>
-                    <tr><th>Host Email</th><td>${hostEmail}</td></tr>
+                    <tr><th>Appointment Time</th><td>${appointmentTimeStr} (${appointmentDuration}mins) </td></tr>
+                    ${appointmentLink?.note && `<tr><th>Note from Host</th><td>${appointmentLink?.note}</td> </tr>`}
                     <tr><th>Participant Email</th><td>${participantEmail}</td></tr>
                     <tr><th>Participant Details</th><td>${firstName} ${lastName} ${phone}</td></tr>
-                    <tr><th>Note from Participant</th><td>${notes}</td></tr>
+                    ${notes&& `<tr><th>Note from Participant</th><td>${notes}</td> </tr>`}
                   </table>
+                  <br/>
                   <p>Thank you for using our scheduling service.</p>
+                  <p>If you want to cancel or reschedule this appointment, contact the host with this detail.</p>
+                  <p>Email: ${hostEmail}</p>
+                  <p>Email: ${hostPhone}</p>
+                  <br/>
+
+                  
                   <p>Best Regards,<br>Zikoro<br><br>
                     <img src="https://www.zikoro.com/_next/image?url=%2Fzikoro.png&w=128&q=75" alt="zikoro">
                   </p>
