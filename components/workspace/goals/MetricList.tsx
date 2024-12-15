@@ -62,7 +62,8 @@ const MetricList = async ({ keyResult }: { keyResult: KeyResult }) => {
         <small className="truncate text-sm">{keyResult?.keyResultOwner}</small>
       </div>
 
-      <div>
+      {timelines && timelines?.length > 0 ? 
+        <div>
         <h4 className="text-lg font-bold pb-4">Timeline</h4>
 
         <div className="overflow-auto no-scrollbar">
@@ -77,7 +78,7 @@ const MetricList = async ({ keyResult }: { keyResult: KeyResult }) => {
               </tr>
             </thead>
             <tbody>
-              {timelines && timelines?.length > 0 ? (
+              { 
                 timelines.map((timeline: KeyResultsTimeline, index: number) => (
                   <tr key={index} className="odd:bg-white even:bg-baseBg">
                     <td className="px-4 py-2">
@@ -112,17 +113,16 @@ const MetricList = async ({ keyResult }: { keyResult: KeyResult }) => {
                     </td>
                   </tr>
                 ))
-              ) : (
-                <tr>
-                  <td colSpan={5} className="text-center border px-4 py-2">
-                    No timeline data available.
-                  </td>
-                </tr>
-              )}
+              }
             </tbody>
           </table>
         </div>
+      </div> 
+        :
+      <div className="text-center border px-4 py-6 w-full">
+        No timeline data available.
       </div>
+      }
     </div>
   );
 };

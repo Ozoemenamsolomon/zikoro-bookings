@@ -52,7 +52,7 @@ const Goals =  ({goalsData,countSize,errorString }:{
     fetchGoals(page)
   }
   return (
-    <section className='bg-white sm:p-3 '>
+    <section className='bg-white '>
         {
             loading ?
             <div className='h-screen pt-32 flex justify-center'><Loader2Icon className='animate-spin'/></div>
