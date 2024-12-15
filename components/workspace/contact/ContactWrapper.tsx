@@ -26,10 +26,11 @@ const ContactWrapper = ({
 
       {/* Children Section */}
       <div
-        className={`max-md:absolute max-md:inset-0 w-full md:col-span-3 md:relative h-full transition-all ${
+        className={`max-md:absolute max-md:inset-0 w-full md:col-span-3 md:relative h-full transition-all 
+          ${
           isOpen
             ? 'max-md:animate-slide-in-right  '
-            : 'max-md:animate-slide-out-left max-md:pointer-events-none max-h-screen overflow-hidden'
+            : 'max-md:animate-slide-out-left max-md:pointer-events-none max-h-screen overflow-auto hide-scrollbar'
         }`}
       >
         {children}

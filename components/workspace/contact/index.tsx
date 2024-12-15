@@ -20,7 +20,7 @@ const ContactLayout: React.FC<ContactProps> = async ({ children,  }) => {
     <div className=" ">
       
       <ContactName/>
-      <div className="sm:border rounded-lg bg-white min-h-screen">
+      <div className="sm:border rounded-lg bg-white verflow-auto min-h-screen">
           {
             count === 0  ?
             <EmptyContact/>
