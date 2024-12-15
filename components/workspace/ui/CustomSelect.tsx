@@ -52,6 +52,7 @@ export const SelectInput: React.FC<SelectInputProps> = ({
   }, [value])
 
   const handleChange = (selectedValue: string | number) => {
+    console.log({selectedValue})
     setInputValue(selectedValue.toString());
     if (onChange) {
       onChange(name, selectedValue);
@@ -97,7 +98,7 @@ export const SelectInput: React.FC<SelectInputProps> = ({
           {label}
         </label>
       )}
-      <div ref={containerRef} 
+      <div onClick={() => setIsOpen(!isOpen)} ref={containerRef} 
       className={cn(
         "relative py-3 px-2 flex items-center gap-1 border rounded-md",
         disabled ? "bg-gray-300 text-gray-300" : "hover:border-purple-300",
@@ -117,14 +118,14 @@ export const SelectInput: React.FC<SelectInputProps> = ({
                 handleInputChange(e);
               }
             }}
-            onClick={() => setIsOpen(!isOpen)}
+            // onClick={() => setIsOpen(!isOpen)}
             className={cn(`w-full bg-transparent focus:ring-0 appearance-none focus:outline-none ${
               disabled ? 'cursor-not-allowed' : 'border-gray-300'
             }`,)}
             placeholder={placeholder }
             pattern={pattern||''}
           />
-          <div className="shrink-0 pointer-events-none">
+          <div  className="shrink-0 pointer-events-none">
             {icon ? <ChevronDown size={14} /> : <UpDownArrow  />}
           </div>
         </div>

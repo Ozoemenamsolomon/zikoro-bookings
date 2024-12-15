@@ -13,8 +13,8 @@ import { PenLine } from 'lucide-react'
 const KeyResultDetails = async({keyResultId}:{keyResultId:string}) => {
     const {keyResult,error} = await fetchKeyResultById(keyResultId)
   return (
-    <section className='bg-white sm:p-3  overflow-auto'>
-        <section className="bg-baseBg sm:border sm:rounded-md sm:p-3 py-6 min-h-screen w-full space-y-6">
+    <section className='bg-white '>
+        <section className="bg-baseBg   py-6   sm:p-6   min-h-screen w-full space-y-6">
             
             <header className="flex justify-between gap-3 pb-3 border-b w-full">
                 <BackToGoalDetailsBtn goalId={keyResult?.goalId!}/>
