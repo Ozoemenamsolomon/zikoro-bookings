@@ -70,7 +70,7 @@ const EditKeyResultDetails = ({ keyResult, text }: { keyResult: KeyResult, text?
     if (!keyResultData?.endDate) newErrors.endDate = 'End date is required.'
     if (!keyResultData?.unit) newErrors.endDate = 'Unit is required.'
     if (!String(keyResultData?.targetValue)) newErrors.targetValue = 'Target value is required.'
-    if (!String(keyResultData?.currentValue)) newErrors.currentValue = 'Start value is required.'
+    if (!String(keyResultData?.startValue)) newErrors.startValue = 'Start value is required.'
     if (keyResultData?.startDate && keyResultData?.endDate && new Date(keyResultData?.startDate) > new Date(keyResultData?.endDate)) {
         newErrors.endDate = 'End date must be after start date.';
       }

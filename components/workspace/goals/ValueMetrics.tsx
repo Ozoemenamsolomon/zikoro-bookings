@@ -4,15 +4,15 @@ import { KeyResult } from '@/types/goal'
 
 const ValueMetrics = ({errors, keyResultData, handleChange}:
   {errors:{[key:string]: string|null}, handleChange:(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=>void, keyResultData:KeyResult}) => {
-     console.log({keyResultData})
+    //  console.log({keyResultData})
   return (
     <div className='space-y-3'>
         <div className="grid sm:grid-cols-2 gap-x-2 gap-y-4">
         <CustomInput
                 label="Start Value"
-                name="currentValue"
-                value={keyResultData?.currentValue!}
-                error={errors.currentValue}
+                name="startValue"
+                value={keyResultData?.startValue!}
+                error={errors.startValue}
                 placeholder="0.0"
                 type='number'
                 isRequired
@@ -41,7 +41,6 @@ const ValueMetrics = ({errors, keyResultData, handleChange}:
                 onChange={handleChange}
             />
 
-            {/* <button onClick={removeMetric} type="button" className='text-red-600 text-sm font-medium'>Remove unit</button> */}
         </div>
         
     </div>
