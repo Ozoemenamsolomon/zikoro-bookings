@@ -9,16 +9,20 @@ import BackToGoalDetailsBtn from './BackToGoalDetailsBtn'
 import EditKeyResultDetails from './EditKeyResultDetails'
 import KeyResultForm from './KeyResultForm'
 import { PenLine } from 'lucide-react'
+import { urls } from '@/constants'
+import { redirect } from 'next/navigation'
 
-const KeyResultDetails = async({keyResultId}:{keyResultId:string}) => {
+const KeyResultDetails = async({params}:{params:{keyResultId:string,contactId:string,goalId:string|number}}) => {
+    const {goalId,contactId,keyResultId} = await params
     const {keyResult,error} = await fetchKeyResultById(keyResultId)
+    if (!goalId || !contactId || !keyResult ) redirect(`${urls.contacts}/${contactId}/goals/details/${goalId}`)
   return (
     <section className='bg-white '>
         <section className="bg-baseBg   py-6   sm:p-6   min-h-screen w-full space-y-6">
             
             <header className="flex justify-between gap-3 pb-3 border-b w-full">
                 <BackToGoalDetailsBtn goalId={keyResult?.goalId!}/>
-                <h3 className="font-bold text-xl">Key Result - {keyResultId}</h3>
+                <h3 className="font-bold text-xl">Key Result</h3>
                 <EditKeyResultDetails keyResult={keyResult!} />
             </header>
 
