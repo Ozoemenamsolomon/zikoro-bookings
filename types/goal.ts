@@ -29,6 +29,7 @@ export interface Goal {
     currentValue?: number | null; // numeric or null
     targetValue?: number | null; // numeric or null
     unit?: string | null; // text or null
+    startValue?: number | null; 
   }
   export interface KeyResultsTimeline {
     id?: number; // bigint

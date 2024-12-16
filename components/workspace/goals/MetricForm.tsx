@@ -38,6 +38,7 @@ const MetricForm = ({ keyResult,
     value?: string;
     attachments?: string;
     gen?: string;
+    isGreater?: string;
   } | null>(null);
   const [loading, setLoading] = useState<string>('');
 
@@ -66,17 +67,37 @@ const MetricForm = ({ keyResult,
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
+      const numericValue = Number(value);
+      const targetValue = Number(keyResult?.targetValue);
+  
+      // Validate value against the targetValue
+      if (numericValue > targetValue) {
+        setErrors((prev: any) => ({
+          ...prev,
+          isGreater: 'The current value is greater than the target value (optional)',
+        }));
+      } else if (errors?.isGreater && numericValue <= targetValue) {
+        setErrors((prev: any) => ({
+          ...prev,
+          isGreater: '',
+        }));
+      }
+  
+      // Update form data
       setFormData((prevFormData) => ({
         ...prevFormData,
         [name]: value,
       }));
+  
+      // Clear field-specific error
       setErrors((prevErrors) => ({
         ...prevErrors,
         [name]: '',
       }));
     },
-    []
+    [keyResult.targetValue, errors] // Dependencies added for accurate re-render behavior
   );
+  
 
   const handleFileUpload = async () => {
     if (!files?.length) {
@@ -137,7 +158,6 @@ const MetricForm = ({ keyResult,
     try {
       // handle file upload first
       const uploadedFiles = await handleFileUpload( )
-      console.log({uploadedFiles})
       if(errors?.attachments&&errors?.attachments?.length>0){ return}
       setLoading('Submiting values')
       const { data: metricResponse, error: metricError } = await PostRequest({
@@ -203,7 +223,6 @@ const MetricForm = ({ keyResult,
     }),
     []
   );
-
   return (
     <CenterModal
       className="max-w-2xl w-full overflow-hidden"
@@ -219,7 +238,7 @@ const MetricForm = ({ keyResult,
         <h4 className="text-lg font-bold pb-8">Update Value</h4>
 
         <div className="text-sm pb-4 mb-4 border-b flex justify-between gap-2 flex-wrap w-full font-semibold">
-          <p className="">Start value: <span>{0}</span></p>
+          <p className="">Start value: <span>{keyResult?.startValue||0}</span></p>
           <p className="">Target value: <span>{keyResult?.targetValue}</span></p>
           <p className="">Current value: <span>{keyResult?.currentValue}</span></p>
         </div>
@@ -238,7 +257,8 @@ const MetricForm = ({ keyResult,
           />
           <small className="text-sm text-gray-600 font-semibold">Degrees</small>
         </div>
-        {errors?.value && <small className="text-red-500">{errors.value}</small>}
+        {errors?.value && <small className="text-red-500 w-full flex justify-center">{errors.value}</small>}
+        {errors?.isGreater && <small className="text-blue-700 w-full flex justify-center">{errors?.isGreater}</small>}
 
         <div className="py-4">
           <label htmlFor="Note" className="text-gray-600 pb-2 font-semibold text-sm">
