@@ -7,6 +7,7 @@ import { SelectInput } from '../ui/CustomSelect';
 import CategoryForm from './CategoryForm';
 import { useAppointmentContext } from '@/context/AppointmentContext';
 import CustomInput from '../ui/CustomInput';
+import { ReactSelect } from '@/components/shared/ReactSelect';
 
 const AppointmentDetails: React.FC<FormProps> = ({
   formData,
@@ -17,6 +18,14 @@ const AppointmentDetails: React.FC<FormProps> = ({
 }) => {
   const {selectedType} = useAppointmentContext()
 
+  const handleSelect = (name:string,value:any)=> {
+    setFormData&&setFormData((prev)=>{
+      return {
+        ...prev,
+        [name]:value
+      }
+    })
+  }
   return (
     <div className=" space-y-6">
       <div className='flex gap-3 items-end'>
@@ -36,27 +45,28 @@ const AppointmentDetails: React.FC<FormProps> = ({
 
       <div>
         <p className='label'>Duration in minutes</p>
-        <SelectInput
-          name='duration'
-          value={formData?.duration || ''}
-          options={[
-            {label:'15',value:15},
-            {label:'30',value:30},
-            {label:'45',value:45},
-            {label:'60',value:60},
-            {label:'90',value:90},
-            {label:'120',value:120},
-            {label:'180',value:180},
-            {label:'210',value:210},
-            {label:'360',value:360},
-          ]}
-          setFormData={setFormData!}
-          setError={setErrors}
-          placeholder='Select'
-          className='w-48'
-          error={errors?.duration}
-          pattern="^(\d*|0|5|[1-9]\d*0|[1-9]\d*5)$"        
-        />
+        <ReactSelect
+            name="duration"
+            options={[
+              {label:'15',value:15},
+              {label:'30',value:30},
+              {label:'45',value:45},
+              {label:'60',value:60},
+              {label:'90',value:90},
+              {label:'120',value:120},
+              {label:'180',value:180},
+              {label:'210',value:210},
+              {label:'360',value:360},
+            ]}
+            value={formData?.duration || ''}
+            onChange={handleSelect}
+            isClearable
+            placeholder="Select"
+            className="w-48 h-12"
+            setError={setErrors}
+            error={errors?.duration}
+          />
+        
       </div>
 
       <div className="pb-3">

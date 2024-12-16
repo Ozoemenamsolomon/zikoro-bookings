@@ -4,6 +4,7 @@ import { CheckCircle, FileWarning, Loader2, X } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Arrow90degUp } from 'styled-icons/bootstrap';
+ 
 
 interface FileUploaderProps {
   onChange?: (files: { url: string; type: string }[]) => void;
@@ -11,9 +12,10 @@ interface FileUploaderProps {
   setFiles:  React.Dispatch<React.SetStateAction<File[]>> 
   previewUrls: { type: string; url: string }[];
   setPreviewUrls: React.Dispatch<React.SetStateAction< { type: string; url: string }[]>>
+  isDisabled:boolean
 }
 
-export const FileUploader: React.FC<FileUploaderProps> = ({ onChange, files, setFiles,previewUrls, setPreviewUrls }) => {
+export const FileUploader: React.FC<FileUploaderProps> = ({ onChange, files, setFiles,previewUrls, setPreviewUrls, isDisabled }) => {
   // const [previewUrls, setPreviewUrls] = useState<{ type: string; url: string }[]>([]);
   const [uploadedFileUrls, setUploadedFileUrls] = useState<{ url: string; type: string }[]>([]);
   const [loading, setLoading] = useState(false);
@@ -147,6 +149,9 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onChange, files, set
     </button>
   );
 
+
+
+
   return (
     <div className="space-y-2 rounded-lg bg-cms-white">
       <div className="flex flex-col space-y-2">
@@ -154,6 +159,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onChange, files, set
           type="file"
           onChange={handleFileChange}
           multiple
+          disabled={isDisabled}
           className="p-2 border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:bg-blue-100/10 file:text-blue-700 hover:file:bg-blue-100/20"
           aria-label="Upload files"
         />
@@ -162,15 +168,16 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onChange, files, set
 
       <div className="grid grid-cols-3 justify-center items-center md:grid-cols-4 lg:grid-cols-6 gap-2">
         {previewUrls.map((preview, index) => (
-          <div key={index} className="relative flex items-center justify-center border max-w-24 rounded-lg shadow-sm overflow-hidden">
+          <div key={index} className="relative flex items-center justify-center border size-24 rounded-lg shadow-sm overflow-hidden">
             <DeleteBtn url={preview.url} />
-            {preview.type === 'image' && <img src={preview.url} alt="Image Preview" className="object-cover w-full h-24" />}
+            {renderAttachment(preview?.url, preview?.type)}
+            {/* {preview.type === 'image' && <img src={preview.url} alt="Image Preview" className="object-cover w-full h-24" />}
             {preview.type === 'video' && (
               <video controls className="w-full h-36">
                 <source src={preview.url} type="video/mp4" />
               </video>
             )}
-            {preview.type === 'pdf' && <iframe src={preview.url} className="w-full h-24" title="PDF Preview"></iframe>}
+            {preview.type === 'pdf' && <iframe src={preview.url} className="w-full h-24" title="PDF Preview"></iframe>} */}
           </div>
         ))}
       </div>
@@ -219,4 +226,35 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onChange, files, set
       )}
     </div>
   );
+};
+
+export   const renderAttachment = (url: string, type: string) => {
+  if (type.startsWith('image')) {
+    return <img src={url} alt="Image Preview" className="object-cover w-full h-full" />;
+  } else if (type.startsWith('video')) {
+    return (
+      <video controls className="w-full h-full">
+        <source src={url} type={type} />
+      </video>
+    );
+  } else if (type === 'application/pdf') {
+    return (
+      <iframe
+        src={url}
+        title="PDF Preview"
+        className="w-full h-full no-scrollbar border"
+      ></iframe>
+    );
+  } else {
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-500 text-xs w-full h-full flex justify-center items-center underline"
+      >
+        View File
+      </a>
+    );
+  }
 };

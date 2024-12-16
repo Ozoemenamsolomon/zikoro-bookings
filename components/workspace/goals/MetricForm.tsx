@@ -2,7 +2,7 @@
 
 import { CenterModal } from '@/components/shared/CenterModal';
 import { Button } from '@/components/ui/button';
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import 'react-quill/dist/quill.snow.css'; // Import styles for ReactQuill
 import { FileUploader } from '@/components/shared/Fileuploader';
@@ -11,8 +11,9 @@ import { PostRequest } from '@/utils/api';
 import { useAppointmentContext } from '@/context/AppointmentContext';
 import { useGoalContext } from '@/context/GoalContext';
 // import { urls } from '@/constants';
-import { KeyResult } from '@/types/goal';
+import { KeyResult, KeyResultsTimeline } from '@/types/goal';
 import { useRouter } from 'next/navigation';
+import useUserStore from '@/store/globalUserStore';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
@@ -22,8 +23,16 @@ interface FormData  {
   attachments: { url: string; type: string }[];
 }
 
-const MetricForm = ({ keyResult }: { keyResult: KeyResult }) => {
-  const {contact,} = useAppointmentContext()
+const MetricForm = ({ keyResult, 
+  triggerBtn=<div className="flex justify-center">
+                <Button className="bg-basePrimary">Update new value</Button>
+              </div>, 
+  metric }: { 
+    keyResult: KeyResult,
+    triggerBtn?: React.ReactNode,
+    metric?: KeyResultsTimeline
+   }) => {
+  
   const {refresh} = useRouter()
   const [errors, setErrors] = useState<{
     value?: string;
@@ -40,7 +49,20 @@ const MetricForm = ({ keyResult }: { keyResult: KeyResult }) => {
 
   const [files, setFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<{ type: string; url: string }[]>([]);
+  const [isDisabled, setIsDisabled] = useState<boolean>(false);
 
+  useEffect(() => {
+    if(metric) {
+      setFormData({
+        Note:metric.Note!,
+        value:metric.value!,
+        attachments: metric.attachments || []
+      })
+    }
+    setPreviewUrls(metric?.attachments||[])
+    setIsDisabled(true)
+  }, [metric])
+  
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
@@ -106,6 +128,8 @@ const MetricForm = ({ keyResult }: { keyResult: KeyResult }) => {
     return Object.keys(newErrors).length === 0;
   }, [formData]);
 
+  const {user} = useUserStore()
+
   const handleSubmit = async () => {
     setErrors(null);
     if (!validate()) return;
@@ -124,7 +148,7 @@ const MetricForm = ({ keyResult }: { keyResult: KeyResult }) => {
             attachments:uploadedFiles,
             keyResultId: keyResult?.id,
             organizationId: keyResult?.organization,
-            createdBy: keyResult?.createdBy,
+            createdBy: user?.id,
           },
         },
       });
@@ -183,11 +207,7 @@ const MetricForm = ({ keyResult }: { keyResult: KeyResult }) => {
   return (
     <CenterModal
       className="max-w-2xl w-full overflow-hidden"
-      trigerBtn={
-        <div className="flex justify-center">
-          <Button className="bg-basePrimary">Update new value</Button>
-        </div>
-      }
+      trigerBtn={triggerBtn}
     >
       <form
         className="p-6 sm:p-12 max-h-[90vh] overflow-auto hide-scrollbar"
@@ -224,12 +244,20 @@ const MetricForm = ({ keyResult }: { keyResult: KeyResult }) => {
           <label htmlFor="Note" className="text-gray-600 pb-2 font-semibold text-sm">
             Add Note (optional)
           </label>
-          <ReactQuill
-            value={formData.Note}
-            onChange={(value) => setFormData((prev) => ({ ...prev, Note: value }))}
-            modules={memoizedToolbar}
-            className="editor-content no-scrollbar"
-          />
+
+          {metric&&isDisabled ? (
+              <div
+                dangerouslySetInnerHTML={{ __html: metric?.Note! }}
+                className="prose  text-xs "
+              />
+            ) : (
+              <ReactQuill
+                value={formData.Note}
+                onChange={(value) => setFormData((prev) => ({ ...prev, Note: value }))}
+                modules={memoizedToolbar}
+                className="editor-content no-scrollbar"
+              />
+            )}
         </div>
 
         <div className="pb-4">
@@ -242,6 +270,7 @@ const MetricForm = ({ keyResult }: { keyResult: KeyResult }) => {
             onChange={handleFileUpload}
             previewUrls={previewUrls}
             setPreviewUrls={setPreviewUrls}
+            isDisabled={metric! && isDisabled}
           />
           {errors?.attachments && <small className="text-red-500">{errors.attachments}</small>}
         </div>

@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import CreatableSelect from "react-select/creatable";
 import Select, { ActionMeta, MultiValue, SingleValue } from "react-select";
+import { cn } from "@/lib";
 
 interface OptionType {
   value: string | number;
@@ -121,7 +122,7 @@ export const ReactSelect: React.FC<ReactSelectProps> = ({
       options={memoizedOptions}
       isMulti={isMulti}
       placeholder={placeholder}
-      className={className}
+      className={cn('h-10 hide-scrollbar', className)}
       onChange={handleChange}
       styles={{
         control: (baseStyles, state) => ({
