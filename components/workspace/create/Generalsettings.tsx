@@ -140,23 +140,6 @@ const Generalsettings: React.FC<FormProps> = ({
             setError={setErrors}
             error={errors?.sessionBreak}
           />
-        {/* <SelectInput
-          name="sessionBreak"
-          value={formData?.sessionBreak || ''}
-          options={[
-            { label: '0', value: 0 },
-            { label: '5', value: 5 },
-            { label: '10', value: 10 },
-            { label: '15', value: 15 },
-            { label: '20', value: 20 },
-          ]}
-          setFormData={setFormData!}
-          className="w-32"
-          type='number'
-          setError={setErrors}
-          error={errors?.sessionBreak}
-          pattern="\d+"
-        /> */}
       </div>
 
       

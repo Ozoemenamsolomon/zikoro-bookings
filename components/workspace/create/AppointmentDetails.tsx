@@ -7,7 +7,7 @@ import { SelectInput } from '../ui/CustomSelect';
 import CategoryForm from './CategoryForm';
 import { useAppointmentContext } from '@/context/AppointmentContext';
 import CustomInput from '../ui/CustomInput';
-import { ReactSelect } from '@/components/shared/ReactSelect';
+import CustomCreatableSelect, { ReactSelect } from '@/components/shared/ReactSelect';
 
 const AppointmentDetails: React.FC<FormProps> = ({
   formData,
@@ -18,14 +18,21 @@ const AppointmentDetails: React.FC<FormProps> = ({
 }) => {
   const {selectedType} = useAppointmentContext()
 
-  const handleSelect = (name:string,value:any)=> {
-    setFormData&&setFormData((prev)=>{
-      return {
+  const handleSelectDuration = (name: string, value: string | string[]) => {
+    // Convert the value to a number
+    const numericValue = Number(value);
+  
+    // Validate if the value is a positive integer and a multiple of 5
+    if (!Number.isInteger(numericValue) || numericValue <= 0 || numericValue % 5 !== 0) {
+      return; 
+    }
+  
+    setFormData &&
+      setFormData((prev) => ({
         ...prev,
-        [name]:value
-      }
-    })
-  }
+        [name]: numericValue,
+      }));
+  };
   return (
     <div className=" space-y-6">
       <div className='flex gap-3 items-end'>
@@ -45,21 +52,21 @@ const AppointmentDetails: React.FC<FormProps> = ({
 
       <div>
         <p className='label'>Duration in minutes</p>
-        <ReactSelect
+        <CustomCreatableSelect
             name="duration"
             options={[
-              {label:'15',value:15},
-              {label:'30',value:30},
-              {label:'45',value:45},
-              {label:'60',value:60},
-              {label:'90',value:90},
-              {label:'120',value:120},
-              {label:'180',value:180},
-              {label:'210',value:210},
-              {label:'360',value:360},
+              {label:'15',value:'15'},
+              {label:'30',value:'30'},
+              {label:'45',value:'45'},
+              {label:'60',value:'60'},
+              {label:'90',value:'90'},
+              {label:'120',value:'120'},
+              {label:'180',value:'180'},
+              {label:'210',value:'210'},
+              {label:'360',value:'360'},
             ]}
-            value={formData?.duration || ''}
-            onChange={handleSelect}
+            value={String(formData?.duration) || ''}
+            onChange={handleSelectDuration}
             isClearable
             placeholder="Select"
             className="w-48 h-12"
@@ -109,39 +116,7 @@ const AppointmentDetails: React.FC<FormProps> = ({
                   />
                 </div>
             </div>
-              // :
-              // <div className={`space-y-`}>
-                
-              //   <div className="pb-2 flex gap-4 items-center ">
-              //     <div 
-              //     onClick={ () => {
-              //       if(setFormData){
-              //         setFormData((prev:AppointmentFormData) => ({
-              //           ...prev,
-              //           locationDetails: 'Google Meet',
-              //         }))}
-              //       }}
-              //     className={`${formData?.locationDetails==='Google Meet' ? 'border-gray-400 border-2':'border'}  cursor-pointer p-4 rounded-md flex items-center gap-4 text-xl `}>
-              //       <GoogleMeetIcon/>
-              //       <p>Google Meet</p>
-              //     </div>
-              //     <div 
-              //     onClick={ () => {
-              //       if(setFormData){
-              //         setFormData((prev:AppointmentFormData) => ({
-              //           ...prev,
-              //           locationDetails: 'Zoom',
-              //         }))}
-              //       }}
-              //     className={`${formData?.locationDetails==='Zoom' ? 'border-gray-400 border-2':'border'} border cursor-pointer p-4 rounded-md flex items-center gap-4 text-xl `} >
-              //         <ZoomIcon/>
-              //         <p>Zoom</p>
-              //     </div>
-              //   </div>
-
-              //   <p className="">You haven’t configured your online meeting yet,</p>
-              //   <p className="cursor-pointer text-zikoroBlue">Click here to do that now.</p>
-              // </div>
+              
           }
       </div>
 
