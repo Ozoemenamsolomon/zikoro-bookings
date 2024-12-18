@@ -122,11 +122,11 @@ export const useSetLoggedInUser = () => {
       .eq("userEmail", email)
       .single();
     if (error) {
-      //  console.log({error});
-      window.open(
-        `/onboarding?email=${email}&createdAt=${new Date().toISOString()}`,
-        "_self"
-      );
+       console.log({error});
+      // window.open(
+      //   `/onboarding?email=${email}&createdAt=${new Date().toISOString()}`,
+      //   "_self"
+      // );
       return;
     }
     console.log(user);
