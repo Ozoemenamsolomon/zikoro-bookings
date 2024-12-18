@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { urls } from '@/constants'
 import { Goal } from '@/types/goal'
 import { useAppointmentContext } from '@/context/AppointmentContext'
+import DeleteGoal from './DeleteGoal'
 
 const DropDownGoalAction = ({goal,}:{goal:Goal})  => {
   const {contact} = useAppointmentContext()
@@ -67,9 +68,7 @@ const DropDownGoalAction = ({goal,}:{goal:Goal})  => {
             </div>
           </div> */}
 
-          <button type="button" className="text-red-600 duration-300">
-            Delete Goal
-          </button>
+           <DeleteGoal goal={goal} />
         </div>
       </PopoverMenu>
   )

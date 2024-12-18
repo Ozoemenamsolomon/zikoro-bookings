@@ -113,8 +113,8 @@ export const fetchGoalsByGoalId = async (
         .select('*') 
         // .select('*, createdBy(firstName,lastName,id)') 
         .eq('keyResultId', keyId)
-        .order('created_at', {ascending: false} ); 
-  console.log({error})
+        .order('created_at', {ascending: true} ); 
+  // console.log({error})
       return { data, error: error?.message||null,};
     } catch (error) {
       console.error('Server error:', error);

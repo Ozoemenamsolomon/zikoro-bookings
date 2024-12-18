@@ -6,6 +6,7 @@ import { format } from 'date-fns'
 import { Goal } from '@/types/goal'
 import { useGoalContext } from '@/context/GoalContext'
 import DropDownGoalAction from './DropDownGoalAction'
+import ChartGoal from './ChartGoal'
 
 const GoalCard = ({goal,goalId}:{goal:Goal,goalId?:string}) => {
     const {setGoalData} = useGoalContext()
@@ -25,7 +26,7 @@ const GoalCard = ({goal,goalId}:{goal:Goal,goalId?:string}) => {
     
   return (
     <div className='space-y-5'>
-        <ProgressMetrics/>
+        <ChartGoal goal={goal}/>
 
         {!goalId && <DropDownGoalAction goal={goal}/>}
         
