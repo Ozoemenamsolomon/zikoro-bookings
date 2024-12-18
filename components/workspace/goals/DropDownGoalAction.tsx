@@ -17,7 +17,7 @@ const DropDownGoalAction = ({goal,}:{goal:Goal})  => {
   // useClickOutside( ref, ()=>setDrop(false))
   return (
     <PopoverMenu
-        className="w-40 "
+        className="w-48"
         align="end"
         trigerBtn={
           <Button className="rounded-full h-5 w-5 text-white p-1 absolute right-7 top-2">

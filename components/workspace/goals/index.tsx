@@ -63,7 +63,7 @@ const Goals =  ({goalsData,countSize,errorString }:{
             goals?.length===0 ? 
             <EmptyGoal/>
             :
-        <section className="bg-baseBg sm:border sm:rounded-md sm:p-3 py-6 min-h-screen w-full space-y-6">
+        <section className="bg-baseBg  sm:p-3 py-6 min-h-screen w-full space-y-6">
             <header className="flex justify-end">
               <AddNewGoalBtn text='New Goal' />
             </header>

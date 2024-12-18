@@ -23,7 +23,7 @@ const DropDownKeyResultAction = ({keyResult}:{keyResult:KeyResult}) => {
   // console.log(params)
   return (
     <PopoverMenu
-        className="w-40 "
+        className="w-48"
         align="end"
         trigerBtn={
           <Button className="rounded-full h-5 w-5 text-white p-1 absolute right-3 top-3">

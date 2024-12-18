@@ -53,7 +53,7 @@ export const fetchAppointments = async (
 
       if (payload?.date && !payload?.type){
         query.gte('appointmentDate', startOfMonth(new Date(payload?.date!)).toISOString())
-             .lte('appointmentDate', endOfMonth(new Date(payload?.date!)).toISOString())
+             .lte('appointmentDate', endOfMonth(new Date(payload?.date!)).toISOString())                   
       } else if (payload?.type==='past-appointments'){
         query.lt('appointmentDate', today)
       } else {
