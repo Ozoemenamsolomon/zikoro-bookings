@@ -41,7 +41,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ setFormData, setErrors, for
   };
 
   const addNewCategory = () => {
-    if (!categories[categories.length - 1]?.name) {
+    if (categories.length > 0 && !categories[categories.length - 1]?.name) {
       setErrors((prev: AppointmentFormData) => ({ ...prev, category: 'Please fill out the current category before adding a new one.' }));
       return;
     }
@@ -59,7 +59,8 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ setFormData, setErrors, for
 // console.log({categories})
   return (
     <>
-      {Array.isArray(categories) && categories.length && categories?.map((category:Category, index:number) => (
+      {Array.isArray(categories) && categories.length ? 
+      categories?.map((category:Category, index:number) => (
         <div key={index} className="rounded-md space-y-4 bg-slate-50 border relative p-4 pt-6">
           <h5 className="label px-1 bg-slate-50 absolute -top-3 left-3">Appointment Type {index + 1}</h5>
           <X size={18} className='absolute right-4 top-0 text-slate-500 hover:text-slate-700 ' onClick={()=>removeCategory(index)} />
@@ -171,7 +172,9 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ setFormData, setErrors, for
             </div>
           )}
         </div>
-      ))}
+      ))
+      : null
+    }
 
       <div onClick={addNewCategory} className="text-zikoroBlue cursor-pointer flex gap-2 pt- items-center">
         <PlusCircle size={14} />

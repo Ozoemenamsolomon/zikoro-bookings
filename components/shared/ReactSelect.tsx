@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import CreatableSelect from "react-select/creatable";
 import Select, { ActionMeta, MultiValue, SingleValue } from "react-select";
+import { cn } from "@/lib";
 
 interface OptionType {
   value: string | number;
@@ -121,7 +122,7 @@ export const ReactSelect: React.FC<ReactSelectProps> = ({
       options={memoizedOptions}
       isMulti={isMulti}
       placeholder={placeholder}
-      className={className}
+      className={cn('h-10 hide-scrollbar', className)}
       onChange={handleChange}
       styles={{
         control: (baseStyles, state) => ({
@@ -171,14 +172,6 @@ export const ReactSelect: React.FC<ReactSelectProps> = ({
           ...baseStyle,
           borderRight: "0px",
         }),
-        // indicatorSeparator: (baseStyle) => ({
-        //   ...baseStyle,
-        //   width: "0px",
-        // }),
-        // container: (baseStyle) => ({
-        //   ...baseStyle,
-        //   height: minHeight || baseStyle.height,
-        // }),
       }}
     />
     {error ? <p className="text-red-600 text-[12px] pt-1">{error}</p> : null}
@@ -191,9 +184,15 @@ interface CreatableSelectProps {
   name: string;
   options: Array<{ label: string; value: string }>;
   value: string | string[] | null;
-  onChange: (name: string, value: string | string[]) => void;
+  onChange: (name: string, value: string | string[], index?:number) => void;
   isMulti?: boolean;
+  isClearable?: boolean;
+  isSearchable?: boolean;
   placeholder?: string;
+  className?: string;
+  index?: number;
+  error?: string;
+  setError?: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const CustomCreatableSelect: React.FC<CreatableSelectProps> = ({
@@ -202,9 +201,14 @@ const CustomCreatableSelect: React.FC<CreatableSelectProps> = ({
   value,
   onChange,
   isMulti = false,
+  isClearable = true,
+  isSearchable = true,
   placeholder = 'Select...',
+  className,
+  index,
+  error,setError,
 }) => {
-  // Helper to format selected values correctly
+  const memoizedOptions = useMemo(() => options, [options]);
   const formatValue = (
     value: string | string[] | null,
   ): SingleValue<{ label: string; value: string }> | MultiValue<{ label: string; value: string }> => {
@@ -215,30 +219,86 @@ const CustomCreatableSelect: React.FC<CreatableSelectProps> = ({
     }
     return null;
   };
-
-  // Handle value change
   const handleChange = (
     newValue: SingleValue<{ label: string; value: string }> | MultiValue<{ label: string; value: string }>,
     actionMeta: ActionMeta<{ label: string; value: string }>
   ) => {
     if (isMulti) {
       const selectedValues = (newValue as MultiValue<{ label: string; value: string }>).map((option) => option.value);
-      onChange(name, selectedValues);
+      onChange(name, selectedValues, index);
     } else {
       const selectedValue = (newValue as SingleValue<{ label: string; value: string }>)?.value || '';
-      onChange(name, selectedValue);
+      onChange(name, selectedValue, index);
     }
+
+    setError &&
+      setError((prev:any) => {
+        return {
+          ...prev,
+          general: '',
+          [name]: '',
+        };
+      });
   };
 
   return (
+    <div>
     <CreatableSelect
       isMulti={isMulti}
-      options={options}
+      options={memoizedOptions}
       value={formatValue(value)}
       onChange={handleChange}
       placeholder={placeholder}
       classNamePrefix="custom-creatable-select"
+      isClearable={isClearable}
+      isSearchable={isSearchable}
+      className={cn('h-10 hide-scrollbar', className)}
+      styles={{
+        control: (baseStyles, state) => ({
+          ...baseStyles,
+          borderColor: state?.isFocused
+            ? "#e9d5ff"
+            : "",
+          "&:hover": {
+            borderColor: "#e9d5ff",
+          },
+          height: "100%",
+          boxShadow: "0px",
+        }),
+
+        option: (baseStyles, state) => ({
+          ...baseStyles,
+          textAlign: "start",
+          color: state?.isSelected ? "black" : "black",
+          backgroundColor: state?.isFocused ? "#e9d5ff" : "",
+        }),
+        singleValue: (baseStyles) => ({
+          ...baseStyles,
+          textAlign: "start",
+          textDecoration: "capitalize",
+          fontSize: "13px",
+          padding: "4px",
+        }),
+        placeholder: (baseStyles) => ({
+          ...baseStyles,
+          textAlign: "start",
+          color: '#6b7280',
+          fontSize: "13px",
+        }),
+        menu: (baseStyles) => ({
+          ...baseStyles,
+          borderRadius: "6px",
+          zIndex: 100,
+          fontSize: "13px",
+        }),
+        dropdownIndicator: (baseStyle) => ({
+          ...baseStyle,
+          borderRight: "0px",
+        }),
+      }}
     />
+    {error ? <p className="text-red-600 text-[12px] pt-1">{error}</p> : null}
+    </div>
   );
 };
 

@@ -18,9 +18,9 @@ const ContactLayout: React.FC<ContactProps> = async ({ children,  }) => {
   // console.log({data,count,error})
   return (
     <div className=" ">
-      <h4 className="text-lg font-semibold pb-4">Contacts</h4>
+      
       <ContactName/>
-      <div className="sm:border rounded-lg bg-white min-h-screen">
+      <div className="sm:border rounded-lg bg-white verflow-auto min-h-screen">
           {
             count === 0  ?
             <EmptyContact/>
@@ -38,18 +38,6 @@ const ContactLayout: React.FC<ContactProps> = async ({ children,  }) => {
                 }>
                   {children}
               </ContactWrapper>
-
-              {/* <div className="flex md:divide-x">
-
-                  <Suspense fallback={<div className="pt-20 w-full flex justify-center"><Loading/></div>}>
-                    <ContactList fetchedcontacts={data} />
-                  </Suspense>
-
-                  <div className={`${true ? 'max-md:hidden':''} w-full md:w-3/4 h-full `}>
-                      {children}
-                  </div>
-
-              </div> */}
             </>
           }
       </div>

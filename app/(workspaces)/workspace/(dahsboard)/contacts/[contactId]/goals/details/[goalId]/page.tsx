@@ -3,14 +3,14 @@ import { unstable_noStore } from "next/cache";
 
 const Contacts = async ({
   searchParams: { s },
-  params:{goalId},
+  params 
 }: {
-  params:{goalId:string},
+  params:{contactId:string, goalId:string},
   searchParams: { s: string };
 }) => {
   unstable_noStore();
   return ( 
-      <GoalDetails goalId={goalId}/>
+      <GoalDetails params={params}/>
     );
 };
 

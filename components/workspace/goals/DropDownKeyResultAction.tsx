@@ -10,6 +10,7 @@ import { useAppointmentContext } from '@/context/AppointmentContext'
 import { useParams } from 'next/navigation'
 import EditKeyResultDetails from './EditKeyResultDetails'
 import { KeyResult } from '@/types/goal'
+import DeleteKeyResult from './DeleteKeyResult'
 
 const DropDownKeyResultAction = ({keyResult}:{keyResult:KeyResult}) => {
   const [selectedView, setSelectedView] = useState<'Default' | 'Chart'>('Default');
@@ -74,9 +75,7 @@ const DropDownKeyResultAction = ({keyResult}:{keyResult:KeyResult}) => {
             </div>
           </div>
 
-          <button type="button" className="text-red-600 duration-300">
-            Delete key result
-          </button>
+          <DeleteKeyResult keyResult={keyResult} />
         </div>
       </PopoverMenu>
   )

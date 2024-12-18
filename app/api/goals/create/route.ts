@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
       }
     const supabase = createClient()
     const {goalData,keyResultData} = await req.json()
-    // console.log({goalData,keyResultData,timeLineData} )
+    console.log({goalData,keyResultData,} )
     try {
       const { data, error } = await supabase
         .from('goals')

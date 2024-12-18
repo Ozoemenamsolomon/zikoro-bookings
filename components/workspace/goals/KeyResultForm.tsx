@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation'
 import { useAppointmentContext } from '@/context/AppointmentContext'
 import useUserStore from '@/store/globalUserStore'
 import { revalidatePath } from 'next/cache'
-import { Goal } from '@/types/goal'
+import { Goal, KeyResult } from '@/types/goal'
 import { GoalDatePicker } from './GoalDatePicker'
 import { isAfter, isBefore, startOfDay, startOfToday } from 'date-fns'
 
@@ -45,6 +45,10 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
+    // console.log({name,mode})
+    if(name==='startValue'){
+        setKeyResultData((prev:any) => ({ ...prev, [name]: value, currentValue: value }))
+    }
     setKeyResultData(prev => ({ ...prev, [name]: value }))
     setErrors(prev => ({ ...prev, [name]: '' }))
   }, [])
@@ -71,7 +75,7 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
     if (!keyResultData.endDate) newErrors.endDate = 'End date is required.'
     if (!keyResultData.unit) newErrors.unit = 'The Unit of measurement is required.'
     if (!keyResultData.targetValue) newErrors.targetValue = 'Target value is required.'
-    if (!keyResultData.currentValue) newErrors.currentValue = 'Start value is required.'
+    if (!keyResultData.startValue) newErrors.startValue = 'Start value is required.'
     if (keyResultData.startDate && keyResultData.endDate && new Date(keyResultData.startDate) > new Date(keyResultData.endDate)) {
         newErrors.endDate = 'End date must be after start date.';
       }
@@ -227,31 +231,6 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
                 value={keyResultData?.keyResultOwner || ''}
                 onChange={handleSelectChange}
             />
-
-            {/* <div className="flex flex-col sm:flex-row items-center w-full gap-3">
-                    <DatePicker
-                        label="Start Date"
-                        name="startDate"
-                        value={keyResultData?.startDate!}
-                        onChange={(date) => handleDateChange(date!, 'startDate')}
-                        placeholder="Pick a start date"
-                        error={errors?.startDate!}
-                        className='w- '
-                        isRequired
-                    />
-
-                    <DatePicker
-                        label="End Date"
-                        name="endDate"
-                        value={keyResultData?.endDate!}
-                        onChange={(date) => handleDateChange(date!,'endDate')}
-                        placeholder="Pick an end date"
-                        className='py- '
-                        error={errors?.endDate!}
-                        isRequired
-                    />
-            </div> */}
-
             <div className="flex flex-col sm:flex-row items-center w-full gap-3">
                 <GoalDatePicker
                     label="Start Date"
@@ -341,13 +320,13 @@ export const metricsTypes:{
         type: 'value',
         label: 'Value',
     },
-    {
-        icon: <ListView/>,
-        type: 'milestone',
-        label: 'Milestone',
-    },{
-        icon: <LikeIcon/>,
-        type: 'boolean',
-        label: 'Yes/No',
-    },
+    // {
+    //     icon: <ListView/>,
+    //     type: 'milestone',
+    //     label: 'Milestone',
+    // },{
+    //     icon: <LikeIcon/>,
+    //     type: 'boolean',
+    //     label: 'Yes/No',
+    // },
 ]

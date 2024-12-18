@@ -29,6 +29,8 @@ export interface Goal {
     currentValue?: number | null; // numeric or null
     targetValue?: number | null; // numeric or null
     unit?: string | null; // text or null
+    startValue?: number | null; 
+    status?: string | null; 
   }
   export interface KeyResultsTimeline {
     id?: number; // bigint
@@ -39,7 +41,7 @@ export interface Goal {
     value?: number | null; // numeric or null
     createdBy?: number | null; // bigint or null
     Note?: string | null; // text or null
-    attachments?: Record<string, any> | null; // JSON object or null
+    attachments?: { url:string, type:string }[] | null; // JSON object or null
   }
 
   // {

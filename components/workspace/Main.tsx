@@ -38,7 +38,7 @@ const Main = ({children}:{children:React.ReactNode}) => {
                         <ChevronLast size={18} className='text-gray-600'/>
                     </button>
 
-                    <header className='flex justify-between w-full gap-4  items-center pb-2 '>
+                    <header className='flex justify-between w-full gap-4  items-center pb-2  max-sm:pb-8 '>
                         <div></div>
 
                         <Link href={urls.root}><Image src={'/zikoro.png'} alt={'zikro-icon'} height={180} width={100} className=''/></Link>

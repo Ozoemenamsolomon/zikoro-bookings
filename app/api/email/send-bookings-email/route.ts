@@ -102,18 +102,20 @@ console.log( { bookingFormData, appointmentLink })
                     </tr>
                     
                     <tr><th>Appointment Location</th><td>${appointmentLink?.locationDetails}</td></tr>
-                    <tr><th>Appointment Duration</th><td>${appointmentDuration}mins</td></tr>
                     <tr><th>Appointment Date</th><td>${appointmentDate}</td></tr>
-                    <tr><th>Appointment Time</th><td>${appointmentTimeStr}</td></tr>
+                    <tr><th>Appointment Time</th><td>${appointmentTimeStr} (${appointmentDuration}mins) </td></tr>
                     ${appointmentLink?.note && `<tr><th>Note from Host</th><td>${appointmentLink?.note}</td> </tr>`}
                     <tr><th>Participant Email</th><td>${participantEmail}</td></tr>
-                    <tr><th>Participant Details</th><td>${firstName} ${lastName} ${phone}</td></tr>
-                    ${notes&& `<tr><th>Note from Participant</th><td>${notes}</td> </tr>`}
+                    <tr><th>Participant Name</th><td>${firstName} ${lastName}</td></tr>
+                    <tr><th>Participant Phone</th><td>${phone}</td></tr>
+                    ${notes && notes !==undefined ? `<tr><th>Note from Participant</th><td>${notes}</td> </tr>` : null}
                   </table>
                   <br/>
                   <p>Thank you for using our scheduling service.</p>
-                  <p>If you want to cancel or reschedule this appointment, reach out to the host with this detail.</p>
+                  <p>If you want to cancel or reschedule this appointment, contact the host with this detail.</p>
                   <p>Email: ${hostEmail}</p>
+                  <p>Phone: ${hostPhone}</p>
+                  <br/>
 
                   
                   <p>Best Regards,<br>Zikoro<br><br>

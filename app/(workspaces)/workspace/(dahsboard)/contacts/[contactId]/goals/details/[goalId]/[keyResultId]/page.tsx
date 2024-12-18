@@ -2,13 +2,13 @@ import KeyResultDetails from "@/components/workspace/goals/KeyResultDetails";
 import { unstable_noStore } from "next/cache";
 
 const KeyResult = async ({
-  params:{keyResultId},
+  params
 }: {
-  params:{keyResultId:string},
+  params:{keyResultId:string,contactId:string,goalId:string|number},
 }) => {
   unstable_noStore();
   return ( 
-      <KeyResultDetails keyResultId={keyResultId}/>
+      <KeyResultDetails  params={params}/>
     );
 };
 
