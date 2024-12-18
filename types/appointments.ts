@@ -156,7 +156,7 @@ export interface AppointmentUnavailability {
 }
 
 export interface BookingsContact {
-  id?: number; // bigint
+  id?: string; // uuid
   created_at?: string; // timestamp with time zone
   email?: string | null; // text
   phone?: string | null; // text
@@ -168,7 +168,7 @@ export interface BookingsContact {
   createdBy?: number | null; // bigint
   age?: number;
   profileImg?: string;
-  favorite?: boolean;
+  favourite?: boolean;
 }
 export interface ContactTag {
   id?: number;  

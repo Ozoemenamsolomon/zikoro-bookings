@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { urls } from '@/constants'
 import { Goal } from '@/types/goal'
 import { useAppointmentContext } from '@/context/AppointmentContext'
+import DeleteGoal from './DeleteGoal'
 
 const DropDownGoalAction = ({goal,}:{goal:Goal})  => {
   const {contact} = useAppointmentContext()
@@ -16,7 +17,7 @@ const DropDownGoalAction = ({goal,}:{goal:Goal})  => {
   // useClickOutside( ref, ()=>setDrop(false))
   return (
     <PopoverMenu
-        className="w-40 "
+        className="w-48"
         align="end"
         trigerBtn={
           <Button className="rounded-full h-5 w-5 text-white p-1 absolute right-7 top-2">
@@ -67,9 +68,7 @@ const DropDownGoalAction = ({goal,}:{goal:Goal})  => {
             </div>
           </div> */}
 
-          <button type="button" className="text-red-600 duration-300">
-            Delete Goal
-          </button>
+           <DeleteGoal goal={goal} />
         </div>
       </PopoverMenu>
   )

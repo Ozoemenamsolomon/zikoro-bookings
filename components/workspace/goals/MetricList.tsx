@@ -1,12 +1,9 @@
-import { Button } from '@/components/ui/button';
-import { fetchMetricsByKeyResultId } from '@/lib/server/goals';
 import { KeyResult, KeyResultsTimeline } from '@/types/goal';
 import MetricForm from './MetricForm';
-import { SquareArrowOutUpRight } from 'lucide-react';
 import MetricPreview from './MetricPreview';
 
-const MetricList = async ({ keyResult }: { keyResult: KeyResult }) => {
-  const { data: timelines, error } = await fetchMetricsByKeyResultId(keyResult?.id!);
+const MetricList = async ({ keyResult, timeLine:{data:timelines, error} }: 
+  { keyResult: KeyResult, timeLine: { data: KeyResultsTimeline[] | null; error: string | null }; }) => {
 
   const getInitials = (name: string) => {
     const words = name.split(' ');

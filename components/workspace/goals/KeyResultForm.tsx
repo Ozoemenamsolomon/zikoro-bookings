@@ -98,6 +98,7 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
                             ...keyResultData,
                             goalId:goalData.id,
                             organization: goalData.organization,
+                            status: 'Not-started',
                             createdBy: goalData.createdBy,
                         },
                     }

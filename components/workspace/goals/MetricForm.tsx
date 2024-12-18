@@ -154,18 +154,23 @@ const MetricForm = ({ keyResult,
   const handleSubmit = async () => {
     setErrors(null);
     if (!validate()) return;
-
+  
     try {
-      // handle file upload first
-      const uploadedFiles = await handleFileUpload( )
-      if(errors?.attachments&&errors?.attachments?.length>0){ return}
-      setLoading('Submiting values')
-      const { data: metricResponse, error: metricError } = await PostRequest({
-        url: '/api/goals/submitMetric',
+      // Handle file upload first
+      const uploadedFiles = await handleFileUpload();
+      if (errors?.attachments && errors?.attachments?.length > 0) {
+        return;
+      }
+  
+      setLoading("Submitting values");
+  
+      // Prepare the requests
+      const metricRequest = PostRequest({
+        url: "/api/goals/submitMetric",
         body: {
           timeLineData: {
             ...formData,
-            attachments:uploadedFiles,
+            attachments: uploadedFiles,
             keyResultId: keyResult?.id,
             organizationId: keyResult?.organization,
             createdBy: user?.id,
@@ -173,37 +178,49 @@ const MetricForm = ({ keyResult,
         },
       });
   
-      const { data: keyResultResponse, error: keyResultError } = await PostRequest({
-        url: '/api/goals/editKeyResult',
+      const keyResultRequest = PostRequest({
+        url: "/api/goals/editKeyResult",
         body: {
           keyResultData: {
             ...keyResult,
             currentValue: formData.value,
+            status: "In-progress",
           },
         },
       });
+  
+      // Execute requests concurrently
+      const [metricResponse, keyResultResponse] = await Promise.all([
+        metricRequest,
+        keyResultRequest,
+      ]);
+  
+      const metricError = metricResponse.error;
+      const keyResultError = keyResultResponse.error;
+  
       if (metricError || keyResultError) {
         setErrors({
-          gen: metricError || keyResultError || 'Error occurred while submitting values',
+          gen: metricError || keyResultError || "Error occurred while submitting values",
         });
         return;
       } else {
-          toast.success('Timeline updated successfull')
-            refresh()
-            setFormData({
-              value: null,
-              Note: '',
-              attachments: [],
-            })
-            setPreviewUrls([])
+        toast.success("Timeline updated successfully");
+        refresh();
+        setFormData({
+          value: null,
+          Note: "",
+          attachments: [],
+        });
+        setPreviewUrls([]);
       }
     } catch (error) {
-      console.error('Submission failed:', error)
-      setErrors({gen:'Submission failed:'})
+      console.error("Submission failed:", error);
+      setErrors({ gen: "Submission failed:" });
     } finally {
-      setLoading('')
+      setLoading("");
     }
   };
+  
 
   const memoizedToolbar = useMemo(
     () => ({

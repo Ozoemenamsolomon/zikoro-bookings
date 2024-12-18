@@ -92,12 +92,12 @@ const AppointmentHistory = ({bookingsData,countSize,errorString,initialItem}:{
                                 </div>
 
                                 <div className="flex gap-3 items-center shrink-0">
-                                    <div className="flex p-2 rounded-full bg-purple-100 border text-basePrimary/60">
+                                    {/* <div className="flex p-2 rounded-full bg-purple-100 border text-basePrimary/60">
                                         <SquarePen size={16}/>
                                     </div>
                                     <div className="flex p-2 rounded-full bg-purple-100 border text-basePrimary/60">
                                         <FolderOpen size={16}/>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                             )

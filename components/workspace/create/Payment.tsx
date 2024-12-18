@@ -4,6 +4,7 @@ import { FlutterWaveIcon, Paystack, Stripe } from '@/constants';
 import { MinusCircle, PlusCircle, XCircle } from 'lucide-react';
 import Image from 'next/image';
 import { Description } from '@radix-ui/react-dialog';
+import SwitchToggler from '../ui/SwitchToggler';
 
 const Payment: React.FC<FormProps> = ({
   formData,
@@ -56,8 +57,17 @@ const Payment: React.FC<FormProps> = ({
           </div>
 
           <div className="py-4 ">
-              <p>Choose who should pay the 5% session value </p>
-              <div className="flex gap-6 pt-2 justify-between">
+              {/* <p>Choose who should pay the 5% session value </p> */}
+              <div className="flex gap-2 pt-">
+                <div className="shrink-0">
+                  <SwitchToggler/>
+                </div>
+                <div className="">
+                  <h6 className="text-md ">Event attendees pay 5% processing fee?</h6>
+                  <small>When active, a 5% service charge is added to attendee payments. Disable to pay it from your event revenue.</small>
+                </div>
+              </div>
+              {/* <div className="flex gap-6 pt-2 justify-between">
                 {
                   [
                     {label:'Attendee',desc:'Attendee will be charged 5% of meeting value.'},
@@ -73,7 +83,7 @@ const Payment: React.FC<FormProps> = ({
                     )
                   })
                 }
-                </div>
+                </div> */}
             </div>
           {errors?.paymentGateway ? <p className="text-red-600 text-[12px] pt-1">{errors?.paymentGateway}</p> : null}
 
