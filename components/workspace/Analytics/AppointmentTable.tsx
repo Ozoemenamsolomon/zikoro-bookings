@@ -9,6 +9,7 @@ import {
 import { KPIData } from "@/lib";
 import { LongArrowUp, LongArrowDown } from "styled-icons/fa-solid"; // Import LongArrowDown
 
+
 export const AppointmentTable = ({
   tableData,
   isLoading,
