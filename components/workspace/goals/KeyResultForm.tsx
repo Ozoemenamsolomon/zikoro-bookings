@@ -5,19 +5,18 @@ import React, { useCallback, useEffect, useState } from 'react'
 import CustomInput from '../ui/CustomInput'
 import {  useGoalContext } from '@/context/GoalContext'
 import { CustomSelect } from '@/components/shared/CustomSelect'
-import { DatePicker } from '../ui/DatePicker'
 import { Button } from '@/components/ui/button'
 import ValueMetrics from './ValueMetrics'
-import { LikeIcon, ListView, OneTwoThree, urls } from '@/constants'
+import {  OneTwoThree, urls } from '@/constants'
 import { PostRequest } from '@/utils/api'
 import { toast } from 'react-toastify'
 import { useRouter } from 'next/navigation'
 import { useAppointmentContext } from '@/context/AppointmentContext'
 import useUserStore from '@/store/globalUserStore'
-import { revalidatePath } from 'next/cache'
-import { Goal, KeyResult } from '@/types/goal'
+import { Goal } from '@/types/goal'
 import { GoalDatePicker } from './GoalDatePicker'
 import { isAfter, isBefore, startOfDay, startOfToday } from 'date-fns'
+import { keyresultStatuses } from '@/constants/status'
 
 const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, mode?:string}) => {
   const {push,refresh} = useRouter()
@@ -66,6 +65,10 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
         setKeyResultData((prevData) => ({ ...prevData, keyResultOwner: Number(selectedOption?.value!) }));
   };
 
+  const selectStatus= (value: string) => {
+      setKeyResultData((prevData) => ({ ...prevData, status:value}));
+  };
+
    const validateForm = () => {
     const newErrors: { [key: string]: string | null } = {}
     if (!keyResultData.keyResultTitle) newErrors.keyResultTitle = 'Key result title is required.'
@@ -98,7 +101,6 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
                             ...keyResultData,
                             goalId:goalData.id,
                             organization: goalData.organization,
-                            status: 'Not-started',
                             createdBy: goalData.createdBy,
                         },
                     }
@@ -294,6 +296,15 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
                 keyResultData?.measurementType==='value' &&
                 <ValueMetrics keyResultData={keyResultData} handleChange={handleChange} errors={errors}/>
             }
+
+            <CustomSelect
+                label="Status"
+                placeholder="Select a status"
+                options={keyresultStatuses}
+                error={errors?.status!}
+                value={keyResultData?.status || ''}
+                onChange={selectStatus}
+            />
 
             <div className=" w-full pt-4 flex flex-col items-center">
                 {errors?.general && <small className="text-[12px] text-center text-red-600">{errors.general}</small>}

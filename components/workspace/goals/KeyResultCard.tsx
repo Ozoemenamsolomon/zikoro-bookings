@@ -11,8 +11,8 @@ const KeyResultCard = async ({keyResult}:{keyResult:KeyResult}) => {
     const timelines = await fetchMetricsByKeyResultId(keyResult?.id!);
     
   return (
-        <div className="p-2 pb-5 space-y-2 rounded-md border bg-white relative">
-            <div className="bg-baseBg text-center w-full border rounded-md p-6 max-sm:px-2">
+        <div className=" py-6   space-y-4 rounded-md border bg-white relative">
+            <div className="pl-4 pr-1 text-center w-full ">
                 <Suspense
                     fallback={
                         <div className="py-20 flex justify-center">
@@ -24,7 +24,7 @@ const KeyResultCard = async ({keyResult}:{keyResult:KeyResult}) => {
                 </Suspense>
             </div>
 
-            <div className="flex px-4 justify-between items-center gap-4 flex-col sm:flex-row">
+            <div className="flex px-4 sm:justify-between  sm:items-center gap-4 flex-col sm:flex-row">
                 <div className="">
                     <h6 className="font-bold">{keyResult?.keyResultTitle}</h6>
                     <p className="text-sm">{keyResult?.description}</p>

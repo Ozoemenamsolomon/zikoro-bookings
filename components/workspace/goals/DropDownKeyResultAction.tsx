@@ -11,6 +11,7 @@ import { useParams } from 'next/navigation'
 import EditKeyResultDetails from './EditKeyResultDetails'
 import { KeyResult } from '@/types/goal'
 import DeleteKeyResult from './DeleteKeyResult'
+import UpdateKeyResultStatus from './UpdateKeyResultStatus'
 
 const DropDownKeyResultAction = ({keyResult}:{keyResult:KeyResult}) => {
   const [selectedView, setSelectedView] = useState<'Default' | 'Chart'>('Default');
@@ -39,6 +40,7 @@ const DropDownKeyResultAction = ({keyResult}:{keyResult:KeyResult}) => {
           </Link>
 
           <EditKeyResultDetails keyResult={keyResult!} text={'Edit details'}/>
+          <UpdateKeyResultStatus keyResult={keyResult} label='Update Status'/>
 
           <div ref={ref}>
             <button

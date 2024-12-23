@@ -60,6 +60,7 @@ const keyResult: KeyResult = {
     startDate: null,
     endDate: null,
     measurementType:'value',
+    status: 'Not-started',
     keyResultOwner:null
     // status: 'DRAFT',
   };
