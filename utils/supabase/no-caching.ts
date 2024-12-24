@@ -1,9 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 // import { unstable_noStore as noStore } from "next/cache";
 
-const supabaseUrl = process.env.SUPABASE_URL as string
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string
-
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL! as string
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!  as string
 // export function createADMINClient() {
 //     noStore();
 //     return createClient(

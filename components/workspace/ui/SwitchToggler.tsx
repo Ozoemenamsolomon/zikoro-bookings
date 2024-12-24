@@ -41,3 +41,39 @@ const SwitchToggler: React.FC<SwitchTogglerProps> = ({ isOn: controlledIsOn, onC
 };
 
 export default SwitchToggler;
+
+
+interface TogglerProps {
+  value?: string; // Currently selected value
+  options: [string, string]; // Two toggle options
+  onChange?: (value: string) => void; // Callback when toggled
+}
+
+export const Toggler: React.FC<TogglerProps> = ({
+  value,
+  options = ['', ''],
+  onChange,
+}) => {
+  const [selected, setSelected] = useState(value || options[0]);
+
+  const toggleSwitch = () => {
+    const newValue = selected === options[0] ? options[1] : options[0];
+    setSelected(newValue);
+    onChange?.(newValue);
+  };
+
+  return (
+    <div
+      className={`relative flex items-center  w-12 h-6 p- cursor-pointer rounded-full bg-gray-300 transition-colors duration-300 p- `}
+      role="switch"
+      aria-checked={selected === options[1]}
+      onClick={toggleSwitch}
+    >
+      <div
+        className={`absolute w-[22px] h-[22px] bg-white rounded-full shadow-md transition-transform duration-300 ${
+          selected === options[0] ? 'translate-x-0.5' : 'translate-x-[24px]'
+        }`}
+      />
+    </div>
+  );
+};

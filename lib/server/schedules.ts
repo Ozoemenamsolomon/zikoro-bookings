@@ -2,6 +2,7 @@ import { AppointmentLink, } from "@/types/appointments";
 import { createClient } from "@/utils/supabase/server"
 import { getUserData } from ".";
 import { randomInt } from "crypto";
+import { createADMINClient } from "../../utils/supabase/no-caching";
 
 interface FetchContactsResult {
   data: AppointmentLink[] | null;
@@ -12,7 +13,7 @@ interface FetchContactsResult {
 export const fetchSchedules = async (
   userId?:string, start:number|string = 0, end:number|string = 19
 ): Promise<FetchContactsResult> => {
-    const supabase = createClient()
+    const supabase = createADMINClient()
 
     let id 
     if(userId){
@@ -29,7 +30,7 @@ export const fetchSchedules = async (
       .eq('createdBy', id)
       .range(Number(start), Number(end))
       .order('created_at', {ascending: false} )
-      .neq("id", randomInt(1000000000))
+      // .neq("id", randomInt(1000000000))
     // const {count } = await supabase
     //   .from('bookings') 
     //   .select('*', { count: 'exact' } )
@@ -54,7 +55,7 @@ export const fetchSchedules = async (
 export const fetchSchedule = async (
   alias: string
 ) => {
-    const supabase = createClient()
+    const supabase = createADMINClient()
 
     try {
     const { data, error }  = await supabase
