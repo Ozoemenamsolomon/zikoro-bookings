@@ -2,13 +2,15 @@ export interface BookingWorkSpace {
   id?: string; // UUID represented as a string
   created_at?: string; // ISO timestamp string
   workspaceName?: string | null; // Optional text field
-  workspaceOwner?: number | null; // Optional bigint, represented as number in TypeScript
+  workspaceOwner?: bigint | null; // Optional bigint, represented as number in TypeScript
   subscriptionPlan?: string | null; // Optional text field
   subscriptionEndDate?: string | null; // Optional date represented as ISO string
-  workspaceLogo?: string | null; // Optional text field
+  workspaceLogo?: string ; // Optional text field
+  workspaceAlias: string ; // Optional text field
   workspaceDescription?: string | null; // Optional text field
 }
 
+ 
 export interface BookingTeams {
   id: number; // bigint represented as number in TypeScript
   created_at: string; // ISO timestamp string

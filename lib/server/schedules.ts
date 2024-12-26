@@ -40,13 +40,13 @@ export const fetchSchedules = async (
     // console.log({ data, count, error, id });
 
     if (error) {
-      console.error('Error fetching contacts:', error);
+      console.error('Error fetching schedules:', error);
       return { data: null, error: error.message, count: 0 };
     }
 
     return { data, error: null, count: count ?? 0 };
   } catch (error) {
-    console.error('Server error:', error);
+    console.error('schedules: Server error:', error);
     return { data: null, error: 'Server error', count: 0 };
   }
 

@@ -23,7 +23,8 @@ interface FormData  {
   attachments: { url: string; type: string }[];
 }
 
-const MetricForm = ({ keyResult, 
+const MetricForm = ({ 
+  keyResult, 
   triggerBtn=<div className="flex justify-center">
                 <Button className="bg-basePrimary">Update new value</Button>
               </div>, 
@@ -318,7 +319,6 @@ const MetricForm = ({ keyResult,
           <Button type='submit' className="bg-basePrimary" disabled={loading.length>0}>
             {loading ? 'Updating...' : 'Update'}
           </Button>
-          {/* <small>Last updated: Just now</small> */}
         </div>
       </form>
     </CenterModal>

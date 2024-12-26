@@ -2,6 +2,8 @@
 
 import { Booking, BookingsContact, UserType } from '@/types/appointments';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import useUserStore from "@/store/globalUserStore";
+import { wsUrl, wsUrll } from '@/lib/wsUrl';
 
 export interface AppState {
   isLoading: boolean;
@@ -33,6 +35,7 @@ export interface AppState {
   activePath: string, 
   setActivePath:React.Dispatch<React.SetStateAction<string>>;
   isOpen:boolean, setIsOpen:React.Dispatch<React.SetStateAction<boolean>>;
+  getWsUrl: (path:string) => string
 }
 
 export interface AppointmentContextProps extends AppState {
@@ -60,6 +63,12 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [show, setShow] = useState<string>('links')
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
+
+  const { currentWorkSpace } = useUserStore();
+  const workspaceParam = currentWorkSpace?.workspaceAlias ? `ws=${currentWorkSpace.workspaceAlias}` : '';
+  
+  const getWsUrl = (path: string) =>  wsUrll(path,workspaceParam);
+
   const contextValue: AppointmentContextProps = {
     isLoading,setLoading,isfetching, setIsFetching,
     isFormUp,setIsFormUp,
@@ -72,6 +81,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
     contact, setContact, contacts, setContacts, show, setShow,
     searchTerm, setSearchTerm,activePath, setActivePath,
     isOpen, setIsOpen,
+    getWsUrl,
   };
 
   return (

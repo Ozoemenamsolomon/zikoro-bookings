@@ -6,12 +6,21 @@ export const generateSlug = (name: string): string => {
   return `${uniqueIdentifier}`;
 };
 
-export const generateSlugg = (name: string): string => {
+export const generateSlugg = (name: string, length?:number): string => {
   const slug = name?.toLowerCase()
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9\-]/g, '');
 
-  // const uniqueIdentifier = uuidv4();
+    const characters =
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    const hashLength = length || 5;
+    let hash = "";
 
-  return `${slug}`;
+  for (let i = 0; i < hashLength; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    hash += characters.charAt(randomIndex);
+  }
+;
+
+  return `${slug}-${hash}`;
 };
