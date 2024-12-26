@@ -6,6 +6,6 @@ export const wsUrl = (path: string, param: string) => {
   };
 
   export const wsUrll = (path: string, wsPath: string) => {
-    if (!wsPath) return `/workspace${path}`; // Fallback if no param is provided
-    return `${wsPath}${path}`;
+    if (!wsPath) return `/ws`; // Fallback if no param is provided
+    return `/ws/${wsPath}${path}`;
   };

@@ -65,7 +65,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
 
 
   const { currentWorkSpace } = useUserStore();
-  const workspaceParam = currentWorkSpace?.workspaceAlias ? `ws=${currentWorkSpace.workspaceAlias}` : '';
+  const workspaceParam = currentWorkSpace?.workspaceAlias ? `${currentWorkSpace.workspaceAlias}` : '';
   
   const getWsUrl = (path: string) =>  wsUrll(path,workspaceParam);
 

@@ -3,9 +3,11 @@ import { fetchAppointments } from '@/lib/server/appointments';
 import React from 'react'
 
 const AppointmentsPage = async ({
-    searchParams ,
+    searchParams ,  params: { workspaceAlias },
+
   }: {
-    searchParams: { date: string };
+    searchParams: { date: string };  params: { workspaceAlias?:string },
+
   }) => {
     const {data,count,error} = await fetchAppointments({date:searchParams?.date})
     // console.log({data,count,error, searchParams})

@@ -1,7 +1,6 @@
 import React from 'react'
 import Articleone from './Articleone'
 import ArticleTwo from './ArticleTwo'
-import { BookingsContact } from '@/types/appointments'
 
 const ContactInfo = ({searchquery}:{searchquery?:string} ) => {
   return (

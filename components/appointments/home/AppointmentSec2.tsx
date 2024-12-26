@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { urls } from "@/constants";
+import GetStarted from "./GetStarted";
 
 export default function AppointmentSec2() {
   return (
@@ -23,12 +24,13 @@ export default function AppointmentSec2() {
         <div className="flex flex-col justify-between w-[33%]">
           <div>
             <div className=" flex items-center justify-center mx-auto">
-              <Link
+              <GetStarted />
+              {/* <Link
                 href={urls.schedule}
                 className="text-white font-semibold text-base bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end py-[10px] px-[64px] rounded-lg"
               >
                 Get Started For Free!
-              </Link>
+              </Link> */}
             </div>
 
             <p className=" text-xs lg:text-sm font-light mt-2 lg:mt-3 text-center">

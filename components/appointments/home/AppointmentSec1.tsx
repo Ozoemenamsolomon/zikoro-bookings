@@ -1,6 +1,7 @@
 import { urls } from "@/constants";
 import Image from "next/image";
 import Link from "next/link";
+import GetStarted from "./GetStarted";
 
 export default function AppointmentSec1() {
   return (
@@ -46,12 +47,7 @@ export default function AppointmentSec1() {
       <div className="flex flex-col lg:hidden mt-20">
         <div>
           <div className=" flex items-center justify-center mx-auto">
-            <Link
-              href={urls.appointments}
-              className=" text-white font-semibold [@media(max-width:320px)]:text-[12px] text-base bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end py-[10px] px-[64px] rounded-lg"
-            >
-              Get Started For Free!
-            </Link>
+            <GetStarted />
           </div>
 
           <p className=" text-xs lg:text-sm font-light mt-2 lg:mt-3 text-center">
