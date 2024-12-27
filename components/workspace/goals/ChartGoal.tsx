@@ -10,7 +10,7 @@ import {
   PolarRadiusAxis,
   Label,
 } from "recharts"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+ 
 import { ChartContainer } from "@/components/ui/chart"
 
 const ChartGoal = ({goal}:{goal:Goal}) => {

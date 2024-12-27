@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { PostRequest } from '@/utils/api';
 import { toast } from 'react-toastify';
 import { generateSlugg } from '@/lib/generateSlug';
+import { useRouter } from 'next/navigation';
 
 const initialFormData: BookingWorkSpace = {
   workspaceName: '',
@@ -22,8 +23,9 @@ const initialFormData: BookingWorkSpace = {
   workspaceDescription: '',
 };
 
-const CreateWorkSpace = ({ workSpaceData, button }: { workSpaceData?: BookingWorkSpace, button?: React.ReactNode}) => {
+const CreateWorkSpace = ({ workSpaceData, button, redirectTo }: { workSpaceData?: BookingWorkSpace, button?: React.ReactNode, redirectTo?:string}) => {
   const {user, setWorkSpaces, setCurrentWorkSpace, workspaces } = useUserStore();
+  const {push} = useRouter()
 
   const [formData, setFormData] = useState<BookingWorkSpace>({
     ...initialFormData,
@@ -94,7 +96,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     if (workSpaceData) {
       const { data, error } = await PostRequest({
-        url: "/api/workpsace/edit",
+        url: "/api/workspaces/edit",
         body: {
           ...formData,
           workspaceLogo: uploadedFiles ? uploadedFiles?.[0].url! : formData?.workspaceLogo,
@@ -123,10 +125,11 @@ const handleSubmit = async (e: React.FormEvent) => {
         setFormData(initialFormData);
         setPreviewUrls([]);
         setIsOpen(false);
+        if(redirectTo) push(`/ws/${data?.workspaceAlias}/${redirectTo}`)
       }
     } else {
       const { data, error } = await PostRequest({
-        url: "/api/workpsace/create",
+        url: "/api/workspaces/create",
         body: {
           ...formData,
           workspaceLogo: uploadedFiles ? uploadedFiles?.[0].url! : '',
@@ -153,6 +156,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         setFormData(initialFormData);
         setPreviewUrls([]);
         setIsOpen(false);
+        if(redirectTo) push(`/ws/${data?.workspaceAlias}/${redirectTo}`)
       }
     }
   } catch (error) {

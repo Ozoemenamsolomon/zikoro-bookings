@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { postRequest } from "@/utils/api";
 import useUserStore from "@/store/globalUserStore";
 import { createClient } from "@/utils/supabase/client";
+import { useAppointmentContext } from "@/context/AppointmentContext";
 
 const supabase = createClient();
 
@@ -54,6 +55,7 @@ export function useRegistration() {
 
 export function useLogin() {
   const [loading, setLoading] = useState(false);
+  const {getWsUrl} = useAppointmentContext()
   const router = useRouter();
   const { setLoggedInUser } = useSetLoggedInUser();
   // Assuming this is a hook
@@ -81,7 +83,8 @@ export function useLogin() {
         await setLoggedInUser(data?.user?.email);
          
         toast.success("Sign In Successful");
-        router.push(redirectTo ?? "/workspace/appointments");
+        router.push(getWsUrl(`/schedule`));
+        // router.push(redirectTo ?? "/workspace/appointments");
         setLoading(false);
       }
     } catch (error) {
@@ -129,7 +132,7 @@ export const useSetLoggedInUser = () => {
       // );
       return;
     }
-    console.log(user);
+    // console.log(user);
     setUser(user);
     return user;
   };

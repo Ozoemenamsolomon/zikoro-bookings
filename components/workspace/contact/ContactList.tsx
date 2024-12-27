@@ -20,12 +20,13 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
   const { replace, push } = useRouter();
   const pathname = usePathname()
 
-  // eg: /workspace/contacts/[contactId]/goals
-  const contactId = pathname?.split('/')?.[3] || ''
-  const fourthPath = pathname?.split('/')?.[4] || ''
-  const { contact, setContact, contacts, setContacts, isfetching, searchTerm, setSearchTerm, setIsFetching,activePath, setActivePath, setIsOpen } = useAppointmentContext();
+  // eg: ws/[workspace]/contacts/[contactId]/goals
+  // const g = pathname?.split('/')
+  const contactId = pathname?.split('/')?.[4] || ''
+  const fifthPath = pathname?.split('/')?.[5] || ''
+  const { contact, setContact, contacts, setContacts, isfetching, searchTerm, setSearchTerm, setIsFetching,getWsUrl, setActivePath, setIsOpen } = useAppointmentContext();
   const [loading, setLoading] = useState<string | null>(null);
-
+// console.log({contactId,fifthPath, pathname, g})
   const filterContacts = useCallback(
     (term: string) => {
       if (!contacts) return [];
@@ -76,8 +77,8 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
   }, [fetchedcontacts, searchTerm, contactId, filterContacts]); // Keep dependencies concise
   
   useEffect(() => {
-    if(fourthPath) setActivePath(fourthPath)
-  }, [fourthPath])
+    if(fifthPath) setActivePath(fifthPath)
+  }, [fifthPath])
   
   // Handle search input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,13 +146,13 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
               <div key={id} 
               onClick={() => {
                 setContact(item)
-                push(`${urls.contacts}/${id}/${fourthPath}`)
-                setActivePath(fourthPath)
+                push(getWsUrl(`${urls.contacts}/${id}/${fifthPath}`))
+                setActivePath(fifthPath)
                 setIsOpen(true)
                 }} className="py-2 w-full cursor-pointer">
               <div
                 className={`${
-                  contact?.id === id ? 'bg-baseBg ring-1 ring-slate-300' : ''
+                  contact?.id === id ? 'bg-baseBg ring-1 ring-zikoroBlue' : ''
                 } rounded-md w-full p-2 hover:bg-slate-100 duration-300 flex gap-2 items-center`}
               >
                 <div className="h-12 w-12 rounded-full bg-baseLight uppercase font-semibold shrink-0 flex items-center justify-center">

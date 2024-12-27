@@ -13,10 +13,10 @@ import { urls } from '@/constants'
 import { redirect } from 'next/navigation'
 import MetricLineChart from './MetricLineChart'
 
-const KeyResultDetails = async({params}:{params:{keyResultId:string,contactId:string,goalId:string|number}}) => {
-    const {goalId,contactId,keyResultId} = await params
+const KeyResultDetails = async({params}:{params:{woorkspaceId:string, keyResultId:string,contactId:string,goalId:string|number}}) => {
+    const {goalId,contactId,keyResultId,woorkspaceId} = await params
     const {keyResult,error} = await fetchKeyResultById(keyResultId)
-    if (!goalId || !contactId || !keyResult ) redirect(`${urls.contacts}/${contactId}/goals/details/${goalId}`)
+    if (!keyResult ) redirect(`/ws/${woorkspaceId}/${urls.contacts}/${contactId}/goals`)
     const timelines = await fetchMetricsByKeyResultId(keyResult?.id!);
   return (
     <section className='bg-white '>

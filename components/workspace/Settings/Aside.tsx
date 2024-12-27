@@ -8,6 +8,7 @@ import {
     UserCircle,Link2,
     Users2, 
     } from "lucide-react";
+import { useAppointmentContext } from '@/context/AppointmentContext'
 
 interface AsideProp {
     className?:string,
@@ -28,19 +29,19 @@ const asidelinks: AsideLink[] = [
     {
         label: "Profile",
         icon: <UserCircle size={20}/>,
-        path: "/workspace/settings/profile",
+        path: "/settings/profile",
     // roles: staff,
     },
     {
         label: "Links",
         icon: <Link2 size={20}/>,
-        path: "/workspace/settings/links",
+        path: "/settings/links",
         // roles: staff,
     },
     {
         label: "Teams",
         icon: <Users2 size={20}/>,
-        path: "/workspace/settings/teams",
+        path: "/settings/teams",
         // roles: staff,
     },
 ];
@@ -48,6 +49,7 @@ const asidelinks: AsideLink[] = [
   const Aside:React.FC<AsideProp> = ({className,  }) => {
     const [expanded, setExpanded] = useState(true);
     const pathname = usePathname()
+    const {getWsUrl} = useAppointmentContext()
 
   return (
     <aside  className={cn("",className)}>
@@ -64,7 +66,7 @@ const asidelinks: AsideLink[] = [
                     asidelinks?.map(({icon,label,path,alert,roles},idx) => {
                         let isActive = pathname===path
                         return (
-                            <Link key={idx} href={path}
+                            <Link key={idx} href={getWsUrl(path)}
                                 className={`
                                     relative flex items-center p-2 rounded-md
                                     font- cursor-pointer

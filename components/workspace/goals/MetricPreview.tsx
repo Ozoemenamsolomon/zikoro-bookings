@@ -5,7 +5,7 @@ import { SquareArrowOutUpRight } from 'lucide-react'
 import React from 'react'
 import { renderAttachment } from './MetricList'
 import { format } from 'date-fns'
-import { P } from 'styled-icons/fa-solid'
+
 
 const MetricPreview = ({
     triggerBtn=<div className="flex justify-center">

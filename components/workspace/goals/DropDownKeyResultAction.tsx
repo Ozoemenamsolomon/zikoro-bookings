@@ -18,7 +18,7 @@ const DropDownKeyResultAction = ({keyResult}:{keyResult:KeyResult}) => {
   const [drop, setDrop] = useState<boolean>(false);
   const ref = useRef(null)
   useClickOutside( ref, ()=>setDrop(false))
-  const {contact} = useAppointmentContext()
+  const {contact,getWsUrl} = useAppointmentContext()
 
   const params = useParams()
   // console.log(params)
@@ -34,7 +34,7 @@ const DropDownKeyResultAction = ({keyResult}:{keyResult:KeyResult}) => {
       >
         <div className="bg-white shadow rounded-md p-4 space-y-3 text-sm w-full text-gray-800">
           
-          <Link href={`${urls.contacts}/${contact?.id}/goals/details/${params?.goalId}/${keyResult.id}`} 
+          <Link href={getWsUrl(`${urls.contacts}/${contact?.id}/goals/details/${params?.goalId}/${keyResult.id}`)} 
           type="button" className="hover:text-gray-950 duration-300 block">
             Open key result
           </Link>

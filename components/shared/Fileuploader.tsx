@@ -13,10 +13,11 @@ interface FileUploaderProps {
   setPreviewUrls: React.Dispatch<React.SetStateAction<{ type: string; url: string }[]>>;
   isDisabled: boolean;
   multiple?: boolean; // New prop for allowing single or multiple files
+  input?: React.ReactNode
 }
 
 export const FileUploader: React.FC<FileUploaderProps> = ({
-  setFiles,
+  setFiles,input,
   previewUrls,
   setPreviewUrls,
   isDisabled,
@@ -107,16 +108,22 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
   return (
     <div className="space-y-2 rounded-lg bg-cms-white">
       <div className="flex flex-col space-y-2 disabled:opacity-30">
-        <input
-          type="file"
-          onChange={handleFileChange}
-          multiple={multiple}          
-          accept={multiple ? undefined : 'image/*'} // Enforce only images if single mode
-          disabled={isDisabled}
-          className="p-2 border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:bg-blue-100/10 file:text-blue-700 hover:file:bg-blue-100/20"
-          aria-label="Upload files"
-        />
-        <small>{multiple ? `File type (pdf, image, mp4). Maximum file size of 5MB` : 'File type (image). Maximum file size of 5MB'}</small>
+        {
+          input ? input :
+          <>
+            <input
+              type="file"
+              onChange={handleFileChange}
+              multiple={multiple}          
+              accept={multiple ? undefined : 'image/*'} // Enforce only images if single mode
+              disabled={isDisabled}
+              className="p-2 border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:bg-blue-100/10 file:text-blue-700 hover:file:bg-blue-100/20"
+              aria-label="Upload files"
+            />
+            <small>{multiple ? `File type (pdf, image, mp4). Maximum file size of 5MB` : 'File type (image). Maximum file size of 5MB'}</small>
+          </>
+        }
+
       </div>
 
       <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">

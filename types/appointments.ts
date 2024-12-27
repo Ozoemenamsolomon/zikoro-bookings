@@ -125,9 +125,9 @@ export interface UserType {
 }
 
 export interface User {
-  id: bigint;
-  created_at: Date;
-  userEmail: string;
+  id?: bigint;
+  created_at?: Date;
+  userEmail?: string;
   firstName: string;
   lastName: string;
   jobTitle?: string | null;

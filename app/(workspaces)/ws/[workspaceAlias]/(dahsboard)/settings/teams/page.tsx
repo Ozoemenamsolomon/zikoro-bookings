@@ -1,9 +1,9 @@
+import Teams from '@/components/workspace/Settings/Teams'
 import React from 'react'
 
 const TeamsSettingsPage = () => {
   return (
-    <div>TeamsSettingsPage</div>
-  )
+    <Teams/>  )
 }
 
 export default TeamsSettingsPage

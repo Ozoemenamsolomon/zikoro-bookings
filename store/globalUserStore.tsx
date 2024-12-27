@@ -25,7 +25,7 @@ const useUserStore = create<UserState>()(
         
         if (user) {
           try {
-            const response = await fetch(`/api/workpsace?userId=${user.id}`);
+            const response = await fetch(`/api/workspaces?userId=${user.id}`);
             
             const { data, error } = await response.json();
 

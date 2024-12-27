@@ -8,10 +8,10 @@ import BackToGoalsBtn from './BackToGoalsBtn'
 import { fetchGoalsByGoalId } from '@/lib/server/goals'
 import { redirect } from 'next/navigation'
 import { urls } from '@/constants'
-const GoalDetails = async ({params}:{params:{goalId:string, contactId:string }}) => {
-  const {goalId,contactId} = await params
+const GoalDetails = async ({params}:{params:{woorkspaceId:string,goalId:string, contactId:string }}) => {
+  const {goalId, woorkspaceId ,contactId} = await params
   const {goal, error} = await fetchGoalsByGoalId(goalId)
-  if (!goal ) redirect(`${urls.workspace}/contacts/${contactId}/goals`)
+  if (!goal ) redirect(`/ws/${woorkspaceId}/contacts/${contactId}/goals`)
   return (
     <section className='bg-white '>
         <section className="bg-baseBg  py-6   sm:p-6 min-h-screen w-full space-y-6">

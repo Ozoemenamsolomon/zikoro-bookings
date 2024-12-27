@@ -3,7 +3,7 @@ import ProfileSettings from '@/components/workspace/Settings/ProfileSettings'
 
 const ProfileSetingsPage = () => {
   return (
-    <ProfileSettings/>
+    <ProfileSettings />
   )
 }
 

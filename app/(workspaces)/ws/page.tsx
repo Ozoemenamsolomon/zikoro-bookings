@@ -1,3 +1,4 @@
+import WsComponent from "@/components/workspace/workspace";
 
 const WsPage = async ({
     params: { workspaceAlias },
@@ -7,7 +8,7 @@ const WsPage = async ({
     searchParams: { s: string };
   }) => {
     return (
-        <section className="min-h-screen flex justify-center items-center font-semibold text-center">Incomplete Url</section>
+      <WsComponent />
     )
 }
 
