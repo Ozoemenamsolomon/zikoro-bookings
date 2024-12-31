@@ -64,7 +64,7 @@ const MultipleEmailInput: React.FC<MultipleEmailInputProps> = ({
 
   return (
     <div
-      className="border rounded-md p-2 sm:p-4 flex flex-wrap gap-1 min-h-[8rem] items-start"
+      className="border rounded-md p-2 sm:p-4 flex flex-wrap gap-1 min-h-[8rem] items-start justify-start"
       onClick={handleFocus}
     >
       {emails.map((email) => (

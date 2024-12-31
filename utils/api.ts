@@ -41,17 +41,17 @@ export const postRequest = async <T>({
   return await Api.post<ApiResponse<T>>(endpoint, payload, config);
 };
 
-type RequestOptions<T> = {
+type RequestOptions = {
   url: string;
-  body: T;
+  body: any;
   responseType?: 'json' | 'text' | 'blob';
 };
 
-export async function PostRequest<T = any, R = any>({
+export async function PostRequest<R  = any>({
   url,
   body,
   responseType = 'json',
-}: RequestOptions<T>): Promise<R> {
+}: RequestOptions): Promise<R> {
   const response = await fetch(url, {
       method: 'POST',
       headers: {

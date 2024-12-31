@@ -3,15 +3,20 @@ import { CenterModal } from '@/components/shared/CenterModal';
 import { CustomSelect } from '@/components/shared/CustomSelect';
 import MultipleEmailInput from '@/components/shared/MultipleEmailsInput';
 import { Button } from '@/components/ui/button';
+import useUserStore from '@/store/globalUserStore';
+import { PostRequest } from '@/utils/api';
 import { X } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
+import { toast } from 'react-toastify';
 
 const InviteTeams = () => {
+  const {user,currentWorkSpace} = useUserStore()
   const [formData, setFormData] = useState({
     emails: [] as string[],
-    role: '',
+    role: 'MEMBER',
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [open, setOpen] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>|null>(null);
   const [loading, setLoading] = useState<string>('');
 
   /** Handle Select Change */
@@ -23,6 +28,7 @@ const InviteTeams = () => {
   /** Handle Submit */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors(null)
     if (!formData.role) {
       setErrors({ role: 'Role is required' });
       return;
@@ -31,21 +37,35 @@ const InviteTeams = () => {
       setErrors({ emails: 'At least one email is required' });
       return;
     }
+    // filter user email
+    const filterdEmails = formData?.emails.filter(email => email !== user?.userEmail)
+    if(filterdEmails.length===0) {
+      setErrors({email:'Own email cannot be reassigned'})
+    }
 
     try {
       setLoading('Sending...');
-      console.log('Form Data:', formData);
-      setTimeout(() => {
-        setLoading('');
-        alert('Invites sent successfully!');
-      }, 1000);
+      const res = await PostRequest({
+        url:'/api/email/inviteTeam',
+        body: {...formData, emails:filterdEmails, workspaceName:currentWorkSpace?.workspaceName, workspaceAlias:currentWorkSpace?.workspaceAlias},
+      })
+      console.log({res})
+      if(res?.msg==='failed'){
+        setErrors({general:res?.message})
+        return
+      }
+  
+      toast.success('Team invite was successful')
+      setFormData({emails:[],role:''})
+      setOpen(false)
+
     } catch (error) {
       setErrors({ gen: 'Failed to send invites' });
-      setLoading('');
+    } finally {
+      setLoading('')
     }
   };
 
-  const [open, setOpen] = useState(false)
 
   return (
     <CenterModal
@@ -60,7 +80,7 @@ const InviteTeams = () => {
         <button
             onClick={()=>setOpen(false)}
           type="button"
-          className="absolute top-3 right-3 rounded-full h-12 w-12 bg-black text-white flex justify-center items-center"
+          className="absolute top-3 right-3 rounded-full h-10 w-10 bg-black text-white flex justify-center items-center"
         >
           <X />
         </button>
@@ -94,9 +114,12 @@ const InviteTeams = () => {
                 ]}
             />
             </div>
-          <Button type="submit" className="bg-basePrimary h-12 px-6 text-white w-full">
-            {loading ? 'Sending...' : 'Send Invite'}
-          </Button>
+            <div className="flex flex-col items-center">
+              {errors?.general && <small className='text-red-600 w-full block text-center'>{errors?.general}</small>}
+              <Button type="submit" className="bg-basePrimary h-12 px-6 text-white w-full">
+                {loading ? 'Sending...' : 'Send Invite'}
+              </Button>
+          </div>
         </form>
       </div>
     </CenterModal>

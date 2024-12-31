@@ -245,8 +245,8 @@ const handleSubmit = async (e: React.FormEvent) => {
             value={formData.subscriptionPlan}
             onChange={handleSelectChange}
             options={[
-              { label: 'Subscription 1', value: 'Subscription 1' },
-              { label: 'Subscription 2', value: 'Subscription 2' },
+              { label: 'FREE', value: 'FREE' },
+              // { label: 'Subscription 2', value: 'Subscription 2' },
             ]}
           />
 

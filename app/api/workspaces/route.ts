@@ -5,6 +5,7 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId')!;  
+    const email = searchParams.get('email')!;  
     const {data,error,count} = await fetchWorkspaces(userId) 
 
     if (error) {

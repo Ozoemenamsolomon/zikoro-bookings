@@ -46,7 +46,7 @@ export const updateSession = async (request: NextRequest) => {
     } = await supabase.auth.getUser();
   
     // Check if the request path starts with /workspace
-    if (path.startsWith("/workspace") && !user) {
+    if (path.startsWith("/ws") && !user) {
       const redirectUrl = new URL("/login", request.url);
       redirectUrl.searchParams.set("redirectedFrom", path);
       return NextResponse.redirect(redirectUrl);

@@ -17,6 +17,7 @@ export interface BookingTeams {
   workspaceId?: string | null; // Optional UUID represented as string
   userId?: number | null; // Optional bigint represented as number
   role?: string | null; // Optional text field
+  email?: string | null; // Optional text field
 }
 
 // export interface TOrganization {

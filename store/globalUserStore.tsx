@@ -2,8 +2,6 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { TUser } from "@/types/user";
 import { BookingWorkSpace } from "@/types";
-
-// Define the user state interface
 interface UserState {
   user: TUser | null;
   setUser: (user: TUser | null) => void;
@@ -15,46 +13,12 @@ interface UserState {
   setCurrentWorkSpace: (workspace: BookingWorkSpace | null) => void;
 }
 
-// Create the user store
+// Zustand store
 const useUserStore = create<UserState>()(
   persist(
     (set, get) => ({
       user: null,
-      setUser: async (user: TUser | null) => {
-        set({ user });
-        
-        if (user) {
-          try {
-            const response = await fetch(`/api/workspaces?userId=${user.id}`);
-            
-            const { data, error } = await response.json();
-
-            if (error) {
-              console.error('Error fetching workspaces:', error);
-              set({ workspaces: [] });
-              set({ currentWorkSpace: null });
-              return;
-            }
-
-            set({ workspaces: data });
-
-            // Check for persisted current workspace
-            const persistedWorkspace = get().currentWorkSpace;
-            if (persistedWorkspace) {
-              const exists = data.find(
-                (ws:BookingWorkSpace) => ws.workspaceOwner === persistedWorkspace.workspaceOwner
-              );
-              set({ currentWorkSpace: exists || data[0] || null });
-            } else {
-              set({ currentWorkSpace: data[0] || null });
-            }
-          } catch (error) {
-            console.error('Failed to fetch workspaces:', error);
-            set({ workspaces: [] });
-            set({ currentWorkSpace: null });
-          }
-        }
-      },
+      setUser: (user: TUser | null) => set({ user }),
 
       workspaces: [],
       setWorkSpaces: (workspaces: BookingWorkSpace[]) => set({ workspaces }),
@@ -63,10 +27,57 @@ const useUserStore = create<UserState>()(
       setCurrentWorkSpace: (workspace: BookingWorkSpace | null) => set({ currentWorkSpace: workspace }),
     }),
     {
-      name: "user-store", // Persisted storage key
+      name: "user-store",
       storage: createJSONStorage(() => localStorage),
     }
   )
 );
+export default useUserStore
 
-export default useUserStore;
+// Outside Zustand: Async Logic
+export async function initializeWorkspaces(
+  user: TUser | null,
+  assignedWkspace?: BookingWorkSpace | null,
+  isSignup?: boolean
+): Promise<BookingWorkSpace | null> {
+  const { setUser, setWorkSpaces, setCurrentWorkSpace, currentWorkSpace } = useUserStore.getState();
+
+  setUser(user);
+
+  if (user && !isSignup) {
+    try {
+      const response = await fetch(`/api/workspaces?userId=${user.id}`);
+      const { data, error } = await response.json();
+
+      if (error) {
+        console.error('Error fetching workspaces:', error);
+        setWorkSpaces([]);
+        setCurrentWorkSpace(null);
+        return null;
+      }
+
+      setWorkSpaces(data);
+
+      if (assignedWkspace) {
+        setCurrentWorkSpace(assignedWkspace);
+        return assignedWkspace;
+      } else if (currentWorkSpace) {
+        const exists = data.find(
+          (ws: BookingWorkSpace) => ws.workspaceOwner === currentWorkSpace.workspaceOwner
+        );
+        setCurrentWorkSpace(exists || data[0] || null);
+        return exists || data[0] || null;
+      } else {
+        setCurrentWorkSpace(data[0] || null);
+        return data[0] || null;
+      }
+    } catch (error) {
+      console.error('Failed to fetch workspaces:', error);
+      setWorkSpaces([]);
+      setCurrentWorkSpace(null);
+      return null;
+    }
+  }
+
+  return null;
+}
