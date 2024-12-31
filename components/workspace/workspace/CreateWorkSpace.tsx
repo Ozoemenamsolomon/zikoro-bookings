@@ -1,5 +1,5 @@
 import { CenterModal } from '@/components/shared/CenterModal';
-import { ArrowLeft, Check, Plus, PlusCircle } from 'lucide-react';
+import { ArrowLeft, Check, ChevronDown, Plus, PlusCircle } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Toggler } from '../ui/SwitchToggler';
 import CustomInput from '../ui/CustomInput';
@@ -23,7 +23,7 @@ const initialFormData: BookingWorkSpace = {
   workspaceDescription: '',
 };
 
-const CreateWorkSpace = ({ workSpaceData, button, redirectTo }: { workSpaceData?: BookingWorkSpace, button?: React.ReactNode, redirectTo?:string}) => {
+const CreateWorkSpace = ({ workSpaceData, button, redirectTo, onClose }: { workSpaceData?: BookingWorkSpace, button?: React.ReactNode, redirectTo?:string, onClose?:(k:boolean)=>void}) => {
   const {user, setWorkSpaces, setCurrentWorkSpace, workspaces } = useUserStore();
   const {push} = useRouter()
 
@@ -125,6 +125,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         setFormData(initialFormData);
         setPreviewUrls([]);
         setIsOpen(false);
+        onClose&&onClose(false);
         if(redirectTo) push(`/ws/${data?.workspaceAlias}/${redirectTo}`)
       }
     } else {
@@ -169,7 +170,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
 };
 
-  
+  const [drop, setDrop] = useState(false)
   return (
     <CenterModal
       className="overflow-hidden"
@@ -186,47 +187,51 @@ const handleSubmit = async (e: React.FormEvent) => {
         </button>
       }
     >
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row overflow-auto scrollbar-none sm:max-h-[80vh] sm:max-w-7xl w-full h-screen sm:h-full ">
+      <form onSubmit={handleSubmit} className="grid sm:grid-cols-5 overflow-auto hide-scrollbar sm:max-h-[90vh] sm:max-w-7xl w-full h-screen sm:h-full ">
         {/* Sidebar Section */}
-        <div className="bg-gray-200 space-y-8 sm:w-1/2 lg:w-2/5 p-6 py-10 justify-between flex flex-col h-full">
-        <div className="space-y-8">
-        <button><ArrowLeft size={20} /></button>
-          <div className="flex gap-2 items-center">
-            <p className="font-semibold">Monthly</p>
-            <Toggler options={['Monthly', 'Yearly']} />
-            <div className="flex items-center gap-1">
-              <p className="font-semibold">Yearly</p>
-              <small className="bg-zikoroBlue px-3 h-8 flex items-center text-white">save up to 15%</small>
-            </div>
-          </div>
+        <div className="h-full w-full sm:col-span-2 bg-gray-200">
+          <div className=" sm:max-h-[90vh] sm:gap-8  px-6 py-10 justify-between flex flex-col h-full">
+            <div className="space-y-1">
+            <button onClick={()=>setDrop(curr=>!curr)} type='button' className='sm:hidden'><ChevronDown size={20} className={`${drop?'rotate-180':'rotate-0'} duration-300 transition-all transform`}/></button>
+              {/* <div className="flex gap-2 items-center">
+                <p className="font-semibold">Monthly</p>
+                <Toggler options={['Monthly', 'Yearly']} />
+                <div className="flex items-center gap-1">
+                  <p className="font-semibold">Yearly</p>
+                  <small className="bg-zikoroBlue px-3 h-8 flex items-center text-white">save up to 15%</small>
+                </div>
+              </div> */}
 
-          {/* Plan Details */}
-          <div className="space-y-3">
-            <h4 className="font-semibold text-xl">FREE</h4>
-            <p>NGN0 per month</p>
-            <h6 className="text-lg font-medium">Plan Features</h6>
-            {['Unlimited events', 'Attendee check-in', '3 discount coupons', 'No engagement Feature'].map((item, i) => (
-              <div key={i} className="flex gap-2 items-center">
-                <Check size={16} className="text-purple-500" />
-                <small>{item}</small>
+              {/* Plan Details */}
+              <div className="space-y-3 ">
+                <h4 className="font-semibold text-xl">FREE</h4>
+                <div className={`${drop?'max-h-screen':'max-h-0 sm:max-h-screen'} overflow-hidden transform transition-all duration-500 ease-in-out space-y-3 `}>
+                    <p>NGN0 per month</p>
+                    <h6 className="text-lg font-medium">Plan Features</h6>
+                    {['Unlimited events', 'Attendee check-in', '3 discount coupons', 'No engagement Feature'].map((item, i) => (
+                      <div key={i} className="flex gap-2 items-center">
+                        <Check size={16} className="text-purple-500" />
+                        <small>{item}</small>
+                      </div>
+                    ))}
+                    <div className="flex gap-2 items-center">
+                      <Plus size={16} className="text-purple-500" />
+                      <small>Show more features</small>
+                    </div>
+                </div>
               </div>
-            ))}
-            <div className="flex gap-2 items-center">
-              <Plus size={16} className="text-purple-500" />
-              <small>Show more features</small>
             </div>
-          </div>
-        </div>
-          
-          <div className="  bg-baseLight px-2 py-2 rounded-md flex justify-between gap-12 items-center text-xl font-medium">
-            <h5>Total Cost</h5>
-            <h5>NGN 0</h5>
+            
+            <div className="  bg-baseLight px-2 py-2 rounded-md flex justify-between gap-12 items-center text-xl font-medium">
+              <h5>Total Cost</h5>
+              <h5>NGN 0</h5>
+            </div>
           </div>
         </div>
 
         {/* Form Section */}
-        <div className="bg-gray-100 sm:w-1/2 lg:w-3/5 p-6 py-10 space-y-3">
-          <h5 className="font-semibold text-xl pb-4">Workspace Information</h5>
+        <div className="bg-gray-100  h-full sm:col-span-3 px-6 py-10 space-y-3">
+          <h5 className="font-semibold text-xl pb-2">Workspace Information</h5>
           <CustomInput
             type="text"
             name="workspaceName"

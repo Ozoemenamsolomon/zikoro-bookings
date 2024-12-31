@@ -1,3 +1,5 @@
+import { User } from "./appointments";
+
 export interface BookingWorkSpace {
   id?: string; // UUID represented as a string
   created_at?: string; // ISO timestamp string
@@ -16,6 +18,15 @@ export interface BookingTeams {
   created_at: string; // ISO timestamp string
   workspaceId?: string | null; // Optional UUID represented as string
   userId?: number | null; // Optional bigint represented as number
+  role?: string | null; // Optional text field
+  email?: string | null; // Optional text field
+}
+
+export interface BookingTeamsTable {
+  id: number; // bigint represented as number in TypeScript
+  created_at: string; // ISO timestamp string
+  workspaceId?: BookingWorkSpace; // Optional UUID represented as string
+  userId?: User | null; // Optional bigint represented as number
   role?: string | null; // Optional text field
   email?: string | null; // Optional text field
 }

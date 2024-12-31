@@ -3,6 +3,7 @@ import { getUserData } from ".";
 import { BookingWorkSpace } from "@/types";
 import { User } from "@/types/appointments";
 import { generateSlugg } from "../generateSlug";
+import { createADMINClient } from "@/utils/supabase/no-caching";
  
 type ResultProp = {
   data: BookingWorkSpace[] | null;
@@ -139,4 +140,23 @@ export const assignMyWorkspace = async (
   }
 };
 
+export const fetchTeamMembers = async (
+  workspaceAlias: string,
+) => {
+    const supabase = createADMINClient()
+console.log(workspaceAlias)
+    try {
+    const { data, error }  = await supabase
+      .from('bookingTeams')
+      .select('*, workspaceId(workspaceOwner,workspaceAlias), userId(*)') 
+      .eq('workspaceId', workspaceAlias)
+      .order('created_at', { ascending: false })
+
+    console.error({ data, error });
+    return { data, error: error?.message};
+  } catch (error) {
+    console.error('bookingTeams Server error:', error);
+    return { data: null, error: 'Server error'};
+  }
+};
  
