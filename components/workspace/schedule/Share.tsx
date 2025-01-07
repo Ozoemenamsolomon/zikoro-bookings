@@ -1,19 +1,19 @@
-import { EmailIcon, FacebookIcon, TwitterIcon, WhatsappIcon } from '@/constants';
+import { EmailIcon, FacebookIcon, ShareIcon, TwitterIcon, WhatsappIcon } from '@/constants';
 import { AppointmentLink } from '@/types/appointments';
 import { Code, Copy, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import EmbedLink from './EmbedLink';
 import CopyLinkButton from '../ui/CopyLinkButton';
+import { CenterModal } from '@/components/shared/CenterModal';
 
 interface ShareProps {
-  isShare: number|null|bigint; 
-  setIsShare: React.Dispatch<React.SetStateAction<number|null|bigint>>;
-  idx:number|bigint;
+   
+   
   data: AppointmentLink;
 }
 
-const Share: React.FC<ShareProps> = ({data, idx, isShare, setIsShare }) => {
+const Share: React.FC<ShareProps> = ({data,     }) => {
   const [embed, setEmbed] = useState(false)
   const list = [
     {
@@ -36,10 +36,10 @@ const Share: React.FC<ShareProps> = ({data, idx, isShare, setIsShare }) => {
       label: 'Email',
       link: `mailto:?subject=Check%20this%20out&body=https://zikoro.com/booking/${data?.appointmentAlias}`,
     },
-    // {
-    //   icon: <Code />,
-    //   label: 'Embed',
-    // },
+    {
+      icon: <Code />,
+      label: 'Embed',
+    },
     {
       icon: <Copy />,
       label: 'Copy Link',
@@ -47,14 +47,14 @@ const Share: React.FC<ShareProps> = ({data, idx, isShare, setIsShare }) => {
   ];
 
   return (
-    <section
-        onClick={()=>setIsShare( null)} 
-      className={`${
-        isShare===idx ? 'scale-100 z-10' : 'scale-0 -z-10'
-      } transform transition-all duration-300 ease-in bg-slate-500/5 fixed inset-0 p-4 justify-center items-center flex overflow-auto`}
+    <CenterModal
+      trigerBtn={<button type='button' disabled={!data?.statusOn}   className="flex  gap-1 items-center">
+                      <p className="">Share</p>
+                      <div className={'disabled:opacity-20'}><ShareIcon/> </div>
+                  </button>}
     >
-      <div onClick={e=>e.stopPropagation()} className="py-28  w-full max-w-4xl max-h-[90vh] overflow-auto px-6  rounded-lg bg-white relative shadow-lg ">
-           <div className="pb-16 text-center text-xl font-semibold w-full ">
+      <div onClick={e=>e.stopPropagation()} className="py-12  w-full max-w-4xl max-h-[90vh] overflow-auto px-6  rounded-lg bg-white relative shadow-lg ">
+           <div className="pb-8 text-center text-xl font-semibold w-full ">
             Share your schedule across various platforms
           </div>
 
@@ -93,13 +93,12 @@ const Share: React.FC<ShareProps> = ({data, idx, isShare, setIsShare }) => {
               </Link >
             )}
             )}
-            <XCircle size={20} onClick={()=>setIsShare( null)} className='text-gray-500 absolute top-6 right-6'/>
+       
           </div>
 
           <EmbedLink embed={embed}/>
       </div>
-
-    </section>
+    </CenterModal>
   );
 };
 

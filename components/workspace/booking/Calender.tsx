@@ -69,7 +69,7 @@ const Calender: React.FC<CalendarProps> = ({ appointmentLink, }) => {
     const [slotsLoading, setSlotsLoading] = useState(true)
     const [hasCategory, setHasCategory] = useState(false)
     const {bookingFormData, isFormUp, setIsFormUp, setBookingFormData} = useAppointmentContext()
-
+// console.log({workspaceId: appointmentLink?.workspaceId})
     let today = startOfToday();
 
     let [selectedDay, setSelectedDay] = useState<Date>();
@@ -166,19 +166,23 @@ const Calender: React.FC<CalendarProps> = ({ appointmentLink, }) => {
         setBookingFormData((prev) => ({
           ...prev,
           appointmentType: appointmentTypeJson[0]?.name || '',
-          price: selectedAppointmentType?.amount || appointmentLink?.amount,
-          currency: selectedAppointmentType?.curency || appointmentLink?.curency || '',
+          // price: selectedAppointmentType?.amount || appointmentLink?.amount,
+          // currency: selectedAppointmentType?.curency || appointmentLink?.curency || '',
           categoryNote: selectedAppointmentType?.note,
+          workspaceId: appointmentLink?.workspaceId,
+          teamMembers: appointmentLink?.teamMembers,
         }));
       } else {
         if (Array.isArray(appointmentTypeJson) && appointmentTypeJson.length) {
           const selectedAppointmentType = appointmentTypeJson.find((item: Category) => item.name === bookingFormData?.appointmentType) || appointmentTypeJson[0];
           setBookingFormData((prev) => ({
             ...prev,
-            price: selectedAppointmentType?.amount,
-            currency: selectedAppointmentType?.curency,
+            // price: selectedAppointmentType?.amount,
+            // currency: selectedAppointmentType?.curency,
             categoryNote: selectedAppointmentType?.note,
-          }));
+            workspaceId: appointmentLink?.workspaceId,
+            teamMembers: appointmentLink?.teamMembers,
+        }));
         }
         // console.log('bbbbbbb', {bookingFormData, appointmentTypeJson})
       }

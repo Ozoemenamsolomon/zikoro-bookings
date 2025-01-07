@@ -58,7 +58,7 @@ const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Sat
 const formdata = {
   appointmentName: '',
   category: "",
-  duration: null,
+  duration: 60,
   loctionType: 'Onsite',
   locationDetails: '',
   timeZone: "",
@@ -93,14 +93,16 @@ interface ValidationErrors {
 const CreateAppointments: React.FC<{ appointment?: AppointmentLink, serverError?:string, alias?:string }> = ({ appointment,alias, serverError }) => {
   const { push } = useRouter();
   const pathname = usePathname();
-  const {setselectedType,selectedType} = useAppointmentContext()
+  const {setselectedType,selectedType,getWsUrl} = useAppointmentContext()
   const [isOpen, setIsOpen] = useState(appointment? false : true)
 
   const [formData, setFormData] = useState<AppointmentFormData>(formdata);
   const [errors, setErrors] = useState<{ [key: string]: string } | any>(serverError ? {'general': serverError} : null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const {user} = useUserStore()
+  const {user,currentWorkSpace} = useUserStore()
+
+
   useEffect(() => {
     if (appointment) {
       try {
@@ -251,7 +253,7 @@ const CreateAppointments: React.FC<{ appointment?: AppointmentLink, serverError?
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({...payload, workspaceId:currentWorkSpace?.workspaceAlias, createdBy:user?.id}),
         });
       }
       const result = await response.json();
@@ -259,7 +261,7 @@ const CreateAppointments: React.FC<{ appointment?: AppointmentLink, serverError?
       if (response.ok) {
         setFormData(formdata);
         toast.success(success);
-        push(urls.schedule);
+        push( getWsUrl(urls.schedule));
       } else {
         setErrors({ general: result.error });
         toast.error('Form submission failed!');

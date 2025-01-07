@@ -33,6 +33,14 @@ const AppointmentDetails: React.FC<FormProps> = ({
         [name]: numericValue,
       }));
   };
+  const handleSelect = (name:string,value:any)=> {
+    setFormData&&setFormData((prev)=>{
+      return {
+        ...prev,
+        [name]:value
+      }
+    })
+  }
   return (
     <div className=" space-y-6">
       <div className='flex gap-3 items-end'>
@@ -164,23 +172,24 @@ const AppointmentDetails: React.FC<FormProps> = ({
             <div className={`${formData?.isPaidAppointment ? 'max-h-screen visible':'max-h-0 invisible overflow-hidden'}  relative z-30 transform  transition-all duration-300  `}>
               <p className='pb-2 label'>Set curency and pricing</p>
               <div className="flex gap-8 items-center">
-                  
-                  <SelectInput
-                    name='curency'
-                    value={formData?.curency || ''}
-                    options={[
-                      {label:'USD',value:'USD'},
-                      {label:'CAD',value:'CAD'},
-                      {label:'EUR',value:'EUR'},
-                      {label:'NGN',value:'NGN'},
-                      {label:'AUD',value:'AUD'},
-                    ]}
-                    setFormData={setFormData!}
-                    placeholder='Select'
-                    className='w-44 z-50 '
-                    setError={setErrors}
-                    error={errors?.currency }
-                  />
+                   <ReactSelect
+                      name="curency"
+                      options={[
+                        {label:'USD',value:'USD'},
+                        {label:'CAD',value:'CAD'},
+                        {label:'EUR',value:'EUR'},
+                        {label:'NGN',value:'NGN'},
+                        {label:'AUD',value:'AUD'},
+                      ]}
+                      value={formData?.curency || ''}
+                      onChange={handleSelect}
+                      isClearable
+                      placeholder="Select"
+                      className="w-44 h-12"
+                      setError={setErrors}
+                      error={errors?.currency}
+                    />
+ 
                   <CustomInput
                     name='amount'
                     value={formData?.amount || ''}

@@ -39,7 +39,7 @@ export const fetchSchedules = async (
     //   .eq('createdBy', id)
 
     const { data, count, error } = await query;
-    console.log({workspaceAlias, data:data?.[1], count, error, id });
+    // console.log({workspaceAlias, data, count, error, id });
 
     if (error) {
       console.error('Error fetching schedules:', error);
@@ -66,7 +66,7 @@ export const fetchSchedule = async (
       .eq('appointmentAlias', alias)
       .single()
 
-    console.error({ data, error });
+    // console.error({ data, error, alias });
     return { data, error: error?.message};
   } catch (error) {
     console.error('AppointmentLink Server error:', error);

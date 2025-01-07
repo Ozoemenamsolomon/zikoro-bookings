@@ -14,7 +14,7 @@ export async function generateMetadata(
   const parentTitle = parentInfo.title?.absolute || "Default Parent Title";
   const parentDescription = parentInfo.description || "Default Parent Description";
 
-  const alias = params.alias;
+  const alias = (await params).alias;
 
   const { data, error }: { data: AppointmentLink | null; error: any } = await fetchSchedule(alias);
 
@@ -37,7 +37,6 @@ const BookAppointmentPage = async ({ params }: { params: { alias: string } }) =>
   const alias = (await params).alias;
 
   const { data, error } = await fetchSchedule(alias);
-
   if (error || !data) {
     // Handle error state if required (e.g., return a custom error page or message)
     return (
