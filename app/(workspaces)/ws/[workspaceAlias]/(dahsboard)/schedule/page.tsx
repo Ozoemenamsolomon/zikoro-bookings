@@ -4,9 +4,12 @@ import React from 'react'
 
 export const revalidate = 0;
 
-const SchedulesPage = async ({searchParams}:{
-  searchParams:string}) => {
-    const {data,count,error} = await fetchSchedules()
+const SchedulesPage = async ({searchParams,params}:{
+  searchParams:string
+  params:{workspaceAlias:string}
+}) => {
+  const workspaceAlias =( await params).workspaceAlias
+    const {data,count,error} = await fetchSchedules(workspaceAlias)
 
   return (
     <SchedulesLinks schedules={data} count={count} error={error} />

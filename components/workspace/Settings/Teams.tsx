@@ -1,8 +1,7 @@
-import React from 'react'
+'use client'
+import React, { useState } from 'react'
 import InviteTeams from './InviteTeams'
-import { BookingTeams, BookingTeamsTable } from '@/types'
-import { Button } from '@/components/ui/button'
-import { Trash2 } from 'lucide-react'
+import {  BookingTeamsTable } from '@/types'
 import DeleteMember from './DeleteMember'
 
 interface TeamsProps {
@@ -10,8 +9,7 @@ interface TeamsProps {
 }
 
 const Teams = ({ teamMembers }: TeamsProps) => {
-
-
+  const [teams, setTeams] = useState<BookingTeamsTable[]>(teamMembers||[])
   return (
     <section className="sm:py-8 sm:px-8 space-y-5">
       {/* Invite Team Members Section */}
@@ -31,7 +29,7 @@ const Teams = ({ teamMembers }: TeamsProps) => {
             </tr>
           </thead>
           <tbody>
-            {teamMembers?.map((member) => (
+            {teams?.map((member) => (
               <tr key={member.id} className="border-t hover:bg-gray-50">
                 <td className="p-4 w-5/8 flex gap-2 items-center">
                   
@@ -55,7 +53,7 @@ const Teams = ({ teamMembers }: TeamsProps) => {
                 <td className="p-4 w-2/8">{member?.role}</td>
                 <td className="p-4 w-1/8">{member?.userId ? 'Active' : 'Pending'}</td>
                 <td className="p-4 w-1/8  text-center">
-                   <DeleteMember id={member?.id}/>
+                   <DeleteMember id={member?.id} setTeams={setTeams}/>
                 </td>
               </tr>
             ))}

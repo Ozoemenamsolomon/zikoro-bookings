@@ -31,6 +31,17 @@ export interface BookingTeamsTable {
   email?: string | null; // Optional text field
 }
 
+ export interface CredentialTokenBalance {
+  id: number
+  created_at: string // ISO timestamp (e.g., "2024-06-27T12:34:56Z")
+  workspaceId?: number | null
+  tokenId?: number | null
+  lastActivity?: string | null
+  lastactivityQty?: number | null
+  availableBalance?: number | null
+  lastactivityUserId?: number | null
+}
+
 // export interface TOrganization {
 //   id: number;
 //   created_at: string;

@@ -52,65 +52,64 @@ const asidelinks: AsideLink[] = [
     const {getWsUrl} = useAppointmentContext()
 
   return (
-    <aside  className={cn("",className)}>
-        <nav className="flex flex-col h-full gap-3 text-gray-600">
-            <div className="">
-                <button onClick={()=>setExpanded(curr=>!curr)} className=" bg-slate-50 hover:bg-gradient-to-r hover:from-slate-200  hover:to-purple-200 hover:text-zikoroBlue duration-300 group
-                p-2 rounded-md   ">
-                    <ChevronLast size={20} className={expanded ? 'rotate-180  transitionn-all duration-200' : 'rotate-0 transitionn-all duration-200'}/>
-                </button>
-            </div>
+    <aside  className={cn("h-full max-md:border-b space-y-2 text-gray-600",className)}>
+        <div className="max-md:hidden">
+            <button onClick={()=>setExpanded(curr=>!curr)} className=" bg-slate-50 hover:bg-gradient-to-r hover:from-slate-200  hover:to-purple-200 hover:text-zikoroBlue duration-300 group
+            p-2 rounded-md   ">
+                <ChevronLast size={20} className={expanded ? 'rotate-180  transitionn-all duration-200' : 'rotate-0 transitionn-all duration-200'}/>
+            </button>
+        </div>
 
-            <ul className="flex-1 flex flex-col gap-2">
-                {
-                    asidelinks?.map(({icon,label,path,alert,roles},idx) => {
-                        let isActive = pathname===path
-                        return (
-                            <Link key={idx} href={getWsUrl(path)}
-                                className={`
-                                    relative flex items-center p-2 rounded-md
-                                    font- cursor-pointer
-                                    transition-colors group
-                                    hover:bg-gradient-to-r hover:from-slate-200  hover:to-purple-200 hover:text-zikoroBlue duration-300 group
-                                    ${isActive ? 'bg-gradient-to-r hover:from-slate-200  hover:to-purple-200 text-zikoroBlue' : ' '}
-                                `}
+        <ul className="md:flex-1 flex md:flex-col  gap-2 ">
+            {
+                asidelinks?.map(({icon,label,path,alert,roles},idx) => {
+                    let isActive = pathname.includes(path)
+                    return (
+                        <Link key={idx} href={getWsUrl(path)}
+                            className={`
+                                relative flex items-center p-2 rounded-md
+                                 
+                                transition-colors group
+                                hover:bg-gradient-to-r hover:from-slate-200  hover:to-purple-200 hover:text-zikoroBlue duration-300 group
+                                ${isActive ? 'bg-gradient-to-r hover:from-slate-200  hover:to-purple-200 text-zikoroBlue' : ' '}
+                            `}
+                        >
+                            <div className="shrink-0">{icon}</div>
+                            <span
+                                className={`overflow-hidden transition-all text-nowrap whitespace-nowrap ${
+                                expanded ? 'md:w-28 ml-3' : 'md:w-0 w-full max-md:ml-3'
+                                }`}
                             >
-                                {icon}
-                                <span
-                                    className={`overflow-hidden transition-all text-nowrap whitespace-nowrap ${
-                                    expanded ? 'w-28 ml-3' : 'w-0 '
-                                    }`}
+                                <p className={isActive ? 'font-semibold' : ''}>{label}</p>
+                            </span>
+
+                            {alert && (
+                                <div
+                                className={`absolute right-4 w-4 h-4 rounded-full bg-green ${
+                                    expanded ? '' : 'top-2'
+                                }`}
+                                />
+                            )}
+
+                            {!expanded && (
+                                <div
+                                className={`
+                                absolute left-full rounded-md px-2 py-1 ml-1
+                                bg-pink-50 text-zikoroBlue text-sm
+                                invisible opacity-20 -translate-x-3 transition-all
+                                group-hover:visible group-hover:opacity-100 group-hover:translate-x-0
+                                text-nowrap
+                            `}
                                 >
-                                    <p className={isActive ? 'font-semibold' : ''}>{label}</p>
-                                </span>
+                                {label}
+                                </div>
+                            )}
+                        </Link>
+                    )
+                })
 
-                                {alert && (
-                                    <div
-                                    className={`absolute right-4 w-4 h-4 rounded-full bg-green ${
-                                        expanded ? '' : 'top-2'
-                                    }`}
-                                    />
-                                )}
-
-                                {!expanded && (
-                                    <div
-                                    className={`
-                                    absolute left-full rounded-md px-2 py-1 ml-1
-                                    bg-pink-50 text-zikoroBlue text-sm
-                                    invisible opacity-20 -translate-x-3 transition-all
-                                    group-hover:visible group-hover:opacity-100 group-hover:translate-x-0
-                                    text-nowrap
-                                `}
-                                    >
-                                    {label}
-                                    </div>
-                                )}
-                                </Link>
-                        )
-                    })
-                }
-            </ul>
-        </nav>
+            }
+        </ul>
     </aside>
   )
 }

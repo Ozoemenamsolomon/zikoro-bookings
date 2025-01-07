@@ -8,10 +8,11 @@ interface FetchContactsResult {
   data: AppointmentLink[] | null;
   error: string | null;
   count: number;
+  // workspaceId?:string;
 }
 
 export const fetchSchedules = async (
-  userId?:string, start:number|string = 0, end:number|string = 19
+  workspaceAlias:string, userId?:string, start:number|string = 0, end:number|string = 19,
 ): Promise<FetchContactsResult> => {
     const supabase = createADMINClient()
 
@@ -28,6 +29,7 @@ export const fetchSchedules = async (
       .from('appointmentLinks')
       .select('*', { count: 'exact' }) 
       .eq('createdBy', id)
+      .eq('workspaceId', workspaceAlias)
       .range(Number(start), Number(end))
       .order('created_at', {ascending: false} )
       // .neq("id", randomInt(1000000000))
@@ -37,7 +39,7 @@ export const fetchSchedules = async (
     //   .eq('createdBy', id)
 
     const { data, count, error } = await query;
-    // console.log({ data, count, error, id });
+    console.log({workspaceAlias, data:data?.[1], count, error, id });
 
     if (error) {
       console.error('Error fetching schedules:', error);

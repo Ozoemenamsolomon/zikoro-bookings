@@ -144,12 +144,14 @@ export const fetchTeamMembers = async (
   workspaceAlias: string,
 ) => {
     const supabase = createADMINClient()
-console.log(workspaceAlias)
+    console.log(workspaceAlias)
+
     try {
     const { data, error }  = await supabase
       .from('bookingTeams')
       .select('*, workspaceId(workspaceOwner,workspaceAlias), userId(*)') 
       .eq('workspaceId', workspaceAlias)
+      // .neq('status','ARCHIVED')
       .order('created_at', { ascending: false })
 
     console.error({ data, error });

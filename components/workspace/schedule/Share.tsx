@@ -36,10 +36,10 @@ const Share: React.FC<ShareProps> = ({data, idx, isShare, setIsShare }) => {
       label: 'Email',
       link: `mailto:?subject=Check%20this%20out&body=https://zikoro.com/booking/${data?.appointmentAlias}`,
     },
-    {
-      icon: <Code />,
-      label: 'Embed',
-    },
+    // {
+    //   icon: <Code />,
+    //   label: 'Embed',
+    // },
     {
       icon: <Copy />,
       label: 'Copy Link',
