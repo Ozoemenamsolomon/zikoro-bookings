@@ -34,7 +34,7 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
         `${item.firstName} ${item.lastName}`.toLowerCase().includes(term.toLowerCase())
       );
     },
-    [contacts]
+    [contacts,contact,fetchedcontacts]
   );
   
   useEffect(() => {
@@ -74,7 +74,7 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
   
     updateContactsAndSelected();
     setIsFetching(false)
-  }, [fetchedcontacts, searchTerm, contactId, filterContacts]); // Keep dependencies concise
+  }, [fetchedcontacts, searchTerm, contactId,contacts,contact, filterContacts]); // Keep dependencies concise
   
   useEffect(() => {
     if(fifthPath) setActivePath(fifthPath)

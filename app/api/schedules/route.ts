@@ -11,9 +11,15 @@ export async function GET(req: NextRequest) {
     const end = searchParams.get('end')!;  
     const userId = searchParams.get('userId')!;
     const start = searchParams.get('start')!;
+    const workspaceId = searchParams.get('workspaceId')!;
+
+    if ( !workspaceId ) {
+      console.error("FETCHING SCHEDULES: Missing required parameters: workspaceId")
+      return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
+    }
 
     try {
-        const {data, count, error} = await fetchSchedules(userId, start, end)
+        const {data, count, error} = await fetchSchedules(workspaceId, userId, start, end)
   
       if (error) {
         console.error("Error fetching bookings:", error);

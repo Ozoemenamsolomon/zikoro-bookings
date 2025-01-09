@@ -92,7 +92,7 @@ export const formatUnavailability = (data: AppointmentUnavailability[]): Unavail
 };
 
 
-export async function fetchCalendarData(workspaceAlias:string, date: Date | string, viewingType: 'month' | 'week', userId?:string, ):Promise<any> {
+export async function fetchCalendarData(workspaceId:string, date: Date | string, viewingType: 'month' | 'week', userId?:string, ):Promise<any> {
   // Validate the viewing type and default to 'month' if invalid
   const viewing = viewingType === 'month' || viewingType === 'week' ? viewingType : 'week';
 
@@ -123,15 +123,15 @@ export async function fetchCalendarData(workspaceAlias:string, date: Date | stri
     .from('bookings') 
     .select('*, appointmentLinkId(*, createdBy(userEmail, organization, firstName, lastName, phoneNumber))', { count: 'exact' })
     .eq("createdBy", id)
-    .eq('workspaceId', workspaceAlias)
+    .eq('workspaceId', workspaceId)
     .gte('appointmentDate', startRangeDate.toISOString().split('T')[0])
     .lte('appointmentDate', endRangeDate.toISOString().split('T')[0]);
-  console.log({ data, error })
+  // console.log({ data, error })
   const {count } = await supabase
     .from('bookings') 
     .select('*', { count: 'exact' } )
     .eq("createdBy", id)
-    .eq('workspaceId', workspaceAlias)
+    .eq('workspaceId', workspaceId)
   
   // Error handling
   if (error) {
@@ -154,6 +154,7 @@ export async function fetchCalendarData(workspaceAlias:string, date: Date | stri
     .from('appointmentUnavailability')
     .select('*',  { count: 'exact' })
     .eq("createdBy", id)
+    .eq('workspaceId', workspaceId)
   
   // Format the data based on the viewing type
   const formattedMonthData = formatAppointmentsByMonth(data || {})

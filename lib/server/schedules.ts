@@ -12,10 +12,12 @@ interface FetchContactsResult {
 }
 
 export const fetchSchedules = async (
-  workspaceAlias:string, userId?:string, start:number|string = 0, end:number|string = 19,
+  workspaceId:string, userId?:string, start:number|string = 0, end:number|string = 19,
 ): Promise<FetchContactsResult> => {
     const supabase = createADMINClient()
-
+    if(!workspaceId){
+      console.error('FETCH SCHEDULES: workspaceId is missing')
+    }
     let id 
     if(userId){
       id = userId
@@ -29,14 +31,10 @@ export const fetchSchedules = async (
       .from('appointmentLinks')
       .select('*', { count: 'exact' }) 
       .eq('createdBy', id)
-      .eq('workspaceId', workspaceAlias)
+      .eq('workspaceId', workspaceId)
       .range(Number(start), Number(end))
       .order('created_at', {ascending: false} )
-      // .neq("id", randomInt(1000000000))
-    // const {count } = await supabase
-    //   .from('bookings') 
-    //   .select('*', { count: 'exact' } )
-    //   .eq('createdBy', id)
+
 
     const { data, count, error } = await query;
     // console.log({workspaceAlias, data, count, error, id });

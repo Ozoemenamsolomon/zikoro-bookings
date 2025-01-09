@@ -29,7 +29,7 @@ interface CalendarData {
 }
 
 const CalendarPage: React.FC<PageProps> = async ({ params, searchParams }) => {
-  const workspaceAlias  = (await params).workspaceAlias;
+  const workspaceId  = (await params).workspaceAlias;
   const  date = (await searchParams).date;
   const  viewing  = (await searchParams).viewing;
 
@@ -46,7 +46,7 @@ const CalendarPage: React.FC<PageProps> = async ({ params, searchParams }) => {
     unavailableDates,
     viewing: view,
     dataCount,
-  } = await fetchCalendarData(workspaceAlias, date, viewing);
+  } = await fetchCalendarData(workspaceId, date, viewing);
 
   return (
     <CalendarLayout

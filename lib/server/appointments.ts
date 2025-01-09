@@ -1,4 +1,4 @@
-import { Booking, BookingsContact } from "@/types/appointments";
+import { Booking, } from "@/types/appointments";
 import { createClient } from "@/utils/supabase/server"
 import { getUserData } from ".";
 import { endOfMonth, startOfDay, startOfMonth, startOfToday, startOfWeek } from "date-fns";
@@ -30,10 +30,12 @@ const groupBookingsByDate = (bookings: Booking[]): GroupedBookings => {
 };
 
 export const fetchAppointments = async (
- payload?: {userId?: string, date?: string, type?: string} 
+   payload?: {workspaceId:string, userId?: string, date?: string, type?: string} 
 ): Promise<FetchBookingsResult> => {
     const supabase = createClient()
-
+    if(!payload?.workspaceId){
+      console.error('APPOINTMENT BOOKINGS: workspaceId is missing')
+    }
     let id 
     if(payload?.userId){
       id = payload?.userId
@@ -47,6 +49,7 @@ export const fetchAppointments = async (
       .from("bookings")
       .select(`*, appointmentLinkId(*, createdBy(id, userEmail,organization,firstName,lastName,phoneNumber))`, { count: 'exact' })
       .eq("createdBy", id)
+      .eq("workspaceId", payload?.workspaceId)
       .order("appointmentDate", { ascending: true })
 
       const {count} = await query

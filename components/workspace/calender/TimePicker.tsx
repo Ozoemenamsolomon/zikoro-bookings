@@ -17,11 +17,10 @@ const TimePicker = ({
   handleUnavailabilityChange: (dayString: string, newData: AppointmentUnavailability|null, deleteId?: number|bigint) => void; 
   unavailableForDay?: FormattedUnavailability[];
 }) => {
-  const { user } = useUserStore();
+  const { user,currentWorkSpace } = useUserStore();
   const [slot, setSlot] = useState<{ from: string; to: string }>({ from: '', to: '' });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  
   const timeOptions = useMemo(() => generateTimeOptions(), []);
 
   const handleTimeChange = (field: 'from' | 'to', value: string) => {
@@ -45,6 +44,7 @@ const TimePicker = ({
       endDateTime: generateAppointmentTime({ time: slot.to, selectedDate: dayString }),
       createdBy: user?.id!,
       appointmentDate: format(dayString, 'yyyy-MM-dd'),
+      workspaceId : currentWorkSpace?.workspaceAlias,
     };
 
     if (formData?.startDateTime! >= formData?.endDateTime!) {
@@ -54,7 +54,7 @@ const TimePicker = ({
 
     try {
       setLoading(true);
-      const response = await fetch('/api/calendar/addunavailability', {
+      const response = await fetch(`/api/calendar/addunavailability?workspaceId=${currentWorkSpace?.workspaceAlias}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ const TimePicker = ({
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/calendar/deleteUnavailability?id=${item?.id}&userId=${user?.id!}`, {
+      const response = await fetch(`/api/calendar/deleteUnavailability?id=${item?.id}&userId=${user?.id!}&workspaceId=${currentWorkSpace?.workspaceAlias}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
       });

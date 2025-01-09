@@ -5,7 +5,8 @@ import {format,parse, isWithinInterval} from 'date-fns';
 import { SlotsResult } from './Calender';
 import { usePathname } from 'next/navigation';
 import { useAppointmentContext } from '@/context/AppointmentContext';
-import Loading, { BookingSlotSkeleton } from '@/components/shared/Loader';
+import  { BookingSlotSkeleton } from '@/components/shared/Loader';
+ 
 
 interface SlotsType {
   selectedDate: Date | string |undefined;
@@ -22,6 +23,7 @@ const Slots: React.FC<SlotsType> = ({appointmentLink, timeSlots, selectedDate, h
   const [loading, setLoading] = useState(true);
   const [unavailbleDates, setUnavailableDates] = useState(null);
   const maxBookingLimit = appointmentLink?.maxBooking;
+  const workspaceId = appointmentLink?.workspaceId
 
   const [error, setError] = useState('')
   const pathname = usePathname()
@@ -32,7 +34,7 @@ const Slots: React.FC<SlotsType> = ({appointmentLink, timeSlots, selectedDate, h
     setError('')
     try {
       // fetch slots based on appointmentLink.id and date 
-      const response = await fetch(`/api/bookings/bookingsByAppointmentLink/?appointmentDate=${format(selectedDate!, 'yyyy-MM-dd')}&appointmentLinkId=${appointmentLink?.id}`, 
+      const response = await fetch(`/api/bookings/bookingsByAppointmentLink/?appointmentDate=${format(selectedDate!, 'yyyy-MM-dd')}&appointmentLinkId=${appointmentLink?.id}&workspaceId=${workspaceId}`, 
         {
         method: 'GET',
         headers: {
@@ -60,7 +62,7 @@ const Slots: React.FC<SlotsType> = ({appointmentLink, timeSlots, selectedDate, h
     setError('')
     try {
       // fetch users unavailable dates based on user.id and selected date
-      const response = await fetch(`/api/calendar/fetchUnavailability?date=${format(selectedDate!, 'yyyy-MM-dd')}&userId=${appointmentLink?.createdBy?.id}`, 
+      const response = await fetch(`/api/calendar/fetchUnavailability?date=${format(selectedDate!, 'yyyy-MM-dd')}&userId=${appointmentLink?.createdBy?.id}&workspaceId=${workspaceId}`, 
         {
         method: 'GET',
         headers: {

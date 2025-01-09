@@ -14,7 +14,8 @@ import { useAppointmentContext } from '@/context/AppointmentContext'
 const ScheduleAppointment = ({ contact }: { contact: BookingsContact, appointmentLinks?: AppointmentLink[] }) => {
   const {setShow,setIsFormUp, show} = useAppointmentContext()
   const [selectedBookingLink, setSelectedBookingLink] = useState<AppointmentLink | null>(null)
-  const {user} = useUserStore()
+  const { user,currentWorkSpace } = useUserStore()
+  const workspaceId = currentWorkSpace?.workspaceAlias
   // Fetching schedule data using custom hook
   const { fetchSchedules, handlePageChange, totalPages, loading, currentPage, scheduleList, isError } = useGetSchedules()
 
@@ -94,7 +95,7 @@ const SelectAppointmentLink = ({
 
       <div className="max-h-[65vh] max-w-xl w-full mx-auto overflow-auto hide-scrollbar px-6 pb-4 pt-4 space-y-4 min-h-80">
         {loading ? (
-          <section className="space-y-2 w-full">
+          <section className="space-y-2 w-full ">
             {[...Array(6)].map((_, i) => (
               <div className="animate-pulse h-12 w-full bg-slate-100 rounded-md" key={i}></div>
             ))}
@@ -104,7 +105,8 @@ const SelectAppointmentLink = ({
         ) : !scheduleList?.length ? (
           <EmptyList size="30" text="No schedules" />
         ) : (
-          <>
+          <div className='min-h-72 flex flex-col gap-3 justify-between'>
+            <div className="space-y-2">
             {scheduleList.map((item) => (
               <div
                 key={item.id}
@@ -122,8 +124,9 @@ const SelectAppointmentLink = ({
                 </div>
               </div>
             ))}
+            </div>
             <PaginationMain currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
-          </>
+          </div>
         )}
       </div>
 
@@ -158,14 +161,16 @@ const SelectDateTime = ({
       </div>
 
       <section className="p-2 w-full ">
-        <Calender appointmentLink={{...selectedBookingLink, 
-          createdBy:{
-              id: user?.id, 
-              userEmail: user?.userEmail,
-              organization: user?.organization,
-              firstName: user?.firstName,
-              lastName: user?.lastName,
-              phoneNumber: user?.phoneNumber}
+        <Calender appointmentLink={
+          {
+            ...selectedBookingLink, 
+            createdBy:{
+                id: user?.id, 
+                userEmail: user?.userEmail,
+                organization: user?.organization,
+                firstName: user?.firstName,
+                lastName: user?.lastName,
+                phoneNumber: user?.phoneNumber}
             }} />
       </section>
 

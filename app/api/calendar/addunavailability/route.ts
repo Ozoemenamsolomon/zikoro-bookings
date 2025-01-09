@@ -6,6 +6,7 @@ export async function POST(req: NextRequest) {
   if (req.method !== "POST") {
     return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
   }
+  
   try {
     const body = await req.json();
     const result= await supabase
