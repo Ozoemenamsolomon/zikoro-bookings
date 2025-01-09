@@ -9,6 +9,7 @@ import CanceledAppointments from './CanceledAppt'
 import RescheduledAppointments from './RescheduledAppt'
 import { useGetBookingsAnalytics } from '@/hooks/services/appointments'
 import { Booking,  } from '@/types/appointments'
+import { useAnalyticsContext } from '@/context/AnalyticsContext'
 
 export interface SectionOneProps {
   isLoading: boolean;
@@ -19,17 +20,17 @@ export interface SectionOneProps {
   previous: Booking[];
 }
 
-const SectionOne = ({curList, prevList, typeParam}:{curList:Booking[]|null, prevList:Booking[]|null, typeParam?:string}) => {
+const SectionOne = ( ) => {
 
-  const {type, handleSetType, isLoading, error, current, previous,} = useGetBookingsAnalytics({curList, prevList, typeParam})
+  const {type, handleSetType, isLoading, error, current, previous,} = useAnalyticsContext()
 
   return (
     <div className="grid h-ful p-4 py-8 space-y-4 rounded-lg bg-white border">
 
-    <header className="flex w-full justify-end gap-4 items-center">
+    {/* <header className="flex w-full justify-end gap-4 items-center">
         <p className="">Sort</p>
         <SelectDuration type={type} setType ={handleSetType} />
-    </header>
+    </header> */}
 
     <section className="grid xs:grid-cols-2 md:grid-cols-3  gap-4 xl:grid-cols-2 text-center">
         <TotalBookings type={type} isLoading={isLoading} error={error} current={current} previous={previous}/>

@@ -7,6 +7,7 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const type = url.searchParams.get("type");
     const userId = url.searchParams.get("userId");
+    const workspaceId = url.searchParams.get('workspaceId')!;
 
     if (!userId || !type  ) {
       return NextResponse.json(
@@ -15,7 +16,12 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const {curList, prevList, error, count} = await fetchAnalytics({type, userId})
+    if ( !workspaceId ) {
+      console.error("FETCH ANALYTICS: workspaceId missing")
+      return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
+    }
+
+    const {curList, prevList, error, count} = await fetchAnalytics({type, userId,workspaceId})
 
     if (error) {
       return NextResponse.json(

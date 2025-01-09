@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import ProgressMetrics from './ProgressMetrics'
 import { format } from 'date-fns'
 import { Goal } from '@/types/goal'
-import { useGoalContext } from '@/context/GoalContext'
+import { useGoalContext } from '@/context/AnalyticsContext'
 import DropDownGoalAction from './DropDownGoalAction'
 import ChartGoal from './ChartGoal'
 

@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server"
 import { getUserData } from ".";
 import { Goal, KeyResult, KeyResultsTimeline } from "@/types/goal";
-import { MetricValueType } from "@/context/GoalContext";
+import { MetricValueType } from "@/context/AnalyticsContext";
 
 interface FetchContactsResult {
   data: Goal[] | null;

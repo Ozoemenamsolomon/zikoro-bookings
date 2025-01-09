@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { urls } from '@/constants'
 import { useAppointmentContext } from '@/context/AppointmentContext'
-import { useGoalContext } from '@/context/GoalContext'
+import { useGoalContext } from '@/context/AnalyticsContext'
 import { PostRequest } from '@/utils/api'
 
 import { useRouter } from 'next/navigation'

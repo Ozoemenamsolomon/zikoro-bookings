@@ -4,14 +4,12 @@ import React, { useEffect, useState } from 'react'
 import SelectDuration from './SelectDuration'
 import { DoughnutChart } from './DoughnutChart'
 import { AppointmentTable } from './AppointmentTable'
-import { useGetBookingsAnalytics } from '@/hooks/services/appointments'
 import { generateKPIData, KPIData } from '@/lib'
-import { Booking } from '@/types/appointments'
+import { useAnalyticsContext } from '@/context/AnalyticsContext'
 
-const SectionTwo =({curList, prevList, typeParam}:{curList:Booking[]|null, prevList:Booking[]|null, typeParam?:string}) => {
+const SectionTwo =() => {
     const [tableData, setTableData] = useState<KPIData[]>([])
-
-    const {type, handleSetType,isLoading,error, current,previous,} = useGetBookingsAnalytics(({curList, prevList, typeParam}))
+    const {type, handleSetType, isLoading, error, current, previous,} = useAnalyticsContext()
 
     useEffect(() => {
        if(current) setTableData(generateKPIData(current,previous))
@@ -22,10 +20,10 @@ console.log({current,previous,})
     <div className="  p-4 py-8 rounded-lg bg-white border">
         <header className="">
             <h4 className="text-lg font-semibold pb-2">Appointment type</h4>
-            <div className="flex w-full justify-end gap-4 items-center">
+            {/* <div className="flex w-full justify-end gap-4 items-center">
                 <p className="">Sort</p>
                 <SelectDuration type={type} setType ={handleSetType} />
-            </div>
+            </div> */}
         </header>
 
         <div className="grid md:grid-cols-2 xl:grid-cols-1 ">

@@ -8,7 +8,7 @@ import 'react-quill/dist/quill.snow.css';
 import { toast } from 'react-toastify';
 import { PostRequest } from '@/utils/api';
 import { useAppointmentContext } from '@/context/AppointmentContext';
-import { useGoalContext } from '@/context/GoalContext';
+import { useGoalContext } from '@/context/AnalyticsContext';
 import { KeyResult } from '@/types/goal';
 import { useRouter } from 'next/navigation';
 import ValueMetrics from './ValueMetrics';

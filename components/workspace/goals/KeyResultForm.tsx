@@ -3,7 +3,7 @@
 import { CenterModal } from '@/components/shared/CenterModal'
 import React, { useCallback, useEffect, useState } from 'react'
 import CustomInput from '../ui/CustomInput'
-import {  useGoalContext } from '@/context/GoalContext'
+import {  useGoalContext } from '@/context/AnalyticsContext'
 import { CustomSelect } from '@/components/shared/CustomSelect'
 import { Button } from '@/components/ui/button'
 import ValueMetrics from './ValueMetrics'

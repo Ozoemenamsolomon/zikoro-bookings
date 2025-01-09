@@ -117,7 +117,7 @@ export const useGetBookingsAnalytics = ({
   prevList: Booking[] | null;
   typeParam?: string;
 }) => {
-  const { user } = useUserStore();
+  const { user,currentWorkSpace } = useUserStore(); 
 
   const [isLoading, setLoading] = useState(false);
   const [type, setType] = useState(typeParam || 'weekly');
@@ -129,7 +129,7 @@ export const useGetBookingsAnalytics = ({
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/analytics/?type=${fetchType}&userId=${user?.id}`);
+      const response = await fetch(`/api/analytics/?type=${fetchType}&userId=${user?.id}&workspaceId=${currentWorkSpace?.workspaceAlias}`);
       if ( !response.ok) {
         throw new Error('Error fetching appointments');
       }
@@ -161,7 +161,7 @@ export const useGetBookingsAnalytics = ({
     getBookings,
     current,
     previous,
-    type,
+    type, setType,
     handleSetType
   };
 };
