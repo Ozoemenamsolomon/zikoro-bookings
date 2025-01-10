@@ -28,7 +28,7 @@ const UpcomingAppointments = ({ contact }: { contact: BookingsContact }) => {
 
       const response = await fetch(`/api/bookingsContact/fetchBookings?createdBy=${user?.id}&contactEmail=${contact?.email}&offset=${offset}&limit=${limit}&gteToday=${today}&workspaceId=${workspaceId}`)
       const { data, count, error } = await response.json()
-
+      // console.log({ data, count, error })
       if (error) {
         console.error('Error fetching appointments:', error)
         setIsError('Failed to fetch appointments.')
@@ -60,7 +60,7 @@ const UpcomingAppointments = ({ contact }: { contact: BookingsContact }) => {
   return (
     <section className="flex flex-col gap-3 w-full p-3 min-h-">
       {loading ? (
-        <p className="flex justify-center w-full text-basePrimary/50 py-32"><Loader2Icon size={18} className='animate-spin'/></p>
+        <p className="flex justify-center w-full text-basePrimary/50 py-24"><Loader2Icon size={18} className='animate-spin'/></p>
       ) : isError ? (
         <p className="text-center text-red-500">{isError}</p>
       ) : bookings.length ? (

@@ -14,19 +14,20 @@ import { urls } from '@/constants';
 type ContactProps = {
   fetchedcontacts: BookingsContact[] | null;
   searchquery?: string;
+  contactId?:string
 };
 
-const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
+const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery, contactId }) => {
   const { replace, push } = useRouter();
   const pathname = usePathname()
 
   // eg: ws/[workspace]/contacts/[contactId]/goals
   // const g = pathname?.split('/')
-  const contactId = pathname?.split('/')?.[4] || ''
+  const pathnameContactId = pathname?.split('/')?.[4] || ''
   const fifthPath = pathname?.split('/')?.[5] || ''
   const { contact, setContact, contacts, setContacts, isfetching, searchTerm, setSearchTerm, setIsFetching,getWsUrl, setActivePath, setIsOpen } = useAppointmentContext();
   const [loading, setLoading] = useState<string | null>(null);
-// console.log({contactId,fifthPath, pathname, g})
+
   const filterContacts = useCallback(
     (term: string) => {
       if (!contacts) return [];
@@ -37,8 +38,21 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
     [contacts,contact,fetchedcontacts]
   );
   
+  useEffect(()=>{
+    if(searchquery){
+       setSearchTerm(searchquery)
+    }
+  }, [searchquery])
+
+  useEffect(()=>{
+    if(searchquery){
+       setSearchTerm(searchquery)
+    }
+  }, [searchquery])
+  
+  
   useEffect(() => {
-    const updateContactsAndSelected = () => {
+    const updateContactsAndSelected = async () => {
       if (!fetchedcontacts) return; // Avoid processing if no contacts fetched
   
       // If a search term exists, filter contacts
@@ -53,7 +67,7 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
         setContacts(fetchedcontacts);
         // console.log({fetchedcontacts, contactId, pats:pathname?.split('/')})
         // Update selected contact
-        if (contactId) {
+        if (contactId || pathnameContactId && contact?.id !== pathnameContactId) {
           
           const filteredContact = fetchedcontacts.find((item) => item.id === contactId);
           if(filteredContact){
@@ -64,7 +78,7 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
             console.log('no filteredContact')
             setContact(fetchedcontacts?.[0])
           }
-        } else {
+        } else if (contact?.id!==pathnameContactId) {
           setContact((prevContact) =>
             prevContact?.id === fetchedcontacts?.[0]?.id ? prevContact : fetchedcontacts?.[0] || null
           );
@@ -74,7 +88,7 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
   
     updateContactsAndSelected();
     setIsFetching(false)
-  }, [fetchedcontacts, searchTerm, contactId,contacts,contact, filterContacts]); // Keep dependencies concise
+  }, [fetchedcontacts, searchTerm,searchquery, contactId, pathnameContactId]); // Keep dependencies concise
   
   useEffect(() => {
     if(fifthPath) setActivePath(fifthPath)
@@ -144,8 +158,8 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
             const { firstName, profileImg, lastName, favourite, id, email, tags } = item
             return (
               <div key={id} 
-              onClick={() => {
-                setContact(item)
+              onClick={async () => {
+                 await setContact(item)
                 push(getWsUrl(`${urls.contacts}/${id}/${fifthPath}`))
                 setActivePath(fifthPath)
                 setIsOpen(true)

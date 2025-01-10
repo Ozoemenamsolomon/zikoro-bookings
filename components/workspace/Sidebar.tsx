@@ -10,6 +10,7 @@ import { useLogOut } from '@/hooks';
 import { urls } from '@/constants';
 import { useAppointmentContext } from '@/context/AppointmentContext';
 import SelectWorkspace from './workspace/SelectWorkspace';
+import Image from 'next/image';
 
 type NavLink = {
   icon: React.ElementType;
@@ -81,8 +82,14 @@ const Sidebar = () => {
         <div className="flex gap-4 items-center w-full pb-2">
           <div className=" h-14 w-14 flex-shrink-0 rounded-full flex justify-center items-center bg-baseLight" 
           >
-            <div className="h-12 w-12 bg-basePrimary flex-shrink-0 rounded-full" 
+            <div className="h-12 w-12 flex-shrink-0 " 
             >
+              {
+                user?.profilePicture ?
+                <Image src={user?.profilePicture } alt='profile-image' width={300} height={300} className='h-full w-full rounded-full object-cover'/>
+                :
+                <div className="h-full w-full  bg-basePrimary rounded-full"></div>
+              }
             </div>
           </div>
           <div>

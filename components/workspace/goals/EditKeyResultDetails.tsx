@@ -8,7 +8,6 @@ import 'react-quill/dist/quill.snow.css';
 import { toast } from 'react-toastify';
 import { PostRequest } from '@/utils/api';
 import { useAppointmentContext } from '@/context/AppointmentContext';
-import { useGoalContext } from '@/context/AnalyticsContext';
 import { KeyResult } from '@/types/goal';
 import { useRouter } from 'next/navigation';
 import ValueMetrics from './ValueMetrics';
@@ -17,12 +16,13 @@ import { CustomSelect } from '@/components/shared/CustomSelect';
 import { DatePicker } from '../ui/DatePicker';
 import { metricsTypes } from './KeyResultForm';
 import useUserStore from '@/store/globalUserStore';
+import { useGoalContext } from '@/context/GoalContext';
 
 const EditKeyResultDetails = ({ keyResult, text }: { keyResult: KeyResult, text?:string }) => {
   
   const {refresh} = useRouter()
   const {user} = useUserStore()
-  const {metricValue,  isSubmitting, setIsSubmitting,} = useGoalContext()
+  const {  isSubmitting, setIsSubmitting,} = useGoalContext()
   const [keyResultData, setKeyResultData] = useState<KeyResult>()
 
   useEffect(() => {
@@ -120,8 +120,8 @@ const EditKeyResultDetails = ({ keyResult, text }: { keyResult: KeyResult, text?
         </button>
       }
     >
-      <section className="max-h-[95vh] w-full overflow-auto hide-scrollbar py-6">
-            <div className="border-b pb-3 w-full ">
+      <section className="max-h-[95vh] w-full overflow-auto hide-scrollbar py-6 ">
+            <div className="border-b pb-3 w-full pt-12">
                 <h4 className="text-lg font-bold px-4">Edit Key Result</h4>
             </div>
 
@@ -151,10 +151,12 @@ const EditKeyResultDetails = ({ keyResult, text }: { keyResult: KeyResult, text?
             {/* Owner */}
             <CustomSelect
                 label="Owner"
+                name='keyResultOwner'
+                isRequired
                 placeholder="Select an owner"
                 options={ownerOptions}
                 error={errors?.keyResultOwner!}
-                value={keyResultData?.keyResultOwner || ''}
+                value={String(keyResultData?.keyResultOwner || '')}
                 onChange={handleSelectChange}
             />
 

@@ -1,43 +1,42 @@
+import ContactLayout from '@/components/workspace/contact';
 import AppointmentHistory from '@/components/workspace/contact/AppointmentHistory';
-import { urls } from '@/constants';
-import { getUserData } from '@/lib/server';
-import { fetchContact } from '@/lib/server/contacts';
-import { createClient } from '@/utils/supabase/server';
+import ContactSubLayout from '@/components/workspace/contact/ContactSubLayout';
+
+import { fetchAppointmentHistory } from '@/lib/server/appointments';
+import { fetchContacts } from '@/lib/server/contacts';
+import { unstable_noStore } from 'next/cache';
+
 import { redirect } from 'next/navigation';
 import React from 'react'
 
 const ContactAppointmentHistory = async ({
+  params: { contactId, workspaceAlias },
   searchParams: { s },
-  params: {contactId },
 }: {
+  params: { contactId: string, workspaceAlias:string; };
   searchParams: { s: string };
-  params: { contactId: string };
 }) => {
-  const supabase = createClient()
-  const {user} = await getUserData()
-  let limit=10
-  const {data:contact, error:contactErr} = await fetchContact(contactId)
-  if(!contact) redirect(`${urls.contacts}/?notFound=The contact does not exist`)
-  let query = supabase
-          .from('bookings')
-          .select(
-            'id, created_at, appointmentDuration, appointmentDate, appointmentName, appointmentTimeStr, appointmentLinkId(locationDetails)', 
-            { count: 'exact' }
-          )
-          .eq('createdBy', user?.id)
-          .eq('participantEmail', contact?.email)
-          .range(0, limit-1)
+  unstable_noStore();
 
-          const {data:initialData}= await query
-          const { data, count, error } = await query.order('appointmentDate', { ascending: false })
-
-  // console.log({
-  //   contactId, // Original URI-encoded email
-  //   decodedEmail, // Decoded email string
-  //   d:{ data, count, first:initialData?.[0]?.created_at, error } 
-  // });
+  const {data:contacts, count:size} = await fetchContacts()
+  let contact 
+  if(contacts) {
+    contact = contacts.find(item => item.id === contactId)
+    if(!contact) {
+      redirect(`/ws?notFound=The contact does not exist`)
+    }
+  } else {
+    redirect(`/ws`)
+  }
+  
+  const { initialData, data, count, error} = await fetchAppointmentHistory({contactEmail:contact.email!})
+ 
   return ( 
-      <AppointmentHistory  bookingsData={data} countSize={count!} initialItem={initialData?.[0]?.created_at} errorString={error?.message!}/>
+    <ContactLayout contactId={contactId} searchquery={s} data={contacts} count={size}>
+      <ContactSubLayout>
+        <AppointmentHistory  bookingsData={data} countSize={count!} initialItem={initialData?.[0]?.created_at} errorString={error!}/>
+      </ContactSubLayout>
+    </ContactLayout>
   )
 }
 

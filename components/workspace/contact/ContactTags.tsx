@@ -93,7 +93,7 @@ const ContactTags = () => {
                 url: "/api/bookingsContact/updateContact",
                 body: { tags: contactTags, id: contact?.id },
             });
-    console.log({data,error})
+    // console.log({data,error})
             if (!error) {
                 setContact(data);
                 setContacts((prev) =>
@@ -111,9 +111,9 @@ const ContactTags = () => {
         }
     };
 
-    useEffect(() => {
-      if(contacts)console.log({contacts})
-    }, [contacts])
+    // useEffect(() => {
+    //   if(contacts) console.log({contacts})
+    // }, [contacts])
     
 
     const deleteTag = useCallback(async (tagToDelete: string) => {

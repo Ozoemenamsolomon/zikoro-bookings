@@ -74,7 +74,7 @@ const Share: React.FC<ShareProps> = ({data,     }) => {
               )}
               if(label==='Copy Link') {
                 return (
-                  <CopyLinkButton link={`https://zikoro.com/booking/${data?.appointmentAlias}`}>
+                  <CopyLinkButton key={idx} link={`https://zikoro.com/booking/${data?.appointmentAlias}`}>
                     <div key={idx}
                     className="bg-[#F2F2F2] w-full py-6 px-4 flex justify-center items-center flex-col gap-4 shadow-md hover:shadow-xl cursor-pointer rounded-md  "
                     >

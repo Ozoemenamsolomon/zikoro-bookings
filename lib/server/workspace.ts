@@ -154,8 +154,8 @@ export const fetchTeamMembers = async (
       // .neq('status','ARCHIVED')
       .order('created_at', { ascending: false })
 
-    console.error({ data, error });
-    return { data, error: error?.message};
+    // console.error({ data, error });
+    return { data, error: error?.message||null};
   } catch (error) {
     console.error('bookingTeams Server error:', error);
     return { data: null, error: 'Server error'};

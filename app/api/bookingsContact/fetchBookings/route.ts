@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
 
           const {data:initialData}= await query
           const { data, count, error } = await query.order('appointmentDate', { ascending: false })
-          console.log(initialData?.[0]?.created_at)
+          console.log({initialData, data })
       if (error) {
         return NextResponse.json({data:null, error: error.message, count }, { status: 400 });
       }

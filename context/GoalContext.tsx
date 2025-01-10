@@ -1,8 +1,10 @@
 "use client"
 
+import { fetchTeamMembers } from '@/lib/server/workspace';
 import useUserStore from '@/store/globalUserStore';
+import { BookingTeamMember,   } from '@/types';
 import { Goal, KeyResult } from '@/types/goal';
-import React, { createContext, useContext, useState, ReactNode, } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, } from 'react';
 
 export interface MetricValueType {
   startValue:number
@@ -35,12 +37,14 @@ export interface AppState {
     setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>
     goalData:Goal;
     setGoalData: React.Dispatch<React.SetStateAction<Goal>>;
+
     keyResultData:KeyResult;
     setKeyResultData: React.Dispatch<React.SetStateAction<KeyResult>>;
     metricValue:MetricValueType;
     setMetricValue: React.Dispatch<React.SetStateAction<MetricValueType>>;
     errors:{ [key: string]: string | null };
     setErrors: React.Dispatch<React.SetStateAction<{ [key: string]: string | null }>>;
+    teamMembers: {label:string, value:string}[];
 }
 
 export interface GoalContextProp extends AppState {
@@ -51,6 +55,7 @@ const GoalContext = createContext<GoalContextProp | undefined>(undefined);
 
 const initialFormData: Goal = {
   goalName: '',
+ 
   // status: 'DRAFT',
 };
 
@@ -72,19 +77,47 @@ const initialMetricValue:MetricValueType = {
 }
 
 export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-
+    const {currentWorkSpace} = useUserStore()
     const [goalData, setGoalData] = useState<Goal>(initialFormData);
     const [keyResultData, setKeyResultData] = useState<KeyResult>(keyResult);
     const [metricValue, setMetricValue] = useState<MetricValueType>(initialMetricValue);
     const [errors, setErrors] = useState<{ [key: string]: string | null }>({})
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [teamMembers, setTeamMembers] = useState<{label:string, value:string}[]>([]);
+
+    useEffect(() => {
+      const fetchTeamMembers = async () => {
+        if (!currentWorkSpace?.workspaceAlias) return;
+  
+        try {
+          const response = await fetch(`/api/workspaces/team?workspaceId=${currentWorkSpace.workspaceAlias}`);
+          const { data, error } = await response.json();
+  
+          if (error) {
+            console.error("Error fetching team members:", error);
+            setTeamMembers([]);
+          } else {
+            const teams = data.map((team: BookingTeamMember) => ({
+              label: `${team?.userId?.firstName} ${team?.userId?.lastName}`,
+              value: `${team?.id}`,
+            }));
+            setTeamMembers(teams || []);
+          }
+        } catch (err) {
+          console.error("Unhandled error in fetching team members:", err);
+        }
+      };
+  
+      fetchTeamMembers();
+    }, [currentWorkSpace]);
 
   const contextValue: GoalContextProp = {
     goalData, setGoalData,
     errors, setErrors,
     isSubmitting, setIsSubmitting,
     keyResultData, setKeyResultData,
-    metricValue, setMetricValue,
+    metricValue, setMetricValue, 
+    teamMembers,
   };
 
   return (

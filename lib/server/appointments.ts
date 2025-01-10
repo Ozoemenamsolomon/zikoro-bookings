@@ -1,7 +1,8 @@
 import { Booking, } from "@/types/appointments";
-import { createClient } from "@/utils/supabase/server"
+import { createADMINClient } from "@/utils/supabase/no-caching";
 import { getUserData } from ".";
 import { endOfMonth, startOfDay, startOfMonth, startOfToday, startOfWeek } from "date-fns";
+import { limit } from "@/constants";
 
 export interface GroupedBookings {
   [date: string]: Booking[];
@@ -32,7 +33,7 @@ const groupBookingsByDate = (bookings: Booking[]): GroupedBookings => {
 export const fetchAppointments = async (
    payload?: {workspaceId:string, userId?: string, date?: string, type?: string} 
 ): Promise<FetchBookingsResult> => {
-    const supabase = createClient()
+    const supabase = createADMINClient()
     if(!payload?.workspaceId){
       console.error('APPOINTMENT BOOKINGS: workspaceId is missing')
     }
@@ -83,7 +84,7 @@ export const fetchAppointments = async (
 export const fetchBookings = async (
   {appointmentDate, appointmentLinkId}:{appointmentDate:string, appointmentLinkId:string} 
  ): Promise<{data:Booking[]|null, error:string|null}> => {
-     const supabase = createClient()
+     const supabase = createADMINClient()
    try {
     const { data, error, status } = await supabase
       .from("bookings")
@@ -104,4 +105,59 @@ export const fetchBookings = async (
      return { data: null, error: 'Server error',  };
    }
  };
+ 
+
+ type FetchAppointmentHistoryParams = {
+   userId?: string;
+   contactEmail: string;
+ };
+ 
+ type FetchAppointmentHistoryResult = {
+   initialData: Booking[] | null;
+   data: Booking[] | null;
+   count: number | null;
+   error: string | null;
+ };
+ 
+ export async function fetchAppointmentHistory({
+   userId,
+   contactEmail,
+ }: FetchAppointmentHistoryParams): Promise<FetchAppointmentHistoryResult> {
+  const supabase = createADMINClient()
+
+  let id 
+  if(userId){
+    id = userId
+  } else {
+    const {user} = await getUserData()
+    id = user?.id
+  }
+
+   try {
+     // Initial query
+     let query = supabase
+       .from("bookings")
+       .select(
+         "id, created_at, appointmentDuration, appointmentDate, appointmentName, appointmentTimeStr, appointmentLinkId(locationDetails)",
+         { count: "exact" }
+       )
+       .eq("createdBy", id)
+       .eq("participantEmail", contactEmail)
+       .range(0, limit - 1);
+ 
+     // Fetch initial data
+     const { data: initialData, error: initialError } = await query;
+     if (initialError) throw new Error(initialError.message);
+ 
+     // Fetch ordered data
+     const { data, count, error } = await query.order("appointmentDate", { ascending: false });
+     if (error) throw new Error(error.message);
+ 
+     return { initialData, data, count, error: null };
+   } catch (err: any) {
+     console.error("Error fetching bookings:", err.message);
+     return { initialData: null, data: null, count: null, error: err.message };
+   }
+ }
+ 
  

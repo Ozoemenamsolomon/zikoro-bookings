@@ -1,23 +1,22 @@
 
 import React, { Suspense } from 'react'
-import EditGoalBtn from './EditGoalBtn'
-import BackToGoalsBtn from './BackToGoalsBtn'
-import ProgressMetrics from './ProgressMetrics'
+
 import { fetchKeyResultById, fetchMetricsByKeyResultId } from '@/lib/server/goals'
 import MetricList from './MetricList'
 import BackToGoalDetailsBtn from './BackToGoalDetailsBtn'
 import EditKeyResultDetails from './EditKeyResultDetails'
-import KeyResultForm from './KeyResultForm'
-import { Loader2, PenLine } from 'lucide-react'
+import { Loader2, } from 'lucide-react'
 import { urls } from '@/constants'
 import { redirect } from 'next/navigation'
 import MetricLineChart from './MetricLineChart'
 
-const KeyResultDetails = async({params}:{params:{woorkspaceId:string, keyResultId:string,contactId:string,goalId:string|number}}) => {
-    const {goalId,contactId,keyResultId,woorkspaceId} = await params
-    const {keyResult,error} = await fetchKeyResultById(keyResultId)
-    if (!keyResult ) redirect(`/ws/${woorkspaceId}/${urls.contacts}/${contactId}/goals`)
+const KeyResultDetails = async({params}:{params:{workspaceAlias:string, keyResultId:string,contactId:string,goalId:string|number}}) => {
+
+    const {goalId, contactId, keyResultId, workspaceAlias} = await params
+    const {keyResult, error} = await fetchKeyResultById(keyResultId)
+    if (!keyResult ) redirect(`/ws/${workspaceAlias}/${urls.contacts}/${contactId}/goals`)
     const timelines = await fetchMetricsByKeyResultId(keyResult?.id!);
+
   return (
     <section className='bg-white '>
         <section className="bg-baseBg   py-6   sm:p-6   min-h-screen w-full space-y-6">

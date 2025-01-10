@@ -24,9 +24,9 @@ const SelectWorkspace = () => {
 
   /** Handle Workspace Selection */
   const handleWorkspaceChange = (wsAlias: string) => {
-    setIsOpen(false)
     setCurrentWorkSpace(workspaces.find((ws) => ws.workspaceAlias === wsAlias)!);
     router.push(getWorkspacePath(wsAlias, pathname.split('/').slice(3).join('/')));
+    setIsOpen(false)
   };
 
   return (
@@ -47,7 +47,7 @@ const SelectWorkspace = () => {
         </button>
       }
     >
-      <div className="bg-white shadow rounded-md p-4 space-y-1 text-sm w-full text-gray-800">
+      <div onClick={e=>e.stopPropagation()} className="bg-white shadow rounded-md p-4 space-y-1 text-sm w-full text-gray-800">
         {workspaces?.map((ws) => (
           <div  key={ws?.id} className="flex gap-2 items-center">
             <button
