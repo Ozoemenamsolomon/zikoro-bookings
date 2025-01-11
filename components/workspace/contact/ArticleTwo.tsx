@@ -6,9 +6,10 @@ import PreviousAppointments from './PreviousAppointments'
 import UpcomingAppointments from './UpcomingAppointments'
 import { useAppointmentContext } from '@/context/AppointmentContext'
 import { Loader2Icon } from 'lucide-react'
+import { BookingsContact } from '@/types/appointments'
 
-const ArticleTwo = () => {
-  const {contact,isfetching} = useAppointmentContext()
+const ArticleTwo = ({contact}:{contact:BookingsContact}) => {
+  const {isfetching} = useAppointmentContext()
   if(isfetching) return (
     <div className="w-full h-screen  bg-white">
         <div className="h-80 flex flex-col justify-center items-center">
@@ -17,7 +18,7 @@ const ArticleTwo = () => {
     </div>
 )
   return (
-    <div className="w-full p-6 md:px-2  h-screen overflow-auto no-scrollbar space-y-5 bg-white relative z-10">
+    <div className="w-full p-6 md:px-2  md:h-screen md:pb-20 overflow-auto no-scrollbar space-y-5 bg-white relative z-10">
         <div className=" border rounded-md text-center space-y-3 w-full">
           <div className="text-center  rounded-md w-full p-4 bg-baseBg border-b font-semibold">Schedule Appointment</div>
           <div className="p-3">

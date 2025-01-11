@@ -21,21 +21,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
   }
   const { bookingFormData, appointmentLink } = await req.json();
-console.log( { bookingFormData, appointmentLink })
+// console.log( { bookingFormData, appointmentLink })
   try {
 
     if (!bookingFormData || !appointmentLink) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const { userEmail: hostEmail, organization: hostOrg, firstName: hostfName, lastName: hostlName, phoneNumber: hostPhone, } = appointmentLink.createdBy;
+    const { userEmail: hostEmail, organization: hostOrg, firstName: hostfName, lastName: hostlName, phoneNumber: hostPhone,  } = appointmentLink.createdBy;
 
     const { appointmentName, appointmentDuration, appointmentTime, appointmentDate, appointmentTimeStr, firstName, lastName, notes, participantEmail, teamMembers, phone } = bookingFormData;
 
-    const emailList = [participantEmail, hostEmail];
+    const emailList = [participantEmail, hostEmail, ];
     const uniqueEmailArray = mergeEmailLists(teamMembers, emailList);
 
-    console.log(emailList, uniqueEmailArray, );
+    console.log({emailList,teamMembers, uniqueEmailArray, });
 
     const appointmentDateTime = parse(`${appointmentDate}T${appointmentTime}`, "yyyy-MM-dd'T'HH:mm:ss", new Date());
     const appointmentEndDateTime = addMinutes(appointmentDateTime, appointmentDuration);
@@ -98,21 +98,26 @@ console.log( { bookingFormData, appointmentLink })
                       <th>Host Organization</th>
                       <td>
                         ${appointmentLink?.businessName}
-                        <img src=${appointmentLink?.logo} alt=logo>
                       </td>
                     </tr>
-                    <tr><th>Host Details</th><td>${hostfName} ${hostlName} ${hostPhone}</td></tr>
+                    
                     <tr><th>Appointment Location</th><td>${appointmentLink?.locationDetails}</td></tr>
-                    <tr><th>Appointment Duration</th><td>${appointmentDuration}mins</td></tr>
                     <tr><th>Appointment Date</th><td>${appointmentDate}</td></tr>
-                    <tr><th>Appointment Time</th><td>${appointmentTimeStr}</td></tr>
-                    <tr><th>Note from Host</th><td>${appointmentLink?.note}</td></tr>
-                    <tr><th>Host Email</th><td>${hostEmail}</td></tr>
+                    <tr><th>Appointment Time</th><td>${appointmentTimeStr} (${appointmentDuration}mins) </td></tr>
+                    ${appointmentLink?.note && `<tr><th>Note from Host</th><td>${appointmentLink?.note}</td> </tr>`}
                     <tr><th>Participant Email</th><td>${participantEmail}</td></tr>
-                    <tr><th>Participant Details</th><td>${firstName} ${lastName} ${phone}</td></tr>
-                    <tr><th>Note from Participant</th><td>${notes}</td></tr>
+                    <tr><th>Participant Name</th><td>${firstName} ${lastName}</td></tr>
+                    <tr><th>Participant Phone</th><td>${phone}</td></tr>
+                    ${notes && notes !==undefined ? `<tr><th>Note from Participant</th><td>${notes}</td> </tr>` : null}
                   </table>
+                  <br/>
                   <p>Thank you for using our scheduling service.</p>
+                  <p>If you want to cancel or reschedule this appointment, contact the host with this detail.</p>
+                  <p>Email: ${hostEmail}</p>
+                  <p>Phone: ${hostPhone}</p>
+                  <br/>
+
+                  
                   <p>Best Regards,<br>Zikoro<br><br>
                     <img src="https://www.zikoro.com/_next/image?url=%2Fzikoro.png&w=128&q=75" alt="zikoro">
                   </p>

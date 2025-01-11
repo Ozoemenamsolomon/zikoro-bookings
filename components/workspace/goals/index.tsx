@@ -15,7 +15,7 @@ import AddNewGoalBtn from './AddNewGoalBtn'
 const Goals =  ({goalsData,countSize,errorString }:{
   goalsData:Goal[]|null,countSize:number,errorString:string|null
 }) => {
-
+console.log({goalsData})
 //   const {data,count,error} = await fetchGoalsByUserId(contactId!)
   const {contact} = useAppointmentContext()
   const { user } = useUserStore()
@@ -51,8 +51,9 @@ const Goals =  ({goalsData,countSize,errorString }:{
     setCurrentPage(page)
     fetchGoals(page)
   }
+
   return (
-    <section className='bg-white sm:p-3 '>
+    <section className='bg-white '>
         {
             loading ?
             <div className='h-screen pt-32 flex justify-center'><Loader2Icon className='animate-spin'/></div>
@@ -63,18 +64,20 @@ const Goals =  ({goalsData,countSize,errorString }:{
             goals?.length===0 ? 
             <EmptyGoal/>
             :
-        <section className="bg-baseBg sm:border sm:rounded-md sm:p-3 py-6 min-h-screen w-full space-y-6">
-            <header className="flex justify-end">
-              <AddNewGoalBtn text='New Goal' />
-            </header>
-            <div className="space-y-6 mx-auto max-w-4xl pb-6">
-                {
-                    
-                    goals?.map((goal,i)=>
-                        <div key={i} className='bg-white  hover:shadow duration-300 border rounded-md p-5 relative '>
-                            <GoalCard  goal={goal} />
-                        </div>
-                )}
+        <section className="bg-baseBg  sm:p-3 py-6 min-h-screen flex flex-col justify-between w-full gap-6">
+          <div className="space-y-6">
+              <header className="flex justify-end">
+                <AddNewGoalBtn text='New Goal' />
+              </header>
+              <div className="space-y-6 mx-auto max-w-4xl pb-6">
+                  {
+                      
+                      goals?.map((goal,i)=>
+                          <div key={i} className='bg-white  hover:shadow duration-300 border rounded-md p-5 relative '>
+                              <GoalCard  goal={goal} />
+                          </div>
+                  )}
+              </div>
             </div>
             <div className="flex justify-center py-2">
                 <PaginationMain

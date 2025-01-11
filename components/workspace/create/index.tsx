@@ -2,7 +2,7 @@
 
 import { AtmCardIcon, BentArrowLeft, CalenderIcon, ClockIcon, SettingsIcon, ThemeIcon, urls } from '@/constants';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Details from './Details';
 import SetAvailability from './SetAvailability';
 import Payment from './Payment';
@@ -20,6 +20,8 @@ import { useAppointmentContext } from '@/context/AppointmentContext';
 import useUserStore from '@/store/globalUserStore';
 import Loading from '@/components/shared/Loader';
 import { generateSlug } from '@/lib/generateSlug';
+import { fetchTeamMembers } from '@/lib/server/workspace';
+import { BookingTeamMember } from '@/types';
 
 const detailsArray: DetailItem[] = [
   {
@@ -58,7 +60,7 @@ const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Sat
 const formdata = {
   appointmentName: '',
   category: "",
-  duration: null,
+  duration: 60,
   loctionType: 'Onsite',
   locationDetails: '',
   timeZone: "",
@@ -90,17 +92,20 @@ interface ValidationErrors {
   [key: string]: string;
 }
 
-const CreateAppointments: React.FC<{ appointment?: AppointmentLink, serverError?:string, alias?:string }> = ({ appointment,alias, serverError }) => {
+const CreateAppointments: React.FC<{teams: {label:string,value:string}[]; appointment?: AppointmentLink, serverError?:string|null, alias?:string }> = 
+  ({ appointment,alias, teams, serverError }) => 
+    {
   const { push } = useRouter();
   const pathname = usePathname();
-  const {setselectedType,selectedType} = useAppointmentContext()
+  const {setselectedType,selectedType,getWsUrl,setTeamMembers} = useAppointmentContext()
   const [isOpen, setIsOpen] = useState(appointment? false : true)
 
   const [formData, setFormData] = useState<AppointmentFormData>(formdata);
   const [errors, setErrors] = useState<{ [key: string]: string } | any>(serverError ? {'general': serverError} : null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const {user} = useUserStore()
+  const {user,currentWorkSpace} = useUserStore()
+
   useEffect(() => {
     if (appointment) {
       try {
@@ -137,6 +142,7 @@ const CreateAppointments: React.FC<{ appointment?: AppointmentLink, serverError?
         category: selectedType==='multiple' ? [] : ''
       }));
     }
+    setTeamMembers(teams)
   }, [appointment,pathname,selectedType]);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -251,7 +257,7 @@ const CreateAppointments: React.FC<{ appointment?: AppointmentLink, serverError?
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({...payload, workspaceId:currentWorkSpace?.workspaceAlias, createdBy:user?.id}),
         });
       }
       const result = await response.json();
@@ -259,7 +265,7 @@ const CreateAppointments: React.FC<{ appointment?: AppointmentLink, serverError?
       if (response.ok) {
         setFormData(formdata);
         toast.success(success);
-        push(urls.schedule);
+        push( getWsUrl(urls.schedule));
       } else {
         setErrors({ general: result.error });
         toast.error('Form submission failed!');
@@ -280,25 +286,21 @@ const CreateAppointments: React.FC<{ appointment?: AppointmentLink, serverError?
         <div className="fixed z-50 bg-white/5 inset-0 flex justify-center items-center" ><Loading/></div>:null
       }
 
-      <Link href={urls.schedule} type="button" className="max-sm:pl-4">
+      <Link href={getWsUrl(urls.schedule)} type="button" className="max-sm:pl-4 inline-block">
         <BentArrowLeft w={20} />
       </Link>
-      <section className="py-4 flex w-full justify-center items-center">
-        <form onSubmit={handleSubmit} className="w-full max-w-2xl bg-white rounded-[6px] p-6 sm:p-[60px] grid gap-0.5 overflow-hidden">
+
+      <section className="py-4 flex flex-col w-full justify-center items-center">
+        <h4 className="text-center font-semibold text-xl pb-6">Schedule Appointment</h4>
+        <form onSubmit={handleSubmit} className="w-full max-w-2xl bg-white rounded-[6px] p-6 sm:p-[60px] flex flex-col gap-0.5 overflow-auto">
           {errors && Object.keys(errors).length > 0 && (
-            <div className='grid overflow-hidden -96'>
-              {errors.general ? (
-                <div className="flex flex-wrap">
-                  <p className="text-red-600 text-[12px] text-wrap">{errors.general}</p>
-                </div>
+            errors.general ? (
+                  <p className="text-red-600 pb-2 px-2 text-[12px] text-wrap">{errors.general}</p>
               ) : (
-                <div className="flex flex-wrap">
-                  <p className="text-red-600 text-[12px] text-wrap">
+                  <p className="text-red-600 pb-2 px-2 text-[12px] text-wrap">
                     {Object.values(errors).filter(error => error).join(', ')}
                   </p>
-                </div>
-              )}
-            </div>
+              )
           )}
 
 

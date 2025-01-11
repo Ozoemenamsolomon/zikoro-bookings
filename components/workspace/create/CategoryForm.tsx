@@ -41,7 +41,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ setFormData, setErrors, for
   };
 
   const addNewCategory = () => {
-    if (!categories[categories.length - 1]?.name) {
+    if (categories.length > 0 && !categories[categories.length - 1]?.name) {
       setErrors((prev: AppointmentFormData) => ({ ...prev, category: 'Please fill out the current category before adding a new one.' }));
       return;
     }
@@ -59,7 +59,8 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ setFormData, setErrors, for
 // console.log({categories})
   return (
     <>
-      {Array.isArray(categories) && categories.length && categories?.map((category:Category, index:number) => (
+      {Array.isArray(categories) && categories.length ? 
+      categories?.map((category:Category, index:number) => (
         <div key={index} className="rounded-md space-y-4 bg-slate-50 border relative p-4 pt-6">
           <h5 className="label px-1 bg-slate-50 absolute -top-3 left-3">Appointment Type {index + 1}</h5>
           <X size={18} className='absolute right-4 top-0 text-slate-500 hover:text-slate-700 ' onClick={()=>removeCategory(index)} />
@@ -86,14 +87,16 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ setFormData, setErrors, for
               onChange={(e) => handleCategoryChange('note', e.target.value, index, )}
             />
 
-          <div className="flex gap-4 justify-between items-center">
+          <div className="flex   gap-4 justify-between items-center">
             <div className="flex-1">
               <h5 className="text-lg font-medium">Make this a paid appointment</h5>
               <p className="text-sm text-gray-600">Guests will be charged to book this appointment</p>
+              <small className='italic'>Coming soon</small>
+
             </div>
             <div
-              className={`flex-shrink-0 ${category.isPaidAppointment ? 'bg-blue-600 ring-blue-600 ring-2' : 'bg-gray-300 ring-2 ring-gray-300'} w-14 h-6 p-1.5 relative flex items-center rounded-full cursor-pointer`}
-              onClick={() => handleCategoryChange('isPaidAppointment', !category.isPaidAppointment, index, )}
+              className={`flex-shrink-0 ${category.isPaidAppointment ? 'bg-blue-600 ring-blue-600 ring-2' : 'bg-gray-300 ring-2 ring-gray-300'} w-14 h-6 p-1.5 relative flex items-center rounded-full cursor-pointe`}
+              // onClick={() => handleCategoryChange('isPaidAppointment', !category.isPaidAppointment, index, )}
             >
               <div className="flex w-full justify-between font-semibold text-[9px] text-gray-50">
                 <p>ON</p>
@@ -171,7 +174,9 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ setFormData, setErrors, for
             </div>
           )}
         </div>
-      ))}
+      ))
+      : null
+    }
 
       <div onClick={addNewCategory} className="text-zikoroBlue cursor-pointer flex gap-2 pt- items-center">
         <PlusCircle size={14} />

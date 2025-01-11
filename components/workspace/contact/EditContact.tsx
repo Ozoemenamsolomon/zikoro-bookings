@@ -119,7 +119,6 @@ const EditContact = () => {
 
                             <div className="flex py-2 justify-center w-full">
                                 <ProfileImageUpload formData={formData} setFormData={setFormData} />
-                                
                             </div>
 
                             <div className="grid sm:grid-cols-2 gap-4">

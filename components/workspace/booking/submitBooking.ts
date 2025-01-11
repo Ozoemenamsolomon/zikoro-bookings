@@ -55,7 +55,7 @@ export const submitBooking = async ({
     }
 
     delete newBookingData?.['categoryNote']
-
+// console.log({newBookingData})
     try {
         const response = await fetch('/api/bookings/insert', {
             method: 'POST',
@@ -66,6 +66,7 @@ export const submitBooking = async ({
         });
         
         const result = await response.json();
+// console.log({result})
        
         if (response.ok) {
             bookingSuccess=true
@@ -97,13 +98,15 @@ export const submitBooking = async ({
                 }),
             });
             // console.log({email: await res.json()})
+            setSuccess('Booking was successful')
             if(res.ok){
                 emailSuccess=true
                 console.log('==GOOD RES==')
-                setSuccess('Booking was successful, email reminder sent')
+                
+                // setSuccess('Booking was successful, email reminder sent')
             } else {
                 console.log('==BAD RES==')
-                setSuccess(`Booking successful, some emails could not send`)
+                // setSuccess(`Booking successful, some emails could not send`)
             }
             const slot: string = result?.data?.appointmentTime;
             // update slot booking count

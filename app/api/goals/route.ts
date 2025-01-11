@@ -1,3 +1,4 @@
+import { fetchGoalsByUserId } from "@/lib/server/goals";
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -14,16 +15,16 @@ export async function GET(req: NextRequest) {
     const limit = Number(searchParams.get('limit')!);
 
     try {
-        const { data, count, error } = await supabase
-          .from('goals')
-          .select('*', { count: 'exact' })
-          .eq('createdBy', createdBy)
-          .eq('id', contactId)
-          .range(offset, offset + limit - 1)
-          .order('created_at', {ascending:false})
+        const { data, count, error } = await fetchGoalsByUserId(contactId,offset)
+          // .from('goals')
+          // .select('*, goalOwner(id,userId(id,firstName,lastName))', { count: 'exact' })
+          // .eq('createdBy', createdBy)
+          // .eq('id', contactId)
+          // .range(offset, offset + limit - 1)
+          // .order('created_at', {ascending:false})
 
           console.log({ data, count, error })
-      return NextResponse.json({ data, count, error :error?.message||null}, { status: 200 });
+      return NextResponse.json({ data, count, error }, { status: 200 });
   
     } catch (error) {
       console.error("Unhandled goals error:", error);

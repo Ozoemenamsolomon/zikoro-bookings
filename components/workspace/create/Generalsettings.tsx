@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { AppointmentFormData, FormProps } from '@/types/appointments';
 import { SelectInput } from '../ui/CustomSelect';
 import CustomInput from '../ui/CustomInput';
+import { ReactSelect } from '@/components/shared/ReactSelect';
+import { CustomSelect } from '@/components/shared/CustomSelect';
+import { useAppointmentContext } from '@/context/AppointmentContext';
 
 const Generalsettings: React.FC<FormProps> = ({
   formData,
@@ -11,22 +14,33 @@ const Generalsettings: React.FC<FormProps> = ({
 }) => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState(false);
+  const {teamMembers} = useAppointmentContext()
 
-  const addTeamMember = () => {
+  // const addTeamMember = (value) => {
+  //   const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //   if (email.length > 0 && pattern.test(email)) {
+  //     const newTeamMembers = formData?.teamMembers
+  //       ? `${formData.teamMembers}, ${email}`
+  //       : email;
+  //       setFormData && setFormData((prev:AppointmentFormData)=>{
+  //         return {...prev,
+  //           teamMembers: newTeamMembers,}
+  //         });
+  //     setEmail('');
+  //     setError(false);
+  //   } else {
+  //     setError(true);
+  //   }
+  // };
+  const addTeamMember = (value:string) => {
     const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (email.length > 0 && pattern.test(email)) {
       const newTeamMembers = formData?.teamMembers
-        ? `${formData.teamMembers}, ${email}`
-        : email;
+        ? `${formData.teamMembers}, ${value}`
+        : value;
         setFormData && setFormData((prev:AppointmentFormData)=>{
           return {...prev,
             teamMembers: newTeamMembers,}
           });
-      setEmail('');
-      setError(false);
-    } else {
-      setError(true);
-    }
   };
 
   const removeEmail = (selected: string) => {
@@ -42,31 +56,37 @@ const Generalsettings: React.FC<FormProps> = ({
 
   };
 
+  const handleSelect = (value:any,name?:string)=> {
+    setFormData&&setFormData((prev)=>{
+      return {
+        ...prev,
+        [name!]:Number(value)
+      }
+    })
+  }
   return (
     <div className="space-y-4">
       <div className="">
-        <p className="pb-2">Add Team members email</p>
-        <div className={`${error ? 'ring-2 ring-red-600' : ''} flex rounded-md gap-2 items-center border p-1`}>
-          <CustomInput
-            type="email"
-            name="email"
-            value={email}
-            placeholder="Enter Team member Email"
-            className="focus:ring-0 border-none focus:bg-transparent py-1"
-            onChange={(e) => {
-              setError(false);
-              setEmail(e.target.value);
-            }}
-          />
-          <div onClick={addTeamMember} className="cursor-pointer rounded-md flex-shrink-0 text-white bg-basePrimary py-2 px-6">
-            Invite
-          </div>
+        <p className="pb-2">Add Team members</p>
+        <div className={`${errors?.teamMembers ? 'ring-1 ring-red-600' : ''} flex rounded-md gap-2 items-center `}>
+        
+        <CustomSelect
+          name='teamMembers'
+          options={ teamMembers}
+          // value={''}
+          error={errors?.teamMembers}
+          onChange={addTeamMember}
+          placeholder="Select team member"
+          className="w-full h-12"
+          setError={setErrors}
+        />
+ 
         </div>
         {formData?.teamMembers ? (
-          <div className="space-y-2 pt-2">
+          <div className="space-y-1 pt-2">
             {formData.teamMembers.split(', ').map((item, idx) => (
-              <div key={idx} className="flex max-w-lg justify-between gap-6 items-center py-1 px-2 border rounded bg-gray-50">
-                <p>{item}</p>
+              <div key={idx} className="flex max-w-lg  justify-between gap-6 items-center   px-2     ">
+                <p className='italic'>{item}</p>
                 <p onClick={() => removeEmail(item)} className="text-red-600 text-sm cursor-pointer">X Remove</p>
               </div>
             ))}
@@ -76,44 +96,81 @@ const Generalsettings: React.FC<FormProps> = ({
 
       <div className="">
         <p className="pb-2">Maximum bookings per session</p>
-        <SelectInput
-          name="maxBooking"
-          value={formData?.maxBooking || ''}
+        <CustomSelect
+          // label="Maximum bookings per session"
+          name='maxBooking'
           options={[
-            { label: '1', value: 1 },
-            { label: '2', value: 2 },
-            { label: '3', value: 3 },
-            { label: '5', value: 5 },
-            { label: '10', value: 10 },
+            { label: '1', value: '1' },
+            { label: '2', value: '2' },
+            { label: '3', value: '3' },
+            { label: '5', value: '5' },
+            { label: '10', value: '10' },
           ]}
-          setFormData={setFormData!}
-          className="w-32 z-50"
-          type='number'
-          error={errors?.maxBooking}
+          value={String(formData?.maxBooking || '')}
+          error={errors?.maxBooking!}
+          onChange={handleSelect}
+          isRequired
+          placeholder="Select"
+          className="w-48 h-12"
           setError={setErrors}
-          pattern="\d+"
         />
+        {/* <ReactSelect
+            name="maxBooking"
+            options={[
+              { label: '1', value: 1 },
+              { label: '2', value: 2 },
+              { label: '3', value: 3 },
+              { label: '5', value: 5 },
+              { label: '10', value: 10 },
+            ]}
+            value={formData?.maxBooking || ''}
+            onChange={handleSelect}
+            isClearable
+            placeholder="Select"
+            className="w-48 h-12"
+            setError={setErrors}
+            error={errors?.maxBooking}
+          /> */}
+        
       </div>
 
       <div className="">
         <label htmlFor="sessionBreak" className="pb-2">Break between sessions in minutes</label>
-        <SelectInput
-          name="sessionBreak"
-          value={formData?.sessionBreak || ''}
+        <CustomSelect
+          // label="Maximum bookings per session"
+          name='sessionBreak'
           options={[
-            { label: '0', value: 0 },
-            { label: '5', value: 5 },
-            { label: '10', value: 10 },
-            { label: '15', value: 15 },
-            { label: '20', value: 20 },
+            { label: '0', value: '0' },
+            { label: '5', value: '5' },
+            { label: '10', value: '10' },
+            { label: '15', value: '15' },
+            { label: '20', value: '20' },
           ]}
-          setFormData={setFormData!}
-          className="w-32"
-          type='number'
+          value={String(formData?.sessionBreak || '')}
+          error={errors?.sessionBreak!}
+          onChange={handleSelect}
+          isRequired
+          placeholder="Select"
+          className="w-48 h-12"
           setError={setErrors}
-          error={errors?.sessionBreak}
-          pattern="\d+"
         />
+        {/* <ReactSelect
+            name="sessionBreak"
+            options={[
+              { label: '0', value: 0 },
+              { label: '5', value: 5 },
+              { label: '10', value: 10 },
+              { label: '15', value: 15 },
+              { label: '20', value: 20 },
+            ]}
+            value={formData?.sessionBreak || ''}
+            onChange={handleSelect}
+            isClearable
+            placeholder="Select"
+            className="w-48 h-12"
+            setError={setErrors}
+            error={errors?.sessionBreak}
+          /> */}
       </div>
 
       

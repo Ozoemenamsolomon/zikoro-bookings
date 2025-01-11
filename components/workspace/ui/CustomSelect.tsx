@@ -52,6 +52,7 @@ export const SelectInput: React.FC<SelectInputProps> = ({
   }, [value])
 
   const handleChange = (selectedValue: string | number) => {
+    console.log({selectedValue})
     setInputValue(selectedValue.toString());
     if (onChange) {
       onChange(name, selectedValue);
@@ -69,6 +70,7 @@ export const SelectInput: React.FC<SelectInputProps> = ({
       });
   };
 
+  
   useClickOutside(containerRef, () => setIsOpen(false));
 
   const filteredOptions = options.filter(option =>
@@ -88,46 +90,48 @@ export const SelectInput: React.FC<SelectInputProps> = ({
       }
     })
   };
-// console.log({inputValue,value})
   return (
     <>
-    <div ref={containerRef} className={cn("relative z-30", className)}>
+    <div className={cn("relative", )}>
       {label && (
         <label className="block font- mb-2" htmlFor={name}>
           {label}
         </label>
       )}
-      <div className={cn("relative w-full", className)}>
-        <input
-          type={"text"}
-          disabled={disabled}
-          name={name}
-          value={inputValue}
-          // onChange={handleInputChange}
-          onChange={(e) => {
-            // Ensure the value only contains positive digits
-            if(type==='number'){
-              const value = e.target.value;
-              e.target.value = value.replace(/\D/g, ''); // Remove non-digit characters
-              handleInputChange(e);
-            } else {
-              handleInputChange(e);
-            }
-          }}
-          onClick={() => setIsOpen(!isOpen)}
-          className={cn(`appearance-none w-full border px-2 py-2 rounded-md focus:outline-none focus:shadow-outline focus:border-blue-500 ${
-            disabled ? 'cursor-not-allowed border-gray-300 bg-gray-100' : 'border-gray-300'
-          }`, className)}
-          placeholder={placeholder }
-          pattern={pattern||''}
-        />
-        <div className="absolute right-2 top-3 pointer-events-none">
-          {icon ? <ChevronDown size={14} /> : <UpDownArrow  />}
+      <div onClick={() => setIsOpen(!isOpen)} ref={containerRef} 
+      className={cn(
+        "relative py-3 px-2 flex items-center gap-1 border rounded-md",
+        disabled ? "bg-gray-300 text-gray-300" : "hover:border-purple-300",
+        isOpen && "border-purple-400 shadow-md w-20", className
+      )}>
+          <input
+            type={"text"}
+            disabled={disabled}
+            name={name}
+            value={inputValue}
+            onChange={(e) => {
+              if(type==='number'){
+                const value = e.target.value;
+                e.target.value = value.replace(/\D/g, ''); // Remove non-digit characters
+                handleInputChange(e);
+              } else {
+                handleInputChange(e);
+              }
+            }}
+            // onClick={() => setIsOpen(!isOpen)}
+            className={cn(`w-full bg-transparent focus:ring-0 appearance-none focus:outline-none ${
+              disabled ? 'cursor-not-allowed' : 'border-gray-300'
+            }`,)}
+            placeholder={placeholder }
+            pattern={pattern||''}
+          />
+          <div  className="shrink-0 pointer-events-none">
+            {icon ? <ChevronDown size={14} /> : <UpDownArrow  />}
+          </div>
         </div>
-        
 
         {isOpen && (
-          <ul className={cn(`absolute py-2 z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto hide-scrollbar`, className)}>
+          <ul className={cn(`z-30 absolute py-2 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto hide-scrollbar`, className)}>
             {placeholder && !inputValue && (
               <li
                 onClick={() => handleChange('')}
@@ -147,7 +151,7 @@ export const SelectInput: React.FC<SelectInputProps> = ({
             ))}
           </ul>
         )}
-      </div>
+      
     </div>
     {error ? <p className="text-red-600 text-[12px] pt-1">{error}</p> : null}
     </>

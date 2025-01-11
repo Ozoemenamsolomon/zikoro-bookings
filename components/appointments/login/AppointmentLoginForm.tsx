@@ -7,16 +7,21 @@ import { useLogin } from "@/hooks/services/auth";
 import { urls } from "@/constants";
 import { LoaderAlt } from "styled-icons/boxicons-regular";
 
-const AppointmentLoginForm = () => {
+const AppointmentLoginForm =({userEmail, role ,workspaceName ,workspaceAlias ,}:{ 
+  userEmail:string, 
+  role:string ,
+  workspaceName:string ,
+  workspaceAlias:string ,
+}) => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const { loading, logIn } = useLogin();
 
   const [formData, setFormData] = useState({
-    email: "",
+    email: userEmail || "",
     password: "",
+    role, workspaceAlias
   });
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -28,7 +33,7 @@ const AppointmentLoginForm = () => {
   }
 
   return (
-    <div className="bg-white py-0 sm:py-[16px] lg:py-[20px] px-3 sm:px-[42px] lg:px-[42px] rounded-[8px] w-full max-w-full sm:max-w-md md:max-w-[542px] mx-auto lg:max-w-[542px] ">
+    <div className="auth-form">
       <div className="flex justify-center ">
         <Image
           src="/appointments/logoFooter.png"
@@ -90,8 +95,13 @@ const AppointmentLoginForm = () => {
           type="submit"
           className="py-4 px-3 text-base w-full rounded-[8px] font-semibold mt-10 mb-6 text-white bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end"
         >
-          {loading && <LoaderAlt size={22} className="animate-spin" />}
-          Get Started
+          {loading ?
+          <div className="flex w-full justify-center gap-2 items-center">
+            <LoaderAlt size={22} className="animate-spin" /> 
+            {workspaceAlias ? loading : 'Get Started' }
+          </div> :
+            'Get Started'
+          }
         </button>
       </form>
 

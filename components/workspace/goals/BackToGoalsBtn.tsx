@@ -7,10 +7,10 @@ import Link from 'next/link'
 import React from 'react'
 
 const BackToGoalsBtn = () => {
-  const {contact} = useAppointmentContext()
+  const {contact,getWsUrl} = useAppointmentContext()
 
   return (
-    <Link href={`${urls.contacts}/${contact?.id}/goals`} className='bg-white border flex justify-center items-center h-8 w-8 rounded-full'>
+    <Link href={getWsUrl(`${urls.contacts}/${contact?.id}/goals`)} className='bg-white border flex justify-center items-center h-8 w-8 rounded-full'>
         <ArrowLeft size={18}/>
     </Link >  )
 }

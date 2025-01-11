@@ -6,15 +6,21 @@ import React, { useState } from "react";
 import { useRegistration } from "@/hooks/services/auth";
 import { LoaderAlt } from "styled-icons/boxicons-regular";
 
-const AppointmentSignupForm = () => {
+const AppointmentSignupForm = ({userEmail, role ,workspaceName ,workspaceAlias ,}:{ 
+  userEmail:string, 
+  role:string ,
+  workspaceName:string ,
+  workspaceAlias:string ,
+}) => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const { loading, register } = useRegistration();
   const [formData, setFormData] = useState({
-    email: "",
+    email: userEmail||"",
     password: "",
+    role,workspaceName,workspaceAlias
   });
-
+// console.log({userEmail, role ,workspaceName ,workspaceAlias}, formData)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -24,7 +30,6 @@ const AppointmentSignupForm = () => {
     e.preventDefault();
     await register(formData);
   }
-
   return (
     <div className="bg-white py-0 lg:py-[37px] px-3 lg:px-[42px] rounded-[8px] max-w-full lg:max-w-[542px] ">
       <div className="flex justify-center ">

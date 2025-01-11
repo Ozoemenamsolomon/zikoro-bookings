@@ -23,7 +23,7 @@ type PaginationProps = {
     const handleLastPage = () => onPageChange(totalPages);
   
     return (
-      <div className="flex gap-1 max-sm:text-sm justify-between items-center mt-4">
+      <div className="flex gap-1 max-sm:text-sm justify-center items-center mt-4">
         <button onClick={handleFirstPage} disabled={currentPage === 1} className="p-2 border_ bg-cms-faint rounded disabled:opacity-20">
           <ChevronsLeft className="h-5 w-5" />
         </button>

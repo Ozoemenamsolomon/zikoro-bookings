@@ -13,9 +13,15 @@ export async function GET(req: NextRequest) {
     const contactEmail = searchParams.get('contactEmail')!;
     const offset = Number(searchParams.get('offset')!);
     const limit = Number(searchParams.get('limit')!);
-    const ltToday = Number(searchParams.get('ltToday')!);
-    const gteToday = Number(searchParams.get('gteToday')!);
+    const ltToday = searchParams.get('ltToday');
+    const gteToday = searchParams.get('gteToday');
+    const workspaceId = searchParams.get('workspaceId');
 
+    if ( !workspaceId ) {
+      console.error("FETCHING CONTACT BOOKINGS: Missing required parameters: workspaceId")
+      return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
+    }
+// console.log({ltToday,gteToday, searchParams})
     try {
       let query = supabase
           .from('bookings')
@@ -25,6 +31,7 @@ export async function GET(req: NextRequest) {
           )
           .eq('createdBy', createdBy)
           .eq('participantEmail', contactEmail)
+          .eq('workspaceId', workspaceId)
           .range(offset, offset + limit - 1)
 
           if(ltToday){
@@ -36,7 +43,7 @@ export async function GET(req: NextRequest) {
 
           const {data:initialData}= await query
           const { data, count, error } = await query.order('appointmentDate', { ascending: false })
-          console.log(initialData?.[0]?.created_at)
+          console.log({initialData, data })
       if (error) {
         return NextResponse.json({data:null, error: error.message, count }, { status: 400 });
       }

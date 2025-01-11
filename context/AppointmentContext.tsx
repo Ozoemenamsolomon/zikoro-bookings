@@ -2,6 +2,8 @@
 
 import { Booking, BookingsContact, UserType } from '@/types/appointments';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import useUserStore from "@/store/globalUserStore";
+import { wsUrl, wsUrll } from '@/lib/wsUrl';
 
 export interface AppState {
   isLoading: boolean;
@@ -28,11 +30,14 @@ export interface AppState {
   setContacts:React.Dispatch<React.SetStateAction<BookingsContact[] | null >>;
   show: string, 
   setShow:React.Dispatch<React.SetStateAction<string>>;
+  teamMembers: {label:string,value:string}[], 
+  setTeamMembers:React.Dispatch<React.SetStateAction<{label:string,value:string}[]>>;
   searchTerm: string, 
   setSearchTerm:React.Dispatch<React.SetStateAction<string>>;
   activePath: string, 
   setActivePath:React.Dispatch<React.SetStateAction<string>>;
-
+  isOpen:boolean, setIsOpen:React.Dispatch<React.SetStateAction<boolean>>;
+  getWsUrl: (path:string) => string
 }
 
 export interface AppointmentContextProps extends AppState {
@@ -54,10 +59,18 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [selectedType, setselectedType] = useState<string>('single');
   const [slotCounts, setSlotCounts] = useState<{ [key: string]: number }|null>(null);
   const [selectedItem, setSelectedItem] = useState<any>();
+  const [teamMembers, setTeamMembers] = useState<{label:string,value:string}[]>([]);
   
   const [contact, setContact] = useState<BookingsContact | null>(null);
   const [contacts, setContacts] = useState<BookingsContact[] | null>(null);
   const [show, setShow] = useState<string>('links')
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+
+
+  const { currentWorkSpace } = useUserStore();
+  const workspaceParam = currentWorkSpace?.workspaceAlias ? `${currentWorkSpace.workspaceAlias}` : '';
+  
+  const getWsUrl = (path: string) =>  wsUrll(path,workspaceParam);
 
   const contextValue: AppointmentContextProps = {
     isLoading,setLoading,isfetching, setIsFetching,
@@ -70,6 +83,9 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
     selectedItem, setSelectedItem,
     contact, setContact, contacts, setContacts, show, setShow,
     searchTerm, setSearchTerm,activePath, setActivePath,
+    isOpen, setIsOpen,
+    getWsUrl,
+    teamMembers, setTeamMembers,
   };
 
   return (

@@ -1,9 +1,10 @@
 import { Moon } from '@/constants';
 import { timezones as Timezones } from '@/constants';
-import { AppointmentFormData,  } from '@/types/appointments';
+import { AppointmentFormData, AppointmentLink,  } from '@/types/appointments';
 import React, { useEffect, useState } from 'react';
 import { SelectInput } from './CustomSelect';
 import { format } from 'date-fns'; 
+import { ReactSelect } from '@/components/shared/ReactSelect';
 
 export const generateTimeOptions = () => {
   const times: string[] = [];
@@ -30,9 +31,10 @@ interface DateTimeScheduler {
     setFormData: any;
     formData: AppointmentFormData;
     errors?:AppointmentFormData;
+    setErrors?:any;
   }
 
-const DateTimeScheduler = ({setFormData,errors,formData}:DateTimeScheduler) => {
+const DateTimeScheduler = ({setFormData, setErrors, errors,formData}:DateTimeScheduler) => {
   useEffect(() => {
     formData?.timeDetails
   }, [formData?.timeDetails])
@@ -40,7 +42,7 @@ const DateTimeScheduler = ({setFormData,errors,formData}:DateTimeScheduler) => {
   const handleToggleDay = (day: string) => {
     setFormData({
       ...formData,
-      timeDetails: formData.timeDetails.map((schedule => (
+      timeDetails: formData.timeDetails.map(((schedule:any) => (
         schedule.day === day ? { ...schedule, enabled: !schedule.enabled } : schedule
       )))
     })
@@ -49,31 +51,41 @@ const DateTimeScheduler = ({setFormData,errors,formData}:DateTimeScheduler) => {
   const handleTimeChange = (day: string, type: "from" | "to", value: string) => {
     setFormData({
         ...formData,
-        timeDetails: formData.timeDetails.map(schedule => (
+        timeDetails: formData.timeDetails.map((schedule:any) => (
             schedule.day === day ? { ...schedule, [type]: value } : schedule
           ))
       })
   };
 
   const Unavailable = 0
-
+  const handleSelect = (name:string,value:any)=> {
+    setFormData&&setFormData((prev:AppointmentLink)=>{
+      return {
+        ...prev,
+        [name]:value
+      }
+    })
+  }
   return (
     <div className="w-full">
       <div className="pb-6">
         <label className="block text-lg font-medium text-gray-700 mb-2">Select Timezone</label>
-        <SelectInput 
+        <ReactSelect
+          name="timeZone"
           options={timezones}
-          name='timeZone'
-          error={errors?.timeZone}
           value={formData?.timeZone  }
-          // value={formData?.timeZone || timezones[12].value}
-          setFormData={setFormData}
+          onChange={handleSelect}
+          isClearable
+          placeholder="Select"
+          className="w-full h-12"
+          setError={setErrors}
+          error={errors?.timeZone}
         />
       </div>
       
-      <div className="grid grid-cols-1 gap-6">
-        {formData.timeDetails.map((schedule, idx) => (
-            <div key={idx}  className="grid grid-cols-3 gap-6 mb-2">
+      <div className="grid ">
+        {formData.timeDetails.map((schedule:any, idx:number) => (
+            <div key={idx}  className="grid sm:grid-cols-3 gap-y-2  gap-x-6 mb-4 sm:mb-2">
                 <div className="col-span-1 flex w-full gap-2 items-center">
                     <div
                         className={` flex-shrink-0 ${schedule.enabled ? 'bg-blue-600 ring-blue-600 ring-2 ' : 'bg-gray-300 ring-2 ring-gray-300'} mr- w-14 h-6 p-1.5  relative flex items-center  rounded-full  cursor-pointer `}

@@ -10,6 +10,12 @@ export const loginSchema = z.object({
     .string()
     .min(8, { message: "Password must be at least 8 characters" })
     .min(1, { message: "Password is required" }),
+  
+  role: z
+    .string(),
+  workspaceAlias: z
+    .string(),
+ 
 });
 
 export const onboardingSchema = z.object({

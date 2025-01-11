@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { FormProps } from '@/types/appointments';
 import { FlutterWaveIcon, Paystack, Stripe } from '@/constants';
-import { PlusCircle, XCircle } from 'lucide-react';
+import { MinusCircle, PlusCircle, XCircle } from 'lucide-react';
 import Image from 'next/image';
+import { Description } from '@radix-ui/react-dialog';
+import SwitchToggler from '../ui/SwitchToggler';
 
 const Payment: React.FC<FormProps> = ({
   formData,
@@ -45,19 +47,54 @@ const Payment: React.FC<FormProps> = ({
       <div className="">
         <p className="pb-2">Connect your preferred payment gateway</p>
         <div className="w-full py-3">
-          <div className="flex ">
-            {formData?.paymentGateway && gateway ? <div className="border-2 cursor-pointer flex items-center justify-center  py-3 px-8 rounded-md hover:shadow-md duration-300">
+          <div className="">
+            {formData?.paymentGateway && gateway ? 
+            <div className="flex">
+            <div className=" border-2 cursor-pointer  py-3 px-8 rounded-md hover:shadow-md duration-300">
               {gateway}
-            </div> : null}
+            </div></div> : null}
+            <small>Requires 5% charges</small>
           </div>
+
+          <div className="py-4 ">
+              {/* <p>Choose who should pay the 5% session value </p> */}
+              <div className="flex gap-2 pt-">
+                <div className="shrink-0">
+                  <SwitchToggler/>
+                </div>
+                <div className="">
+                  <h6 className="text-md ">Event attendees pay 5% processing fee?</h6>
+                  <small>When active, a 5% service charge is added to attendee payments. Disable to pay it from your event revenue.</small>
+                </div>
+              </div>
+              {/* <div className="flex gap-6 pt-2 justify-between">
+                {
+                  [
+                    {label:'Attendee',desc:'Attendee will be charged 5% of meeting value.'},
+                    {label:'Host',desc:'Host will be charged 5% of meeting value.'},
+                  ].map(({label,desc},i)=>{
+                    return (
+                      <div className="w-full cursor-pointer  " key={i}>
+                        <div className="flex text-center">
+                          <p className='border border-purple-300 hover:border-purple-500 rounded-md py-2 px-4'>{label}</p>
+                        </div>
+                        <small>{desc}</small>
+                      </div>
+                    )
+                  })
+                }
+                </div> */}
+            </div>
           {errors?.paymentGateway ? <p className="text-red-600 text-[12px] pt-1">{errors?.paymentGateway}</p> : null}
 
         </div>
         <p className="flex gap-4 items-center pb-4 cursor-pointer text-zikoroBlue" onClick={() => setDrop((curr) => !curr)}>
-          <PlusCircle className='text-zikoroBlue' size={20} />
+          {!drop ? 
+          <PlusCircle className='text-zikoroBlue' size={20} /> :
+          <MinusCircle className='text-zikoroBlue' size={20} /> }
           <span>Add payment method</span>
         </p>
-        <div className={`${drop ? 'max-h-screen' : 'max-h-0'} transform transition-all overflow-hidden duration-500 ease-in-out`}>
+        <div className={`${drop ? 'max-h-screen' : 'max-h-0'} opacity-40 transform transition-all overflow-hidden duration-500 ease-in-out`}>
           <div className="py-8 relative rounded-md shadow bg-white border px-20">
             <div className="grid grid-cols-2 w-full justify-center gap-4">
               <XCircle
@@ -68,8 +105,8 @@ const Payment: React.FC<FormProps> = ({
               {paymentGateways.map((gateway) => (
                 <div
                   key={gateway.name}
-                  onClick={() => handleSetFormData(gateway.name)}
-                  className={`${formData?.paymentGateway === gateway.name ? 'border-gray-400 border-2' : 'border-2'} cursor-pointer flex items-center justify-center w-full p-4 rounded-md hover:shadow-md duration-300`}
+                  // onClick={() => handleSetFormData(gateway.name)}
+                  className={`${formData?.paymentGateway === gateway.name ? 'border-gray-400 border-2' : 'border-2'} cursor-not-allowed flex items-center justify-center w-full p-4 rounded-md hover:shadow-md duration-300 `}
                 >
                   {gateway.component}
                 </div>

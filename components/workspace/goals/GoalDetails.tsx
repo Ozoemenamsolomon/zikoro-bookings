@@ -7,14 +7,17 @@ import EditGoalBtn from './EditGoalBtn'
 import BackToGoalsBtn from './BackToGoalsBtn'
 import { fetchGoalsByGoalId } from '@/lib/server/goals'
 import { redirect } from 'next/navigation'
-import { urls } from '@/constants'
 
-const GoalDetails = async ({goalId}:{goalId:string}) => {
+const GoalDetails = async ({params}:{params:{workspaceAlias:string,goalId:string, contactId:string }}) => {
+  
+  const {goalId, workspaceAlias ,contactId} = await params
   const {goal, error} = await fetchGoalsByGoalId(goalId)
-  if (!goal ) redirect(urls.contactsGoals)
+
+  if (!goal ) redirect(`/ws/${workspaceAlias}/contacts/${contactId}/goals`)
+
   return (
-    <section className='bg-white sm:p-3 '>
-        <section className="bg-baseBg sm:border sm:rounded-md sm:p-3 py-6 min-h-screen w-full space-y-6">
+    <section className='bg-white '>
+        <section className="bg-baseBg  py-6   sm:p-6 min-h-screen w-full space-y-6">
             
             <header className="flex justify-between gap-3 pb-3 border-b w-full">
                 <BackToGoalsBtn/>

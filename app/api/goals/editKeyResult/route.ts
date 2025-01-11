@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
       }
     const supabase = createClient()
-    const {keyResultData,timeLineData} = await req.json()
+    const {keyResultData} = await req.json()
     // console.log({keyResultData,timeLineData} )
     try {
       const { data, error } = await supabase

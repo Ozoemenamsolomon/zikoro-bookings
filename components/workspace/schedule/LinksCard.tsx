@@ -7,8 +7,10 @@ import React, { useEffect, useState } from 'react'
 import Share from './Share'
 import CopyLinkButton from '../ui/CopyLinkButton'
 import {toast} from 'react-toastify'
+import { useAppointmentContext } from '@/context/AppointmentContext'
 
 const LinksCard = ({data,}:{data:AppointmentLink|any}) => {
+    const {getWsUrl} = useAppointmentContext()
     const [item, setItem] = useState<AppointmentLink>(data)
     const [loading, setLoading] = useState(false) 
     const [isShare, setIsShare] = useState<number|null|bigint>(null)
@@ -57,11 +59,11 @@ const LinksCard = ({data,}:{data:AppointmentLink|any}) => {
             backgroundColor: !isDisabled ? backgroundColor : '',
             borderColor: !isDisabled ?item?.brandColour! : '',
         }}
-        className={`w-full p-4 border-2 space-y-2 rounded-lg h-full ${item?.statusOn ? '':'text-gray-300'} `}
+        className={` max-[520px]:max-w-80 w-full p-4 border-2 space-y-2 rounded-lg h-full ${item?.statusOn ? '':'text-gray-300'} `}
         >
         <div className="flex  justify-between gap-6 items-center">
             <h4 className="text-lg font-medium">{item?.appointmentName}</h4>
-            <Link className={item?.statusOn ? '':'opacity-20'} aria-disabled={item?.statusOn} href={`${urls.edit}?alias=${item?.id}&appointmentAlias=${item?.appointmentAlias}`}><EditPenBoxIcon/> </Link >
+            <Link className={item?.statusOn ? '':'opacity-20'} aria-disabled={item?.statusOn} href={`${getWsUrl(urls.edit)}?appointmentAlias=${item?.appointmentAlias}`}><EditPenBoxIcon/> </Link >
         </div>
 
         <div className="">
@@ -91,19 +93,16 @@ const LinksCard = ({data,}:{data:AppointmentLink|any}) => {
 
       <div className="flex   justify-between gap-6 items-center">
         <CopyLinkButton 
-            link={`${linkorigin}/book-appointment/${item?.id}/?alias=${item?.appointmentAlias}`}
+            link={`${linkorigin}/book-appointment/${item?.appointmentAlias}`}
             // link={`https://zikoro.com/booking/${item?.appointmentAlias}`}
         >
             <button  disabled={!item?.statusOn} type='button' className="underline">Copy link</button>
         </CopyLinkButton>
 
-            <button type='button' disabled={!item?.statusOn} onClick={()=>{setIsShare(data?.id!)}} className="flex  gap-1 items-center">
-                <p className="">Share</p>
-                <div className={item?.statusOn ? '':'opacity-20'}><ShareIcon/> </div>
-            </button>
+        <Share data={item}  />
+            
         </div>
 
-        <Share data={data} idx={data?.id!} isShare={isShare} setIsShare={setIsShare}/>
         
     </div>
   )

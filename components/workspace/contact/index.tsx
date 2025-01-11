@@ -1,23 +1,28 @@
 import React, { Suspense } from "react";
 import ContactList from "./ContactList";
 import ContactNav from "./ContactNav";
-import { BookingsContact } from "@/types/appointments";
 import EmptyContact from "./EmptyContact";
 import { fetchContacts } from "@/lib/server/contacts";
 import Loading from "@/components/shared/Loader";
+import ContactWrapper from "./ContactWrapper";
+import ContactName from "./ContactName";
+import { BookingsContact } from "@/types/appointments";
 
 type ContactProps = {
   children: React.ReactNode;
   searchquery?: string;
+  contactId?: string;
+  data: BookingsContact[] | null;
+  count: number;
 };
 
-const ContactLayout: React.FC<ContactProps> = async ({ children,  }) => {
-  const {data,count,error} = await fetchContacts()
+const ContactLayout: React.FC<ContactProps> = async ({ children,searchquery, data,count, contactId }) => {
   // console.log({data,count,error})
   return (
     <div className=" ">
-      <h4 className="text-lg font-semibold pb-4">Contacts</h4>
-      <div className="sm:border rounded-lg bg-white ">
+      
+      <ContactName/>
+      <div className="sm:border rounded-lg bg-white verflow-auto min-h-screen">
           {
             count === 0  ?
             <EmptyContact/>
@@ -27,16 +32,14 @@ const ContactLayout: React.FC<ContactProps> = async ({ children,  }) => {
                 <ContactNav/>
               </div>
 
-              <div className="flex flex-col md:flex-row md:divide-x">
-                <Suspense fallback={<div className="pt-20 w-full flex justify-center"><Loading/></div>}>
-                  <ContactList fetchedcontacts={data} />
-                </Suspense>
-
-                  <div className="w-full md:w-3/4 h-full">
-                      {children}
-                  </div>
-
-              </div>
+              <ContactWrapper 
+                contactItems={
+                  <Suspense fallback={<div className="pt-20 w-full flex justify-center"><Loading/></div>}>
+                    <ContactList searchquery={searchquery} fetchedcontacts={data} contactId={contactId} />
+                  </Suspense>
+                }>
+                  {children}
+              </ContactWrapper>
             </>
           }
       </div>

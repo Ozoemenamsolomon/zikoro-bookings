@@ -7,16 +7,17 @@ export async function DELETE(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get('userId');
   const id = searchParams.get('id');
+  const workspaceId = searchParams.get('workspaceId')!;
 
   if (!userId || !id) {
+    console.error("FETCHUNAVAILABILITY: Missing required parameters: userId || id")
     return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
   }
-
+ 
   try {
     const { data, error } = await supabase
       .from('appointmentUnavailability')
       .delete()
-      .eq("createdBy", userId)
       .eq("id", id);
 
     if (error) {

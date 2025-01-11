@@ -25,7 +25,7 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ data:null, error: result?.error.message }, { status: 400 });
     }
 
-    console.log('Updating appointmentLink result:', result)
+    // console.log('Updating appointmentLink result:', result)
     return NextResponse.json({ data:result?.data, error:result.error }, { status: 200 });
   } catch (error) {
     console.error("Unhandled appointmentLink error:", error);

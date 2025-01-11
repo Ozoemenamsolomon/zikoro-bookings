@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server"
 import { endOfMonth, endOfWeek, endOfYear, startOfMonth, startOfWeek, startOfYear, subMonths, subWeeks, subYears } from "date-fns";
 import { getUserData } from ".";
 import { Booking } from "@/types/appointments";
+import { createADMINClient } from "@/utils/supabase/no-caching";
 
 interface FetchBookingsResult {
   curList:Booking[], prevList:Booking[],
@@ -10,10 +11,13 @@ interface FetchBookingsResult {
 }
 
 export const fetchAnalytics = async (
- {type='weekly',userId}: {type?: string, userId?:string} 
+ {type='weekly',userId, workspaceId}: {type?: string, userId?:string, workspaceId:string} 
 ): Promise<FetchBookingsResult> => {
-    const supabase = createClient()
-
+    const supabase = createADMINClient()
+    if ( !workspaceId ) {
+      console.error(" ANALYTICS ERROR: workspaceId missing")
+      throw new Error('workspaceId is missing');
+    }
     try {
       let currentStart, currentEnd, previousStart, previousEnd, id;
 
@@ -47,6 +51,7 @@ export const fetchAnalytics = async (
       .from('bookings')
       .select('*, appointmentLinkId(id,appointmentName,brandColour,amount, locationDetails)')
       .eq("createdBy", id)
+      .eq("workspaceId", workspaceId)
       .gte('appointmentDate', currentStart)
       .lte('appointmentDate', currentEnd)
       // .order("appointmentDate", { ascending: true })
@@ -58,6 +63,8 @@ export const fetchAnalytics = async (
     const { data: prevList, error: prevErr } = await supabase
       .from('bookings')
       .select('*, appointmentLinkId(id,appointmentName,brandColour,amount, locationDetails)')
+      .eq("createdBy", id)
+      .eq("workspaceId", workspaceId)
       .gte('appointmentDate', previousStart)
       .lte('appointmentDate', previousEnd);
       // .order("appointmentDate", { ascending: true })

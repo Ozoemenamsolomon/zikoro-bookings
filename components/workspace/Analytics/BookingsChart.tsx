@@ -141,6 +141,8 @@ export const BookingsChart: React.FC<SectionOneProps> = ({
             margin={{
               left: 12,
               right: 12,
+              top:12,
+              bottom:12,
             }}
           >
             <CartesianGrid vertical={false} />
@@ -160,9 +162,10 @@ export const BookingsChart: React.FC<SectionOneProps> = ({
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
             />
+            {/* 'basis' | 'basisClosed' | 'basisOpen' | 'bumpX' | 'bumpY' | 'bump' | 'linear' | 'linearClosed' | 'natural' | 'monotoneX' | 'monotoneY' | 'monotone' | 'step' | 'stepBefore' | 'stepAfter' */}
             <Area
               dataKey="value"
-              type="natural"
+              type="bumpX"
               fill="hsla(252, 100%, 97%, 1)"
               fillOpacity={0.4}
               stroke="hsla(231, 100%, 40%, 1)"
