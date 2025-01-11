@@ -24,7 +24,7 @@ interface CustomSelectProps {
   label?: string;
   className?: string;
   error?: string;
-  value: string;
+  value?: string;
   name: string;
   noOptionsLabel?:string;
   placeholder?: string;

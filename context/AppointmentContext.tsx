@@ -30,6 +30,8 @@ export interface AppState {
   setContacts:React.Dispatch<React.SetStateAction<BookingsContact[] | null >>;
   show: string, 
   setShow:React.Dispatch<React.SetStateAction<string>>;
+  teamMembers: {label:string,value:string}[], 
+  setTeamMembers:React.Dispatch<React.SetStateAction<{label:string,value:string}[]>>;
   searchTerm: string, 
   setSearchTerm:React.Dispatch<React.SetStateAction<string>>;
   activePath: string, 
@@ -57,6 +59,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [selectedType, setselectedType] = useState<string>('single');
   const [slotCounts, setSlotCounts] = useState<{ [key: string]: number }|null>(null);
   const [selectedItem, setSelectedItem] = useState<any>();
+  const [teamMembers, setTeamMembers] = useState<{label:string,value:string}[]>([]);
   
   const [contact, setContact] = useState<BookingsContact | null>(null);
   const [contacts, setContacts] = useState<BookingsContact[] | null>(null);
@@ -82,6 +85,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
     searchTerm, setSearchTerm,activePath, setActivePath,
     isOpen, setIsOpen,
     getWsUrl,
+    teamMembers, setTeamMembers,
   };
 
   return (

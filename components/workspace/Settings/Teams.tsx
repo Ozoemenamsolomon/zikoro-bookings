@@ -13,7 +13,7 @@ const Teams = ({ teamMembers }: TeamsProps) => {
   return (
     <section className="sm:py-8 sm:px-8 space-y-5">
       {/* Invite Team Members Section */}
-      <div className="flex justify-end w-full border-b pb-5">
+      <div className="flex justify-end w-full ">
         <InviteTeams />
       </div>
 

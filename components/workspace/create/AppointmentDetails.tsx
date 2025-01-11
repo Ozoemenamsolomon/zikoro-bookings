@@ -145,24 +145,25 @@ const AppointmentDetails: React.FC<FormProps> = ({
               />
             </div>
 
-            <div className="flex gap-4 justify-between items-center">
-            <div className="flex-1">
+            <div className="flex   gap-4 justify-between items-center">
+            <div  className="flex-1">
               <h5 className="label">Make this a paid appointment</h5>
               <p className="text-sm text-gray-600">Guests will be charged to book this appointment</p>
+              <small className='italic'>Coming soon</small>
             </div>
             <div
                 className={` flex-shrink-0 ${formData?.isPaidAppointment ? 'bg-blue-600 ring-blue-600 ring-2 ' : 'bg-gray-300 ring-2 ring-gray-300'} mr- w-14 h-6 p-1.5  relative flex items-center  rounded-full  cursor-pointer `}
-                onClick={()=>{
-                  setFormData && setFormData((prev:AppointmentFormData)=>{
-                    return {
-                      ...prev,
-                      isPaidAppointment: !prev.isPaidAppointment,
-                      paymentGateway: prev.isPaidAppointment ? '' : 'Zikoro manage',
-                      curency: '',
-                      amount: null,
-                    }
-                  })
-                  }}
+                // onClick={()=>{
+                //   setFormData && setFormData((prev:AppointmentFormData)=>{
+                //     return {
+                //       ...prev,
+                //       isPaidAppointment: !prev.isPaidAppointment,
+                //       paymentGateway: prev.isPaidAppointment ? '' : 'Zikoro manage',
+                //       curency: '',
+                //       amount: null,
+                //     }
+                //   })
+                //   }}
               >   
                 <div className="flex w-full justify-between font-semibold text-[9px]"> <p className='text-white'>ON</p><p className='text-gray-50'>OFF</p>  </div>
                 <div className={`bg-white absolute inset-0 w-7 h-6 flex-shrink-0 rounded-full transition-transform duration-200 transform ${formData?.isPaidAppointment ? 'translate-x-7' : ''}`}></div>

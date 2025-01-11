@@ -14,7 +14,7 @@ const SettingsMain:React.FC<MainProp> = ({className, children}) => {
   return (
     <main className={cn("w-full flex-1 min-h-screen md:flex gap-0 bg-white border rounded-lg",className)}>
         <Aside 
-            className='shrink-0 bg-white z-10 border-r sticky top-0 md:grid md:py-8 md:px-4 p-2 overflow-auto hide-scrollbar'
+            className='shrink-0 bg-white z-10 border-r sticky top-0 md:flex md:flex-col md:h-screen md:py-8 md:px-4 p-2 overflow-auto hide-scrollbar'
         />
         <Article className='flex-1 h-full p-6'>
             {children}

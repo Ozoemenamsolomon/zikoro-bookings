@@ -32,12 +32,12 @@ const asidelinks: AsideLink[] = [
         path: "/settings/profile",
     // roles: staff,
     },
-    {
-        label: "Links",
-        icon: <Link2 size={20}/>,
-        path: "/settings/links",
-        // roles: staff,
-    },
+    // {
+    //     label: "Links",
+    //     icon: <Link2 size={20}/>,
+    //     path: "/settings/links",
+    //     // roles: staff,
+    // },
     {
         label: "Teams",
         icon: <Users2 size={20}/>,
@@ -52,7 +52,7 @@ const asidelinks: AsideLink[] = [
     const {getWsUrl} = useAppointmentContext()
 
   return (
-    <aside  className={cn("h-full max-md:border-b space-y-2 text-gray-600",className)}>
+    <aside  className={cn("  max-md:border-b space-y-2   text-gray-600",className)}>
         <div className="max-md:hidden">
             <button onClick={()=>setExpanded(curr=>!curr)} className=" bg-slate-50 hover:bg-gradient-to-r hover:from-slate-200  hover:to-purple-200 hover:text-zikoroBlue duration-300 group
             p-2 rounded-md   ">
@@ -60,7 +60,7 @@ const asidelinks: AsideLink[] = [
             </button>
         </div>
 
-        <ul className="md:flex-1 flex md:flex-col  gap-2 ">
+        <ul className="md:flex-1 flex md:flex-col  flex-start gap-2 ">
             {
                 asidelinks?.map(({icon,label,path,alert,roles},idx) => {
                     let isActive = pathname.includes(path)

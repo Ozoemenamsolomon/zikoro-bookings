@@ -144,8 +144,6 @@ export const fetchTeamMembers = async (
   workspaceAlias: string,
 ) => {
     const supabase = createADMINClient()
-    console.log(workspaceAlias)
-
     try {
     const { data, error }  = await supabase
       .from('bookingTeams')
@@ -154,7 +152,7 @@ export const fetchTeamMembers = async (
       // .neq('status','ARCHIVED')
       .order('created_at', { ascending: false })
 
-    // console.error({ data, error });
+    console.error({ data, error });
     return { data, error: error?.message||null};
   } catch (error) {
     console.error('bookingTeams Server error:', error);
