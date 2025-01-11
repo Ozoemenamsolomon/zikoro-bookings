@@ -10,9 +10,10 @@ import { toast } from 'react-toastify'
 
 type UpdateKeyResultStatusProps = {
   keyResult: KeyResult
+  label?:string
 }
 
-const UpdateKeyResultStatus = ({ keyResult }: UpdateKeyResultStatusProps) => {
+const UpdateKeyResultStatus = ({ keyResult , label}: UpdateKeyResultStatusProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [status, setStatus] = useState<string>(keyResult?.status || '')
   const [isDeletable, setIsDeletable] = useState(true) 
@@ -62,6 +63,8 @@ const UpdateKeyResultStatus = ({ keyResult }: UpdateKeyResultStatusProps) => {
         disabled={!isDeletable} // Disable trigger based on the condition
         className="max-w-80"
         trigerBtn={
+          label ?
+          <button className=" flex items-center gap-1 flex-nowrap  whitespace-nowrap">{label}  </button> : 
           <button className="underline flex items-center gap-1 flex-nowrap text-zikoroBlue whitespace-nowrap">{keyResult?.status}<Edit size={20} className='text-gray-700'/></button>
         }
       >

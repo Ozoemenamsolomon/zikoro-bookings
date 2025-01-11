@@ -10,7 +10,7 @@ import {
   PolarRadiusAxis,
   Label,
 } from "recharts"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+ 
 import { ChartContainer } from "@/components/ui/chart"
 
 const ChartGoal = ({goal}:{goal:Goal}) => {
@@ -58,7 +58,7 @@ const ChartGoal = ({goal}:{goal:Goal}) => {
     }, [goal])
     // console.log({chartData})
   return (
-    <div className="bg-baseBg w-full border rounded-md">
+    <div className="  w-full  ">
     {
     loading ?
         <div className="py-20 flex justify-center">

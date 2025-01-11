@@ -9,7 +9,7 @@ import { Outline } from 'styled-icons/boxicons-regular';
 import { ChevronRight } from 'lucide-react';
 
 const ContactNav = () => {
-  const {contact,activePath,isOpen, setIsOpen, setActivePath} = useAppointmentContext()
+  const {contact,activePath, getWsUrl, setActivePath} = useAppointmentContext()
   return (
     <div className="w-full sticky top-0 overflow-auto no-scrollbar flex gap-3 items-center px-4 md:px-6 py-3 border-b ">
 
@@ -21,7 +21,7 @@ const ContactNav = () => {
         {contactNav.map(({ label, link }) => (
         <Link
             key={label}
-            href={`${urls.contacts}/${contact?.id}/${link}`}
+            href={getWsUrl(`${urls.contacts}/${contact?.id}/${link}`)}
             onClick={()=>setActivePath(link)}
             className={`px-4 py-1 rounded hover:ring hover:ring-gray-100 duration-300 ${
             link === activePath ? "text-basePrimary" : ""

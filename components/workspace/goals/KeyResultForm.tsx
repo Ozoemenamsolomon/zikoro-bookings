@@ -3,27 +3,26 @@
 import { CenterModal } from '@/components/shared/CenterModal'
 import React, { useCallback, useEffect, useState } from 'react'
 import CustomInput from '../ui/CustomInput'
-import {  useGoalContext } from '@/context/GoalContext'
 import { CustomSelect } from '@/components/shared/CustomSelect'
-import { DatePicker } from '../ui/DatePicker'
 import { Button } from '@/components/ui/button'
 import ValueMetrics from './ValueMetrics'
-import { LikeIcon, ListView, OneTwoThree, urls } from '@/constants'
+import {  OneTwoThree, urls } from '@/constants'
 import { PostRequest } from '@/utils/api'
 import { toast } from 'react-toastify'
 import { useRouter } from 'next/navigation'
 import { useAppointmentContext } from '@/context/AppointmentContext'
 import useUserStore from '@/store/globalUserStore'
-import { revalidatePath } from 'next/cache'
-import { Goal, KeyResult } from '@/types/goal'
+import { Goal } from '@/types/goal'
 import { GoalDatePicker } from './GoalDatePicker'
 import { isAfter, isBefore, startOfDay, startOfToday } from 'date-fns'
+import { keyresultStatuses } from '@/constants/status'
+import { useGoalContext } from '@/context/GoalContext'
 
 const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, mode?:string}) => {
   const {push,refresh} = useRouter()
-  const {user} = useUserStore()
-  const {contact} =useAppointmentContext()
-  const {keyResultData, setKeyResultData, goalData, setGoalData, isSubmitting, setIsSubmitting,} = useGoalContext()
+
+  const {contact,getWsUrl,} =useAppointmentContext()
+  const {keyResultData, setKeyResultData, goalData, setGoalData, isSubmitting, setIsSubmitting, teamMembers} = useGoalContext()
 
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({})
   const [success, setSuccess] = useState<string>('')
@@ -32,17 +31,6 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
     if(goal) setGoalData(goal)
   }, [goal])
   
-  const ownerOptions = [
-    { value:user?.id,  
-      label: `${user?.firstName} ${user?.lastName}` },
-    { value: 122,  
-      label: 'Ebuka Johnson' },
-    { value:102,
-      label: 'Smart Udoka' },
-    { value:87, 
-      label: 'Bodu Joel' },
-  ]
-
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     // console.log({name,mode})
@@ -58,12 +46,16 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
     setErrors(prev => ({ ...prev, [field]: '' }))
   };
 
-  const handleSelectChange = (value: number) => {
-    const selectedOption = ownerOptions.find(option => option.value === Number(value));
+  const handleSelectChange = (value: string) => {
+    const selectedOption = teamMembers.find(option => option.value === value);
     if (!selectedOption) {
       return;
     }
         setKeyResultData((prevData) => ({ ...prevData, keyResultOwner: Number(selectedOption?.value!) }));
+  };
+
+  const selectStatus= (value: string) => {
+      setKeyResultData((prevData) => ({ ...prevData, status:value}));
   };
 
    const validateForm = () => {
@@ -98,7 +90,6 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
                             ...keyResultData,
                             goalId:goalData.id,
                             organization: goalData.organization,
-                            status: 'Not-started',
                             createdBy: goalData.createdBy,
                         },
                     }
@@ -128,11 +119,11 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
                 if (error) {
                     setErrors({general:error})
                 } else {
-                    toast.success('Goal created')
-                    setSuccess('Goal created successfully')
+                    toast.success('Goal created successfully')
+                    // setSuccess('Goal created successfully')
                     setKeyResultData({})
                     setGoalData({})
-                    push(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`)
+                    push(getWsUrl(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`))
                 }
             }
         } catch (error) {
@@ -142,24 +133,24 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
         }
       }
 
-      const isStartDayDisabled = (day: Date) => {
-        // Disable days before today
-        const startOfDayToCheck = startOfDay(day);
-        if (isBefore(startOfDayToCheck, startOfToday())) {
-          return true
+    const isStartDayDisabled = (day: Date) => {
+    // Disable days before today
+    const startOfDayToCheck = startOfDay(day);
+    if (isBefore(startOfDayToCheck, startOfToday())) {
+        return true
+    }
+    if (goalData?.startDate && 
+        isBefore(startOfDayToCheck, startOfDay(goalData.startDate!))) {
+        return true
         }
-        if (goalData?.startDate && 
-            isBefore(startOfDayToCheck, startOfDay(goalData.startDate!))) {
-            return true
-          }
-          if (goalData?.endDate && 
-            isAfter(startOfDayToCheck, startOfDay(goalData.endDate!))) {
-            return true
-          }
-         return false  
-        };
-  
-      const isEndDayDisabled = (day: Date) => {
+        if (goalData?.endDate && 
+        isAfter(startOfDayToCheck, startOfDay(goalData.endDate!))) {
+        return true
+        }
+        return false  
+    };
+
+    const isEndDayDisabled = (day: Date) => {
         // Disable days before today
         const startOfDayToCheck = startOfDay(day);
         if (isBefore(startOfDayToCheck, startOfToday())) {
@@ -182,7 +173,7 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
 
   return (
     <CenterModal
-        className='rounded-md bg-white max-w-2xl w-full px-4 py-8 overflow-auto sm:max-h-[95vh] hide-scrollbar'
+        className='rounded-md max-w-2xl w-full px-4 py-8 overflow-auto sm:max-h-[95vh] hide-scrollbar'
         disabled={!isActive}
         trigerBtn={
             <button
@@ -225,12 +216,14 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
 
             {/* Owner */}
             <CustomSelect
+                name='keyResultOwner'
                 label="Owner"
                 placeholder="Select an owner"
-                options={ownerOptions}
+                options={teamMembers}
                 error={errors?.keyResultOwner!}
-                value={keyResultData?.keyResultOwner || ''}
+                value={String(keyResultData?.keyResultOwner ? keyResultData?.keyResultOwner  : '' ) }
                 onChange={handleSelectChange}
+                isRequired
             />
             <div className="flex flex-col sm:flex-row items-center w-full gap-3">
                 <GoalDatePicker
@@ -289,11 +282,22 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
                     
                 </div>
             </div>
-
+            {/* measurementType:'value', */}
             {
-                keyResultData?.measurementType==='value' &&
+                // keyResultData?.measurementType==='value' &&
                 <ValueMetrics keyResultData={keyResultData} handleChange={handleChange} errors={errors}/>
             }
+
+            <CustomSelect
+                label="Status"
+                name="status"
+                placeholder="Select a status"
+                options={keyresultStatuses}
+                error={errors?.status!}
+                value={keyResultData?.status || ''}
+                onChange={selectStatus}
+                isRequired
+            />
 
             <div className=" w-full pt-4 flex flex-col items-center">
                 {errors?.general && <small className="text-[12px] text-center text-red-600">{errors.general}</small>}

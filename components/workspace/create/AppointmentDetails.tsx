@@ -33,6 +33,14 @@ const AppointmentDetails: React.FC<FormProps> = ({
         [name]: numericValue,
       }));
   };
+  const handleSelect = (name:string,value:any)=> {
+    setFormData&&setFormData((prev)=>{
+      return {
+        ...prev,
+        [name]:value
+      }
+    })
+  }
   return (
     <div className=" space-y-6">
       <div className='flex gap-3 items-end'>
@@ -51,7 +59,7 @@ const AppointmentDetails: React.FC<FormProps> = ({
       </div>
 
       <div>
-        <p className='label'>Duration in minutes</p>
+        <p className='label'>Duration in minutes (Multiples of 5)</p>
         <CustomCreatableSelect
             name="duration"
             options={[
@@ -137,24 +145,25 @@ const AppointmentDetails: React.FC<FormProps> = ({
               />
             </div>
 
-            <div className="flex gap-4 justify-between items-center">
-            <div className="flex-1">
+            <div className="flex   gap-4 justify-between items-center">
+            <div  className="flex-1">
               <h5 className="label">Make this a paid appointment</h5>
               <p className="text-sm text-gray-600">Guests will be charged to book this appointment</p>
+              <small className='italic'>Coming soon</small>
             </div>
             <div
                 className={` flex-shrink-0 ${formData?.isPaidAppointment ? 'bg-blue-600 ring-blue-600 ring-2 ' : 'bg-gray-300 ring-2 ring-gray-300'} mr- w-14 h-6 p-1.5  relative flex items-center  rounded-full  cursor-pointer `}
-                onClick={()=>{
-                  setFormData && setFormData((prev:AppointmentFormData)=>{
-                    return {
-                      ...prev,
-                      isPaidAppointment: !prev.isPaidAppointment,
-                      paymentGateway: prev.isPaidAppointment ? '' : 'Zikoro manage',
-                      curency: '',
-                      amount: null,
-                    }
-                  })
-                  }}
+                // onClick={()=>{
+                //   setFormData && setFormData((prev:AppointmentFormData)=>{
+                //     return {
+                //       ...prev,
+                //       isPaidAppointment: !prev.isPaidAppointment,
+                //       paymentGateway: prev.isPaidAppointment ? '' : 'Zikoro manage',
+                //       curency: '',
+                //       amount: null,
+                //     }
+                //   })
+                //   }}
               >   
                 <div className="flex w-full justify-between font-semibold text-[9px]"> <p className='text-white'>ON</p><p className='text-gray-50'>OFF</p>  </div>
                 <div className={`bg-white absolute inset-0 w-7 h-6 flex-shrink-0 rounded-full transition-transform duration-200 transform ${formData?.isPaidAppointment ? 'translate-x-7' : ''}`}></div>
@@ -164,23 +173,24 @@ const AppointmentDetails: React.FC<FormProps> = ({
             <div className={`${formData?.isPaidAppointment ? 'max-h-screen visible':'max-h-0 invisible overflow-hidden'}  relative z-30 transform  transition-all duration-300  `}>
               <p className='pb-2 label'>Set curency and pricing</p>
               <div className="flex gap-8 items-center">
-                  
-                  <SelectInput
-                    name='curency'
-                    value={formData?.curency || ''}
-                    options={[
-                      {label:'USD',value:'USD'},
-                      {label:'CAD',value:'CAD'},
-                      {label:'EUR',value:'EUR'},
-                      {label:'NGN',value:'NGN'},
-                      {label:'AUD',value:'AUD'},
-                    ]}
-                    setFormData={setFormData!}
-                    placeholder='Select'
-                    className='w-44 z-50 '
-                    setError={setErrors}
-                    error={errors?.currency }
-                  />
+                   <ReactSelect
+                      name="curency"
+                      options={[
+                        {label:'USD',value:'USD'},
+                        {label:'CAD',value:'CAD'},
+                        {label:'EUR',value:'EUR'},
+                        {label:'NGN',value:'NGN'},
+                        {label:'AUD',value:'AUD'},
+                      ]}
+                      value={formData?.curency || ''}
+                      onChange={handleSelect}
+                      isClearable
+                      placeholder="Select"
+                      className="w-44 h-12"
+                      setError={setErrors}
+                      error={errors?.currency}
+                    />
+ 
                   <CustomInput
                     name='amount'
                     value={formData?.amount || ''}

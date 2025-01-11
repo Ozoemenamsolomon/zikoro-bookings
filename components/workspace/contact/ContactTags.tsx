@@ -9,8 +9,8 @@ import { PostRequest } from '@/utils/api'
 
 const ContactTags = () => {
     const {contact, setContact,contacts, setContacts} = useAppointmentContext()
-    const {user} = useUserStore()
- 
+    const { user,currentWorkSpace } = useUserStore()
+    const workspaceId = currentWorkSpace?.workspaceAlias
 
     const [tags, setTags] = useState<{tag:string}[]>([])
  
@@ -86,14 +86,14 @@ const ContactTags = () => {
         setIsDisabled(false);
       };
 
-      const insertContactTags  = async () => {
+    const insertContactTags  = async () => {
         try {
             setLoading("updating");
             const { data, error } = await PostRequest({
                 url: "/api/bookingsContact/updateContact",
                 body: { tags: contactTags, id: contact?.id },
             });
-    
+    // console.log({data,error})
             if (!error) {
                 setContact(data);
                 setContacts((prev) =>
@@ -110,33 +110,10 @@ const ContactTags = () => {
             setLoading("");
         }
     };
-    
-    const insertContactTag = async () => {
-        try {
-            setLoading('updating')
-        // inserting/updating contact tags
-        const {data, error} = await PostRequest({
-            url:'/api/bookingsContact/updateContact',
-            body:{tags:contactTags, id:contact?.id}})
-            
-            if(!error) {
-                setContact(data)
-                let list = contacts?.map((item)=>{
-                    console.log({checking:item?.id===contact?.id, data })
-                    return item?.id===contact?.id ? data : item
-                })
-                setContacts(list!)
-            }
-        } catch (error) {
-            console.log(error)
-        } finally {
-            setLoading('')
-        }
-    }
 
-    useEffect(() => {
-      if(contacts)console.log({contacts})
-    }, [contacts])
+    // useEffect(() => {
+    //   if(contacts) console.log({contacts})
+    // }, [contacts])
     
 
     const deleteTag = useCallback(async (tagToDelete: string) => {

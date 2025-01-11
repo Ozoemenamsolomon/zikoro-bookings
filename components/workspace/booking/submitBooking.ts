@@ -55,7 +55,7 @@ export const submitBooking = async ({
     }
 
     delete newBookingData?.['categoryNote']
-
+// console.log({newBookingData})
     try {
         const response = await fetch('/api/bookings/insert', {
             method: 'POST',
@@ -66,6 +66,7 @@ export const submitBooking = async ({
         });
         
         const result = await response.json();
+// console.log({result})
        
         if (response.ok) {
             bookingSuccess=true

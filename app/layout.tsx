@@ -3,6 +3,7 @@ import "./globals.css";
 import { montserrat } from "../utils/fonts";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { AppointmentProvider } from "@/context/AppointmentContext";
 
 export const metadata: Metadata = {
   metadataBase: new URL(`https://www.bookings.zikoro.com`),
@@ -50,8 +51,10 @@ export default function RootLayout({
       <body
         className={`${montserrat.className}  antialiased`}
         >
-        <ToastContainer />
-        {children}
+        <AppointmentProvider> 
+          <ToastContainer />
+          {children}
+        </AppointmentProvider>
       </body>
     </html>
   )

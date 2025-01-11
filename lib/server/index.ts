@@ -100,7 +100,7 @@ export const fetchAllData = async (table: string, orderBy?: string, start:number
 
   export const deleteRow = async (table: string,  column: string, value: any, log?:string): Promise<{ status: number; statusText: string; }> => {
     const supabase = createClient();
-    console.log({table, column,value, log})
+    // console.log({table, column,value, log})
     
     const {status,statusText} = await supabase 
         .from(table)

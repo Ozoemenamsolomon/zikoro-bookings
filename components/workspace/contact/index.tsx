@@ -1,20 +1,22 @@
 import React, { Suspense } from "react";
 import ContactList from "./ContactList";
 import ContactNav from "./ContactNav";
-import { BookingsContact } from "@/types/appointments";
 import EmptyContact from "./EmptyContact";
 import { fetchContacts } from "@/lib/server/contacts";
 import Loading from "@/components/shared/Loader";
 import ContactWrapper from "./ContactWrapper";
 import ContactName from "./ContactName";
+import { BookingsContact } from "@/types/appointments";
 
 type ContactProps = {
   children: React.ReactNode;
   searchquery?: string;
+  contactId?: string;
+  data: BookingsContact[] | null;
+  count: number;
 };
 
-const ContactLayout: React.FC<ContactProps> = async ({ children,  }) => {
-  const {data,count,error} = await fetchContacts()
+const ContactLayout: React.FC<ContactProps> = async ({ children,searchquery, data,count, contactId }) => {
   // console.log({data,count,error})
   return (
     <div className=" ">
@@ -33,7 +35,7 @@ const ContactLayout: React.FC<ContactProps> = async ({ children,  }) => {
               <ContactWrapper 
                 contactItems={
                   <Suspense fallback={<div className="pt-20 w-full flex justify-center"><Loading/></div>}>
-                    <ContactList fetchedcontacts={data} />
+                    <ContactList searchquery={searchquery} fetchedcontacts={data} contactId={contactId} />
                   </Suspense>
                 }>
                   {children}

@@ -2,6 +2,7 @@ export interface AppointmentLink {
     id?: bigint;
     created_at?: string;
     appointmentName: string;
+    workspaceId: string;
     category: any;
     duration: number|null;
     loctionType: string;
@@ -125,9 +126,9 @@ export interface UserType {
 }
 
 export interface User {
-  id: bigint;
-  created_at: Date;
-  userEmail: string;
+  id?: bigint;
+  created_at?: Date;
+  userEmail?: string;
   firstName: string;
   lastName: string;
   jobTitle?: string | null;

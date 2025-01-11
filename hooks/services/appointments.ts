@@ -10,7 +10,7 @@ import { GroupedBookings } from "@/lib/server/appointments";
 import { getRequest } from "@/utils/api";
 
 export const useGetSchedules =  (scheduleData?: { error?: string | null; schedules?: AppointmentLink[] | null; count?: number; } )=> {
-  const { user } = useUserStore();
+  const { user, currentWorkSpace } = useUserStore();
   const [isError, setIsError] = useState<string>(scheduleData?.error||'');
   const [scheduleList, setScheduleList] = useState<AppointmentLink[]>(scheduleData?.schedules || []);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -27,7 +27,7 @@ export const useGetSchedules =  (scheduleData?: { error?: string | null; schedul
         setLoading(true);
 
         const offset = (page - 1) * limit;
-        const  response = await fetch(`/api/schedules?userId=${user?.id}&start=${offset}&end=${offset + limit - 1}`);
+        const  response = await fetch(`/api/schedules?userId=${user?.id}&start=${offset}&end=${offset + limit - 1}&workspaceId=${currentWorkSpace?.workspaceAlias}`);
         if (response.status!==200) {
           throw new Error('Error fetching appointments');
         }
@@ -70,7 +70,7 @@ export const useGetBookings = ({
   fetchedcount: number;
   fetchError: string | null;
 }) => {
-  const { user } = useUserStore(); 
+  const { user,currentWorkSpace } = useUserStore(); 
   const [groupedBookings, setGroupedBookings] = useState<GroupedBookings | null>(groupedBookingData);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [count, setCount] = useState<number>(fetchedcount);
@@ -81,7 +81,7 @@ export const useGetBookings = ({
     setError(null);  
   
     try {
-      const  response = await fetch(`/api/appointments?type=${type}&userId=${user?.id}&date=${date}`);
+      const  response = await fetch(`/api/appointments?type=${type}&userId=${user?.id}&date=${date}&workspaceId=${currentWorkSpace?.workspaceAlias}`);
       if (response.status!==200) {
         throw new Error('Error fetching appointments');
       }
@@ -117,7 +117,7 @@ export const useGetBookingsAnalytics = ({
   prevList: Booking[] | null;
   typeParam?: string;
 }) => {
-  const { user } = useUserStore();
+  const { user,currentWorkSpace } = useUserStore(); 
 
   const [isLoading, setLoading] = useState(false);
   const [type, setType] = useState(typeParam || 'weekly');
@@ -129,7 +129,7 @@ export const useGetBookingsAnalytics = ({
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/analytics/?type=${fetchType}&userId=${user?.id}`);
+      const response = await fetch(`/api/analytics/?type=${fetchType}&userId=${user?.id}&workspaceId=${currentWorkSpace?.workspaceAlias}`);
       if ( !response.ok) {
         throw new Error('Error fetching appointments');
       }
@@ -161,7 +161,7 @@ export const useGetBookingsAnalytics = ({
     getBookings,
     current,
     previous,
-    type,
+    type, setType,
     handleSetType
   };
 };
@@ -220,7 +220,7 @@ interface Params {
 }
 
 export const useCalendarData = ({viewing, date, count, formattedWeekData,formattedMonthData, startRangeDate, endRangeDate, errorMsg,}: Params) => {
-  const {user} = useUserStore()
+  const {user,currentWorkSpace} = useUserStore()
   const [view, setView] = useState<'month' | 'week'>(viewing);
   const [currentDate, setCurrentDate] = useState<Date>(date);
   const [loading, setLoading] = useState<boolean>(false);
@@ -236,7 +236,7 @@ export const useCalendarData = ({viewing, date, count, formattedWeekData,formatt
     setError(null);
     setLoading(true);
     try {
-      const response = await fetch(`/api/calendar?date=${date}&viewing=${viewingType}&userId=${user?.id}`);
+      const response = await fetch(`/api/calendar?date=${date}&viewing=${viewingType}&userId=${user?.id}&workspaceId=${currentWorkSpace?.workspaceAlias}`);
       if (!response.ok) {
         // console.log(`Error fetching calendar data: ${response.statusText}`);
         throw new Error(`Error fetching calendar data: ${response.statusText}`);

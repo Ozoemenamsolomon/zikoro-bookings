@@ -1,17 +1,14 @@
 import { KeyResult, KeyResultsTimeline } from '@/types/goal';
 import MetricForm from './MetricForm';
 import MetricPreview from './MetricPreview';
+import RenderOnerProfile from './RenderOnerProfile';
 
 const MetricList = async ({ keyResult, timeLine:{data:timelines, error} }: 
   { keyResult: KeyResult, timeLine: { data: KeyResultsTimeline[] | null; error: string | null }; }) => {
+    const owner = keyResult?.keyResultOwner?.userId;
 
-  const getInitials = (name: string) => {
-    const words = name.split(' ');
-    return words.length > 1
-      ? words[0][0] + words[1][0]
-      : words[0][0] + (words[0][1] || ''); // Handle single-character names gracefully
-  };
-
+  const name = `${owner?.firstName} ${owner?.lastName}`;
+   
  
   if (error) {
     return <div className="text-red-500">Failed to load timelines. Please try again later.</div>;
@@ -19,14 +16,9 @@ const MetricList = async ({ keyResult, timeLine:{data:timelines, error} }:
 
   return (
     <div className="w-full space-y-4">
-      <MetricForm keyResult={keyResult!} />
-
-      <div className="flex items-center gap-2">
-        <div className="rounded-full h-10 w-10 flex justify-center items-center font-bold bg-baseLight uppercase">
-          {getInitials(String(keyResult?.keyResultOwner) || '')}
-        </div>
-        <small className="truncate text-sm">{keyResult?.keyResultOwner}</small>
-      </div>
+      <MetricForm keyResult={{...keyResult, keyResultOwner: keyResult.keyResultOwner.id}!} />
+       
+       <RenderOnerProfile owner={keyResult?.keyResultOwner?.userId}/>
 
       {timelines && timelines.length > 0 ? (
         <div>
@@ -53,7 +45,7 @@ const MetricList = async ({ keyResult, timeLine:{data:timelines, error} }:
                       {new Date(timeline?.created_at || '').toLocaleDateString()}
                     </td>
                     <td className="px-4 py-2">{timeline?.value || '-'}</td>
-                    <td className="px-4 py-2">{timeline?.createdBy || '—'}</td>
+                    <td className="px-4 py-2 text-[12px]">{timeline?.createdBy?.firstName + ' ' + timeline?.createdBy?.lastName || '—'}</td>
                     <td className="px-4 py-2">
                       {timeline.Note ? (
                         <div
@@ -98,9 +90,10 @@ const MetricList = async ({ keyResult, timeLine:{data:timelines, error} }:
           </div>
         </div>
       ) : (
-        <div className="text-center border px-4 py-6 w-full">
-          No timeline data available.
-        </div>
+        null
+        // <div className="text-center border px-4 py-6 w-full">
+        //   No timeline data available.
+        // </div>
       )}
     </div>
   );

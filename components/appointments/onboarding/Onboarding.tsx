@@ -301,6 +301,7 @@ const industryList = [
 type SearchParamsType = {
   email: string;
   createdAt: string;
+  role: string;
 };
 
 type FormData = {
@@ -312,6 +313,7 @@ type FormData = {
   firstName: string;
   lastName: string;
   industry: string;
+  organization: string;
 };
 
 export function generateAlphanumericHash(length?: number): string {
@@ -329,12 +331,13 @@ export function generateAlphanumericHash(length?: number): string {
 }
 
 export default function OnboardingForm({
-  searchParams: { email, createdAt },
+  searchParams: { email, createdAt, role },
 }: {
   searchParams: SearchParamsType;
 }) {
   const [isRefferalCode, setIsReferralCode] = useState<boolean>(false);
   const { loading, registration } = useOnboarding();
+  let url ='/'
 
   const [formData, setFormData] = useState({
     referralCode: "",
@@ -345,6 +348,7 @@ export default function OnboardingForm({
     firstName: "",
     lastName: "",
     industry: "",
+    organization: "",
   });
 
   const router = useRouter();
@@ -383,8 +387,9 @@ export default function OnboardingForm({
       referredBy: values.referredBy.toUpperCase(),
     };
     try {
-      await registration(payload, email, createdAt);
-      handleNext();
+      const path = await registration(payload, email, createdAt, role);
+      url=path?path:url;
+      if(path) handleNext();
     } catch (error) {
       console.error("Registration failed:", error);
     }
@@ -444,7 +449,7 @@ export default function OnboardingForm({
                 <input
                   type="text"
                   placeholder="Enter Referral Code "
-                  className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none border-[1px] border-gray-200 hover:border-indigo-600 w-full pl-[10px] py-4 rounded-[6px] mt-3"
+                  className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none border-[1px] border-gray-200 hover:border-indigo-600 w-full px-[10px] py-4 rounded-[6px] mt-3"
                   value={formData.referredBy}
                   name="referredBy"
                   id=""
@@ -487,12 +492,12 @@ export default function OnboardingForm({
               {/* 1st input */}
               <div>
                 <p className="text-black text-[14px] ">Phone Nuber</p>
-                <div className="flex gap-x-[10px] items-center border-[1px] border-gray-200 hover:border-indigo-600 w-full pl-[10px] py-4 rounded-[6px] mt-3">
+                <div className="flex gap-x-[10px] items-center border-[1px] border-gray-200 hover:border-indigo-600 w-full px-[10px] py-4 rounded-[6px] mt-3">
                   <p>+</p>
                   <input
                     type="tel"
                     placeholder="234 001 002 0003"
-                    className=" text-[#1f1f1f] placeholder-gray-500 bg-transparent outline-none "
+                    className=" text-[#1f1f1f] placeholder-gray-500 bg-transparent outline-none w-full"
                     name="phoneNumber"
                     id=""
                     required
@@ -507,11 +512,11 @@ export default function OnboardingForm({
 
               <div className="mt-[29px]">
                 <p className="text-black text-[14px] ">City</p>
-                <div className=" border-[1px] border-gray-200 hover:border-indigo-600 w-full pl-[10px] py-4 rounded-[6px] mt-3">
+                <div className=" border-[1px] border-gray-200 hover:border-indigo-600 w-full px-[10px] py-4 rounded-[6px] mt-3 ">
                   <input
                     type="text"
                     placeholder="Enter Your City"
-                    className=" text-[#1f1f1f] placeholder-gray-500 bg-transparent outline-none "
+                    className=" text-[#1f1f1f] placeholder-gray-500 bg-transparent outline-none w-full"
                     name="city"
                     id=""
                     value={formData.city}
@@ -610,11 +615,11 @@ export default function OnboardingForm({
 
               <div className="mt-[29px]">
                 <p className="text-black text-[14px] ">Last Name</p>
-                <div className=" border-[1px] border-gray-200 hover:border-indigo-600 w-full pl-[10px] py-4 rounded-[6px] mt-3">
+                <div className=" border-[1px] border-gray-200 hover:border-indigo-600 w-full px-[10px] py-4 rounded-[6px] mt-3">
                   <input
                     type="text"
                     placeholder="Enter Last Name"
-                    className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none "
+                    className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none w-full"
                     name="lastName"
                     id=""
                     value={formData.lastName}
@@ -698,6 +703,24 @@ export default function OnboardingForm({
                 </div>
               </div>
 
+              {/* organization */}
+              <div>
+                <p className="text-black text-[14px] ">Organization Name</p>
+                <div className=" gap-x-[10px] border-[1px] border-gray-200 hover:border-indigo-600 w-full px-[10px] py-4 rounded-[6px] mt-3">
+                  <input
+                    type="text"
+                    placeholder="Enter Organization Name "
+                    className=" text-[#1f1f1f] placeholder-black bg-transparent outline-none w-full"
+                    name="organization"
+                    id="organization"
+                    value={formData.organization}
+                    onChange={handleChange}
+                    required
+                    autoComplete="off"
+                  />
+                </div>
+              </div>
+
               {/* nav buttons */}
               <div className="flex items-center justify-center gap-x-4 mx-auto mt-[52px] ">
                 <button
@@ -713,8 +736,13 @@ export default function OnboardingForm({
                   disabled={currentIndex === stages.length - 1}
                   className="text-white font-semibold text-base bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end py-3 px-4 rounded-lg"
                 >
-                  {loading && <LoaderAlt size={22} className="animate-spin" />}
-                  Create Profile
+                  {loading ? 
+                    <div className="flex">
+                      <LoaderAlt size={22} className="animate-spin" />
+                      <p>{loading}</p>
+                    </div> :
+                    'Create Profile'
+                  }
                 </button>{" "}
               </div>
             </div>
@@ -743,7 +771,7 @@ export default function OnboardingForm({
             {/* buttons */}
             <div className="flex justify-center gap-x-4 mx-auto mt-[52px] ">
               <button
-                onClick={() => router.push("/workspace/appointments")}
+                onClick={() => router.push(url)}
                 className="text-white font-semibold text-base bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end py-3 px-4 rounded-lg"
               >
                 Start Exploring

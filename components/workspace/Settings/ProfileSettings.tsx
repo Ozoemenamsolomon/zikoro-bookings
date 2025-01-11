@@ -1,48 +1,221 @@
-'use client'
-import { Input } from '@/components/ui/input'
-import { BlueCircleIcon,   } from '@/constants'
-import Image from 'next/image'
-import React from 'react'
+'use client';
+
+import React, { useCallback, useEffect, useState } from 'react';
+import { ArrowLeft, Check, Plus, PlusCircle } from 'lucide-react';
+import { FileUploader, handleFileUpload } from '@/components/shared/Fileuploader';
+import { CustomSelect } from '@/components/shared/CustomSelect';
+import { Button } from '@/components/ui/button';
+import { PostRequest } from '@/utils/api';
+import { toast } from 'react-toastify';
+import Image from 'next/image';
+import useUserStore from '@/store/globalUserStore';
+import { User } from '@/types/appointments';
+import { Toggler } from '../ui/SwitchToggler';
+import CustomInput from '../ui/CustomInput';
+import ProfileImageUpload from '@/components/shared/ProfileImageUpload';
+import { uploadImage } from '@/components/shared/ProfileImageUpload';
+import { TUser } from '@/types';
+
+const initialFormData:User = {
+  firstName: '',
+  lastName: '',
+  jobTitle: '',
+  organization: '',
+  city: '',
+  country: '',
+  phoneNumber: '',
+  whatsappNumber: '',
+  profilePicture: '',
+  bio: '',
+};
 
 const ProfileSettings = () => {
-  return (
-    <div className='py-6 space-y-6 max-w-lg'>
-        <div className="flex flex-col">
-            <h2 className="  font-medium pb-2">Profile name</h2>
-            <Input
-                value={'Emmanuel Udeji'}
-                name='name'
-                disabled={true}
-            />
-            <small>This can either be your business name or personal name</small>
-        </div>
+  const { setUser, user } = useUserStore();
+  const [formData, setFormData] = useState<User>({
+    ...initialFormData,
+  });
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        ...user,
+        created_at: user.created_at ? new Date(user.created_at) : new Date(), // Convert to Date
+      });
+    }
+  }, [user]);
 
-        <div className="">
-            <h2 className="  font-medium pb-2">Profile photo</h2>
-            <div className="relative w-28 h-28 ">
-                {
-                    false ?
-                    <></>
-                    :
-                    <div className='h-full w-full bg-slate-200 flex justify-center rounded-full items-center text-gray-300'>
-                        <Image src={'/profile-icon.png'} alt='icon' width={200} height={200} className='h-14 w-14' />
-                    </div>
-                }
-                <div className="absolute right-0 bottom-0">
-                    <BlueCircleIcon/>
-                </div>
-            </div>
-            <small>This can either be your business logo or personal photo</small>
+  const [file, setFile] = useState<File|null>(null);
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState<string>('');
+
+  /** Handle Input Change */
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev:any) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: '' }));
+  }, []);
+
+  /** Handle Select Change */
+  const handleSelectChange = useCallback((value: string) => {
+    setFormData((prev:any) => ({ ...prev, country: value }));
+    setErrors((prev) => ({ ...prev, country: '' }));
+  }, []);
+
+  /** Validation Logic */
+  const validate = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    if (!formData.firstName) newErrors.firstName = 'First name is required';
+    if (!formData.lastName) newErrors.lastName = 'Last name is required';
+    if (!formData.phoneNumber) newErrors.phoneNumber = 'Phone number is required';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+/** Handle Form Submission */
+const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+  
+    try {
+      let imageUrl = formData.profilePicture; // Default to existing profile picture
+  
+      if (file) {
+        setLoading('Uploading picture...');
+        const uploadResponse = await uploadImage(file);
+  
+        if (uploadResponse?.error) {
+          setErrors({ gen: uploadResponse.error });
+          throw new Error('Error uploading file');
+        }
+  
+        imageUrl = uploadResponse?.url || imageUrl;
+      }
+  
+      setLoading('Updating profile...');
+  
+      const { data, error } = await PostRequest({
+        url: '/api/workspaces/userProfile',
+        body: {
+          ...formData,
+          profilePicture: imageUrl,
+        },
+      });
+  
+      if (error) {
+        setErrors({
+          gen: error || 'Error occurred while updating profile',
+        });
+        return;
+      }
+  
+      toast.success('Profile updated successfully');
+      setUser(data); // Update global user state
+      setFormData(data); // Update local form data state
+  
+    } catch (error: any) {
+      setErrors({
+        gen: error?.message || 'Submission failed',
+      });
+    } finally {
+      setLoading('');
+    }
+  };
+  
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-3 mx-auto max-w-lg p-6 py-10 ">
+      {/* Form Section */}
+        <h5 className="font-semibold text-xl pb-4">Profile Information</h5>
+
+        <div>
+            <ProfileImageUpload 
+                imgUrl={formData?.profilePicture}
+                setFile={setFile}
+            />
         </div>
         
-        <div className="">
-        <h2 className="  font-medium pb-2">Bio</h2>
+        <CustomInput
+          type="text"
+          name="firstName"
+          label="First Name"
+          isRequired
+          value={formData.firstName}
+          placeholder="Enter your first name"
+          onChange={handleChange}
+          error={errors.firstName}
+        />
 
-        <textarea name="bio" placeholder={'Write a short bio'} id="bio" rows={6} 
-        className='border w-full p-4 rounded-md'></textarea>
+        <CustomInput
+          type="text"
+          name="lastName"
+          label="Last Name"
+          isRequired
+          value={formData.lastName}
+          placeholder="Enter your last name"
+          error={errors.lastName}
+          onChange={handleChange}
+        />
+
+        <CustomInput
+          type="tel"
+          name="phoneNumber"
+          label="Phone Number"
+          isRequired
+          value={formData.phoneNumber}
+          placeholder="Enter your phone number"
+          error={errors.phoneNumber}
+          onChange={handleChange}
+        />
+
+        <CustomInput
+          type="tel"
+          name="whatsappNumber"
+          label="Whatsapp Number"
+          value={formData.whatsappNumber||''}
+          placeholder="Enter your whatsapp number"
+          error={errors.whatsappNumber}
+          onChange={handleChange}
+        />
+
+        <CustomInput
+          type="text"
+          name="city"
+          label="City"
+          isRequired
+          value={formData?.city||''}
+          placeholder="Enter your city of residence"
+          onChange={handleChange}
+        />
+
+
+        <CustomSelect
+          label="Country"
+          error={errors.country}
+          placeholder="Select a country"
+          value={formData.country}
+          onChange={handleSelectChange}
+          options={[
+            { label: 'USA', value: 'USA' },
+            { label: 'Canada', value: 'Canada' },
+          ]}
+        />
+        <CustomInput
+            isTextarea
+            name="bio"
+          label="Bio"
+          value={formData?.bio||''}
+          placeholder="Enter your brief biography"
+          onChange={handleChange}
+        />
+
+        <div className="flex flex-col gap-1 items-center justify-center">
+          {errors?.gen && <small className="text-red-500">{errors.gen}</small>}
+          <small>{loading}</small>
+          <Button type="submit" className="bg-basePrimary w-full" disabled={loading.length > 0}>
+            {loading || 'Update Profile'}
+          </Button>
         </div>
-    </div>
-  )
-}
+    </form>
+  );
+};
 
-export default ProfileSettings
+export default ProfileSettings;

@@ -40,8 +40,8 @@ const Branding: React.FC<FormProps> = ({
       </div>
 
       <div className="">
-        <p className="pb-2">Brand Color</p>
-        <div className="py-2 px-4 bg-baseLight flex items-center justify-between w-full rounded-md">
+        {/* <p className="pb-2">Brand Color</p> */}
+        <div className="   flex items-center justify-between w-full rounded-md">
           <p>Choose Brand Color</p>
 
           <div className="flex pt-1 items-center gap-2 px-2 rounded-md bg-gray-100 border border-gray-200 text-gray-00 ">

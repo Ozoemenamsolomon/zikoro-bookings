@@ -4,13 +4,10 @@ import { CenterModal } from '@/components/shared/CenterModal';
 import { Button } from '@/components/ui/button';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import 'react-quill/dist/quill.snow.css'; // Import styles for ReactQuill
+import 'react-quill/dist/quill.snow.css';  
 import { FileUploader } from '@/components/shared/Fileuploader';
 import { toast } from 'react-toastify';
 import { PostRequest } from '@/utils/api';
-import { useAppointmentContext } from '@/context/AppointmentContext';
-import { useGoalContext } from '@/context/GoalContext';
-// import { urls } from '@/constants';
 import { KeyResult, KeyResultsTimeline } from '@/types/goal';
 import { useRouter } from 'next/navigation';
 import useUserStore from '@/store/globalUserStore';
@@ -23,7 +20,8 @@ interface FormData  {
   attachments: { url: string; type: string }[];
 }
 
-const MetricForm = ({ keyResult, 
+const MetricForm = ({ 
+  keyResult, 
   triggerBtn=<div className="flex justify-center">
                 <Button className="bg-basePrimary">Update new value</Button>
               </div>, 
@@ -318,7 +316,6 @@ const MetricForm = ({ keyResult,
           <Button type='submit' className="bg-basePrimary" disabled={loading.length>0}>
             {loading ? 'Updating...' : 'Update'}
           </Button>
-          {/* <small>Last updated: Just now</small> */}
         </div>
       </form>
     </CenterModal>

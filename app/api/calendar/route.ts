@@ -7,7 +7,12 @@ export async function GET(req: NextRequest) {
   const view = searchParams.get('viewing'); // 'month' or 'week'
   const userId = searchParams.get('userId');
   const date = searchParams.get('date');
-
+  const workspaceId = searchParams.get('workspaceId')!;
+   
+  if ( !workspaceId ) {
+    console.error("FETCHBOOKINGS: Missing required parameters: workspaceId")
+    return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
+  }
   // Check for valid parameters
   if (view !== 'month' && view !== 'week') {
     return NextResponse.json({ error: "Invalid 'view' parameter" }, { status: 400 });
@@ -25,7 +30,7 @@ export async function GET(req: NextRequest) {
       count,
       error,
       dateDisplay,dataCount
-    } = await fetchCalendarData(date, view, userId);
+    } = await fetchCalendarData(workspaceId, date, view, userId);
 
     // Check for data fetch errors
     if (error) {
