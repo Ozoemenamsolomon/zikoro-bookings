@@ -9,11 +9,13 @@ import { Loader2, } from 'lucide-react'
 import { urls } from '@/constants'
 import { redirect } from 'next/navigation'
 import MetricLineChart from './MetricLineChart'
+import LineClampText from './LineClampText'
 
 const KeyResultDetails = async({params}:{params:{workspaceAlias:string, keyResultId:string,contactId:string,goalId:string|number}}) => {
-
     const {goalId, contactId, keyResultId, workspaceAlias} = await params
-    const {keyResult, error} = await fetchKeyResultById(keyResultId)
+
+    const {keyResult,error} = await fetchKeyResultById(keyResultId)
+    
     if (!keyResult ) redirect(`/ws/${workspaceAlias}/${urls.contacts}/${contactId}/goals`)
     const timelines = await fetchMetricsByKeyResultId(keyResult?.id!);
 
@@ -29,7 +31,7 @@ const KeyResultDetails = async({params}:{params:{workspaceAlias:string, keyResul
 
             <div className="px-4">
                 <h6 className="font-bold">{keyResult?.keyResultTitle}</h6>
-                <p className="text-sm">{keyResult?.description}</p>
+                <LineClampText text={keyResult?.description!} />
             </div>
             
             <div className="bg-baseBg text-center w-full border rounded-md p-6 max-sm:px-2">

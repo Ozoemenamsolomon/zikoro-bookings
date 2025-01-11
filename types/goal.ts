@@ -1,3 +1,5 @@
+import { User } from "./appointments";
+
 export interface Goal {
     id?: number; // bigint
     createdAt?: string; // ISO 8601 format for timestamp with time zone
@@ -6,7 +8,7 @@ export interface Goal {
     createdBy?: number| bigint | null; // bigint or null
     goalName?: string | null; // text or null
     description?: string | null; // text or null
-    goalOwner?: number| bigint | null; // bigint or null
+    goalOwner?: any; // bigint or null
     goalOwnerName?: string | null; // text or null
     startDate?: string | null; // ISO 8601 date string or null
     endDate?: string | null; // ISO 8601 date string or null
@@ -22,7 +24,7 @@ export interface Goal {
     goalId?: number | null; // bigint or null
     keyResultTitle?: string | null; // text or null
     description?: string | null; // text or null
-    keyResultOwner?: number | null; // bigint or null
+    keyResultOwner?: any; // bigint or null
     startDate?: string | null; // ISO 8601 date string or null
     endDate?: string | null; // ISO 8601 date string or null
     measurementType?: string | null; // text or null
@@ -39,7 +41,7 @@ export interface Goal {
     organizationId?: number | null; // bigint or null
     keyResultId?: number | null; // bigint or null
     value?: number | null; // numeric or null
-    createdBy?: number | null; // bigint or null
+    createdBy?: any ; // bigint or null
     Note?: string | null; // text or null
     attachments?: { url:string, type:string }[] | null; // JSON object or null
   }

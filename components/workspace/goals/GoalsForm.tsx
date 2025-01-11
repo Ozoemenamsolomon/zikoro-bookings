@@ -34,12 +34,12 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
       // status: 'DRAFT',
   };
     if(goal){
-      setGoalData({ ...initialFormData, ...goal });
+      setGoalData({ ...initialFormData, ...goal, goalOwner:goal.goalOwner?.id, goalOwnerName: `${goal?.goalOwner?.userId?.firstName} ${goal?.goalOwner?.userId?.lastName}` });
     }else{
       setGoalData(initialFormData)
     }
   }, [user,goal])
-  
+  // console.log({goalData})
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setGoalData(prev => ({ ...prev, [name]: value }))

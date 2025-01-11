@@ -3,7 +3,7 @@ import AppointmentHistory from '@/components/workspace/contact/AppointmentHistor
 import ContactSubLayout from '@/components/workspace/contact/ContactSubLayout';
 
 import { fetchAppointmentHistory } from '@/lib/server/appointments';
-import { fetchContacts } from '@/lib/server/contacts';
+import { fetchContact, fetchContacts } from '@/lib/server/contacts';
 import { unstable_noStore } from 'next/cache';
 
 import { redirect } from 'next/navigation';
@@ -18,25 +18,19 @@ const ContactAppointmentHistory = async ({
 }) => {
   unstable_noStore();
 
-  const {data:contacts, count:size} = await fetchContacts()
-  let contact 
-  if(contacts) {
-    contact = contacts.find(item => item.id === contactId)
-    if(!contact) {
-      redirect(`/ws?notFound=The contact does not exist`)
-    }
-  } else {
-    redirect(`/ws`)
+  const {data:contact, } = await fetchContact(contactId)
+  if(!contact) {
+    redirect(`/ws?msg=page not found`)
   }
   
   const { initialData, data, count, error} = await fetchAppointmentHistory({contactEmail:contact.email!})
  
   return ( 
-    <ContactLayout contactId={contactId} searchquery={s} data={contacts} count={size}>
-      <ContactSubLayout>
+    // <ContactLayout contactId={contactId} searchquery={s} data={contacts} count={size}>
+    //   <ContactSubLayout>
         <AppointmentHistory  bookingsData={data} countSize={count!} initialItem={initialData?.[0]?.created_at} errorString={error!}/>
-      </ContactSubLayout>
-    </ContactLayout>
+    //   </ContactSubLayout>
+    // </ContactLayout>
   )
 }
 

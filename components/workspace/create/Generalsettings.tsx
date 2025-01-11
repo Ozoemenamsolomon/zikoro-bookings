@@ -3,6 +3,7 @@ import { AppointmentFormData, FormProps } from '@/types/appointments';
 import { SelectInput } from '../ui/CustomSelect';
 import CustomInput from '../ui/CustomInput';
 import { ReactSelect } from '@/components/shared/ReactSelect';
+import { CustomSelect } from '@/components/shared/CustomSelect';
 
 const Generalsettings: React.FC<FormProps> = ({
   formData,
@@ -43,11 +44,11 @@ const Generalsettings: React.FC<FormProps> = ({
 
   };
 
-  const handleSelect = (name:string,value:any)=> {
+  const handleSelect = (value:any,name?:string)=> {
     setFormData&&setFormData((prev)=>{
       return {
         ...prev,
-        [name]:value
+        [name!]:Number(value)
       }
     })
   }
@@ -55,7 +56,7 @@ const Generalsettings: React.FC<FormProps> = ({
     <div className="space-y-4">
       <div className="">
         <p className="pb-2">Add Team members email</p>
-        <div className={`${error ? 'ring-2 ring-red-600' : ''} flex rounded-md gap-2 items-center border p-1`}>
+        <div className={`${error ? 'ring-1 ring-red-600' : ''} flex rounded-md gap-2 items-center border p-1`}>
           <CustomInput
             type="email"
             name="email"
@@ -85,7 +86,25 @@ const Generalsettings: React.FC<FormProps> = ({
 
       <div className="">
         <p className="pb-2">Maximum bookings per session</p>
-        <ReactSelect
+        <CustomSelect
+          // label="Maximum bookings per session"
+          name='maxBooking'
+          options={[
+            { label: '1', value: '1' },
+            { label: '2', value: '2' },
+            { label: '3', value: '3' },
+            { label: '5', value: '5' },
+            { label: '10', value: '10' },
+          ]}
+          value={String(formData?.maxBooking || '')}
+          error={errors?.maxBooking!}
+          onChange={handleSelect}
+          isRequired
+          placeholder="Select"
+          className="w-48 h-12"
+          setError={setErrors}
+        />
+        {/* <ReactSelect
             name="maxBooking"
             options={[
               { label: '1', value: 1 },
@@ -101,29 +120,31 @@ const Generalsettings: React.FC<FormProps> = ({
             className="w-48 h-12"
             setError={setErrors}
             error={errors?.maxBooking}
-          />
-        {/* <SelectInput
-          name="maxBooking"
-          value={formData?.maxBooking || ''}
-          options={[
-            { label: '1', value: 1 },
-            { label: '2', value: 2 },
-            { label: '3', value: 3 },
-            { label: '5', value: 5 },
-            { label: '10', value: 10 },
-          ]}
-          setFormData={setFormData!}
-          className="w-32 z-50"
-          type='number'
-          error={errors?.maxBooking}
-          setError={setErrors}
-          pattern="\d+"
-        /> */}
+          /> */}
+        
       </div>
 
       <div className="">
         <label htmlFor="sessionBreak" className="pb-2">Break between sessions in minutes</label>
-        <ReactSelect
+        <CustomSelect
+          // label="Maximum bookings per session"
+          name='sessionBreak'
+          options={[
+            { label: '0', value: '0' },
+            { label: '5', value: '5' },
+            { label: '10', value: '10' },
+            { label: '15', value: '15' },
+            { label: '20', value: '20' },
+          ]}
+          value={String(formData?.sessionBreak || '')}
+          error={errors?.sessionBreak!}
+          onChange={handleSelect}
+          isRequired
+          placeholder="Select"
+          className="w-48 h-12"
+          setError={setErrors}
+        />
+        {/* <ReactSelect
             name="sessionBreak"
             options={[
               { label: '0', value: 0 },
@@ -139,7 +160,7 @@ const Generalsettings: React.FC<FormProps> = ({
             className="w-48 h-12"
             setError={setErrors}
             error={errors?.sessionBreak}
-          />
+          /> */}
       </div>
 
       

@@ -24,7 +24,7 @@ const MetricPreview = ({
 
         <div className="border-b pb-2 w-full flex justify-between gap-2 text-sm">
             <p className="">{format(new Date(metric?.created_at!), 'MMM dd yyyy, hh:mm b')}</p>
-            <p className="">{metric.createdBy}</p>
+            <p className="text-sm">{metric.createdBy?.firstName + ' ' + metric?.createdBy?.lastName}</p>
         </div>
 
         <h4 className="text-xl text-center mx-auto px-2 border-b border-gray-800 font-bold w-40"><span>Value: </span> {metric?.value}</h4>

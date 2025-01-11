@@ -20,8 +20,8 @@ import { useGoalContext } from '@/context/GoalContext'
 
 const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, mode?:string}) => {
   const {push,refresh} = useRouter()
-  const {user} = useUserStore()
-  const {contact,getWsUrl} =useAppointmentContext()
+
+  const {contact,getWsUrl,} =useAppointmentContext()
   const {keyResultData, setKeyResultData, goalData, setGoalData, isSubmitting, setIsSubmitting, teamMembers} = useGoalContext()
 
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({})
@@ -119,8 +119,8 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
                 if (error) {
                     setErrors({general:error})
                 } else {
-                    toast.success('Goal created')
-                    setSuccess('Goal created successfully')
+                    toast.success('Goal created successfully')
+                    // setSuccess('Goal created successfully')
                     setKeyResultData({})
                     setGoalData({})
                     push(getWsUrl(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`))
@@ -282,9 +282,9 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
                     
                 </div>
             </div>
-
+            {/* measurementType:'value', */}
             {
-                keyResultData?.measurementType==='value' &&
+                // keyResultData?.measurementType==='value' &&
                 <ValueMetrics keyResultData={keyResultData} handleChange={handleChange} errors={errors}/>
             }
 

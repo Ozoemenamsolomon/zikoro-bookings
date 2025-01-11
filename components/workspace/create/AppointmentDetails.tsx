@@ -59,7 +59,7 @@ const AppointmentDetails: React.FC<FormProps> = ({
       </div>
 
       <div>
-        <p className='label'>Duration in minutes</p>
+        <p className='label'>Duration in minutes (Multiples of 5)</p>
         <CustomCreatableSelect
             name="duration"
             options={[

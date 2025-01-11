@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib";
 
 interface Option {
   value: any;
@@ -21,6 +22,7 @@ interface OptionGroup {
 
 interface CustomSelectProps {
   label?: string;
+  className?: string;
   error?: string;
   value: string;
   name: string;
@@ -29,6 +31,7 @@ interface CustomSelectProps {
   isRequired?: boolean // New prop for compulsory fields
   options: Option[] | OptionGroup[];
   onChange?: (value: any, field?: string) => void;
+  setError?: (value: any, field?: string) => void;
 }
 
 export const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -40,7 +43,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   isRequired = false, // Default to false for non-compulsory
   onChange,
   value,
-  name,
+  name,className,setError,
 }) => {
   const isGrouped =
     Array.isArray(options) &&
@@ -50,10 +53,18 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
 
   const handleValueChange = (newValue: any) => {
     if (onChange) {
-      onChange(newValue);
+      onChange(newValue,name);
+      setError &&
+      setError((prev:any) => {
+        return {
+          ...prev,
+          general: '',
+          [name]: '',
+        };
+      });
     }
   };
-
+// console.log({value,name})
   const renderOptions = () => {
     if (!options || options.length === 0) {
       return (
@@ -82,7 +93,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   };
 
   return (
-    <div className="w-full">
+    <div className={cn("w-full",)}>
       {label && (
         <label htmlFor={name} className="block text-sm   text-gray-600 mb-1">
           {label} {isRequired && <span className="text-red-500">*</span>}
@@ -96,7 +107,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
           newValue !== "placeholder" ? handleValueChange(newValue) : null
         }
       >
-        <SelectTrigger className="w-full h-12 px-4 py-2 border rounded-lg focus:outline-none">
+        <SelectTrigger className={cn("w-full h-12 px-4 py-2 border rounded-lg focus:border-purple-300", className)}>
           <SelectValue>
             {value
               ? options.find((opt) =>
