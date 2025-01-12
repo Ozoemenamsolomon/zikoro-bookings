@@ -11,7 +11,7 @@ import { PostRequest } from '@/utils/api'
 import { toast } from 'react-toastify'
 import { useRouter } from 'next/navigation'
 import { useAppointmentContext } from '@/context/AppointmentContext'
-import useUserStore from '@/store/globalUserStore'
+
 import { Goal } from '@/types/goal'
 import { GoalDatePicker } from './GoalDatePicker'
 import { isAfter, isBefore, startOfDay, startOfToday } from 'date-fns'
@@ -127,11 +127,11 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
                 }
             }
         } catch (error) {
-          console.error('Submission failed:', error)
+            console.error('Submission failed:', error)
         } finally {
-          setIsSubmitting(false)
+            setIsSubmitting(false)
         }
-      }
+        }
 
     const isStartDayDisabled = (day: Date) => {
     // Disable days before today
@@ -178,7 +178,7 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
         trigerBtn={
             <button
                 type="button"
-                className="text-basePrimary underline px-4"
+                className="text-basePrimary underline px-"
                 > Add Key Result
             </button>
         }

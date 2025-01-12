@@ -93,7 +93,7 @@ const InviteTeams = () => {
             <div className="w-full space-y-2">
               <div>
                 <label className="block leading-tight font-medium ">Enter Email(s)</label>
-                <small className=" text-gray-500 text-[12px]">Press "Enter", "Spacebar" or "," when you type an email</small>
+                <small className=" text-gray-500 text-[12px]">Press "Enter", "Spacebar" or "," after each email</small>
               </div>
 
               <div>
@@ -117,7 +117,7 @@ const InviteTeams = () => {
                   value={formData.role}
                   onChange={handleSelectChange}
                   options={[
-                  { label: 'Admin Role', value: 'ADMIN' },
+                  // { label: 'Admin Role', value: 'ADMIN' },
                   { label: 'Member', value: 'MEMBER' },
                   ]}
               />

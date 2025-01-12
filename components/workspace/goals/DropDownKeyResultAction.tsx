@@ -12,6 +12,7 @@ import EditKeyResultDetails from './EditKeyResultDetails'
 import { KeyResult } from '@/types/goal'
 import DeleteKeyResult from './DeleteKeyResult'
 import UpdateKeyResultStatus from './UpdateKeyResultStatus'
+import MetricForm from './MetricForm'
 
 const DropDownKeyResultAction = ({keyResult}:{keyResult:KeyResult}) => {
   const [selectedView, setSelectedView] = useState<'Default' | 'Chart'>('Default');
@@ -40,9 +41,10 @@ const DropDownKeyResultAction = ({keyResult}:{keyResult:KeyResult}) => {
           </Link>
 
           <EditKeyResultDetails keyResult={keyResult!} text={'Edit details'}/>
-          <UpdateKeyResultStatus keyResult={keyResult} label='Update Status'/>
+          <MetricForm keyResult={{...keyResult, keyResultOwner: keyResult.keyResultOwner.id}!} />
+          {/* <UpdateKeyResultStatus keyResult={keyResult} label='Update Status'/> */}
 
-          <div ref={ref}>
+          {/* <div ref={ref}>
             <button
                 onClick={()=>setDrop(prev=>!prev)}
               type="button"
@@ -75,7 +77,7 @@ const DropDownKeyResultAction = ({keyResult}:{keyResult:KeyResult}) => {
                 <span className="hover:text-gray-950 duration-300">Chart</span>
               </label>
             </div>
-          </div>
+          </div> */}
 
           <DeleteKeyResult keyResult={keyResult} />
         </div>

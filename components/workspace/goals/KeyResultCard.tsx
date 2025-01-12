@@ -13,6 +13,10 @@ const KeyResultCard = async ({ keyResult }: { keyResult: KeyResult }) => {
 
   return (
     <div className="py-6 space-y-4 rounded-md border bg-white relative">
+       <div className="pl-4 flex">
+        <p className="text-zikoroBlue">{keyResult.status}</p>
+       </div>
+
       <div className="pl-4 pr-1 text-center w-full">
         <Suspense
           fallback={
@@ -30,7 +34,6 @@ const KeyResultCard = async ({ keyResult }: { keyResult: KeyResult }) => {
           <h6 className="font-bold">{keyResult?.keyResultTitle}</h6>
            <LineClampText text={keyResult?.description!} />
         </div>
-        <UpdateKeyResultStatus keyResult={keyResult} />
       </div>
       <Suspense>
         <DropDownKeyResultAction keyResult={keyResult} />

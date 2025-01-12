@@ -46,6 +46,7 @@ const DeleteGoal = ({goal}:{goal:Goal}) => {
   return (
     <div>
       <CenterModal
+      className="max-w-sm"
         isOpen={isModalOpen}
         onOpenChange={setIsModalOpen}
         disabled={!isDeletable} // Disable trigger based on the condition
@@ -57,7 +58,7 @@ const DeleteGoal = ({goal}:{goal:Goal}) => {
             Are you sure you want to delete this goal? This action cannot
             be undone.
           </p>
-          <div className="space-y-2">
+          <div className=" flex gap-2">
             <Button
             variant={'destructive'}
               onClick={handleDelete}
