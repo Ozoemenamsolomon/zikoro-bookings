@@ -86,34 +86,43 @@ const InviteTeams = () => {
         </button>
 
         <form onSubmit={handleSubmit} className="space-y-8 p-4 sm:p-8">
-          <h4 className="text-2xl font-semibold w-full border-b pb-4">
-            Invite team member
-          </h4>
+            <h4 className="text-2xl font-semibold w-full border-b pb-4">
+              Invite team member
+            </h4>
 
-          <div className="w-full">
-            <label className="block font-medium mb-2">Enter Email(s)</label>
-            <MultipleEmailInput
-              emails={formData.emails}
-              setEmails={(emails) => setFormData((prev) => ({ ...prev, emails }))}
-            />
-            {errors?.emails && (
-              <p className="text-red-500 text-sm mt-1">{errors.emails}</p>
-            )}
-          </div>
+            <div className="w-full space-y-2">
+              <div>
+                <label className="block leading-tight font-medium ">Enter Email(s)</label>
+                <small className=" text-gray-500 text-[12px]">Press "Enter", "Spacebar" or "," when you type an email</small>
+              </div>
 
-          <div className="">
-            <label htmlFor="role" className='font-medium '>Assign role</label>
-            <CustomSelect
-                error={errors?.role}
-                placeholder="Select"
-                value={formData.role}
-                onChange={handleSelectChange}
-                options={[
-                { label: 'Admin Role', value: 'ADMIN' },
-                { label: 'Member', value: 'MEMBER' },
-                ]}
-            />
+              <div>
+              <MultipleEmailInput
+                emails={formData.emails}
+                setEmails={(emails) => setFormData((prev) => ({ ...prev, emails }))}
+              />
+              {errors?.emails && (
+                <p className="text-red-500 text-sm mt-1">{errors.emails}</p>
+              )}
+              </div>
+
             </div>
+
+            <div className="">
+              <label htmlFor="role" className='font-medium '>Assign role</label>
+              <CustomSelect
+                  name='role'
+                  error={errors?.role}
+                  placeholder="Select"
+                  value={formData.role}
+                  onChange={handleSelectChange}
+                  options={[
+                  { label: 'Admin Role', value: 'ADMIN' },
+                  { label: 'Member', value: 'MEMBER' },
+                  ]}
+              />
+            </div>
+
             <div className="flex flex-col items-center">
               {errors?.general && <small className='text-red-600 w-full block text-center'>{errors?.general}</small>}
               <Button type="submit" className="bg-basePrimary h-12 px-6 text-white w-full">
