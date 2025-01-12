@@ -8,6 +8,7 @@ import { urls } from '@/constants'
 import { Goal } from '@/types/goal'
 import { useAppointmentContext } from '@/context/AppointmentContext'
 import DeleteGoal from './DeleteGoal'
+import KeyResultForm from './KeyResultForm'
 
 const DropDownGoalAction = ({goal,}:{goal:Goal})  => {
   const {contact,getWsUrl} = useAppointmentContext()
@@ -32,6 +33,7 @@ const DropDownGoalAction = ({goal,}:{goal:Goal})  => {
           <Link href={getWsUrl(`${urls.contacts}/${contact?.id}/goals/edit/${goal.id}`)} className='block hover:text-gray-950 duration-300 '>
             Edit Goal
           </Link>
+          <KeyResultForm goal={goal} mode='edit' isActive={true}/>
 
           {/* <div ref={ref}>
             <button

@@ -46,6 +46,7 @@ const DeleteKeyResult = ({keyResult}:{keyResult:KeyResult}) => {
   return (
     <div>
       <CenterModal
+      className="max-w-sm"
         isOpen={isModalOpen}
         onOpenChange={setIsModalOpen}
         disabled={!isDeletable} // Disable trigger based on the condition
@@ -57,7 +58,7 @@ const DeleteKeyResult = ({keyResult}:{keyResult:KeyResult}) => {
             Are you sure you want to delete this key result? This action cannot
             be undone.
           </p>
-          <div className="space-y-2">
+          <div className="flex gap-2">
             <Button
             variant={'destructive'}
               onClick={handleDelete}

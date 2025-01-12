@@ -52,7 +52,7 @@ const SaveGoalBtn = ({mode}:{mode?:string}) => {
                     setKeyResultData({})
                     // setSuccess('Goal created successfully')
                     // revalidatePath(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`)
-                    push(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`)
+                    push(getWsUrl(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`))
                 }
               } else {
                 const { data, error } = await PostRequest({url:'/api/goals/editGoal', body:{goalData}})

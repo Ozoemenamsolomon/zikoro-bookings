@@ -73,14 +73,14 @@ const MetricLineChart: React.FC<LineChartProps> = ({ keyResult, timeLine: { data
                     dataKey="Timeline"
                     tickFormatter={(value) => value}
                     label={{ value: "Timeline", position: "insideBottom", offset: -5 }}
-                    axisLine={{ stroke: "#cbd5e1", strokeWidth: 1 }} // Customize the axis line
-                    tickLine={{ stroke: "#cbd5e1", strokeWidth: 1 }} // Customize tick marks
+                    axisLine={{ stroke: "#cbd5e1", strokeWidth: 1 }} 
+                    // tickLine={{ stroke: "#cbd5e1", strokeWidth: 1 }}  
                   />
                   <YAxis
                     domain={yAxisRange}
                     label={{ value: keyResult.unit || "Value", angle: -90, offset: 24, position: "insideLeft" }}
-                    axisLine={{ stroke: "#cbd5e1", strokeWidth: 1 }} // Customize the axis line
-                    tickLine={{ stroke: "#cbd5e1", strokeWidth: 1 }} // Customize tick marks
+                    axisLine={{ stroke: "#cbd5e1", strokeWidth: 1 }}  
+                    // tickLine={{ stroke: "#cbd5e1", strokeWidth: 1 }} 
                   />
                   <Tooltip content={<ChartTooltipContent />} />
                   <Line

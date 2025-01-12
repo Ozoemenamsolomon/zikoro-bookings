@@ -11,6 +11,8 @@ import { PostRequest } from '@/utils/api';
 import { KeyResult, KeyResultsTimeline } from '@/types/goal';
 import { useRouter } from 'next/navigation';
 import useUserStore from '@/store/globalUserStore';
+import UpdateKeyResultStatus from './UpdateKeyResultStatus';
+import UpdateKeyResultStatusTimeline from './UpdateKeyResultStatusTimeline';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
@@ -49,6 +51,7 @@ const MetricForm = ({
   const [files, setFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<{ type: string; url: string }[]>([]);
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
+  const [status, setStatus] = useState<string>(keyResult?.status || '')
 
   useEffect(() => {
     if(metric) {
@@ -182,7 +185,7 @@ const MetricForm = ({
           keyResultData: {
             ...keyResult,
             currentValue: formData.value,
-            status: "In-progress",
+            status: keyResult.status==="Not-started" ? "In-progress" : status,
           },
         },
       });
@@ -209,6 +212,7 @@ const MetricForm = ({
           Note: "",
           attachments: [],
         });
+        // setStatus('')
         setPreviewUrls([]);
       }
     } catch (error) {
@@ -310,7 +314,9 @@ const MetricForm = ({
           {errors?.attachments && <small className="text-red-500">{errors.attachments}</small>}
         </div>
 
-        <div className="flex flex-col gap-1 items-center justify-center">
+        <UpdateKeyResultStatusTimeline keyResult={keyResult}   status={status} setStatus={setStatus}/>
+
+        <div className="flex flex-col gap-1 items-center pt-4 justify-center">
           {errors?.gen && <small className="text-red-500">{errors.gen}</small>}
           <small>{loading}</small>
           <Button type='submit' className="bg-basePrimary" disabled={loading.length>0}>
