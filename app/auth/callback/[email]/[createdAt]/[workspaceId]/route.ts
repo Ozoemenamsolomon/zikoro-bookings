@@ -4,12 +4,12 @@ import { createClient } from "@/utils/supabase/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { email: string; createdAt: string, role:string } }
+  { params }: { params: { email: string; createdAt: string, workspaceId:string } }
 ) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
   const error = requestUrl.searchParams.get("error_description");
-  const { email, createdAt, role } = params;
+  const { email, createdAt, workspaceId } = params;
 
   // console.log('error ', error);
 
@@ -29,5 +29,5 @@ export async function GET(
     }
   }
 
-  return NextResponse.redirect(`${requestUrl.origin}/onboarding?email=${email}&createdAt=${createdAt}&role=${role}`);
+  return NextResponse.redirect(`${requestUrl.origin}/onboarding?email=${email}&createdAt=${createdAt}&workspaceId=${workspaceId}`);
 }

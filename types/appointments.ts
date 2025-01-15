@@ -123,6 +123,7 @@ export interface UserType {
   facebook?: string | null;
   referralCode?: string | null;
   referredBy?: string | null;
+  workspaceRole?: string;
 }
 
 export interface User {
@@ -145,6 +146,7 @@ export interface User {
   facebook?: string | null;
   referralCode?: string | null;
   referredBy?: string | null;
+  workspaceRole?: string;
 }
 
 export interface AppointmentUnavailability {

@@ -1,3 +1,4 @@
+import { createWorkspace } from "@/lib/server/workspace";
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -8,21 +9,11 @@ export async function POST(req: NextRequest) {
   }
   try {
     const body = await req.json();
-    // console.log(body)
+    // console.log(body) = body.workspaceData, body.userData
 
-    const {data,error}= await supabase
-      .from('bookingWorkSpace')
-      .insert(body)
-      .select('*')
-      .single()
+    const {data,error,newTeam,newTeamError}= await createWorkspace(body)
 
-    console.log('Inserting bookingWorkspace result:', {data,error})
-    if (error) {
-      console.error("Error inserting booking workspace:", error);
-      return NextResponse.json({ data:null, error: error.message }, { status: 400 });
-    }
-
-    return NextResponse.json({ data, error }, { status: 200 });
+    return NextResponse.json({ data, error, newTeam, newTeamError }, { status: 200 });
   } catch (error) {
     console.error("Unhandled booking workspace error:", error);
     return NextResponse.json(

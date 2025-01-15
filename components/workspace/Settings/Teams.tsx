@@ -3,18 +3,22 @@ import React, { useState } from 'react'
 import InviteTeams from './InviteTeams'
 import {  BookingTeamsTable } from '@/types'
 import DeleteMember from './DeleteMember'
+import useUserStore from '@/store/globalUserStore'
+import ResendInvite from './ResendInvite'
 
 interface TeamsProps {
   teamMembers: BookingTeamsTable[]
 }
 
 const Teams = ({ teamMembers }: TeamsProps) => {
+  const {user} = useUserStore()
   const [teams, setTeams] = useState<BookingTeamsTable[]>(teamMembers||[])
+  // console.log({teams})
   return (
     <section className="sm:py-8 sm:px-8 space-y-5">
       {/* Invite Team Members Section */}
       <div className="flex justify-end w-full ">
-        <InviteTeams />
+        {user?.workspaceRole==='ADMIN'? <InviteTeams teams={teams} setTeams={setTeams}/> : null }
       </div>
 
       {/* Team Members Table */}
@@ -41,19 +45,23 @@ const Teams = ({ teamMembers }: TeamsProps) => {
                       className="w-12 h-12 rounded-full object-cover"
                     /> :
                     <div className="w-12 h-12 bg-baseLight font-semibold text-lg flex items-center justify-center rounded-full object-cover">
-                      { `${member?.userId?.firstName?.[0] ?? ''}${member?.userId?.lastName?.[0] ?? ''}`.toUpperCase() || 'NA'}
+                      { `${member?.userId?.firstName?.[0] ?? ''}${member?.userId?.lastName?.[0] ?? ''}`.toUpperCase() || 'NR'}
                     </div>
                   }
 
-                  <div className="">
-                    <p className="max-sm:text-sm font-semibold leading-tight">{member?.userId?.firstName||''  + ' ' + member?.userId?.lastName||''}</p>
-                    <small className='text-gray-500'>{member?.userId?.userEmail||'' }</small>
+                  <div className="">{
+                    member?.userId ?
+                      <p className="max-sm:text-sm font-semibold leading-tight">{member?.userId?.firstName||''  + ' ' + member?.userId?.lastName||''}</p> :
+                    <p className=" leading-3">Not Registered</p>
+                    }
+                      <small className='text-gray-500'>{member?.email}</small>
                   </div>
                 </td>
                 <td className="p-4 w-2/8">{member?.role}</td>
                 <td className="p-4 w-1/8">{member?.userId ? 'Active' : 'Pending'}</td>
-                <td className="p-4 w-1/8  text-center">
-                   <DeleteMember id={member?.id} setTeams={setTeams}/>
+                <td className="p-4 w-1/8  text-center flex items-center">
+                  {user?.workspaceRole==='ADMIN'  && member.role!== 'ADMIN' ? <DeleteMember id={member?.id} setTeams={setTeams}/>:null}
+                  {user?.workspaceRole==='ADMIN' && member.role!== 'ADMIN'? <ResendInvite member={member} setTeams={setTeams}/>:null}
                 </td>
               </tr>
             ))}

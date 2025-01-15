@@ -9,9 +9,6 @@ import { toast } from 'react-toastify'
 
 const DeleteContact = () => {
     const {contact,contacts, setContact,setContacts } = useAppointmentContext()
-    const supabase = createClient()
-
-    const {refresh} = useRouter()
 
     const [loading, setLoading] = useState(false)
     const [isHidden, setIsHidden ] = useState('')
@@ -20,19 +17,16 @@ const DeleteContact = () => {
             try {
                 setLoading(true)
                 const {data:{data,error}} = await deleteRequest({endpoint:`/bookingsContact/deleteContact?id=${contact?.id}`})
-                // const {data, error} = await supabase
-                //     .from('bookingsContact')
-                //     .update({status: 'ARCHIVED'})
-                //     .eq('id', contact?.id)
-                //     .select('*')
-                //     .single()
                 
                 if(!error) {
                     let list = contacts?.filter((item)=> item?.id !== contact?.id)
+
                     setContacts(list!)
+                    setContact(list?.[0]!)
+
                     toast.success('Contact deleted')
                     setIsHidden('hidden')
-                    refresh()
+                    // refresh()
                 } else {
                     throw error
                 }

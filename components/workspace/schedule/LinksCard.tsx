@@ -69,7 +69,7 @@ const LinksCard = ({data,}:{data:AppointmentLink|any}) => {
         <div className="">
             <div className=" flex  gap-4 items-center">
                 <div  className={item.statusOn ? '':'opacity-20'}><ClockIcon/></div>
-                <p className="">{item?.duration}</p>
+                <p className="">{item?.duration} minutes</p>
             </div>
             <div className="flex  gap-4 items-center">
                 <div className={item.statusOn ? '':'opacity-20'}><MapPin/> </div>

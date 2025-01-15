@@ -14,19 +14,19 @@ export const fetchCalendar = async (
 ): Promise<FetchBookingsResult> => {
     const supabase = createClient()
 
-    let id;
+    // let id;
+    // if(userId){
+    //   id = userId
+    // } else {
+    //   const {user} = await getUserData()
+    //   id = user?.id
+    // }
     try {
-      if(userId){
-        id = userId
-      } else {
-        const {user} = await getUserData()
-        id = user?.id
-      }
-
       const { data, error, count } = await supabase
       .from('bookings')
       .select('*, appointmentLinkId(*, createdBy(userEmail, organization, firstName, lastName, phoneNumber))', { count: 'exact' })
-      .eq("createdBy", id)
+      // TODO: .eq("workspaceId", payload?.workspaceId)
+      // .eq("createdBy", id)
       // .order("appointmentDate", { ascending: true })
 
       // console.log('TESTING', { data,error,count});
@@ -110,28 +110,27 @@ export async function fetchCalendarData(workspaceId:string, date: Date | string,
 
   const supabase = createClient()
 
-  let id;
+  // let id;
+  // if(userId){
+  //   id = userId
+  // } else {
+  //   const {user} = await getUserData()
+  //   id = user?.id
+  // }
     try {
-      if(userId){
-        id = userId
-      } else {
-        const {user} = await getUserData()
-        id = user?.id
-      }
-
-  const { data, error } = await supabase
-    .from('bookings') 
-    .select('*, appointmentLinkId(*, createdBy(userEmail, organization, firstName, lastName, phoneNumber))', { count: 'exact' })
-    .eq("createdBy", id)
-    .eq('workspaceId', workspaceId)
-    .gte('appointmentDate', startRangeDate.toISOString().split('T')[0])
-    .lte('appointmentDate', endRangeDate.toISOString().split('T')[0]);
-  // console.log({ data, error })
-  const {count } = await supabase
-    .from('bookings') 
-    .select('*', { count: 'exact' } )
-    .eq("createdBy", id)
-    .eq('workspaceId', workspaceId)
+    const { data, error } = await supabase
+      .from('bookings') 
+      .select('*, appointmentLinkId(*, createdBy(userEmail, organization, firstName, lastName, phoneNumber))', { count: 'exact' })
+      // .eq("createdBy", id)
+      .eq('workspaceId', workspaceId)
+      .gte('appointmentDate', startRangeDate.toISOString().split('T')[0])
+      .lte('appointmentDate', endRangeDate.toISOString().split('T')[0]);
+    // console.log({ data, error })
+    const {count } = await supabase
+      .from('bookings') 
+      .select('*', { count: 'exact' } )
+      // .eq("createdBy", id)
+      .eq('workspaceId', workspaceId)
   
   // Error handling
   if (error) {
@@ -153,7 +152,7 @@ export async function fetchCalendarData(workspaceId:string, date: Date | string,
   const { data:unavailableDatesData, error:err,  count:cc } = await supabase
     .from('appointmentUnavailability')
     .select('*',  { count: 'exact' })
-    .eq("createdBy", id)
+    // .eq("createdBy", id)
     .eq('workspaceId', workspaceId)
   
   // Format the data based on the viewing type
@@ -161,7 +160,7 @@ export async function fetchCalendarData(workspaceId:string, date: Date | string,
   const formattedWeekData = formatAppointmentsByWeek(data || {});
   const unavailableDates:UnavailabilityByDay = formatUnavailability(unavailableDatesData || []);
 
-  console.log({ formattedMonthData,formattedWeekData, startRangeDate, endRangeDate, date: formattedDate , count, dateDisplay, id});
+  // console.log({ formattedMonthData,formattedWeekData, startRangeDate, endRangeDate, date: formattedDate , count, dateDisplay, });
 
   // Return the formatted data and range details
   return {

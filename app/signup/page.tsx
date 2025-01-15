@@ -24,7 +24,7 @@ const AppointmentSignupPage = async ({
   let role = "";
 
   if (token) {
-    let redirectUrl = "/error?message=Token validation failed";
+    let redirectUrl = "/?message=Token validation failed";
 
     try {
       // Decode and validate the token
@@ -32,7 +32,7 @@ const AppointmentSignupPage = async ({
 
       if (!decoded?.email || !decoded?.workspaceName || !decoded?.workspaceAlias) {
         console.error("Invalid token payload");
-        redirectUrl = "/error?message=Invalid token payload";
+        redirectUrl = "/?message=Invalid token payload";
       } else {
         userEmail = decoded.email;
         workspaceName = decoded.workspaceName;

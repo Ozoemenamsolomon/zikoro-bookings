@@ -18,19 +18,19 @@ export const fetchSchedules = async (
     if(!workspaceId){
       console.error('FETCH SCHEDULES: workspaceId is missing')
     }
-    let id 
-    if(userId){
-      id = userId
-    } else {
-      const {user} = await getUserData()
-      id = user?.id
-    }
+    // let id 
+    // if(userId){
+    //   id = userId
+    // } else {
+    //   const {user} = await getUserData()
+    //   id = user?.id
+    // }
 
   try {
     let query = supabase
       .from('appointmentLinks')
       .select('*', { count: 'exact' }) 
-      .eq('createdBy', id)
+      // .eq('createdBy', id)
       .eq('workspaceId', workspaceId)
       .range(Number(start), Number(end))
       .order('created_at', {ascending: false} )

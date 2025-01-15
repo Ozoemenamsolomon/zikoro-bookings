@@ -37,19 +37,19 @@ export const fetchAppointments = async (
     if(!payload?.workspaceId){
       console.error('APPOINTMENT BOOKINGS: workspaceId is missing')
     }
-    let id 
-    if(payload?.userId){
-      id = payload?.userId
-    } else {
-      const {user} = await getUserData()
-      id = user?.id
-    }
+    // let id 
+    // if(payload?.userId){
+    //   id = payload?.userId
+    // } else {
+    //   const {user} = await getUserData()
+    //   id = user?.id
+    // }
     let today = startOfToday().toISOString()
   try {
     let query = supabase
       .from("bookings")
       .select(`*, appointmentLinkId(*, createdBy(id, userEmail,organization,firstName,lastName,phoneNumber))`, { count: 'exact' })
-      .eq("createdBy", id)
+      // .eq("createdBy", id)
       .eq("workspaceId", payload?.workspaceId)
       .order("appointmentDate", { ascending: true })
 
@@ -89,6 +89,7 @@ export const fetchBookings = async (
     const { data, error, status } = await supabase
       .from("bookings")
       .select("*")
+      //TODO: .eq("workspaceId", payload?.workspaceId)
       .eq("appointmentDate", appointmentDate)
       .eq("appointmentLinkId", appointmentLinkId)
       .neq("bookingStatus", 'CANCELLED')
@@ -125,13 +126,13 @@ export const fetchBookings = async (
  }: FetchAppointmentHistoryParams): Promise<FetchAppointmentHistoryResult> {
   const supabase = createADMINClient()
 
-  let id 
-  if(userId){
-    id = userId
-  } else {
-    const {user} = await getUserData()
-    id = user?.id
-  }
+  // let id 
+  // if(userId){
+  //   id = userId
+  // } else {
+  //   const {user} = await getUserData()
+  //   id = user?.id
+  // }
 
    try {
      // Initial query
@@ -141,8 +142,9 @@ export const fetchBookings = async (
          "id, created_at, appointmentDuration, appointmentDate, appointmentName, appointmentTimeStr, appointmentLinkId(locationDetails)",
          { count: "exact" }
        )
-       .eq("createdBy", id)
-       .eq("participantEmail", contactEmail)
+      //  .eq("createdBy", id)
+      // TODO: .eq("workspaceId", payload?.workspaceId)
+      .eq("participantEmail", contactEmail)
        .range(0, limit - 1);
  
      // Fetch initial data

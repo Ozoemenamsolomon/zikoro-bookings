@@ -10,6 +10,9 @@ import useUserStore,  { initializeWorkspaces } from "@/store/globalUserStore";
 import { createClient } from "@/utils/supabase/client";
 import { urls } from "@/constants";
 import { generateSlugg } from "@/lib/generateSlug";
+import { User } from "@/types/appointments";
+import { checkUserExists } from "@/lib/server/workspace";
+import { BookingWorkSpace } from "@/types";
 
 const supabase = createClient();
 
@@ -20,19 +23,12 @@ export function useRegistration() {
   async function register(values: z.infer<typeof loginSchema>) {
     setLoading(true);
     try {
-      // if this registration has workspace token, add the data to the teamBooking.
-      if (values.role && values.email && values.workspaceAlias) {
-        const {data,error} = await PostRequest({
-          url: '/api/workspaces/team/add',
-          body: {email:values.email,workspaceId:values.workspaceAlias,role:values.role}
-        })
-      }
-      // added role to pass the condition to know if this user was added to a workspace or not
+      // added workspaceAlias to pass the condition to know if this user was added to a workspace or not
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
         options: {
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback/${values?.email}/${new Date().toISOString()}/${values.role||'none'}`,
+          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback/${values?.email}/${new Date().toISOString()}/${values.workspaceAlias||'none'}`,
         },
       });
 
@@ -67,17 +63,15 @@ export function useLogin() {
   // Assuming this is a hook
 
   async function logIn(
-    values: z.infer<typeof loginSchema>,
-    redirectTo: string | null
+    values: z.infer<typeof loginSchema>,tokenEmail:string, userData:User|null
   ) {
-    console.log({values})
-    setLoading('Submitting credentials');
+    setLoading('Submitting credentials...');
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
-        password: values.password,
+        password: values.password, 
       });
-      console.log({authUser: data, error})
+      // console.log({authUser: data, error})
       if (error) {
         toast.error(error?.message);
         // console.log(error?.message);
@@ -86,14 +80,14 @@ export function useLogin() {
       }
       setLoading('Setting up your workspace')
       if (data && data?.user?.email) {
-        const url = await setLoggedInUser(values?.email, values.workspaceAlias, values.role );
+        const url = await setLoggedInUser(values?.email, tokenEmail, values.workspaceAlias, values.role, userData );
          
         toast.success("Sign In Successful");
         router.push(url!);
-        // router.push(redirectTo ?? "/workspace/appointments");
         setLoading('');
       }
     } catch (error) {
+      toast.error('An errror occured')
       console.log(error);
       setLoading('');
     }
@@ -122,36 +116,36 @@ export function useLogOut(redirectPath: string = "/") {
 
 export const useSetLoggedInUser = () => {
 
-  const setLoggedInUser = async (email: string, workspaceAlias:string, role:string) => {
+  const setLoggedInUser = async (email: string, tokenEmail:string, workspaceAlias:string, role:string, userData:User|null) => {
     if (!email) return;
 
-    const { data: user, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("userEmail", email)
-        .single(); 
-        console.log({user, error});
-    if (error) {
-       console.log({error});
-      return;
-    }
-
-      console.log({email,user,workspaceAlias,role});
       if(workspaceAlias&&role) {
-        // create bookingTeams with workspaceAlias
+        // update userId in the workspace team
         const {data:bookingTeam,error} = await PostRequest({
-          url:'/api/workspaces/team/add',
+          url:'/api/workspaces/team/update',
           body: {
             email,
             workspaceId:workspaceAlias,
-            role,
-            userId:user.id
+            userId:userData?.id,
+            tokenEmail,
           }
         })
         console.log({bookingTeam})
-        const wkspace = await initializeWorkspaces(user, bookingTeam?.workspaceId!);
+        if(error){
+          toast.error('Process error. Try again')
+        }
+        // initializing user with assignWorkspace
+        const wkspace = await initializeWorkspaces(userData, bookingTeam?.workspaceId!);
         return `/ws/${wkspace?.workspaceAlias}/${urls.schedule}`;
       } else {
+        // This is normal login without tokens.
+        const user = await checkUserExists(email)
+         
+        if (!user) {
+          console.log('User was not found');
+          return;
+        }
+        // initializing user-currentworkspace with currentworkspace from the store
         const wkspace = await initializeWorkspaces(user);
         return `/ws/${wkspace?.workspaceAlias}/${urls.schedule}`;
       }
@@ -326,7 +320,7 @@ type CreateUser = {
 };
 
 export function useOnboarding() {
-  const [loading, setLoading] = useState('');
+  const [loading, setLoading] = useState<string>("");
   const { setUser, setCurrentWorkSpace, setWorkSpaces } = useUserStore();
   const router = useRouter();
 
@@ -334,10 +328,10 @@ export function useOnboarding() {
     values: FormData,
     email: string | null,
     createdAt: string | null,
-    role: string | null
+    workspaceId?: string
   ): Promise<string | null> {
     try {
-      setLoading('Creating user');
+      setLoading("Creating user");
 
       // 🛠️ Create user
       const { data: user, error: userError } = await PostRequest({
@@ -355,7 +349,7 @@ export function useOnboarding() {
         return null;
       }
 
-      setLoading('Setting up your workspace');
+      setLoading("Setting up your workspace");
 
       // 🛠️ Create and setup workspaces
       const { data: workspaces, error: workspaceError } = await PostRequest({
@@ -363,7 +357,7 @@ export function useOnboarding() {
         body: {
           email,
           userId: user?.id,
-          role,
+          workspaceId,
           organization: values?.organization,
         },
       });
@@ -379,21 +373,33 @@ export function useOnboarding() {
         return null;
       }
 
+      // Determine the current workspace
+      const currentWs =
+        workspaceId
+          ? workspaces.find(
+              (ws: BookingWorkSpace) => ws.workspaceAlias === workspaceId
+            ) || workspaces[0]
+          : workspaces[0];
+
       // 🛠️ Update Zustand store
-      setCurrentWorkSpace(workspaces[0]);
+      setCurrentWorkSpace(currentWs);
       setWorkSpaces(workspaces);
-      setUser(user);
+      setUser({
+        ...user,
+        workspaceRole: workspaceId ? "MEMBER" : "ADMIN",
+      });
 
-      setLoading('');
-      toast.success("Profile Updated Successfully");
+      setLoading("");
+      toast.success("Profile updated successfully");
 
-      return `/ws/${workspaces[0]?.workspaceAlias}/schedule`;
+      // Redirect to schedule page
+      return `/ws/${currentWs?.workspaceAlias}/schedule`;
     } catch (error: any) {
-      console.error("Registration Error:", error);
-      toast.error('An error occurred during registration. Please try again.');
+      console.error("Registration error:", error);
+      toast.error("An error occurred during registration. Please try again.");
       return null;
     } finally {
-      setLoading('');
+      setLoading("");
     }
   }
 

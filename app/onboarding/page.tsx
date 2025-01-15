@@ -5,6 +5,7 @@ import React from "react";
 type SearchParamsType = {
   email: string;
   createdAt: string;
+  workspaceId?: string;
 };
 
 const AppointmentSignupPage = ({

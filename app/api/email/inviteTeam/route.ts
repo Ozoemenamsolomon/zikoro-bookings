@@ -1,8 +1,10 @@
-import { generateBookingICS } from "@/lib/generateICS";
-import { mergeEmailLists } from "@/lib/mergeEmails";
 import { NextRequest, NextResponse } from "next/server";
-import { SendMailClient } from 'zeptomail';
-import jwt from 'jsonwebtoken';
+import { SendMailClient } from "zeptomail";
+import jwt from "jsonwebtoken";
+import { baseUrl } from "@/utils/baseUrl";
+import { createWorkspaceTeamMember, updateBookingTeamUserId } from "@/lib/server/workspace";
+import { BookingTeamMember } from "@/types";
+import { createClient } from "@/utils/supabase/server";
 
 const client = new SendMailClient({
   url: process.env.NEXT_PUBLIC_ZEPTO_URL!,
@@ -18,14 +20,14 @@ function generateInviteToken(email: string, workspaceName: string, role: string,
   return jwt.sign(
     { email, workspaceName, role, workspaceAlias },
     jwtSecret,
-    { expiresIn: '5d' }
+    { expiresIn: "5d" }
   );
 }
 
 // Helper function to generate email body
 function generateEmailBody(email: string, workspaceName: string, role: string, workspaceAlias: string, baseUrl: string): string {
   const token = generateInviteToken(email, workspaceName, role, workspaceAlias);
-  const inviteLink = `${baseUrl}?token=${token}`;
+  const inviteLink = `${baseUrl}/login?token=${token}`;
   return `
     <p>You have been invited to join the <strong>${workspaceName}</strong> team as a <strong>${role}</strong>.</p>
     <p>Please click the link below to accept your invitation:</p>
@@ -41,59 +43,87 @@ export async function POST(req: NextRequest) {
 
   try {
     const { emails, role, workspaceName, workspaceAlias } = await req.json();
+    const url = new URL(req.url);
+    const memberEmail:string|null = url.searchParams.get("memberEmail");
 
     if (!emails?.length || !role || !workspaceName || !workspaceAlias) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const baseUrl = `${req.headers.get('origin') || 'http://localhost:3000'}`;
+    const supabase = createClient()
+
+    const rootUrl = req.headers.get("origin") || baseUrl!;
     const subject = `Invitation to join the ${workspaceName} team.`;
-    const failedEmails: string[] = [];
- 
 
-    for (const email of emails) {
-      try {
-        if (!email || typeof email !== 'string') {
-          console.warn(`Invalid email encountered: ${email}`);
-          failedEmails.push(email);
-          continue;
-        }
-        const htmlBody = generateEmailBody(email, workspaceName, role, workspaceAlias, baseUrl);
-        const response = await client.sendMail({
-          from: {
-            address: senderAddress,
-            name: senderName,
-          },
-          to: [{
-            email_address: {
-              address: email,
-              name: "TeamMember",
-            },
-          }],
-          subject,
-          htmlbody: htmlBody,
-        });
-        // console.log('=====', response)
-        if(response?.message !== 'OK'){
-          failedEmails.push(email);
-        }
-         
-      } catch (error) {
-        console.error(`Failed to send email to ${email}:`, error);
-        failedEmails.push(email);
+    const tasks = emails.map((email: string) => {
+      const htmlBody = generateEmailBody(email, workspaceName, role, workspaceAlias, rootUrl);
+
+      const sendEmail = client.sendMail({
+        from: {
+          address: senderAddress,
+          name: senderName,
+        },
+        to: [{ email_address: { address: email, name: "BookingWorkspaceTeamMember" } }],
+        subject,
+        htmlbody: htmlBody,
+      });
+
+      let insertData
+
+      if(!memberEmail) {
+        insertData = createWorkspaceTeamMember({ email, role, workspaceId: workspaceAlias });
+      } else {
+        insertData = supabase
+                    .from('bookingTeams')
+                    .update({email, role,}) 
+                    .eq('workspaceId', workspaceAlias)
+                    .eq('email', memberEmail)
+                    .select('*, workspaceId(*)')
+                    .single()
       }
-    }
 
-    // console.log({ results });
+      return Promise.allSettled([sendEmail, insertData]);
+    });
 
-    if (failedEmails.length > 0) {
+    const results = await Promise.allSettled(tasks);
+
+    const failedEmails: string[] = [];
+    const dbErrors: string[] = [];
+    let storage:any[] = [];
+
+    results.forEach((result, index) => {
+      const email = emails[index];
+      if (result.status === "fulfilled") {
+        const [emailResult, dbResult] = result.value;
+
+        storage?.push(dbResult.value.data) 
+
+        // console.log({emailResult:emailResult.value.data, dbResult })
+
+        if (emailResult.status !== "fulfilled") {
+          failedEmails.push(email);
+        }
+
+        if (dbResult.status !== "fulfilled") {
+          dbErrors.push(`${email}: ${dbResult.reason}`);
+        }
+      } else {
+        console.error(`Unhandled error for ${emails[index]}:`, result.reason);
+      }
+    });
+
+    if (failedEmails.length || dbErrors.length) {
       return NextResponse.json(
-        { message: `Some emails failed to send ${failedEmails.join(', ')}`, msg:'failed' },
+        {
+          error: "Some operations failed",
+          failedEmails,
+          dbErrors,
+        },
         { status: 207 }
       );
     }
 
-    return NextResponse.json({ message: 'All emails sent successfully',}, { status: 200 });
+    return NextResponse.json({ success: "All operations completed successfully", data:storage }, { status: 200 });
   } catch (error) {
     console.error("Unhandled error:", error);
     return NextResponse.json(

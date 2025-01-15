@@ -21,12 +21,12 @@ export const fetchAnalytics = async (
     try {
       let currentStart, currentEnd, previousStart, previousEnd, id;
 
-      if(userId){
-        id = userId
-      } else {
-        const {user} = await getUserData()
-        id = user?.id
-      }
+      // if(userId){
+      //   id = userId
+      // } else {
+      //   const {user} = await getUserData()
+      //   id = user?.id
+      // }
   
       if (type === 'weekly') {
         currentStart = startOfWeek(new Date()).toISOString();
@@ -50,7 +50,7 @@ export const fetchAnalytics = async (
     const { data: curList, error: curErr } = await supabase
       .from('bookings')
       .select('*, appointmentLinkId(id,appointmentName,brandColour,amount, locationDetails)')
-      .eq("createdBy", id)
+      // .eq("createdBy", id)
       .eq("workspaceId", workspaceId)
       .gte('appointmentDate', currentStart)
       .lte('appointmentDate', currentEnd)
@@ -63,7 +63,7 @@ export const fetchAnalytics = async (
     const { data: prevList, error: prevErr } = await supabase
       .from('bookings')
       .select('*, appointmentLinkId(id,appointmentName,brandColour,amount, locationDetails)')
-      .eq("createdBy", id)
+      // .eq("createdBy", id)
       .eq("workspaceId", workspaceId)
       .gte('appointmentDate', previousStart)
       .lte('appointmentDate', previousEnd);
