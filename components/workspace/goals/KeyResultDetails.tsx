@@ -1,23 +1,24 @@
 
 import React, { Suspense } from 'react'
-import EditGoalBtn from './EditGoalBtn'
-import BackToGoalsBtn from './BackToGoalsBtn'
-import ProgressMetrics from './ProgressMetrics'
+
 import { fetchKeyResultById, fetchMetricsByKeyResultId } from '@/lib/server/goals'
 import MetricList from './MetricList'
 import BackToGoalDetailsBtn from './BackToGoalDetailsBtn'
 import EditKeyResultDetails from './EditKeyResultDetails'
-import KeyResultForm from './KeyResultForm'
-import { Loader2, PenLine } from 'lucide-react'
+import { Loader2, } from 'lucide-react'
 import { urls } from '@/constants'
 import { redirect } from 'next/navigation'
 import MetricLineChart from './MetricLineChart'
+import LineClampText from './LineClampText'
 
-const KeyResultDetails = async({params}:{params:{keyResultId:string,contactId:string,goalId:string|number}}) => {
-    const {goalId,contactId,keyResultId} = await params
+const KeyResultDetails = async({params}:{params:{workspaceAlias:string, keyResultId:string,contactId:string,goalId:string|number}}) => {
+    const {goalId, contactId, keyResultId, workspaceAlias} = await params
+
     const {keyResult,error} = await fetchKeyResultById(keyResultId)
-    if (!goalId || !contactId || !keyResult ) redirect(`${urls.contacts}/${contactId}/goals/details/${goalId}`)
+    
+    if (!keyResult ) redirect(`/ws/${workspaceAlias}/${urls.contacts}/${contactId}/goals`)
     const timelines = await fetchMetricsByKeyResultId(keyResult?.id!);
+
   return (
     <section className='bg-white '>
         <section className="bg-baseBg   py-6   sm:p-6   min-h-screen w-full space-y-6">
@@ -30,7 +31,7 @@ const KeyResultDetails = async({params}:{params:{keyResultId:string,contactId:st
 
             <div className="px-4">
                 <h6 className="font-bold">{keyResult?.keyResultTitle}</h6>
-                <p className="text-sm">{keyResult?.description}</p>
+                <LineClampText text={keyResult?.description!} />
             </div>
             
             <div className="bg-baseBg text-center w-full border rounded-md p-6 max-sm:px-2">

@@ -12,8 +12,15 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get('userId');
   const date = searchParams.get('date');
+  const workspaceId = searchParams.get('workspaceId')!;
 
-  if ( !userId  ) {
+  if ( !workspaceId ) {
+    console.error("FETCHUNAVAILABILITY: Missing required parameters: workspaceId")
+    return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
+  }
+
+  if ( !userId   ) {
+    console.error("FETCHUNAVAILABILITY: Missing required parameters: userId")
     return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
   }
 
@@ -23,6 +30,7 @@ export async function GET(req: NextRequest) {
       const { data:dataa, error:err, count:cc } = await supabase
       .from('appointmentUnavailability')
       .select('*',  { count: 'exact' })
+      .eq("workspaceId", workspaceId)
       .eq("createdBy", userId)
       .eq("appointmentDate", date)
       data=dataa, error=err, count=cc

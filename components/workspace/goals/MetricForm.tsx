@@ -4,16 +4,15 @@ import { CenterModal } from '@/components/shared/CenterModal';
 import { Button } from '@/components/ui/button';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import 'react-quill/dist/quill.snow.css'; // Import styles for ReactQuill
+import 'react-quill/dist/quill.snow.css';  
 import { FileUploader } from '@/components/shared/Fileuploader';
 import { toast } from 'react-toastify';
 import { PostRequest } from '@/utils/api';
-import { useAppointmentContext } from '@/context/AppointmentContext';
-import { useGoalContext } from '@/context/GoalContext';
-// import { urls } from '@/constants';
 import { KeyResult, KeyResultsTimeline } from '@/types/goal';
 import { useRouter } from 'next/navigation';
 import useUserStore from '@/store/globalUserStore';
+import UpdateKeyResultStatus from './UpdateKeyResultStatus';
+import UpdateKeyResultStatusTimeline from './UpdateKeyResultStatusTimeline';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
@@ -23,7 +22,8 @@ interface FormData  {
   attachments: { url: string; type: string }[];
 }
 
-const MetricForm = ({ keyResult, 
+const MetricForm = ({ 
+  keyResult, 
   triggerBtn=<div className="flex justify-center">
                 <Button className="bg-basePrimary">Update new value</Button>
               </div>, 
@@ -51,6 +51,7 @@ const MetricForm = ({ keyResult,
   const [files, setFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<{ type: string; url: string }[]>([]);
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
+  const [status, setStatus] = useState<string>(keyResult?.status || '')
 
   useEffect(() => {
     if(metric) {
@@ -154,18 +155,23 @@ const MetricForm = ({ keyResult,
   const handleSubmit = async () => {
     setErrors(null);
     if (!validate()) return;
-
+  
     try {
-      // handle file upload first
-      const uploadedFiles = await handleFileUpload( )
-      if(errors?.attachments&&errors?.attachments?.length>0){ return}
-      setLoading('Submiting values')
-      const { data: metricResponse, error: metricError } = await PostRequest({
-        url: '/api/goals/submitMetric',
+      // Handle file upload first
+      const uploadedFiles = await handleFileUpload();
+      if (errors?.attachments && errors?.attachments?.length > 0) {
+        return;
+      }
+  
+      setLoading("Submitting values");
+  
+      // Prepare the requests
+      const metricRequest = PostRequest({
+        url: "/api/goals/submitMetric",
         body: {
           timeLineData: {
             ...formData,
-            attachments:uploadedFiles,
+            attachments: uploadedFiles,
             keyResultId: keyResult?.id,
             organizationId: keyResult?.organization,
             createdBy: user?.id,
@@ -173,37 +179,50 @@ const MetricForm = ({ keyResult,
         },
       });
   
-      const { data: keyResultResponse, error: keyResultError } = await PostRequest({
-        url: '/api/goals/editKeyResult',
+      const keyResultRequest = PostRequest({
+        url: "/api/goals/editKeyResult",
         body: {
           keyResultData: {
             ...keyResult,
             currentValue: formData.value,
+            status: keyResult.status==="Not-started" ? "In-progress" : status,
           },
         },
       });
+  
+      // Execute requests concurrently
+      const [metricResponse, keyResultResponse] = await Promise.all([
+        metricRequest,
+        keyResultRequest,
+      ]);
+  
+      const metricError = metricResponse.error;
+      const keyResultError = keyResultResponse.error;
+  
       if (metricError || keyResultError) {
         setErrors({
-          gen: metricError || keyResultError || 'Error occurred while submitting values',
+          gen: metricError || keyResultError || "Error occurred while submitting values",
         });
         return;
       } else {
-          toast.success('Timeline updated successfull')
-            refresh()
-            setFormData({
-              value: null,
-              Note: '',
-              attachments: [],
-            })
-            setPreviewUrls([])
+        toast.success("Timeline updated successfully");
+        refresh();
+        setFormData({
+          value: null,
+          Note: "",
+          attachments: [],
+        });
+        // setStatus('')
+        setPreviewUrls([]);
       }
     } catch (error) {
-      console.error('Submission failed:', error)
-      setErrors({gen:'Submission failed:'})
+      console.error("Submission failed:", error);
+      setErrors({ gen: "Submission failed:" });
     } finally {
-      setLoading('')
+      setLoading("");
     }
   };
+  
 
   const memoizedToolbar = useMemo(
     () => ({
@@ -295,13 +314,14 @@ const MetricForm = ({ keyResult,
           {errors?.attachments && <small className="text-red-500">{errors.attachments}</small>}
         </div>
 
-        <div className="flex flex-col gap-1 items-center justify-center">
+        <UpdateKeyResultStatusTimeline keyResult={keyResult}   status={status} setStatus={setStatus}/>
+
+        <div className="flex flex-col gap-1 items-center pt-4 justify-center">
           {errors?.gen && <small className="text-red-500">{errors.gen}</small>}
           <small>{loading}</small>
           <Button type='submit' className="bg-basePrimary" disabled={loading.length>0}>
             {loading ? 'Updating...' : 'Update'}
           </Button>
-          {/* <small>Last updated: Just now</small> */}
         </div>
       </form>
     </CenterModal>

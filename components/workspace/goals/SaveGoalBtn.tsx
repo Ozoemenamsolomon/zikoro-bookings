@@ -5,14 +5,14 @@ import { urls } from '@/constants'
 import { useAppointmentContext } from '@/context/AppointmentContext'
 import { useGoalContext } from '@/context/GoalContext'
 import { PostRequest } from '@/utils/api'
-import { revalidatePath } from 'next/cache'
+
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
 
 const SaveGoalBtn = ({mode}:{mode?:string}) => {
     const {push} = useRouter()
-    const {contact} = useAppointmentContext()
+    const {contact,getWsUrl} = useAppointmentContext()
     const {goalData, setGoalData, keyResultData, setKeyResultData, errors, setErrors} = useGoalContext()
     const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -52,7 +52,7 @@ const SaveGoalBtn = ({mode}:{mode?:string}) => {
                     setKeyResultData({})
                     // setSuccess('Goal created successfully')
                     // revalidatePath(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`)
-                    push(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`)
+                    push(getWsUrl(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`))
                 }
               } else {
                 const { data, error } = await PostRequest({url:'/api/goals/editGoal', body:{goalData}})
@@ -65,7 +65,7 @@ const SaveGoalBtn = ({mode}:{mode?:string}) => {
                     setKeyResultData({})
                     // setSuccess('Goal created successfully')
                     // revalidatePath(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`)
-                    push(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`)
+                    push(getWsUrl(`${urls.contacts}/${contact?.id}/goals/details/${data.id}`))
                 }
               }
 

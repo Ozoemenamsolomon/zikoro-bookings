@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect, useMemo, useState } from "react";
+import React, {useMemo } from "react";
 import {
   CartesianGrid,
   Line,
@@ -8,18 +8,13 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  ResponsiveContainer,
 } from "recharts";
-import {
-  Card,
-} from "@/components/ui/card";
+
 import {
   ChartContainer,
-  ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { KeyResult, KeyResultsTimeline } from "@/types/goal";
-import { Loader2 } from "lucide-react";
 import { format } from "date-fns";
 
 interface LineChartProps {
@@ -32,19 +27,18 @@ const MetricLineChart: React.FC<LineChartProps> = ({ keyResult, timeLine: { data
       if (!timelineData || !keyResult.targetValue) return null;
   
       const formattedTimelineData = timelineData.map((item) => ({
-        x: format(new Date(item.created_at!), 'dd/MM') || "",
-        y: item.value || 0,
+        Timeline: format(new Date(item.created_at!), 'dd/MM') || "",
+        [keyResult?.unit!]: item.value || 0,
       }));
   
       // Add the start and end dates
       const startDatePoint = {
-        x: format(new Date(keyResult.startDate!), 'dd/MM'),
-        y: keyResult.startValue||keyResult.currentValue||0,
+        Timeline: format(new Date(keyResult.startDate!), 'dd/MM'),
+        [keyResult?.unit!]: keyResult.startValue||keyResult.currentValue||0,
       };
-  
       const endDatePoint = {
-        x: format(new Date(keyResult.endDate!), 'dd/MM'),
-        y: keyResult.targetValue,
+        Timeline: format(new Date(keyResult.endDate!), 'dd/MM'),
+        // [keyResult?.unit!]: keyResult.targetValue,
       };
   
       return [startDatePoint, ...formattedTimelineData, endDatePoint];
@@ -54,9 +48,11 @@ const MetricLineChart: React.FC<LineChartProps> = ({ keyResult, timeLine: { data
     const yAxisRange = useMemo(() => {
       if (!keyResult.startValue || !keyResult.targetValue) return [0, 100];
       const maxTimelineValue = timelineData?.reduce((max, item) => Math.max(max, item.value || 0), 0) || 0;
-      return [keyResult.startValue, Math.max(keyResult.targetValue, maxTimelineValue)];
+      // return [keyResult.startValue, Math.max(keyResult.targetValue, maxTimelineValue)];
+      return [0, Math.max(keyResult.targetValue, maxTimelineValue)];
     }, [keyResult.startValue, keyResult.targetValue, timelineData]);
-//   console.log({keyResult, timelineData, chartData, yAxisRange})
+
+    //   console.log({keyResult, timelineData, chartData, yAxisRange})
     return (
         <>
           {error ? (
@@ -68,33 +64,40 @@ const MetricLineChart: React.FC<LineChartProps> = ({ keyResult, timeLine: { data
               <p>No data available for this chart.</p>
             </div>
           ) : (
-            <ChartContainer config={{}} className="w-full max-w-[28rem] mx-auto h-60">
+            <div className="w-full max-w-[28rem] mx-auto">
+            <ChartContainer config={{}} className="w-full  h-60">
                 <LineChart data={chartData} margin={{ top: 10, right: 30, left: -14, bottom: 15 }}>
                   <CartesianGrid stroke="#cccccc" strokeOpacity={0.7} strokeDasharray="3 3" />
 
                   <XAxis
-                    dataKey="x"
+                    dataKey="Timeline"
                     tickFormatter={(value) => value}
                     label={{ value: "Timeline", position: "insideBottom", offset: -5 }}
-                    axisLine={{ stroke: "#cbd5e1", strokeWidth: 1 }} // Customize the axis line
-                    tickLine={{ stroke: "#cbd5e1", strokeWidth: 1 }} // Customize tick marks
+                    axisLine={{ stroke: "#cbd5e1", strokeWidth: 1 }} 
+                    // tickLine={{ stroke: "#cbd5e1", strokeWidth: 1 }}  
                   />
                   <YAxis
                     domain={yAxisRange}
                     label={{ value: keyResult.unit || "Value", angle: -90, offset: 24, position: "insideLeft" }}
-                    axisLine={{ stroke: "#cbd5e1", strokeWidth: 1 }} // Customize the axis line
-                    tickLine={{ stroke: "#cbd5e1", strokeWidth: 1 }} // Customize tick marks
+                    axisLine={{ stroke: "#cbd5e1", strokeWidth: 1 }}  
+                    // tickLine={{ stroke: "#cbd5e1", strokeWidth: 1 }} 
                   />
                   <Tooltip content={<ChartTooltipContent />} />
                   <Line
                     type="linear"
-                    dataKey="y"
+                    dataKey={keyResult?.unit!}
                     stroke="#4F46E5"
                     strokeWidth={2}
                     dot={{ r: 4 }}
                   />
                 </LineChart>
+                
             </ChartContainer>
+            <div className="flex text-[12px] font-semibold text-gray-500 -translate-y-1 justify-between gap-2">
+              <small className="">Started: {format(new Date(keyResult?.startDate!), 'dd/MM/yyyy')}</small>
+              <small className="">Ending: {format(new Date(keyResult?.endDate!), 'dd/MM/yyyy')}</small>
+            </div>
+            </div>
           )}
         </>
     );

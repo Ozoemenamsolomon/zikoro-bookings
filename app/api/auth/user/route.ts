@@ -7,11 +7,11 @@ export async function POST(req: NextRequest) {
     try {
       const params = await req.json();
 
-      const { error, status } = await supabase.from("users").upsert([
-        {
-          ...params,
-        },
-      ]);
+      const { data, error, status } = await supabase
+        .from("users")
+        .upsert([{...params,},])
+        .select('*')
+        .single();
 
       if (error) {
         return Response.json(
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       if (error) throw error;
 
       return NextResponse.json(
-        { msg: "user updated successfully" },
+        {data, msg: "user updated successfully" },
         {
           status: 201,
         }

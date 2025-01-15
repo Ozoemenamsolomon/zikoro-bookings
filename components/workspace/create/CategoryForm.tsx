@@ -87,14 +87,16 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ setFormData, setErrors, for
               onChange={(e) => handleCategoryChange('note', e.target.value, index, )}
             />
 
-          <div className="flex gap-4 justify-between items-center">
+          <div className="flex   gap-4 justify-between items-center">
             <div className="flex-1">
               <h5 className="text-lg font-medium">Make this a paid appointment</h5>
               <p className="text-sm text-gray-600">Guests will be charged to book this appointment</p>
+              <small className='italic'>Coming soon</small>
+
             </div>
             <div
-              className={`flex-shrink-0 ${category.isPaidAppointment ? 'bg-blue-600 ring-blue-600 ring-2' : 'bg-gray-300 ring-2 ring-gray-300'} w-14 h-6 p-1.5 relative flex items-center rounded-full cursor-pointer`}
-              onClick={() => handleCategoryChange('isPaidAppointment', !category.isPaidAppointment, index, )}
+              className={`flex-shrink-0 ${category.isPaidAppointment ? 'bg-blue-600 ring-blue-600 ring-2' : 'bg-gray-300 ring-2 ring-gray-300'} w-14 h-6 p-1.5 relative flex items-center rounded-full cursor-pointe`}
+              // onClick={() => handleCategoryChange('isPaidAppointment', !category.isPaidAppointment, index, )}
             >
               <div className="flex w-full justify-between font-semibold text-[9px] text-gray-50">
                 <p>ON</p>

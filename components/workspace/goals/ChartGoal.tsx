@@ -10,7 +10,7 @@ import {
   PolarRadiusAxis,
   Label,
 } from "recharts"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+ 
 import { ChartContainer } from "@/components/ui/chart"
 
 const ChartGoal = ({goal}:{goal:Goal}) => {
@@ -36,9 +36,10 @@ const ChartGoal = ({goal}:{goal:Goal}) => {
           const completedKeyResults = keyResults.filter((kr) => {
             const isCompleted = kr.status === "Completed"
             const isOverdueCompleted =
-              kr.status !== "Archived" &&
-              new Date(kr.endDate!) < new Date() &&
+              kr.status !== "Archived" && kr.status !== "Completed" &&
+              new Date(kr.endDate!) > new Date() &&
               kr.currentValue! >= kr.targetValue!
+              // consider
             return isCompleted || isOverdueCompleted
           }).length
   
@@ -55,8 +56,9 @@ const ChartGoal = ({goal}:{goal:Goal}) => {
   
       fetchKeyResults()
     }, [goal])
+    // console.log({chartData})
   return (
-    <div className="bg-baseBg w-full border rounded-md">
+    <div className="  w-full  ">
     {
     loading ?
         <div className="py-20 flex justify-center">
@@ -74,18 +76,18 @@ const ChartGoal = ({goal}:{goal:Goal}) => {
       ) : (
         <ChartContainer config={{}} className="w-full max-w-[28rem] mx-auto h-48">
           <RadialBarChart
-            data={[{ name: "Completed", value: chartData.percentage, fill: "hsl(var(--zblue))" }]}
+            data={[
+              { name: "Completed", value: chartData.percentage, fill: "hsl(var(--zblue))" },
+            ]}
             startAngle={90}
-            endAngle={-270}
-            // innerRadius={100}
-            // outerRadius={110}
+            endAngle={90 + (chartData.percentage / 100) * 360}
             width={250}
             height={250}
-            
-            innerRadius="80%"
-            outerRadius="90%"
+            innerRadius={80}
+            outerRadius={90}
           >
-            <PolarGrid gridType="circle" radialLines={false} stroke="none" />
+            <PolarGrid gridType="circle" radialLines={false} stroke="none"  className="first:fill-gray-200 last:fill-white"
+              polarRadius={[82, 78]}/>
             <RadialBar dataKey="value" background cornerRadius={10} />
             <PolarRadiusAxis tick={false} tickLine={false}  axisLine={false}>
               <Label

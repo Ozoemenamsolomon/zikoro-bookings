@@ -14,19 +14,20 @@ import { urls } from '@/constants';
 type ContactProps = {
   fetchedcontacts: BookingsContact[] | null;
   searchquery?: string;
+  contactId?:string
 };
 
-const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
+const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery, contactId }) => {
   const { replace, push } = useRouter();
   const pathname = usePathname()
 
-  // eg: /workspace/contacts/[contactId]/goals
-  const contactId = pathname?.split('/')?.[3] || ''
-  const fourthPath = pathname?.split('/')?.[4] || ''
-  const { contact, setContact, contacts, setContacts, isfetching, searchTerm, setSearchTerm, setIsFetching,activePath, setActivePath, setIsOpen } = useAppointmentContext();
-  const [loading, setLoading] = useState<number | null>(null);
+  // eg: ws/[workspace]/contacts/[contactId]/goals
+  // const g = pathname?.split('/')
+  const pathnameContactId = pathname?.split('/')?.[4] || ''
+  const fifthPath = pathname?.split('/')?.[5] || ''
+  const { contact, setContact, contacts, setContacts, isfetching, searchTerm, setSearchTerm, setIsFetching,getWsUrl, setActivePath, setIsOpen } = useAppointmentContext();
+  const [loading, setLoading] = useState<string | null>(null);
 
-  // console.log({fetchedcontacts, contactId, pats:pathname?.split('/')})
   const filterContacts = useCallback(
     (term: string) => {
       if (!contacts) return [];
@@ -34,11 +35,24 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
         `${item.firstName} ${item.lastName}`.toLowerCase().includes(term.toLowerCase())
       );
     },
-    [contacts]
+    [contacts,contact,fetchedcontacts]
   );
   
+  useEffect(()=>{
+    if(searchquery){
+       setSearchTerm(searchquery)
+    }
+  }, [searchquery])
+
+  useEffect(()=>{
+    if(searchquery){
+       setSearchTerm(searchquery)
+    }
+  }, [searchquery])
+  
+  
   useEffect(() => {
-    const updateContactsAndSelected = () => {
+    const updateContactsAndSelected = async () => {
       if (!fetchedcontacts) return; // Avoid processing if no contacts fetched
   
       // If a search term exists, filter contacts
@@ -51,19 +65,20 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
       } else {
         // Reset to fetched contacts
         setContacts(fetchedcontacts);
-  
+        // console.log({fetchedcontacts, contactId, pats:pathname?.split('/')})
         // Update selected contact
-        if (contactId) {
-          const filteredContact = fetchedcontacts.find((item) => item.id === Number(contactId));
+        if (contactId || pathnameContactId && contact?.id !== pathnameContactId) {
+          
+          const filteredContact = fetchedcontacts.find((item) => item.id === contactId);
           if(filteredContact){
-
               setContact((prevContact) =>
                 prevContact?.id === filteredContact?.id ? prevContact : filteredContact || null
             );
           } else {
+            console.log('no filteredContact')
             setContact(fetchedcontacts?.[0])
           }
-        } else {
+        } else if (contact?.id!==pathnameContactId) {
           setContact((prevContact) =>
             prevContact?.id === fetchedcontacts?.[0]?.id ? prevContact : fetchedcontacts?.[0] || null
           );
@@ -73,39 +88,38 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
   
     updateContactsAndSelected();
     setIsFetching(false)
-  }, [fetchedcontacts, searchTerm, contactId, filterContacts]); // Keep dependencies concise
+  }, [fetchedcontacts, searchTerm,searchquery, contactId, pathnameContactId]); // Keep dependencies concise
   
   useEffect(() => {
-    if(fourthPath) setActivePath(fourthPath)
-  }, [fourthPath])
+    if(fifthPath) setActivePath(fifthPath)
+  }, [fifthPath])
   
   // Handle search input changes
-  const handleChange = 
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       setSearchTerm(value);
-      replace(`/workspace/contacts/?s=${value}`);
+      replace(`${pathname}?s=${value}`);
     }
 
-  // Function to toggle the favorite status
-  const makeFavorite = async ({ favorite, id }: { favorite: boolean; id: number }) => {
-    const updatedFavorite = !favorite;
+  // Function to toggle the favourite status
+  const makeFavorite = async ({ favourite, id }: { favourite: boolean; id: string }) => {
+    const updatedFavorite = !favourite;
     const updatedContacts = contacts?.map((item) =>
-      item.id === id ? { ...item, favorite: updatedFavorite } : item
+      item.id === id ? { ...item, favourite: updatedFavorite } : item
     );
     setContacts(updatedContacts!);
 
     try {
       setLoading(id);
-      const { data, error } = await PostRequest({url:'/api/bookingsContact/updateContact',body:{favorite: updatedFavorite, id}})
-      // console.log( { data, error })
+      const { data, error } = await PostRequest({url:'/api/bookingsContact/updateContact',body:{favourite: updatedFavorite, id}})
+      console.log( { data, error })
 
       if (error) {
-        console.error('Error updating favorite status:', error);
+        console.error('Error updating favourite status:', error);
         setContacts(contacts);
       }
       // const updatedContacts = contacts?.map((item) =>
-      //   item.id === id ? { ...item, favorite: updatedFavorite } : item
+      //   item.id === id ? { ...item, favourite: updatedFavorite } : item
       // );
       // setContacts(updatedContacts!);
       
@@ -141,18 +155,18 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
           </div>
         ) : contacts?.length ? (
           contacts.map((item) => {
-            const { firstName, profileImg, lastName, favorite, id, email, tags } = item
+            const { firstName, profileImg, lastName, favourite, id, email, tags } = item
             return (
               <div key={id} 
-              onClick={() => {
-                setContact(item)
-                push(`${urls.contacts}/${id}/${fourthPath}`)
-                setActivePath(fourthPath)
+              onClick={async () => {
+                 await setContact(item)
+                push(getWsUrl(`${urls.contacts}/${id}/${fifthPath}`))
+                setActivePath(fifthPath)
                 setIsOpen(true)
                 }} className="py-2 w-full cursor-pointer">
               <div
                 className={`${
-                  contact?.id === id ? 'bg-baseBg ring-1 ring-slate-300' : ''
+                  contact?.id === id ? 'bg-baseBg ring-1 ring-zikoroBlue' : ''
                 } rounded-md w-full p-2 hover:bg-slate-100 duration-300 flex gap-2 items-center`}
               >
                 <div className="h-12 w-12 rounded-full bg-baseLight uppercase font-semibold shrink-0 flex items-center justify-center">
@@ -188,11 +202,11 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts,  }) => {
                 <div
                   onClick={(e) => {
                     e.stopPropagation();
-                    makeFavorite({ favorite: favorite!, id: id! });
+                    makeFavorite({ favourite: favourite!, id: id! });
                   }}
                   className="shrink-0"
                 >
-                  {favorite ? (
+                  {favourite ? (
                     <HeartFill size={20} className="text-basePrimary" />
                   ) : (
                     <Heart size={20} className="text" />

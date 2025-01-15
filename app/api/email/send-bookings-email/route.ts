@@ -21,21 +21,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
   }
   const { bookingFormData, appointmentLink } = await req.json();
-console.log( { bookingFormData, appointmentLink })
+// console.log( { bookingFormData, appointmentLink })
   try {
 
     if (!bookingFormData || !appointmentLink) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const { userEmail: hostEmail, organization: hostOrg, firstName: hostfName, lastName: hostlName, phoneNumber: hostPhone, } = appointmentLink.createdBy;
+    const { userEmail: hostEmail, organization: hostOrg, firstName: hostfName, lastName: hostlName, phoneNumber: hostPhone,  } = appointmentLink.createdBy;
 
     const { appointmentName, appointmentDuration, appointmentTime, appointmentDate, appointmentTimeStr, firstName, lastName, notes, participantEmail, teamMembers, phone } = bookingFormData;
 
-    const emailList = [participantEmail, hostEmail];
+    const emailList = [participantEmail, hostEmail, ];
     const uniqueEmailArray = mergeEmailLists(teamMembers, emailList);
 
-    console.log(emailList, uniqueEmailArray, );
+    console.log({emailList,teamMembers, uniqueEmailArray, });
 
     const appointmentDateTime = parse(`${appointmentDate}T${appointmentTime}`, "yyyy-MM-dd'T'HH:mm:ss", new Date());
     const appointmentEndDateTime = addMinutes(appointmentDateTime, appointmentDuration);

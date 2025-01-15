@@ -2,8 +2,10 @@ import Link from 'next/link'
 import React from 'react'
 import LinksCard from './LinksCard'
 import { urls } from '@/constants'
+import { useAppointmentContext } from '@/context/AppointmentContext'
 //  You haven't created any schedule. Your schedule will appear here. Start creating
 const Empty = () => {
+  const {getWsUrl} = useAppointmentContext()
   return (
     <section className='relative w-full h-[85vh] flex justify-center overflow-hidden items-center flex-col text-center'>
 
@@ -49,7 +51,7 @@ const Empty = () => {
       </h2>
       <p className='pb-4 font-semibold'>Your schedule will appear here</p>
 
-      <Link href={urls.create} className='py-3 px-6 font-semibold text-white rounded-md bg-basePrimary' >Start creating</Link>
+      <Link href={getWsUrl(urls.create)} className='py-3 px-6 font-semibold text-white rounded-md bg-basePrimary' >Start creating</Link>
     </div>
         
     </section>

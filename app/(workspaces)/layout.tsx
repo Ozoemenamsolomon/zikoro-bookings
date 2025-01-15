@@ -9,8 +9,6 @@ export const metadata: Metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
-    <AppointmentProvider>
-        {children}
-    </AppointmentProvider>
+    <>{children}</>
   );
 }

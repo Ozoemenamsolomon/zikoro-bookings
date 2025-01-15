@@ -2,50 +2,51 @@ import { AppointmentLink, } from "@/types/appointments";
 import { createClient } from "@/utils/supabase/server"
 import { getUserData } from ".";
 import { randomInt } from "crypto";
+import { createADMINClient } from "../../utils/supabase/no-caching";
 
 interface FetchContactsResult {
   data: AppointmentLink[] | null;
   error: string | null;
   count: number;
+  // workspaceId?:string;
 }
 
 export const fetchSchedules = async (
-  userId?:string, start:number|string = 0, end:number|string = 19
+  workspaceId:string, userId?:string, start:number|string = 0, end:number|string = 19,
 ): Promise<FetchContactsResult> => {
-    const supabase = createClient()
-
-    let id 
-    if(userId){
-      id = userId
-    } else {
-      const {user} = await getUserData()
-      id = user?.id
+    const supabase = createADMINClient()
+    if(!workspaceId){
+      console.error('FETCH SCHEDULES: workspaceId is missing')
     }
+    // let id 
+    // if(userId){
+    //   id = userId
+    // } else {
+    //   const {user} = await getUserData()
+    //   id = user?.id
+    // }
 
   try {
     let query = supabase
       .from('appointmentLinks')
       .select('*', { count: 'exact' }) 
-      .eq('createdBy', id)
+      // .eq('createdBy', id)
+      .eq('workspaceId', workspaceId)
       .range(Number(start), Number(end))
       .order('created_at', {ascending: false} )
-      .neq("id", randomInt(1000000000))
-    // const {count } = await supabase
-    //   .from('bookings') 
-    //   .select('*', { count: 'exact' } )
-    //   .eq('createdBy', id)
+
 
     const { data, count, error } = await query;
-    // console.log({ data, count, error, id });
+    // console.log({workspaceAlias, data, count, error, id });
 
     if (error) {
-      console.error('Error fetching contacts:', error);
+      console.error('Error fetching schedules:', error);
       return { data: null, error: error.message, count: 0 };
     }
 
     return { data, error: null, count: count ?? 0 };
   } catch (error) {
-    console.error('Server error:', error);
+    console.error('schedules: Server error:', error);
     return { data: null, error: 'Server error', count: 0 };
   }
 
@@ -54,7 +55,7 @@ export const fetchSchedules = async (
 export const fetchSchedule = async (
   alias: string
 ) => {
-    const supabase = createClient()
+    const supabase = createADMINClient()
 
     try {
     const { data, error }  = await supabase
@@ -63,7 +64,7 @@ export const fetchSchedule = async (
       .eq('appointmentAlias', alias)
       .single()
 
-    console.error({ data, error });
+    // console.error({ data, error, alias });
     return { data, error: error?.message};
   } catch (error) {
     console.error('AppointmentLink Server error:', error);

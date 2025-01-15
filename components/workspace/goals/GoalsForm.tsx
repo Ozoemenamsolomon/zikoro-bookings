@@ -3,18 +3,17 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import CustomInput from '../ui/CustomInput'
 import { CustomSelect } from '@/components/shared/CustomSelect'
-import { DatePicker } from '../ui/DatePicker'
-import { useGoalContext } from '@/context/GoalContext'
 import useUserStore from '@/store/globalUserStore'
 import { Goal } from '@/types/goal'
 import AddKeyResult from './AddKeyResult'
 import { useAppointmentContext } from '@/context/AppointmentContext'
 import { GoalDatePicker } from './GoalDatePicker'
 import { isBefore, startOfDay, startOfToday } from 'date-fns'
+import { useGoalContext } from '@/context/GoalContext'
 
 
 const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children?:React.ReactNode }) => {
-  const {goalData, setGoalData, errors, setErrors,} = useGoalContext()
+  const {goalData, setGoalData, errors, setErrors, teamMembers} = useGoalContext()
   const {contact} = useAppointmentContext()
   const {user} = useUserStore()
 
@@ -26,8 +25,8 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
       createdBy: user?.id,
       goalName: '',
       description: '',
-      goalOwner: user?.id,
-      goalOwnerName: user?.firstName +' '+user?.lastName,
+      goalOwner: null,
+      goalOwnerName: '',
       startDate: null,
       endDate: null,
       progress: null,
@@ -35,23 +34,12 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
       // status: 'DRAFT',
   };
     if(goal){
-      setGoalData({ ...initialFormData, ...goal });
+      setGoalData({ ...initialFormData, ...goal, goalOwner:goal.goalOwner?.id, goalOwnerName: `${goal?.goalOwner?.userId?.firstName} ${goal?.goalOwner?.userId?.lastName}` });
     }else{
       setGoalData(initialFormData)
     }
   }, [user,goal])
-  
-  const ownerOptions = [
-    { value:user?.id,  
-      label: `${user?.firstName} ${user?.lastName}` },
-    { value: 122,  
-      label: 'Ebuka Johnson' },
-    { value:102,
-      label: 'Smart Udoka' },
-    { value:87, 
-      label: 'Bodu Joel' },
-  ]
-
+  // console.log({goalData})
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setGoalData(prev => ({ ...prev, [name]: value }))
@@ -63,15 +51,16 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
     setErrors(prev => ({ ...prev, [field]: '' }))
   };
 
-  const handleSelectChange = (value: number | string) => {
-    const selectedOption = ownerOptions.find(option => option.value === Number(value));
+  const handleSelectChange = (value: string) => {
+    const selectedOption = teamMembers.find(option => option.value === String(value));
+    console.log({value,selectedOption})
     if (!selectedOption) {
       return;
     }
   
     setGoalData(prevData => ({
       ...prevData,
-      goalOwner: selectedOption.value,
+      goalOwner: Number(selectedOption.value),
       goalOwnerName: selectedOption.label,
     }));
   };
@@ -145,11 +134,14 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
       {/* Owner */}
       <CustomSelect
         label="Owner"
+        name='goalOwner'
         placeholder="Select an owner"
-        options={ownerOptions}
-        value={goalData.goalOwner!}
+        options={teamMembers}
+        value={goalData.goalOwner ? String(goalData.goalOwner ) :'' }
         error={errors?.goalOwner!}
         onChange={handleSelectChange}
+        isRequired
+        noOptionsLabel='No options available. Kindly add team members from the settings menu.'
       />
 
         <div className="flex flex-col sm:flex-row   w-full gap-3">

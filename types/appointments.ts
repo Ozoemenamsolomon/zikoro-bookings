@@ -2,6 +2,7 @@ export interface AppointmentLink {
     id?: bigint;
     created_at?: string;
     appointmentName: string;
+    workspaceId: string;
     category: any;
     duration: number|null;
     loctionType: string;
@@ -122,12 +123,13 @@ export interface UserType {
   facebook?: string | null;
   referralCode?: string | null;
   referredBy?: string | null;
+  workspaceRole?: string;
 }
 
 export interface User {
-  id: bigint;
-  created_at: Date;
-  userEmail: string;
+  id?: bigint;
+  created_at?: Date;
+  userEmail?: string;
   firstName: string;
   lastName: string;
   jobTitle?: string | null;
@@ -144,6 +146,7 @@ export interface User {
   facebook?: string | null;
   referralCode?: string | null;
   referredBy?: string | null;
+  workspaceRole?: string;
 }
 
 export interface AppointmentUnavailability {
@@ -156,7 +159,7 @@ export interface AppointmentUnavailability {
 }
 
 export interface BookingsContact {
-  id?: number; // bigint
+  id?: string; // uuid
   created_at?: string; // timestamp with time zone
   email?: string | null; // text
   phone?: string | null; // text
@@ -168,7 +171,7 @@ export interface BookingsContact {
   createdBy?: number | null; // bigint
   age?: number;
   profileImg?: string;
-  favorite?: boolean;
+  favourite?: boolean;
 }
 export interface ContactTag {
   id?: number;  

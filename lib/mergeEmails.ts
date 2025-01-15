@@ -1,5 +1,5 @@
 export function mergeEmailLists(emailString: string, emailArray: string[]): string[] {
-  console.log({emailArray,emailString})
+  
     const splitEmailArray = emailString ? emailString?.split(',').map(email => email.trim()) : [];
     const combinedEmailArray = [...splitEmailArray, ...emailArray];
   

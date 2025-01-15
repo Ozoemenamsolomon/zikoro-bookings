@@ -19,4 +19,5 @@ export const UserSchema = z.object({
   facebook: z.string(),
   userId: z.string().optional().nullable(),
   website: z.string().optional(),
+  workspaceRole: z.string().optional(),
 });

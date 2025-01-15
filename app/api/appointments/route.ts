@@ -10,9 +10,14 @@ export async function GET(req: NextRequest) {
     const type = searchParams.get('type')!;  
     const userId = searchParams.get('userId')!;
     const date = searchParams.get('date')!;
+    const workspaceId = searchParams.get('workspaceId')!;
 
+    if ( !workspaceId ) {
+      console.error("FETCHAPPOINTMENTBOOKINGS: Missing required parameters: workspaceId")
+      return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
+    }
     try {
-        const {data, count, error} = await fetchAppointments({userId, type, date})
+        const {data, count, error} = await fetchAppointments({workspaceId, userId, type, date})
         // console.error({ data, count, error });
   
       if (error) {

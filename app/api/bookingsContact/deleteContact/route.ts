@@ -13,11 +13,9 @@ export async function DELETE(req: NextRequest) {
     try {
       const {data, error} = await supabase
       .from('bookingsContact')
-      .update({status: 'ARCHIVED'})
+      .delete()
       .eq('id', id)
-      .select('*')
-      .single()   
-  
+  // TODO: confirm that the cascaded table items are deleted too
       if (error) {
         console.error("Error deleting contact:", error);
         return NextResponse.json({data,  error:error.message }, { status: 400 });

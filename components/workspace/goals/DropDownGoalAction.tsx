@@ -8,16 +8,17 @@ import { urls } from '@/constants'
 import { Goal } from '@/types/goal'
 import { useAppointmentContext } from '@/context/AppointmentContext'
 import DeleteGoal from './DeleteGoal'
+import KeyResultForm from './KeyResultForm'
 
 const DropDownGoalAction = ({goal,}:{goal:Goal})  => {
-  const {contact} = useAppointmentContext()
+  const {contact,getWsUrl} = useAppointmentContext()
   // const [selectedView, setSelectedView] = useState<'Default' | 'Chart'>('Default');
   // const [drop, setDrop] = useState<boolean>(false);
   // const ref = useRef(null)
   // useClickOutside( ref, ()=>setDrop(false))
   return (
     <PopoverMenu
-        className="w-40 "
+        className="w-48"
         align="end"
         trigerBtn={
           <Button className="rounded-full h-5 w-5 text-white p-1 absolute right-7 top-2">
@@ -26,12 +27,13 @@ const DropDownGoalAction = ({goal,}:{goal:Goal})  => {
         }
       >
         <div className="bg-white shadow rounded-md p-4 space-y-3 text-sm w-full text-gray-800">
-          <Link href={`${urls.contacts}/${contact?.id}/goals/details/${goal.id}`} className='block hover:text-gray-950 duration-300 '>
+          <Link href={getWsUrl(`${urls.contacts}/${contact?.id}/goals/details/${goal.id}`)} className='block hover:text-gray-950 duration-300 '>
             Preview Goal
           </Link>
-          <Link href={`${urls.contacts}/${contact?.id}/goals/edit/${goal.id}`} className='block hover:text-gray-950 duration-300 '>
+          <Link href={getWsUrl(`${urls.contacts}/${contact?.id}/goals/edit/${goal.id}`)} className='block hover:text-gray-950 duration-300 '>
             Edit Goal
           </Link>
+          <KeyResultForm goal={goal} mode='edit' isActive={true}/>
 
           {/* <div ref={ref}>
             <button

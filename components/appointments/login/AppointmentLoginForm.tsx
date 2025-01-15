@@ -6,17 +6,24 @@ import { useState } from "react";
 import { useLogin } from "@/hooks/services/auth";
 import { urls } from "@/constants";
 import { LoaderAlt } from "styled-icons/boxicons-regular";
+import { User } from "@/types/appointments";
 
-const AppointmentLoginForm = () => {
+const AppointmentLoginForm =({userEmail, role ,workspaceName ,workspaceAlias, userData ,}:{ 
+  userEmail:string, 
+  role:string ,
+  workspaceName:string ,
+  workspaceAlias:string ,
+  userData:User|null,
+}) => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const { loading, logIn } = useLogin();
 
   const [formData, setFormData] = useState({
-    email: "",
+    email: userEmail || "",
     password: "",
+    role, workspaceAlias
   });
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -24,7 +31,7 @@ const AppointmentLoginForm = () => {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    await logIn(formData, urls.schedule);
+    await logIn(formData, userEmail, userData);
   }
 
   return (
@@ -90,8 +97,13 @@ const AppointmentLoginForm = () => {
           type="submit"
           className="py-4 px-3 text-base w-full rounded-[8px] font-semibold mt-10 mb-6 text-white bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end"
         >
-          {loading && <LoaderAlt size={22} className="animate-spin" />}
-          Get Started
+          {loading ?
+          <div className="flex w-full justify-center gap-2 items-center">
+            <LoaderAlt size={22} className="animate-spin" /> 
+            {workspaceAlias ? loading : 'Get Started' }
+          </div> :
+            'Get Started'
+          }
         </button>
       </form>
 

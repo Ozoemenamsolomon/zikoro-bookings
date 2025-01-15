@@ -9,7 +9,8 @@ import PaginationMain from '@/components/shared/PaginationMain'
 import { useAppointmentContext } from '@/context/AppointmentContext'
 
 const PreviousAppointments = ({ contact }: { contact: BookingsContact }) => {
-  const { user } = useUserStore()
+  const { user,currentWorkSpace } = useUserStore()
+  const workspaceId = currentWorkSpace?.workspaceAlias
   const {show} = useAppointmentContext()
   const [bookings, setBookings] = useState<any[]>([])
   const [totalPages, setTotalPages] = useState<number>(0)
@@ -24,7 +25,7 @@ const PreviousAppointments = ({ contact }: { contact: BookingsContact }) => {
     setLoading(true)
     try {
       const offset = (page - 1) * limit
-      const response = await fetch(`/api/bookingsContact/fetchBookings?createdBy=${user?.id}&contactEmail=${contact?.email}&offset=${offset}&limit=${limit}&ltToday=${today}`)
+      const response = await fetch(`/api/bookingsContact/fetchBookings?createdBy=${user?.id}&contactEmail=${contact?.email}&offset=${offset}&limit=${limit}&ltToday=${today}&workspaceId=${workspaceId}`)
       const { data, count, error } = await response.json()
 
       if (error) {

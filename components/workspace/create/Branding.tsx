@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AppointmentFormData,  FormProps } from '@/types/appointments'; 
 import ColorPicker from '../ui/ColorPicker';
 import UploadImage from './uploadImage';
 import CustomInput from '../ui/CustomInput';
+import useUserStore from '@/store/globalUserStore';
+import Image from 'next/image';
+import { ImageUp, PenLine } from 'lucide-react';
+import CreateWorkSpace from '../workspace/CreateWorkSpace';
 
 const Branding: React.FC<FormProps> = ({
   formData,
@@ -10,6 +14,8 @@ const Branding: React.FC<FormProps> = ({
   errors,
   handleChange,
 }) => {
+
+  const {user,currentWorkSpace,setCurrentWorkSpace} = useUserStore()
 
   const handleToggleZikoroBranding = () => {
     if (setFormData) { 
@@ -19,10 +25,26 @@ const Branding: React.FC<FormProps> = ({
       }));
     }
   };
+
+  useEffect(() => {
+    setFormData&&setFormData((prev)=>{
+      return {
+        ...prev,
+        businessName: currentWorkSpace?.workspaceName! || '',
+        logo: currentWorkSpace?.workspaceLogo! || '',
+      }
+    })
+  }, [currentWorkSpace])
+  
   return (
     <div className="space-y-4">
-      <div>
-        <CustomInput
+
+      <div className='flex gap-2 items-center p-3 border rounded-md'>
+        <p className='w-full'>{formData?.businessName || ''}</p>
+        <PenLine size={20} className='shrink-0'/>
+      </div>
+
+      {/* <CustomInput
           label='Business Name'
           type='text'
           error={errors?.businessName}
@@ -30,18 +52,32 @@ const Branding: React.FC<FormProps> = ({
           value={formData?.businessName || ''}
           placeholder='Enter Business Name'
           className=''
+          disabled
           onChange={handleChange}
+        /> */}
+
+      <div className="flex">
+        <div className="flex gap-2 pb-2 border-b">
+        {
+          currentWorkSpace?.workspaceLogo  ?
+          <Image src={currentWorkSpace?.workspaceLogo || ''} alt='logo' width={300} height={300} className='object-cover w-14 rounded-md'/>
+          :
+          <ImageUp size={36} className='text-gray-500'/>
+        }
+
+        <CreateWorkSpace 
+          workSpaceData = {currentWorkSpace!}
+          button={<button> Edit workspace logo  </button>}
+          isRefresh={true}
         />
-      </div>
-
-      <div className="">
         
-        <UploadImage formData={formData!} setFormData={setFormData!} multiple={false}/>
+        {/* <UploadImage formData={formData!} setFormData={setFormData!} multiple={false}/> */}
+      </div>
       </div>
 
       <div className="">
-        <p className="pb-2">Brand Color</p>
-        <div className="py-2 px-4 bg-baseLight flex items-center justify-between w-full rounded-md">
+        {/* <p className="pb-2">Brand Color</p> */}
+        <div className="   flex items-center justify-between w-full rounded-md">
           <p>Choose Brand Color</p>
 
           <div className="flex pt-1 items-center gap-2 px-2 rounded-md bg-gray-100 border border-gray-200 text-gray-00 ">

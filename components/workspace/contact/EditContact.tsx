@@ -5,7 +5,7 @@ import { Pencil } from 'lucide-react'
 import CustomInput from '../ui/CustomInput'
 import { DatePicker } from '../ui/DatePicker'
 import LinksInput from '../ui/LinksInput'
-import ProfileImageUpload from './ProfileImageUpload'
+import ProfileImageUpload, { uploadImage } from './ProfileImageUpload'
 import { BookingsContact,  } from '@/types/appointments'
 import {toast} from 'react-toastify'
 import { useAppointmentContext } from '@/context/AppointmentContext'
@@ -25,18 +25,24 @@ const validateForm = (formData: any) => {
 
 const EditContact = () => {
     const { contact, setContact, setContacts } = useAppointmentContext()
+    const [file, setFile] = useState<File|null>(null)
+    const [previewUrl, setPreviewUrl] = useState<string>()
 
     const [formData, setFormData] = useState<BookingsContact>({
         ...contact
     })
 
     useEffect(() => {
-        contact && setFormData(contact)
+        if(contact){
+            setFormData(contact)
+            setPreviewUrl(contact?.profileImg || '')
+        }
     }, [contact])
     
 
     const [errors, setErrors] = useState<any>({})
-    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState('')
+
 
     const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement| HTMLTextAreaElement>) => {
         const { name, value } = e.target
@@ -60,10 +66,19 @@ const EditContact = () => {
     
         // Proceed only if there are no validation errors
         if (Object.values(validationErrors)?.length === 0) {
-            setIsSubmitting(true);
+            
     
             try {
-                const {data, error}  =  await PostRequest({url:'/api/bookingsContact/updateContact',body: formData}) 
+                let imageUrl
+                if(file) {
+                    setIsSubmitting('uploading...');
+                    imageUrl = await uploadImage(file!)
+                }
+                setIsSubmitting('Submitting...');
+                const {data, error}  =  await PostRequest({
+                url:'/api/bookingsContact/updateContact',
+                body: {...formData, profileImg:imageUrl}
+                }) 
                 console.log({data, error});
                 if (data) {
                     setContacts((prevContacts: BookingsContact[] | null) =>
@@ -74,6 +89,7 @@ const EditContact = () => {
                                 : prevContacts  
                     );
                     setContact(data);
+                    setFile(null)
                     toast.success('Contact updated');
                 } else {
                     toast.error('Server error! Check your network')
@@ -82,7 +98,7 @@ const EditContact = () => {
                 toast.error('Server error! Check your network')
                 console.error('Error submitting form:', error);
             } finally {
-                setIsSubmitting(false);
+                setIsSubmitting('');
             }
         }
     };
@@ -108,9 +124,9 @@ const EditContact = () => {
                             <button 
                                 type='submit' 
                                 className={`bg-basePrimary text-white px-3 py-1 rounded-md ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`} 
-                                disabled={isSubmitting}
+                                disabled={isSubmitting.length>0}
                             >
-                                {isSubmitting ? 'Saving...' : 'Save'}
+                                {isSubmitting ? isSubmitting : 'Save'}
                             </button>
                         </div>
 
@@ -118,8 +134,7 @@ const EditContact = () => {
                             <h6 className="font-medium">Basic Info</h6>
 
                             <div className="flex py-2 justify-center w-full">
-                                <ProfileImageUpload formData={formData} setFormData={setFormData} />
-                                
+                                <ProfileImageUpload formData={formData} previewUrl={previewUrl!} setPreviewUrl={setPreviewUrl} setFile={setFile} />
                             </div>
 
                             <div className="grid sm:grid-cols-2 gap-4">

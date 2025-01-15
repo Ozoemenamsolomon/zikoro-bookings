@@ -8,7 +8,6 @@ import 'react-quill/dist/quill.snow.css';
 import { toast } from 'react-toastify';
 import { PostRequest } from '@/utils/api';
 import { useAppointmentContext } from '@/context/AppointmentContext';
-import { useGoalContext } from '@/context/GoalContext';
 import { KeyResult } from '@/types/goal';
 import { useRouter } from 'next/navigation';
 import ValueMetrics from './ValueMetrics';
@@ -17,31 +16,21 @@ import { CustomSelect } from '@/components/shared/CustomSelect';
 import { DatePicker } from '../ui/DatePicker';
 import { metricsTypes } from './KeyResultForm';
 import useUserStore from '@/store/globalUserStore';
+import { useGoalContext } from '@/context/GoalContext';
 
 const EditKeyResultDetails = ({ keyResult, text }: { keyResult: KeyResult, text?:string }) => {
   
   const {refresh} = useRouter()
   const {user} = useUserStore()
-  const {metricValue,  isSubmitting, setIsSubmitting,} = useGoalContext()
+  const {  isSubmitting, setIsSubmitting,teamMembers} = useGoalContext()
   const [keyResultData, setKeyResultData] = useState<KeyResult>()
 
   useEffect(() => {
-        setKeyResultData(keyResult)
+        setKeyResultData({...keyResult, keyResultOwner: keyResult.keyResultOwner.id })
   }, [keyResult])
 
   const [errors, setErrors] = useState<{ [key: string]: string | null }>({})
   const [success, setSuccess] = useState<string>('')
-
-  const ownerOptions = [
-    { value:user?.id,  
-      label: `${user?.firstName} ${user?.lastName}` },
-    { value: 122,  
-      label: 'Ebuka Johnson' },
-    { value:102,
-      label: 'Smart Udoka' },
-    { value:87, 
-      label: 'Bodu Joel' },
-  ]
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -54,12 +43,12 @@ const EditKeyResultDetails = ({ keyResult, text }: { keyResult: KeyResult, text?
     setErrors(prev => ({ ...prev, [field]: '' }))
   };
 
-  const handleSelectChange = (value: number) => {
-    const selectedOption = ownerOptions?.find(option => option.value === Number(value));
+  const handleSelectChange = (value: string) => {
+    const selectedOption = teamMembers?.find(option => option.value === (value));
     if (!selectedOption) {
       return;
     }
-        setKeyResultData((prevData) => ({ ...prevData, keyResultOwner: Number(selectedOption?.value!)}));
+    setKeyResultData((prevData) => ({ ...prevData, keyResultOwner: Number(selectedOption?.value!)}));
   };
 
    const validateForm = () => {
@@ -98,7 +87,7 @@ const EditKeyResultDetails = ({ keyResult, text }: { keyResult: KeyResult, text?
         } else {
             // console.log(data)
             toast.success('Key result editted')
-            setSuccess('Key result editted successfully')
+            // setSuccess('Key result editted successfully')
             setKeyResultData({})
             refresh()
         }
@@ -120,8 +109,8 @@ const EditKeyResultDetails = ({ keyResult, text }: { keyResult: KeyResult, text?
         </button>
       }
     >
-      <section className="max-h-[95vh] w-full overflow-auto hide-scrollbar py-6">
-            <div className="border-b pb-3 w-full ">
+      <section className="max-h-[95vh] w-full overflow-auto hide-scrollbar py-6 pb-14">
+            <div className="border-b pb-3 w-full pt-">
                 <h4 className="text-lg font-bold px-4">Edit Key Result</h4>
             </div>
 
@@ -151,10 +140,12 @@ const EditKeyResultDetails = ({ keyResult, text }: { keyResult: KeyResult, text?
             {/* Owner */}
             <CustomSelect
                 label="Owner"
+                name='keyResultOwner'
+                isRequired
                 placeholder="Select an owner"
-                options={ownerOptions}
+                options={teamMembers}
                 error={errors?.keyResultOwner!}
-                value={keyResultData?.keyResultOwner || ''}
+                value={String(keyResultData?.keyResultOwner || '')}
                 onChange={handleSelectChange}
             />
 

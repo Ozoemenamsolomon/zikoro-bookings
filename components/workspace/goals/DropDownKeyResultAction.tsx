@@ -11,19 +11,21 @@ import { useParams } from 'next/navigation'
 import EditKeyResultDetails from './EditKeyResultDetails'
 import { KeyResult } from '@/types/goal'
 import DeleteKeyResult from './DeleteKeyResult'
+import UpdateKeyResultStatus from './UpdateKeyResultStatus'
+import MetricForm from './MetricForm'
 
 const DropDownKeyResultAction = ({keyResult}:{keyResult:KeyResult}) => {
   const [selectedView, setSelectedView] = useState<'Default' | 'Chart'>('Default');
   const [drop, setDrop] = useState<boolean>(false);
   const ref = useRef(null)
   useClickOutside( ref, ()=>setDrop(false))
-  const {contact} = useAppointmentContext()
+  const {contact,getWsUrl} = useAppointmentContext()
 
   const params = useParams()
   // console.log(params)
   return (
     <PopoverMenu
-        className="w-40 "
+        className="w-48"
         align="end"
         trigerBtn={
           <Button className="rounded-full h-5 w-5 text-white p-1 absolute right-3 top-3">
@@ -33,14 +35,16 @@ const DropDownKeyResultAction = ({keyResult}:{keyResult:KeyResult}) => {
       >
         <div className="bg-white shadow rounded-md p-4 space-y-3 text-sm w-full text-gray-800">
           
-          <Link href={`${urls.contacts}/${contact?.id}/goals/details/${params?.goalId}/${keyResult.id}`} 
+          <Link href={getWsUrl(`${urls.contacts}/${contact?.id}/goals/details/${params?.goalId}/${keyResult.id}`)} 
           type="button" className="hover:text-gray-950 duration-300 block">
             Open key result
           </Link>
 
           <EditKeyResultDetails keyResult={keyResult!} text={'Edit details'}/>
+          <MetricForm keyResult={{...keyResult, keyResultOwner: keyResult.keyResultOwner.id}!} />
+          {/* <UpdateKeyResultStatus keyResult={keyResult} label='Update Status'/> */}
 
-          <div ref={ref}>
+          {/* <div ref={ref}>
             <button
                 onClick={()=>setDrop(prev=>!prev)}
               type="button"
@@ -73,7 +77,7 @@ const DropDownKeyResultAction = ({keyResult}:{keyResult:KeyResult}) => {
                 <span className="hover:text-gray-950 duration-300">Chart</span>
               </label>
             </div>
-          </div>
+          </div> */}
 
           <DeleteKeyResult keyResult={keyResult} />
         </div>

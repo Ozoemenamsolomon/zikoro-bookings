@@ -287,6 +287,7 @@ export const getUser = async (email: string | null) => {
 export function useOnboarding() {
   const [loading, setLoading] = useState(false);
   const { setUser } = useUserStore();
+  const router = useRouter();
 
   type CreateUser = {
     values: z.infer<typeof onboardingSchema>;
@@ -294,14 +295,14 @@ export function useOnboarding() {
     createdAt: string | null;
   };
   type FormData = {
-    referralCode: string;
-    referredBy: string;
-    phoneNumber: string;
-    country: string;
-    city:string;
-    firstName: string;
-    lastName: string;
-    industry: string;
+    referralCode: string,
+    referredBy:string;
+    phoneNumber: string,
+    city: string,
+    country: string,
+    firstName: string,
+    lastName: string,
+    industry: string,
   };
 
   async function registration(
@@ -311,31 +312,22 @@ export function useOnboarding() {
   ) {
     try {
       setLoading(true);
-      const { data, error, status } = await supabase
-        .from("users")
-        .insert({
+      const { data, status } = await postRequest<CreateUser>({
+        endpoint: "/auth/user",
+        payload: {
+          ...values,
           userEmail: email,
-          firstName: values.firstName,
-          lastName: values.lastName,
           created_at: createdAt,
-          city: values.city,
-          industry: values.industry,
-          referralCode: values.referralCode,
-          phoneNumber: values.phoneNumber,
-          referredBy: values.referredBy
-        });
-
-      if (error) {
-        toast.error(error.message);
-        return;
-      }
+        },
+      });
 
       if (status === 201 || status === 200) {
-        setLoading(false);
-        toast.success("Profile Updated Successfully");
         const user = await getUser(email);
         setUser(user);
+        setLoading(false);
+        toast.success("Profile Updated Successfully");
       }
+
       return data;
     } catch (error: any) {
       //
