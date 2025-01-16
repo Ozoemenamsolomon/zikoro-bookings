@@ -111,6 +111,7 @@ export const fetchBookings = async (
  type FetchAppointmentHistoryParams = {
    userId?: string;
    contactEmail: string;
+   workspaceId:string;
  };
  
  type FetchAppointmentHistoryResult = {
@@ -123,6 +124,7 @@ export const fetchBookings = async (
  export async function fetchAppointmentHistory({
    userId,
    contactEmail,
+   workspaceId,
  }: FetchAppointmentHistoryParams): Promise<FetchAppointmentHistoryResult> {
   const supabase = createADMINClient()
 
@@ -143,7 +145,7 @@ export const fetchBookings = async (
          { count: "exact" }
        )
       //  .eq("createdBy", id)
-      // TODO: .eq("workspaceId", payload?.workspaceId)
+      .eq("workspaceId", workspaceId)
       .eq("participantEmail", contactEmail)
        .range(0, limit - 1);
  

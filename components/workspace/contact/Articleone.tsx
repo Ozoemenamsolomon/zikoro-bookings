@@ -13,12 +13,8 @@ import ContactTags from './ContactTags'
 import DeleteContact from './DeleteContact'
 import Image from 'next/image'
 
-const Articleone = ({searchquery}:{searchquery?:string}) => {
-    const {contact, isfetching,setSearchTerm, setContact} = useAppointmentContext()
-
-    useEffect(() => {
-        if(searchquery) setSearchTerm(searchquery);
-    }, [searchquery]);
+const Articleone = ( ) => {
+    const {contact, isfetching, } = useAppointmentContext()
 
     if(isfetching) return (
         <div className="w-full h-screen  bg-white">

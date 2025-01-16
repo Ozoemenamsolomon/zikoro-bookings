@@ -6,26 +6,21 @@ import { unstable_noStore } from "next/cache";
 import { redirect } from "next/navigation";
 
 const Contacts = async ({
-  params: { contactId, goalId },
-  searchParams: { s },
+  params ,
+ 
 }: {
-  searchParams: { s?: string };
-  params: { contactId: string, goalId:string };
+ 
+  params: { contactId: string, goalId:string, workspaceAlias:string; };
 }) => {
-  // Disable caching
+
+  // const workspaceAlias = (await params).workspaceAlias
+  // const contactId = (await params).contactId
+  const goalId = (await params).goalId
+
   unstable_noStore();
-  // const {data,count,error} = await fetchContacts()
-  // if(!data) {
-  //   console.error("Error fetching goals:", error);
-  //   redirect(`/ws`)
-  // }
     
   return ( 
-    // <ContactLayout contactId={contactId} searchquery={s} data={data} count={count}>
-    //   <ContactSubLayout>
-        <EditGoal goalId={goalId}/>
-    //   </ContactSubLayout>
-    // </ContactLayout>
+    <EditGoal goalId={goalId}/>
     );
 };
 

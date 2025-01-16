@@ -10,12 +10,16 @@ import { redirect } from 'next/navigation';
 import React from 'react'
 
 const ContactAppointmentHistory = async ({
-  params: { contactId, workspaceAlias },
-  searchParams: { s },
+  params ,
+  searchParams ,
 }: {
   params: { contactId: string, workspaceAlias:string; };
   searchParams: { s: string };
 }) => {
+
+  const workspaceAlias = (await params).workspaceAlias
+  const contactId = (await params).contactId
+  const s = (await searchParams).s
   unstable_noStore();
 
   const {data:contact, } = await fetchContact(contactId)
@@ -23,7 +27,7 @@ const ContactAppointmentHistory = async ({
     redirect(`/ws?msg=page not found`)
   }
   
-  const { initialData, data, count, error} = await fetchAppointmentHistory({contactEmail:contact.email!})
+  const { initialData, data, count, error} = await fetchAppointmentHistory({contactEmail:contact.email!,workspaceId:workspaceAlias})
  
   return ( 
     // <ContactLayout contactId={contactId} searchquery={s} data={contacts} count={size}>

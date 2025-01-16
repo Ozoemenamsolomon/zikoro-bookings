@@ -6,18 +6,18 @@ import { redirect } from "next/navigation";
 import { fetchGoalsByUserId } from "@/lib/server/goals";
 
 const Contacts = async ({
-  params: { contactId },
-  searchParams: { s },
+  params ,
+  children,
 }: {
-  searchParams: { s: string };
-  params: { contactId: string };
+  children:React.ReactNode,
+  params: { contactId: string, workspaceAlias:string; };
 }) => {
+
+  const contactId = (await params).contactId
   // Disable caching
   unstable_noStore();
 
   const { data: goalsData, count: goalsCount, error: goalsError } = await fetchGoalsByUserId(contactId)
-
-  // console.log({goalsData})
 
   // Handle errors
   if (goalsError) {
