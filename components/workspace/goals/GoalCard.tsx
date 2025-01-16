@@ -21,6 +21,25 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, goalId }) => {
     setGoalData(goal);
   }, [goal, setGoalData]);
 
+  const renderOwnerProfile = () => {
+    const owner = goal?.goalOwner?.userId;
+    const initials = `${owner?.firstName?.[0] || 'N'}${owner?.lastName?.[0] || 'A'}`;
+
+    return owner?.profilePicture ? (
+      <Image
+        src={owner.profilePicture}
+        alt="profile"
+        width={40}
+        height={40}
+        className="object-cover w-full h-full rounded-full"
+      />
+    ) : (
+      <div className="rounded-full h-10 w-10 flex justify-center items-center font-bold bg-baseLight uppercase">
+        {initials}
+      </div>
+    );
+  };
+
   const renderDate = (label: string, date: string | undefined) => (
     <div className="flex justify-end gap-1 items-center">
       <p>{label}:</p>

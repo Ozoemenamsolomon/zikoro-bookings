@@ -15,7 +15,7 @@ const Tags = async ({
 }) => {
  
   unstable_noStore();
-    const {data,count,error} = await fetchContacts(workspaceAlias)
+    const {data,count,error} = await fetchContacts()
  
   return ( 
     <ContactLayout contactId={contactId} searchquery={s} data={data} count={count}>

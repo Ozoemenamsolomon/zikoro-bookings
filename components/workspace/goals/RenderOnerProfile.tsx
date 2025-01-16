@@ -10,9 +10,9 @@ const RenderOnerProfile = ({owner}:{owner:any}) => {
           <Image
             src={owner.profilePicture}
             alt="profile"
-            width={300}
-            height={300}
-            className="object-cover w-10 h-10 rounded-full"
+            width={40}
+            height={40}
+            className="object-cover w-full h-full rounded-full"
           />
         ) : (
           <div className="rounded-full h-10 w-10 flex justify-center items-center font-bold bg-baseLight uppercase">

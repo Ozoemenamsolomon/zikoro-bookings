@@ -121,13 +121,8 @@ const ContactTags = () => {
     
         const filteredTags = contact.tags.filter(item => item.tag !== tagToDelete);
         const previousContactState = contacts?.find(item => item?.id === contact?.id);
-        const previousContacts= contacts
     
         setContact({ ...contact, tags: filteredTags });
-        setContacts((prev)=>{
-            const res = prev?.map((item)=> item.id === contact.id ? { ...contact, tags: filteredTags } : item)
-            return res||[]
-        })
         try {
         // deleting contact tags
         const { error} = await PostRequest({
@@ -136,11 +131,10 @@ const ContactTags = () => {
             if (error) {
                 if (previousContactState) {
                     setContact(previousContactState); // Revert state on error
-                    setContacts(previousContacts); // Revert state on error
                 }
                 throw new Error(error.message);
             }
-            // toast.success(`Tag - ${tagToDelete} was deleted`);
+            toast.success(`Tag - ${tagToDelete} was deleted`);
         } catch (error) {
             toast.error(`Error occurred! Tag - ${tagToDelete} not deleted`);
             if (previousContactState) {
