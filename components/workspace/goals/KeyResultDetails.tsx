@@ -16,7 +16,7 @@ const KeyResultDetails = async({params}:{params:{workspaceAlias:string, keyResul
 
     const {keyResult,error} = await fetchKeyResultById(keyResultId)
     
-    if (!keyResult ) redirect(`/ws/${workspaceAlias}/${urls.contacts}/${contactId}/goals`)
+    if (!keyResult ) redirect(`/ws/${workspaceAlias}/${urls.contacts}/${contactId}`)
     const timelines = await fetchMetricsByKeyResultId(keyResult?.id!);
 
   return (
