@@ -8,6 +8,7 @@ import { useAppointmentContext } from '@/context/AppointmentContext'
 import { Loader2Icon } from 'lucide-react'
 import { BookingsContact } from '@/types/appointments'
 import EmptyContact from './EmptyContact'
+import EmptyList from '../ui/EmptyList'
 
 const ArticleTwo = ({contact}:{contact:BookingsContact|null}) => {
   const {isfetching} = useAppointmentContext()
@@ -19,7 +20,13 @@ const ArticleTwo = ({contact}:{contact:BookingsContact|null}) => {
     </div>
   )
   if(!contact){
-    return <EmptyContact />
+    return (
+      <div className="w-full h-screen bg-white">
+          <div className="h-80 flex flex-col justify-center items-center">
+          <EmptyList size='34' text='No Contact Found' />
+          </div>
+      </div>
+    )
   }
   return (
     <div className="w-full p-6 md:px-2  md:h-screen md:pb-20 overflow-auto no-scrollbar space-y-5 bg-white relative z-10">

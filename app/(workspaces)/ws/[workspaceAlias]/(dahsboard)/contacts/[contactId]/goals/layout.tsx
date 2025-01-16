@@ -5,9 +5,15 @@ import { fetchContacts } from '@/lib/server/contacts';
 import { redirect } from 'next/navigation';
 import React from 'react'
 
-const layout = async ({ children }: { children: React.ReactNode }) => {
-
-  const {data,count,error} = await fetchContacts()
+const layout = async ({ children, params }: { children: React.ReactNode,
+  params: {
+    workspaceAlias:string,
+    contactId:string,
+  }
+ }) => {
+  const workspaceAlias = (await params).workspaceAlias
+  
+  const {data,count,error} = await fetchContacts(workspaceAlias)
   if(!data) {
     console.error("Error fetching goals:", error);
     redirect(`/ws`)

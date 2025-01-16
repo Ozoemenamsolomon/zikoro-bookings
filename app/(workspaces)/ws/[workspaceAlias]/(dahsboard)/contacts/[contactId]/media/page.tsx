@@ -15,7 +15,7 @@ const ContactMediaPage =async ({
 }) => {
  
   unstable_noStore();
-    const {data,count,error} = await fetchContacts()  
+    const {data,count,error} = await fetchContacts(workspaceAlias)  
 
   return ( 
     <ContactLayout contactId={contactId} searchquery={s} data={data} count={count}>
