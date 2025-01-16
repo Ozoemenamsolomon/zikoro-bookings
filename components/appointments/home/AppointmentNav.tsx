@@ -1,14 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { ChevronDown } from "styled-icons/bootstrap";
-import {
-  ThreeLineCircle,
-  XCircle,
-  NavModalIcon,
-  NavModalIcon2,
-} from "@/constants/icons";
+import { ThreeLineCircle, XCircle } from "@/constants/icons";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useClickOutside } from "@/lib/useClickOutside";
@@ -17,51 +12,19 @@ const AppointmentNav = () => {
   const router = useRouter();
   const menuRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isPreviewOn, setIsPreviewOn] = useState<boolean>(false);
   const [isPreviewShowing, setIsPreviewShowing] = useState<boolean>(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const topSectionHeight = 100; // Adjust this to define the "top section" height
-      if (window.scrollY > topSectionHeight) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    // Trigger handleScroll on scroll and when the browser regains focus
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        handleScroll(); // Re-check scroll position
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    // Initial check on mount
-    handleScroll();
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, []);
+  useClickOutside(menuRef, () => setIsPreviewOn(false));
 
   return (
     <div className="py-6 px-3 md:px-6 relative ">
-      <div
-        className={` flex items-center lg:max-w-[970px] xl:max-w-[1165px] py-3 px-3 md:px-6 lg:px-[36px] rounded-[64px] justify-between mx-auto  ${
-          isScrolled ? "bg-white" : "bg-transparent"
-        }`}
-      >
+      <div className=" bg-white flex items-center lg:max-w-[970px] xl:max-w-[1165px] py-3 px-3 md:px-6 lg:px-[36px] rounded-[64px] justify-between mx-auto  ">
         <Image
-          src={"/logo.png"}
+          src="/appointments/zikoroB.png"
           width={115}
           height={40}
           alt=""
@@ -99,73 +62,15 @@ const AppointmentNav = () => {
 
       {/* preview modal */}
       {isPreviewShowing && (
-        <div className="absolute bg-white  hidden lg:flex flex-col mt-3 gap-y-6 p-3 left-1/2 transform -translate-x-1/2  rounded-[10px]  ">
-          {/* 2nd app */}
-          <div className="w-full flex items-center gap-x-4">
-            {/* left */}
-            <div>
-              <p className="bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end gradient-text font-semibold">
-                Zikoro Events
-              </p>
-              <p className="text-[12px] font-medium text-[#31353B] w-[282px]">
-                Create event tickets, check-in attendees, send RSVPs and more.{" "}
-              </p>
-            </div>
-
-            {/* right */}
-            <div
-              className="cursor-pointer "
-              onClick={() => window.open("https://www.zikoro.com", "_blank")}
-            >
-              <NavModalIcon />
-            </div>
-          </div>
-
-          {/* 3rd app */}
-          <div className="w-full flex items-center gap-x-4">
-            {/* left */}
-            <div>
-              <p className="bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end gradient-text font-semibold">
-                Zikoro Engagement{" "}
-              </p>
-              <p className="text-[12px] font-medium text-[#31353B]  w-[282px]">
-                Drive interaction with engaging polls, quizzes, and live Q&A.
-              </p>
-            </div>
-
-            {/* right */}
-            <div
-              className="cursor-pointer "
-              onClick={() =>
-                window.open("https://engagements.zikoro.com/", "_blank")
-              }
-            >
-              <NavModalIcon />
-            </div>
-          </div>
-
-          {/* 4th app */}
-          <div className="w-full flex items-center gap-x-4">
-            {/* left */}
-            <div>
-              <p className="bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end gradient-text font-semibold">
-                Zikoro Credentials
-              </p>
-              <p className="text-[12px] font-medium text-[#31353B]  w-[282px]">
-                Create, issue certificates and digital badges with ease.
-              </p>
-            </div>
-
-            {/* right */}
-            <div
-              className="cursor-pointer "
-              onClick={() =>
-                window.open("https://credentials.zikoro.com/", "_blank")
-              }
-            >
-              <NavModalIcon />
-            </div>
-          </div>
+        <div className="absolute cursor-pointer hidden lg:block left-96 ">
+          <Image
+            src="/appointments/otherPreviewB.png"
+            className="w-[577px] h-[307px]"
+            alt=""
+            height={307}
+            width={577}
+            onClick={() => router.push("https://www.zikoro.com/")}
+          />
         </div>
       )}
 
@@ -178,79 +83,14 @@ const AppointmentNav = () => {
             >
               Other Products <ChevronDown size={20} />{" "}
               {isPreviewShowing && (
-                <div className="bg-white flex flex-col mt-3 gap-y-6 p-3 lg:hidden rounded-[10px] w-fit">
-                  {/* 1st div */}
-                  <div className="w-full flex items-center gap-x-4">
-                    {/* left */}
-                    <div>
-                      <p className="bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end gradient-text font-semibold">
-                        Zikoro Credentials
-                      </p>
-                      <p className="text-[11px] font-medium text-[#31353B] w-[232px]">
-                        Create event tickets, check-in attendees, send RSVPs and
-                        more.{" "}
-                      </p>
-                    </div>
-
-                    {/* right */}
-                    <div
-                      className="cursor-pointer"
-                      onClick={() =>
-                        window.open("https://www.zikoro.com", "_blank")
-                      }
-                    >
-                      <NavModalIcon2 />
-                    </div>
-                  </div>
-
-                  {/* 2nd app */}
-                  <div className="w-full flex items-center gap-x-4">
-                    {/* left */}
-                    <div>
-                      <p className="bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end gradient-text font-semibold">
-                        Zikoro Events
-                      </p>
-                      <p className="text-[11px] font-medium text-[#31353B] w-[232px]">
-                        Drive interaction with engaging polls, quizzes,and live
-                        Q&A{" "}
-                      </p>
-                    </div>
-
-                    {/* right */}
-                    <div
-                      className="cursor-pointer "
-                      onClick={() =>
-                        window.open("https://www.zikoro.com", "_blank")
-                      }
-                    >
-                      <NavModalIcon2 />
-                    </div>
-                  </div>
-
-                  {/* 3rd app */}
-                  <div className="w-full flex items-center gap-x-4">
-                    {/* left */}
-                    <div>
-                      <p className="bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end gradient-text font-semibold">
-                        Zikoro Engagement{" "}
-                      </p>
-                      <p className="text-[11px] font-medium text-[#31353B]  w-[232px]">
-                        Drive interaction with engaging polls, quizzes, and live
-                        Q&A.
-                      </p>
-                    </div>
-
-                    {/* right */}
-                    <div
-                      className="cursor-pointer "
-                      onClick={() =>
-                        window.open("https://engagements.zikoro.com/", "_blank")
-                      }
-                    >
-                      <NavModalIcon2 />
-                    </div>
-                  </div>
-                </div>
+                <Image
+                  src="/appointments/OtherTopPrevS.png"
+                  width={273}
+                  height={278}
+                  alt=""
+                  className="mt-[19px] w-[273px] h-[278px] block lg:hidden"
+                  onClick={() => router.push("https://www.zikoro.com")}
+                />
               )}
             </li>
             <li

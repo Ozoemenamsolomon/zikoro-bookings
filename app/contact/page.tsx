@@ -23,7 +23,7 @@ const AppointmentContactPage = () => {
           </div>
 
           <Image
-            src="/appointments/contactForm.png"
+            src="/appointments/contactForm.webp"
             width={746}
             height={605}
             alt=""
