@@ -7,7 +7,7 @@ import { createClient } from "@/utils/supabase/client";
 import { settings } from "@/lib/settings";
 import { toast } from "react-toastify";
 import { GroupedBookings } from "@/lib/server/appointments";
-import { getRequest } from "@/utils/api";
+import { getRequest, PostRequest } from "@/utils/api";
 
 export const useGetSchedules =  (scheduleData?: { error?: string | null; schedules?: AppointmentLink[] | null; count?: number; } )=> {
   const { user, currentWorkSpace } = useUserStore();
@@ -268,24 +268,22 @@ export const useCalendarData = ({viewing, date, count, formattedWeekData,formatt
 };
 
 export function useBookingsContact() {
-  const insertBookingsContact = useCallback(async (contact: BookingsContact) => {
-    const supabase = createClient()
+  const {currentWorkSpace } = useUserStore()
 
-    const { data, error } = await supabase
-      .from('bookingsContact')
-      .insert([contact])
-      .select('*')
-      .single();
-      console.log({ data, error } )
-    if (error) { 
-      // console.error('Error inserting data:', error);
-      return null;
+  const insertBookingsContact = useCallback(async (contact: BookingsContact) => {
+    const { data, error } = await PostRequest({
+      url: `/api/bookingsContact/`,
+      body: contact
+    })  
+ 
+    return data;
+    }, []);
+
+    const fetchAllContacts = async () => {
+      const response = await fetch(`/api/bookingsContact?workspaceId=${currentWorkSpace?.workspaceAlias}`)
+       const {data,error,count} = await response.json()
+       return {data,error,count} 
     }
 
-    // console.log('Data inserted successfully:',contact, data );
-    return data;
-  }, []);
-
-
-  return { insertBookingsContact };
+  return { insertBookingsContact,fetchAllContacts };
 }

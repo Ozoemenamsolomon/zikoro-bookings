@@ -14,17 +14,12 @@ const Contacts = async ({
 }) => {
  
   unstable_noStore();
-    const {data,count,error} = await fetchContacts()
-    if(!data) {
-     
-        redirect(`/ws`)
-     
-    }
+    const {data,count,error} = await fetchContacts(workspaceAlias)
   
   return (
     <ContactLayout contactId={contactId} searchquery={s} data={data} count={count}>
     <ContactSubLayout>
-      <ContactInfo searchquery={s} contact = {data?.[0]}/>;
+      <ContactInfo searchquery={s} contact = {data?.[0] || null}/>;
     </ContactSubLayout>
   </ContactLayout>
   )

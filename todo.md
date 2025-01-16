@@ -1,7 +1,7 @@
 - Add a link that points to add team members in the schedule creation	
-- Include team member status pending	
+<!-- - Include team member status pending	 -->
 - Update the empty state design for teams	
-- schedule creation: Organization logo will be inherited from the organization settings page	
+<!-- - schedule creation: Organization logo will be inherited from the organization settings page	 -->
 - Replace the footer in the emails with the workspace name	
 - check fecth function in canceld appointmknet	
 - include a checkbox to help users decide whether they want to allow users to kep the slot unavailable to their audience.i.e make this slot unavailable to your audience.	
@@ -12,11 +12,11 @@
 <!-- - error: some emails fail to send despite that I have the correct email	 -->
 - booking link seems to change when you edit the schedule. For instance, It changed when I added a new team member	
 - Contacts should be connected to a workspace	
-- when someone creates a workspace, add them as admin in their workspace automatically	this includes (defacult workspace creation during onbaording and and workspace creation from dashboard)
-- users should interract with the app based on workspace and workspace right	
+<!-- - when someone creates a workspace, add them as admin in their workspace automatically	this includes (defacult workspace creation during onbaording and and workspace creation from dashboard) -->
+<!-- - users should interract with the app based on workspace and workspace right	 -->
 <!-- - Don't upload contact image before submisasion	 -->
-- forgot passwrd UI doesn't look good. It's too ui	
-- Take users to their workspace and not landing page after onboarding	
+<!-- - forgot passwrd UI doesn't look good. It's too ui	 -->
+<!-- - Take users to their workspace and not landing page after onboarding	 -->
 <!-- - When a contact is deleted also delete their booking history. REMOVE ARCHIVING ...	 -->
 <!-- - 404 error is shown when a goal is created. This could be because a key result was not adeed. Ideally users may not add a key result when a goal is created	 -->
 <!-- - enable users to be able to directly add key results from the goal	 -->

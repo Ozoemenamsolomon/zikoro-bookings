@@ -162,14 +162,20 @@ export function useForgotPassword() {
   async function forgotPassword(email: string) {
     try {
       setLoading(true);
+      const existingUser = await checkUserExists(email)
+      if (!existingUser) {
+        // toast.error('The email is not registered');
+        setLoading(false);
+        return 'The email is not registered';
+      }
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/update-password`,
       });
 
       if (error) {
-        toast.error(error.message);
+        // toast.error(error.message);
         setLoading(false);
-        return;
+        return 'Unable to send email! Check your network';
       }
 
       if (data) {

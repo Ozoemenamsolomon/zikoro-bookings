@@ -12,7 +12,8 @@ const EmptyContact = () => {
         background: 'linear-gradient(269.83deg, #9C00FE 0.14%, #001FCB 99.85%)',
         WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
-      }}>You do not have any contact</h2>
+      }}>You do not have any contact in this workspace</h2>
+      <small className="font-semibold">Contact gets updated when a user books an appointment</small>
 </section>
   )
 }

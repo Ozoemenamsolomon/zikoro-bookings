@@ -10,16 +10,16 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const createdBy = searchParams.get('createdBy')!;  
     const workspaceId = searchParams.get('workspaceId');
-    // if ( !workspaceId ) {
-    //   console.error("FETCHING CONTACT TAGS: Missing required parameters: workspaceId")
-    //   return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
-    // }
+    
+    if ( !workspaceId ) {
+      console.error("FETCHING CONTACT TAGS: Missing required parameters: workspaceId")
+      return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
+    }
     try {
       const { data, error } = await supabase
         .from('bookingTags')
         .select('tag')
-        .eq('createdBy',createdBy)
-        // .eq('workspaceId', workspaceId)
+        .eq('workspaceId', workspaceId)
         .range(0, 19);       
           // console.error({ data, error });
   

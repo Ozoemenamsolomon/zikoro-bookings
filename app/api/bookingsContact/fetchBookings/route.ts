@@ -29,7 +29,6 @@ export async function GET(req: NextRequest) {
             'id, created_at, appointmentDuration, appointmentDate, appointmentName, appointmentTimeStr, appointmentLinkId(locationDetails)', 
             { count: 'exact' }
           )
-          .eq('createdBy', createdBy)
           .eq('participantEmail', contactEmail)
           .eq('workspaceId', workspaceId)
           .range(offset, offset + limit - 1)

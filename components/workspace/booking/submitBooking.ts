@@ -17,8 +17,8 @@ interface SubmitBookingProps {
     maxBookingLimit: number;
     appointmentLink:AppointmentLink|null;
     insertBookingsContact:( (contact: BookingsContact) => void) | null
-    setShow: React.Dispatch<React.SetStateAction<string>>;
-    setIsFormUp: (type:string)=>void
+    setShow?: React.Dispatch<React.SetStateAction<string>>;
+    // setIsFormUp: (type:string)=>void
 }
 
 export const submitBooking = async ({
@@ -33,7 +33,8 @@ export const submitBooking = async ({
     maxBookingLimit,
     appointmentLink,
     insertBookingsContact,
-    setShow, setIsFormUp,
+    setShow, 
+    // setIsFormUp,
 }: SubmitBookingProps): Promise<{ bookingSuccess?: boolean; emailSuccess?: boolean }> => {
 
     setLoading(true);
@@ -83,6 +84,7 @@ export const submitBooking = async ({
                 firstName: bookingFormData?.firstName,
                 lastName: bookingFormData?.lastName,
                 createdBy: appointmentLink?.createdBy?.id,
+                workspaceId: appointmentLink?.workspaceId,
             } 
             insertBookingsContact && await insertBookingsContact(newContact)
 
@@ -119,7 +121,7 @@ export const submitBooking = async ({
             }
 
             // Popup final stage for contact page booking
-            !insertBookingsContact && setShow('final')
+            !insertBookingsContact && setShow && setShow('final')
         } else {
             console.error('Form submission failed', result);
             // setErrors({ general: 'An unexpected error occurred, Try again' });

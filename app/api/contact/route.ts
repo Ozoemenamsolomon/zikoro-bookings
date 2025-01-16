@@ -13,6 +13,7 @@ type UpdateContactRequestBody = {
     industry: string,
     comments: string,
     source: string
+    workspaceId: string
   }
 };
 
@@ -37,6 +38,7 @@ export async function POST(req: NextRequest) {
     const industry = formData.industry;
     const comments = formData.comments;
     const source = formData.source
+    const workspaceId = formData.workspaceId
 
 
     try {
@@ -51,9 +53,10 @@ export async function POST(req: NextRequest) {
           annualEvents: events,
           attendees: attendees,
           industry: industry,
-          comments: comments
+          comments: comments,
+          workspaceId: workspaceId
         });
-
+console.log('INSERTING CONTACT', {data,error})
       if (error) {
         throw error;
       }
