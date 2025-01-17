@@ -139,7 +139,10 @@ async function inviteTeamMember(email: string, workspaceId: string, role: string
     throw error;
   }
 }
+
 ```
+
+#### Contacts
 
 ---
 
