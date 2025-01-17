@@ -9,16 +9,17 @@ interface FetchContactsResult {
 }
 
 export const fetchContacts = async (
+  workspaceId:string,
   q?: string
 ): Promise<FetchContactsResult> => {
     const supabase = createClient()
-    const {user} = await getUserData()
+    // const {user} = await getUserData()
   try {
     let query = supabase
       .from('bookingsContact')
       .select('*', { count: 'exact' }) 
-      .eq('createdBy', user?.id)
-      .or('status.is.null,status.neq.ARCHIVED')
+      .eq('workspaceId', workspaceId)
+      // .or('status.is.null,status.neq.ARCHIVED')
       .order('firstName', {ascending: false} ); 
 
     // If 'q' is provided, add additional filtering
@@ -50,7 +51,7 @@ export const fetchContact = async (
       .from('bookingsContact')
       .select('*') 
       .eq('id', contactId)
-      .or('status.is.null,status.neq.ARCHIVED')
+      // .or('status.is.null,status.neq.ARCHIVED')
       .single()
 
     // console.error({ data, error });

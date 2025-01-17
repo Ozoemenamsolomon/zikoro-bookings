@@ -112,7 +112,6 @@ console.log({ data, error} )
     const { data, error }  = await supabase
         .from('keyResultsTimeline')
         .select('*, createdBy(id,firstName,lastName)') 
-        // .select('*, createdBy(firstName,lastName,id)') 
         .eq('keyResultId', keyId)
         .order('created_at', {ascending: true} ); 
   // console.log({data,error})

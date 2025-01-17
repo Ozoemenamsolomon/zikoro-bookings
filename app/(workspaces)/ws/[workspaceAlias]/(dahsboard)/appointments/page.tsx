@@ -10,8 +10,8 @@ const AppointmentsPage = async ({
 
   }) => {
     const workspaceAlias = (await params).workspaceAlias
-    const {data,count,error} = await fetchAppointments({workspaceId:workspaceAlias!, date:searchParams?.date})
-    // console.log({data,count,error, searchParams})
+    const {data,count,error,querySize} = await fetchAppointments({workspaceId:workspaceAlias!, date:searchParams?.date})
+    console.log({data,count,error, searchParams,querySize})
     return ( 
       <Appointments groupedBookingData={data} fetchedcount={count} fetchError={error} dateHash={searchParams?.date}/>
       );

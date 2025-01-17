@@ -23,8 +23,8 @@ const initialFormData: BookingWorkSpace = {
   workspaceDescription: '',
 };
 
-const CreateWorkSpace = ({ workSpaceData, button, redirectTo, onClose }: { workSpaceData?: BookingWorkSpace, button?: React.ReactNode, redirectTo?:string, onClose?:(k:boolean)=>void}) => {
-  const {user, setWorkSpaces, setCurrentWorkSpace, workspaces } = useUserStore();
+const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh }: { workSpaceData?: BookingWorkSpace, button?: React.ReactNode, redirectTo?:string, onClose?:(k:boolean)=>void, isRefresh?:boolean}) => {
+  const {user, setUser, setWorkSpaces, setCurrentWorkSpace, currentWorkSpace, workspaces } = useUserStore();
   const {push} = useRouter()
 
   const [formData, setFormData] = useState<BookingWorkSpace>({
@@ -95,12 +95,13 @@ const handleSubmit = async (e: React.FormEvent) => {
     setLoading("Submitting values");
 
     if (workSpaceData) {
+      // edit workspace
       const { data, error } = await PostRequest({
         url: "/api/workspaces/edit",
         body: {
           ...formData,
           workspaceLogo: uploadedFiles ? uploadedFiles?.[0].url! : formData?.workspaceLogo,
-          workspaceAlias: generateSlugg(formData?.workspaceName!),
+          // workspaceAlias: generateSlugg(formData?.workspaceName!),
         },
       });
 
@@ -118,7 +119,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         );
 
         // Update currentWorkSpace if it's the same workspace
-        if (data.id === useUserStore.getState().currentWorkSpace?.id) {
+        if (data.id === currentWorkSpace?.id) {
           setCurrentWorkSpace(data);
         }
 
@@ -126,15 +127,21 @@ const handleSubmit = async (e: React.FormEvent) => {
         setPreviewUrls([]);
         setIsOpen(false);
         onClose&&onClose(false);
-        if(redirectTo) push(`/ws/${data?.workspaceAlias}/${redirectTo}`)
+        // if(redirectTo) push(`/ws/${data?.workspaceAlias}/${redirectTo}`)
       }
     } else {
       const { data, error } = await PostRequest({
         url: "/api/workspaces/create",
         body: {
-          ...formData,
-          workspaceLogo: uploadedFiles ? uploadedFiles?.[0].url! : '',
-          workspaceAlias: generateSlugg(formData?.workspaceName!),
+          workspaceData:{
+            ...formData,
+            workspaceLogo: uploadedFiles ? uploadedFiles?.[0].url! : '',
+            workspaceAlias: generateSlugg(formData?.workspaceName!),},
+          userData:{
+            userId:user?.id,
+            role:'ADMIN',
+            email:user?.userEmail,
+          }
         },
       });
 
@@ -150,14 +157,14 @@ const handleSubmit = async (e: React.FormEvent) => {
         setWorkSpaces([...workspaces, data]);
 
         // Set the new workspace as current if it's the first one
-        if (workspaces.length === 0) {
-          setCurrentWorkSpace(data);
-        }
+        
+        setCurrentWorkSpace(data);
+        setUser({...user!, workspaceRole:'ADMIN'})
 
         setFormData(initialFormData);
         setPreviewUrls([]);
         setIsOpen(false);
-        if(redirectTo) push(`/ws/${data?.workspaceAlias}/${redirectTo}`)
+        !isRefresh ? push(`/ws/${data?.workspaceAlias}/schedule`) : null
       }
     }
   } catch (error) {
@@ -243,19 +250,20 @@ const handleSubmit = async (e: React.FormEvent) => {
           />
           {errors.workspaceName && <small className="text-red-500">{errors.workspaceName}</small>}
 
-          <CustomSelect
+          {!isRefresh&&<CustomSelect
+            name='subscriptionPlan'
             label="Select subscription plan"
             error={errors.subscriptionPlan}
             placeholder="Select an option"
-            value={formData.subscriptionPlan}
+            value={formData.subscriptionPlan || ''}
             onChange={handleSelectChange}
             options={[
               { label: 'FREE', value: 'FREE' },
               // { label: 'Subscription 2', value: 'Subscription 2' },
             ]}
-          />
+          />}
 
-          <CustomInput
+          {!isRefresh && <CustomInput
             type="text"
             name="workspaceDescription"
             label="Workspace Description"
@@ -264,12 +272,11 @@ const handleSubmit = async (e: React.FormEvent) => {
             value={formData.workspaceDescription!}
             placeholder="Workspace description"
             onChange={handleChange}
-          />
-          {errors.workspaceDescription && <small className="text-red-500">{errors.workspaceDescription}</small>}
+          />}
 
         <div className="pb-4">
           <label htmlFor="attachments" className="text-gray-600 font-semibold text-sm">
-            Upload File
+            Upload Workspace Logo
           </label>
           <FileUploader
             files={files}

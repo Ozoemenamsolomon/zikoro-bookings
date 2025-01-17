@@ -63,12 +63,20 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
       goalOwner: Number(selectedOption.value),
       goalOwnerName: selectedOption.label,
     }));
+
+    setErrors((prev)=>{
+      return {
+        ...prev,
+        goalOwner:'',
+        goalName:'',
+      }
+    })
   };
   
   // Basic form validation
   const validateForm = () => {
     const newErrors: { [key: string]: string | null } = {}
-    if (!goalData.goalName) newErrors.goalName = 'Goal name is required.'
+    // if (!goalData.goalName) newErrors.goalName = 'Goal name is required.'
     if (!goalData.goalOwner) newErrors.goalOwner = 'Please select an owner.'
     if (!goalData.startDate) newErrors.startDate = 'Start date is required.'
     if (!goalData.endDate) newErrors.endDate = 'End date is required.'
@@ -104,7 +112,9 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
        return false  
 	  };
 
-  useMemo(() => setIsValid(validateForm()), [goalData])
+
+  const openModal = () => setIsValid((cur)=> !cur&&validateForm() ? true:false)
+
   return (
     <>
       <form className="py-8 border-b mb-4 space-y-4 max-w-lg mx-auto" >
@@ -179,7 +189,7 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
 
       {children}
 
-      <AddKeyResult isActive={isValidated!} mode={mode} />
+      <AddKeyResult isOpen={isValidated!} openModal={openModal} mode={mode} />
     </>
   )
 }

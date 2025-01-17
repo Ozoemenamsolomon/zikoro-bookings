@@ -13,7 +13,6 @@ const CreateAppointmentsPage = async ({params}:{
       label: `${team.userId?.firstName} ${team.userId?.lastName}`,
       value: `${team.email}`
     }})
-    console.error({ teams });
        
   return (
     <CreateAppointments teams={teams || []} />

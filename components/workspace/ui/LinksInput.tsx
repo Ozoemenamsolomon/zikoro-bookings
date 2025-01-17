@@ -1,8 +1,9 @@
 'use client';
 import * as React from 'react';
 import { Input } from '@/components/ui/input';
-import { DotsIcon } from '@/constants';
+import { DotsIcon, XCircle } from '@/constants';
 import { cn } from '@/lib/utils';
+import { X, XCircleIcon } from 'lucide-react';
 
 // Updated interface for managing links
 interface LinksInputProps {
@@ -89,9 +90,9 @@ export function CardWithForm({ index, link, onUpdate, onRemove }: CardWithFormPr
             className="bg-baseBg focus-within:bg-baseBg focus:bg-baseBg focus:outline-none focus:ring-0 border w-full"
           />
         </div>
-        <button className="shrink-0" onClick={() => onRemove(index)}>
-          <DotsIcon />
-        </button>
+        <button className="shrink-0 text-gray-300 hover:text-gray-400 duration-300" onClick={() => onRemove(index)}>
+          <XCircleIcon  />
+        </button> 
       </div>
     </div>
   );

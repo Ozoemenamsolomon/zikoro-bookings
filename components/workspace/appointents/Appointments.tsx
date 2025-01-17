@@ -234,21 +234,19 @@ const Appointments = ({
       fetchedcount,
       fetchError,
     });
-
-  const { user } = useUserStore();
-  const router = useRouter();
-  const pathname = usePathname();
+   
   const [drop, setDrop] = useState(false);
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState("upcoming");
   const dropRef = useRef(null);
 
   useClickOutside(dropRef, () => setDrop(false));
 
   const fetchBookings = () => {
-    if (filter !== "upcoming") {
-      getBookings("past-appointments");
-    } else {
+    console.log({filter})
+    if (filter === "upcoming") {
       getBookings("upcoming-appointments");
+    } else {
+      getBookings("past-appointments");
     }
   };
 
@@ -275,13 +273,13 @@ const Appointments = ({
     }
   };
 
-  useEffect(() => {
-    if (!user?.referralCode) {
-      router.push(
-        `/onboarding?email=${user?.userEmail}&createdAt=${user?.created_at}`
-      );
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!user?.referralCode) {
+  //     router.push(
+  //       `/onboarding?email=${user?.userEmail}&createdAt=${user?.created_at}`
+  //     );
+  //   }
+  // }, []);
 
   return (
     <>
@@ -315,7 +313,7 @@ const Appointments = ({
                 className="py-2 w-full bg-white px-4 rounded-full flex justify-between gap-2 items-center text-sm"
               >
                 <p>
-                  {filter !== "past"
+                  {filter === "upcoming"
                     ? "Upcoming appointments"
                     : "Past appointments"}
                 </p>

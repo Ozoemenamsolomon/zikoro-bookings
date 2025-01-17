@@ -33,7 +33,7 @@ const DropDownGoalAction = ({goal,}:{goal:Goal})  => {
           <Link href={getWsUrl(`${urls.contacts}/${contact?.id}/goals/edit/${goal.id}`)} className='block hover:text-gray-950 duration-300 '>
             Edit Goal
           </Link>
-          <KeyResultForm goal={goal} mode='edit' isActive={true}/>
+          <KeyResultForm goal={goal} mode='edit' />
 
           {/* <div ref={ref}>
             <button

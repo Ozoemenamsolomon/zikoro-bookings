@@ -13,7 +13,7 @@ const GoalDetails = async ({params}:{params:{workspaceAlias:string,goalId:string
   const {goalId, workspaceAlias ,contactId} = await params
   const {goal, error} = await fetchGoalsByGoalId(goalId)
 
-  if (!goal ) redirect(`/ws/${workspaceAlias}/contacts/${contactId}/goals`)
+  if (!goal ) redirect(`/ws/${workspaceAlias}/contacts/${contactId} `)
 
   return (
     <section className='bg-white '>
@@ -29,7 +29,7 @@ const GoalDetails = async ({params}:{params:{workspaceAlias:string,goalId:string
 
             <KeyResultList goalId={goalId}/>
 
-            <AddKeyResult  goal={goal} isActive={true} mode='edit' />
+            <AddKeyResult  goal={goal} mode='edit' />
         </section>
     </section>
   )

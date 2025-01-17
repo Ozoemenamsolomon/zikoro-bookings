@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   const workspaces: BookingWorkSpace[] = [];
   
   try {
-    const { email, userId, role, organization } = await req.json();
+    const { email, userId, workspaceId, organization } = await req.json();
 
     if (!email || !userId) {
       return NextResponse.json(
@@ -23,9 +23,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Update user team details if a role is provided
-    if (role!=='none') {
-      const { data: teamData, error: teamError } = await updateBookingTeamUserId(userId, email);
+    // Update user team details if a workspaceId is provided
+    if (workspaceId!=='none') {
+      const { data: teamData, error: teamError } = await updateBookingTeamUserId(userId, email, workspaceId);
       if (teamError) {
         console.error("Error updating team user ID:", teamError);
         return NextResponse.json({ error: teamError }, { status: 400 });

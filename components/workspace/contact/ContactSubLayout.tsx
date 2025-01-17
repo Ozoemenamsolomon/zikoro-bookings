@@ -5,7 +5,7 @@ type ContactProps = {
     children: React.ReactNode;
   };
   
-const ContactSubLayout: React.FC<ContactProps> = ({children}) => {
+const ContactSubLayout: React.FC<ContactProps> = ({children,}) => {
   return (
     <>
         <ContactSubNav/>

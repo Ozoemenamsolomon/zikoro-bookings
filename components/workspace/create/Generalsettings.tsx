@@ -97,7 +97,6 @@ const Generalsettings: React.FC<FormProps> = ({
       <div className="">
         <p className="pb-2">Maximum bookings per session</p>
         <CustomSelect
-          // label="Maximum bookings per session"
           name='maxBooking'
           options={[
             { label: '1', value: '1' },
@@ -114,30 +113,11 @@ const Generalsettings: React.FC<FormProps> = ({
           className="w-48 h-12"
           setError={setErrors}
         />
-        {/* <ReactSelect
-            name="maxBooking"
-            options={[
-              { label: '1', value: 1 },
-              { label: '2', value: 2 },
-              { label: '3', value: 3 },
-              { label: '5', value: 5 },
-              { label: '10', value: 10 },
-            ]}
-            value={formData?.maxBooking || ''}
-            onChange={handleSelect}
-            isClearable
-            placeholder="Select"
-            className="w-48 h-12"
-            setError={setErrors}
-            error={errors?.maxBooking}
-          /> */}
-        
       </div>
 
       <div className="">
         <label htmlFor="sessionBreak" className="pb-2">Break between sessions in minutes</label>
         <CustomSelect
-          // label="Maximum bookings per session"
           name='sessionBreak'
           options={[
             { label: '0', value: '0' },
@@ -146,7 +126,7 @@ const Generalsettings: React.FC<FormProps> = ({
             { label: '15', value: '15' },
             { label: '20', value: '20' },
           ]}
-          value={String(formData?.sessionBreak || '')}
+          value={formData?.sessionBreak || formData?.sessionBreak === 0 ? String(formData?.sessionBreak || '0') : ''}
           error={errors?.sessionBreak!}
           onChange={handleSelect}
           isRequired
@@ -154,23 +134,6 @@ const Generalsettings: React.FC<FormProps> = ({
           className="w-48 h-12"
           setError={setErrors}
         />
-        {/* <ReactSelect
-            name="sessionBreak"
-            options={[
-              { label: '0', value: 0 },
-              { label: '5', value: 5 },
-              { label: '10', value: 10 },
-              { label: '15', value: 15 },
-              { label: '20', value: 20 },
-            ]}
-            value={formData?.sessionBreak || ''}
-            onChange={handleSelect}
-            isClearable
-            placeholder="Select"
-            className="w-48 h-12"
-            setError={setErrors}
-            error={errors?.sessionBreak}
-          /> */}
       </div>
 
       

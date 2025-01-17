@@ -1,11 +1,9 @@
 'use client'
-import { CenterModal } from '@/components/shared/CenterModal'
-import { DropMenu } from '@/components/shared/DropMenu'
+
 import { PopoverMenu } from '@/components/shared/PopoverMenu'
 import { keyresultStatus } from '@/constants/status'
 import { KeyResult } from '@/types/goal'
 import { PostRequest } from '@/utils/api'
-import { Edit, Edit2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'

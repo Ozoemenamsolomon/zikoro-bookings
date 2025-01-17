@@ -6,12 +6,14 @@ import { useState } from "react";
 import { useLogin } from "@/hooks/services/auth";
 import { urls } from "@/constants";
 import { LoaderAlt } from "styled-icons/boxicons-regular";
+import { User } from "@/types/appointments";
 
-const AppointmentLoginForm =({userEmail, role ,workspaceName ,workspaceAlias ,}:{ 
+const AppointmentLoginForm =({userEmail, role ,workspaceName ,workspaceAlias, userData ,}:{ 
   userEmail:string, 
   role:string ,
   workspaceName:string ,
   workspaceAlias:string ,
+  userData:User|null,
 }) => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -29,7 +31,7 @@ const AppointmentLoginForm =({userEmail, role ,workspaceName ,workspaceAlias ,}:
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    await logIn(formData, urls.schedule);
+    await logIn(formData, userEmail, userData);
   }
 
   return (

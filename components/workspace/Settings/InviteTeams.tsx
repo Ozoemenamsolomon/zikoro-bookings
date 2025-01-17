@@ -4,16 +4,18 @@ import { CustomSelect } from '@/components/shared/CustomSelect';
 import MultipleEmailInput from '@/components/shared/MultipleEmailsInput';
 import { Button } from '@/components/ui/button';
 import useUserStore from '@/store/globalUserStore';
+import { BookingTeamMember, BookingTeamsTable } from '@/types';
 import { PostRequest } from '@/utils/api';
 import { X } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 
-const InviteTeams = () => {
+const InviteTeams = ({teams, setTeams}:{teams:BookingTeamsTable[], setTeams: React.Dispatch<React.SetStateAction<BookingTeamsTable[]>>}) => {
   const {user,currentWorkSpace} = useUserStore()
   const [formData, setFormData] = useState({
     emails: [] as string[],
     role: 'MEMBER',
+    // status: 'PENDING',
   });
   const [open, setOpen] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>|null>(null);
@@ -37,22 +39,31 @@ const InviteTeams = () => {
       setErrors({ emails: 'At least one email is required' });
       return;
     }
-    // filter user email
-    const filterdEmails = formData?.emails.filter(email => email !== user?.userEmail)
-    if(filterdEmails.length===0) {
-      setErrors({email:'Own email cannot be reassigned'})
+    // make sure user email is not included ...
+    const uniqueEmails = formData?.emails?.filter(email => {
+      return teams?.some((team:BookingTeamMember) => team.email === email);
+    });
+    
+    if(uniqueEmails.length>0) {
+      setErrors({emails:'Existing email cannot be reassigned'})
+      return
     }
 
     try {
       setLoading('Sending...');
-      const res = await PostRequest({
+      const {error,data, } = await PostRequest({
         url:'/api/email/inviteTeam',
-        body: {...formData, emails:filterdEmails, workspaceName:currentWorkSpace?.workspaceName, workspaceAlias:currentWorkSpace?.workspaceAlias},
+        body: {
+          ...formData, 
+          emails:formData?.emails, workspaceName:currentWorkSpace?.workspaceName, workspaceAlias:currentWorkSpace?.workspaceAlias
+        },
       })
-      console.log({res})
-      if(res?.msg==='failed'){
-        setErrors({general:res?.message})
+      // console.log({error,data,success,failedEmails,dbErrors})
+      if(error){
+        setErrors({general:error})
         return
+      } else {
+        setTeams(prev=>[ ...data, ...prev,])
       }
   
       toast.success('Team invite was successful')
@@ -60,7 +71,7 @@ const InviteTeams = () => {
       setOpen(false)
 
     } catch (error) {
-      setErrors({ gen: 'Failed to send invites' });
+      setErrors({ general: 'Failed to send invites' });
     } finally {
       setLoading('')
     }
@@ -93,7 +104,7 @@ const InviteTeams = () => {
             <div className="w-full space-y-2">
               <div>
                 <label className="block leading-tight font-medium ">Enter Email(s)</label>
-                <small className=" text-gray-500 text-[12px]">Press "Enter", "Spacebar" or "," after each email</small>
+                <small className=" text-gray-800 text-[12px]">Press "Enter", "Spacebar" or "," after each email</small>
               </div>
 
               <div>

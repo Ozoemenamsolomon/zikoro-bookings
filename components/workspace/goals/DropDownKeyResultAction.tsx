@@ -11,7 +11,6 @@ import { useParams } from 'next/navigation'
 import EditKeyResultDetails from './EditKeyResultDetails'
 import { KeyResult } from '@/types/goal'
 import DeleteKeyResult from './DeleteKeyResult'
-import UpdateKeyResultStatus from './UpdateKeyResultStatus'
 import MetricForm from './MetricForm'
 
 const DropDownKeyResultAction = ({keyResult}:{keyResult:KeyResult}) => {

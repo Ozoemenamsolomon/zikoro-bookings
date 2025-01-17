@@ -17,28 +17,16 @@ const CreateNewGoal = async ({
   searchParams: { s: string };
   params: { contactId: string, workspaceAlias:string };
 }) => {
-  // Disable caching
-  // unstable_noStore();
-  // const {data,count,error} = await fetchContacts()
-  // if(!data) {
-  //   console.error("Error fetching goals:", error);
-  //   redirect(`/ws`)
-  // }
     
   return (
-    // <ContactLayout contactId={contactId} searchquery={s} data={data} count={count}>
-    //   <ContactSubLayout>
-        <section className='bg-white sm:p-3 min-h-96'>
-            <header className="flex justify-between gap-3 pb-3 border-b w-full">
-                <BackToGoalsBtn/>
-                <h3 className="font-bold text-xl">New Goal</h3>
-                {/* <div></div> */}
-                <SaveGoalBtn mode='create'/>
-            </header>
-            <GoalsForm/>
-        </section>
-    //   </ContactSubLayout>
-    // </ContactLayout>
+    <section className='bg-white sm:p-3 min-h-96'>
+        <header className="flex justify-between gap-3 pb-3 border-b w-full">
+            <BackToGoalsBtn/>
+            <h3 className="font-bold text-xl">New Goal</h3>
+            <SaveGoalBtn mode='create'/>
+        </header>
+        <GoalsForm/>
+    </section>
   )
 }
 

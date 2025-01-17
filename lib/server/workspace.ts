@@ -1,3 +1,5 @@
+'use server'
+
 import { createClient } from "@/utils/supabase/server";
 import { getUserData } from ".";
 import { BookingWorkSpace } from "@/types";
@@ -38,7 +40,7 @@ export const fetchWorkspaces = async (
       return { data: null, error: workspaceError.message, count: 0 };
     }
 
-    // Fetch team bookings and their associated workspaces
+    // Fetch workspaces that user belong to using the bookingTeams table.
     const { data: teamWorkspaces, error: teamError } = await supabase
       .from('bookingTeams')
       .select('id, workspaceId(*)', { count: 'exact' })
@@ -82,7 +84,7 @@ export const fetchWorkspace = async (
       .select('*') 
       .eq('workspaceAlias', alias)
       .single()
-
+// TODO: consider getting user team membership role
     console.error({ data, error });
     return { data, error: error?.message};
   } catch (error) {
@@ -91,8 +93,27 @@ export const fetchWorkspace = async (
   }
 };
 
+export const createWorkspaceTeamMember = async (
+  body:any
+) => {
+    const supabase = createClient()
+
+    try {
+    const { data, error }  = await supabase
+      .from('bookingTeams')
+      .insert(body) 
+      .select('*, workspaceId(*)')
+      .single()
+
+    return { data, error: error?.message};
+  } catch (error) {
+    console.error('bookingTeams Server error:', error);
+    return { data: null, error: 'Server error'};
+  }
+};
+
 export const updateBookingTeamUserId = async (
-  userId: string, email:string
+  userId: string, email:string, workspaceId:string
 ) => {
     const supabase = createClient()
 
@@ -100,6 +121,7 @@ export const updateBookingTeamUserId = async (
     const { data, error }  = await supabase
       .from('bookingTeams')
       .update({'userId': userId}) 
+      .eq('workspaceId', workspaceId)
       .eq('email', email)
       .select('*, workspaceId(*)')
       .single()
@@ -111,7 +133,21 @@ export const updateBookingTeamUserId = async (
   }
 };
 
+// Mock database check function (replace with real implementation)
+export async function checkUserExists(email: string): Promise<User|null> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('userEmail', email)
+    .single();
+    console.log({ data, error })
+  if (error) {
+    console.error('Error checking user existence:', error);
+  }
 
+  return data 
+}
 export const assignMyWorkspace = async (
   userId: string, email:string, organization:string
 ) => {
@@ -128,35 +164,108 @@ export const assignMyWorkspace = async (
         subscriptionEndDate:null,
         workspaceLogo: '',
         workspaceAlias: generateSlugg(organization||'My Workspace'),
-        workspaceDescription: '',
+        workspaceDescription: 'Default workpsace',
       }) 
       .select('*')
       .single()
 
-    return { data, error: error?.message};
+      if(error) console.log('Error creating workspace: ', error)
+    
+        // add user as admin to the default workspace team members
+        let newTeam, newTeamError
+        if(data) {
+          const {data:newTeamMember, error}= await supabase
+          .from('bookingTeams')
+          .insert({
+            workspaceId: data?.workspaceAlias,
+            userId,
+            role:'ADMIN',
+            email,
+          })
+          .select('*, workspaceId(*)')
+    
+          if(error) {
+            newTeamError='Error occured while adding user to workspace team.'
+            console.log('Error adding team member to workspace: ', error)
+          }
+          newTeam=newTeamMember
+        }
+
+    console.log({data, error:error?.message||null, newTeam, newTeamError})
+
+    return {data, error:error?.message||null, newTeam, newTeamError}
   } catch (error) {
     console.error('bookingWorkSpace Server error:', error);
     return { data: null, error: 'Server error'};
   }
 };
 
-export const fetchTeamMembers = async (
-  workspaceAlias: string,
-) => {
-    const supabase = createADMINClient()
-    try {
-    const { data, error }  = await supabase
+export const createWorkspace = async (body:any) => {
+  // body.workspaceData, body.userData
+  const supabase = createClient()
+  try {
+    const {data,error}= await supabase
+    .from('bookingWorkSpace')
+    .insert(body.workspaceData)
+    .select('*')
+    .single()
+    
+    if(error) console.log('Error creating workspace: ', error)
+    
+    // add user as admin to the default workspace team members
+    let newTeam, newTeamError
+    if(data) {
+      const {data:newTeamMemebr,error}= await supabase
       .from('bookingTeams')
-      .select('*, workspaceId(workspaceOwner,workspaceAlias), userId(*)') 
-      .eq('workspaceId', workspaceAlias)
-      // .neq('status','ARCHIVED')
-      .order('created_at', { ascending: false })
+      .insert({...body.userData, workspaceId: data?.workspaceAlias,})
+      .select('*, workspaceId(*)')
 
-    console.error({ data, error });
-    return { data, error: error?.message||null};
+      if(error) {
+        newTeamError='Error occured while adding user to workspace team.'
+        console.log('Error adding team member to workspace: ', error)
+      }
+      newTeam=newTeamMemebr
+    }
+
+    console.log({data, error, newTeam, newTeamError})
+
+    return {data, error:error?.message||null, newTeam, newTeamError}
   } catch (error) {
-    console.error('bookingTeams Server error:', error);
-    return { data: null, error: 'Server error'};
+    console.error('CREATING WORKSPACE ERROR: ', error)
+    return {data:null, error:'Server error! Check your network'}
+  }
+}
+
+
+export const fetchTeamMembers = async (workspaceAlias: string) => {
+  const supabase = createADMINClient();
+
+  try {
+    const { data, error } = await supabase
+      .from("bookingTeams")
+      .select(
+        `
+        *,
+        workspaceId (
+          workspaceOwner,
+          workspaceAlias
+        ),
+        userId (*)
+      `
+      )
+      .eq("workspaceId", workspaceAlias) // Match workspaceAlias
+      .not("userId", "is", null) // Correctly skip users with null userId
+      .order("created_at", { ascending: false }); // Order by creation date
+
+    if (error) {
+      console.error("Error fetching team members:", error);
+      return { data: null, error: error.message || "Failed to fetch team members" };
+    }
+
+    // console.log("Fetched team members:", data);
+    return { data, error: null };
+  } catch (error: any) {
+    console.error("Server error in fetchTeamMembers:", error);
+    return { data: null, error: "Server error" };
   }
 };
- 

@@ -6,25 +6,23 @@ import { unstable_noStore } from "next/cache";
 import { redirect } from "next/navigation";
 
 const Contacts = async ({
-  params: { contactId, workspaceAlias },
-  searchParams: { s },
+  params ,
+  searchParams ,
 }: {
-  params: { contactId: string, workspaceAlias:string; };
+  params: { workspaceAlias:string; };
   searchParams: { s: string };
 }) => {
- 
+
+  const workspaceAlias = (await params).workspaceAlias
+  const s = (await searchParams).s
+
   unstable_noStore();
-    const {data,count,error} = await fetchContacts()
-    if(!data) {
-     
-        redirect(`/ws`)
-     
-    }
-  
+    const {data,count,error} = await fetchContacts(workspaceAlias)
+
   return (
-    <ContactLayout contactId={contactId} searchquery={s} data={data} count={count}>
-    <ContactSubLayout>
-      <ContactInfo searchquery={s} contact = {data?.[0]}/>;
+    <ContactLayout searchquery={s} data={data} count={count}>
+    <ContactSubLayout >
+      <ContactInfo contact = {data?.[0] || null}/>;
     </ContactSubLayout>
   </ContactLayout>
   )

@@ -2,7 +2,7 @@ export interface AppointmentLink {
     id?: bigint;
     created_at?: string;
     appointmentName: string;
-    workspaceId: string;
+    workspaceId?: string;
     category: any;
     duration: number|null;
     loctionType: string;
@@ -101,6 +101,7 @@ export interface Booking {
   timeStr?: string;
   appointmentNotes?: Record<string, any> | null; 
   appointmentMedia?: Record<string, any> | null; 
+  workspaceId?: string;
 }
 
 export interface UserType {
@@ -123,6 +124,7 @@ export interface UserType {
   facebook?: string | null;
   referralCode?: string | null;
   referredBy?: string | null;
+  workspaceRole?: string;
 }
 
 export interface User {
@@ -145,6 +147,7 @@ export interface User {
   facebook?: string | null;
   referralCode?: string | null;
   referredBy?: string | null;
+  workspaceRole?: string;
 }
 
 export interface AppointmentUnavailability {
@@ -170,6 +173,7 @@ export interface BookingsContact {
   age?: number;
   profileImg?: string;
   favourite?: boolean;
+  workspaceId?: string;
 }
 export interface ContactTag {
   id?: number;  

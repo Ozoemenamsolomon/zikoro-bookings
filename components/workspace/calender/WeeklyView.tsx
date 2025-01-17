@@ -154,25 +154,28 @@ const WeeklyView: React.FC<WeeklyViewProps> = ({ appointments, currentDate }) =>
                                                         // borderColor: item?.scheduleColour
                                                     }}
                                                 >
-                                                    <div className=" w-full h-full flex flex-col justify-between overflow-auto no-scrollbar rounded-lg p-1 bg-slate-50 shadow-md border-t-2"
+                                                    <div className="sm:text-[10px] text-[8px] w-full h-full flex flex-col justify-between overflow-auto no-scrollbar rounded-lg p-1 bg-slate-50 shadow-md border-t-2"
                                                     style={{
                                                         borderColor: event.data[0].scheduleColour!
                                                     }}>
-                                                        <div className="sm:text-[10px] text-[8px] whitespace-nowrap">
+                                                        <div className="whitespace-nowrap ">
                                                             {
                                                                 event.data?.map((item, idx) => (
-                                                                    <div key={idx} className="flex flex-1 overflow-auto no-scrollbar justify-between gap-2">
-                                                                        <div className="whitespace-nowrap w-full flex-nowrap">
-                                                                            <p className="whitespace-nowrap font-semibold capitalize">{item?.firstName + ' ' + item?.lastName}</p>
-                                                                            <p className="whitespace-nowrap">{item?.appointmentName}</p>
-                                                                        </div>
-                                                                        <button><MoreVertical size={10} /></button>
+                                                                    <div key={idx} className="relative flex justify-between items-center gap-2 w-full overflow-hidden">
+                                                                    <div className="w-full min-w-0">
+                                                                      <p className="truncate font-semibold capitalize">{item?.firstName + ' ' + item?.lastName}</p>
+                                                                      <p className="truncate">{item?.appointmentName}</p>
                                                                     </div>
+                                                                    <button className="bg-white absolute right-0 top-1 bottom-0 z-10 shrink-0">
+                                                                      <MoreVertical size={10} />
+                                                                    </button>
+                                                                  </div>
+                                                                  
                                                                 ))
                                                             }
                                                         </div>
 
-                                                        <div className="sm:text-xs text-[8px]">{event?.timeStr}</div>
+                                                        <div className="">{event?.timeStr}</div>
                                                     </div>
                                                     
                                                 </div>

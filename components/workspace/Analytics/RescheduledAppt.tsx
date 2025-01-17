@@ -5,6 +5,7 @@ import ErrorState from './ErrorState'
 import { SectionOneProps } from './SectionOne'
 import { Booking } from '@/types/appointments'
 import Link from 'next/link'
+import { useAppointmentContext } from '@/context/AppointmentContext'
 
 const RescheduledAppointments: React.FC<SectionOneProps> = ({
   isLoading,
@@ -12,6 +13,7 @@ const RescheduledAppointments: React.FC<SectionOneProps> = ({
   current,
 }) => {
   const [rescheduled, setRescheduled] = useState<Booking[]>([])
+  const {getWsUrl} = useAppointmentContext()
 
   const filterCancelledBookings = () => {
     const cancelledList = current?.filter((item) => item.bookingStatus === 'RESCHEDULED');
@@ -36,7 +38,7 @@ const RescheduledAppointments: React.FC<SectionOneProps> = ({
     
             <h3 className="text-2xl font-bold">{rescheduled?.length}</h3>
     
-            <Link href={urls.appointments} 
+            <Link href={getWsUrl(urls.appointments)} 
             type="button"
             className='underline hover:text-zikoroBlue duration-300'
             >see appointments

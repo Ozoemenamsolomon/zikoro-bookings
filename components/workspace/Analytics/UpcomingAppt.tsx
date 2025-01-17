@@ -6,6 +6,7 @@ import { SectionOneProps } from './SectionOne';
 import {  parseISO } from 'date-fns';
 import { Booking } from '@/types/appointments';
 import Link from 'next/link';
+import { useAppointmentContext } from '@/context/AppointmentContext';
 
 const UpcomingAppointments: React.FC<SectionOneProps> = ({
   isLoading,
@@ -13,6 +14,7 @@ const UpcomingAppointments: React.FC<SectionOneProps> = ({
   current,
 }) => {
   const [upcoming, setUpcoming] = useState<Booking[]>([])
+  const {getWsUrl} = useAppointmentContext()
   
   const filterUpcoming = () => {
     let now = new Date(); 
@@ -43,7 +45,7 @@ const UpcomingAppointments: React.FC<SectionOneProps> = ({
     
             <h3 className="text-2xl font-bold">{upcoming.length}</h3>
     
-            <Link href={urls.appointments} 
+            <Link href={getWsUrl(urls.appointments)} 
             type="button"
             className='underline hover:text-zikoroBlue duration-300'
             >see appointments

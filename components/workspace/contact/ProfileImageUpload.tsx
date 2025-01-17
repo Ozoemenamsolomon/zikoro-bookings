@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Loader, Pencil } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Image from 'next/image';
+import { BookingsContact } from '@/types/appointments';
 
 // Cloudinary upload function
 export const uploadImage = async (file: File) => {
@@ -30,47 +31,53 @@ export const uploadImage = async (file: File) => {
 };
 
 interface ProfileImageUploadProps {
-  formData: any;
-  setFormData: React.Dispatch<React.SetStateAction<any>>;
+  previewUrl: string;
+  setPreviewUrl: React.Dispatch<React.SetStateAction<string|undefined>>;
+  setFile: React.Dispatch<React.SetStateAction<File|null>>;
+  formData: BookingsContact;
 }
-
-const ProfileImageUpload: React.FC<ProfileImageUploadProps> = ({ formData, setFormData }) => {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+ 
+const ProfileImageUpload: React.FC<ProfileImageUploadProps> = ({
+  previewUrl,
+  setPreviewUrl,
+  setFile,
+  formData,
+}) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    setIsSubmitting(true)
+
     if (file && file.type.startsWith('image/')) {
-      const imageUrl = await uploadImage(file);
-      if (imageUrl) {
-        setFormData((prev:any) => ({ ...prev, profileImg: imageUrl }));
-      }
+      const objectUrl = URL.createObjectURL(file);
+      setFile(file);
+      setPreviewUrl(objectUrl);
+
+      // Clean up the object URL after usage
+      return () => URL.revokeObjectURL(objectUrl);
     } else {
-      toast.error("Only image files are allowed.");
+      toast.error('Only image files are allowed.');
     }
-    setIsSubmitting(false)
   };
 
   return (
     <div className="relative h-20 w-20 rounded-full bg-baseLight uppercase font-semibold shrink-0 flex items-center text-2xl justify-center">
-      {
-        isSubmitting ? 
-         <Loader className='animate-spin' />
-        :
-      formData?.profileImg ? (
+      {previewUrl ? (
         <Image
-          src={formData?.profileImg || ''}
-          alt=""
-          width={200}
-          height={200}
+          src={previewUrl}
+          alt="Profile preview"
+          width={80}
+          height={80}
           className="w-full h-full rounded-full object-cover"
         />
       ) : (
-        `${formData?.firstName?.[0] ?? ''}${formData?.lastName?.[0] ?? ''}`.toUpperCase() || 'NA'
+        (formData?.firstName?.[0] ?? '') + (formData?.lastName?.[0] ?? '') || 'NA'
       )}
 
-      <label htmlFor="profile-upload" className="border absolute -right-2 bottom-0 rounded-full bg-white p-2 cursor-pointer">
-        <Pencil size={16} className="border-b border-black" />
+      <label
+        htmlFor="profile-upload"
+        className="border absolute -right-2 bottom-0 rounded-full bg-white p-2 cursor-pointer"
+        aria-label="Upload profile image"
+      >
+        <Pencil size={16} className="text-black" />
         <input
           id="profile-upload"
           type="file"

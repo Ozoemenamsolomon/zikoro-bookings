@@ -116,13 +116,15 @@ export async function POST(req: NextRequest) {
               <img src="https://www.zikoro.com/_next/image?url=%2Fzikoro.png&w=128&q=75" alt="zikoro">
             </p>
           </div>
-          <div class="footer">
-            <p>&copy; 2024 Your Company Name. All rights reserved.</p>
-          </div>
+ 
         </div>
       </body>
       </html>
     `;
+
+    // <div class="footer">
+    //         <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+    //       </div>
 
     try {
         for (const email of uniqueEmailArray) {

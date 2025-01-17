@@ -6,8 +6,9 @@ import Link from 'next/link';
 import { useAppointmentContext } from '@/context/AppointmentContext';
 import { urls } from '@/constants';
 
-const ContactSubNav = () => {
+const ContactSubNav = ( ) => {
     const {contact,activePath,getWsUrl, setActivePath} = useAppointmentContext()
+        
   return (
     <div className="w-full flex overflow-auto no-scrollbar gap-1 items-center px-6 py-3 border-b border-slate-200   sticky top-0 bg-white z-20">
         {contactNavSub.map(({ label, link }) => (

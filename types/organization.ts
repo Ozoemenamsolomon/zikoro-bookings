@@ -11,7 +11,6 @@ export interface BookingWorkSpace {
   workspaceAlias: string ; // Optional text field
   workspaceDescription?: string | null; // Optional text field
 }
-
  
 export interface BookingTeams {
   id: number; // bigint represented as number in TypeScript

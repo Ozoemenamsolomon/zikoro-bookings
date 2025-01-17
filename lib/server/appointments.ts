@@ -12,6 +12,7 @@ interface FetchBookingsResult {
   data: GroupedBookings | null;
   error: string | null;
   count: number;
+  querySize:number
 }
 
 const groupBookingsByDate = (bookings: Booking[]): GroupedBookings => {
@@ -37,19 +38,12 @@ export const fetchAppointments = async (
     if(!payload?.workspaceId){
       console.error('APPOINTMENT BOOKINGS: workspaceId is missing')
     }
-    let id 
-    if(payload?.userId){
-      id = payload?.userId
-    } else {
-      const {user} = await getUserData()
-      id = user?.id
-    }
+    
     let today = startOfToday().toISOString()
   try {
     let query = supabase
       .from("bookings")
       .select(`*, appointmentLinkId(*, createdBy(id, userEmail,organization,firstName,lastName,phoneNumber))`, { count: 'exact' })
-      .eq("createdBy", id)
       .eq("workspaceId", payload?.workspaceId)
       .order("appointmentDate", { ascending: true })
 
@@ -61,22 +55,23 @@ export const fetchAppointments = async (
       } else if (payload?.type==='past-appointments'){
         query.lt('appointmentDate', today)
       } else {
+        // default when there is no searchParam - UPCOMING APPOINTMENTS
         query.gte('appointmentDate', today)
       }
 
-    const { data, error } = await query;
+    const { data, error, count:querySize } = await query;
     // console.log({date: startOfWeek(new Date(payload?.date!)).toISOString(), data, }, 'REFETCHING')
 
     if (error) {
       console.error('Error fetching appointments:', error);
-      return { data: null, error: error.message, count: 0 };
+      return { data: null, error: error.message, count: 0, querySize:0 };
     }
 
-    return { data:groupBookingsByDate(data), error: null, count: count ?? 0 };
+    return { data:groupBookingsByDate(data), error: null, count: count ?? 0,  querySize: querySize??0 };
 
   } catch (error) {
     console.error('Server error:', error);
-    return { data: null, error: 'Server error', count: 0 };
+    return { data: null, error: 'Server error', count: 0 , querySize:0};
   }
 
 };
@@ -89,6 +84,7 @@ export const fetchBookings = async (
     const { data, error, status } = await supabase
       .from("bookings")
       .select("*")
+      //TODO: .eq("workspaceId", payload?.workspaceId)
       .eq("appointmentDate", appointmentDate)
       .eq("appointmentLinkId", appointmentLinkId)
       .neq("bookingStatus", 'CANCELLED')
@@ -110,6 +106,7 @@ export const fetchBookings = async (
  type FetchAppointmentHistoryParams = {
    userId?: string;
    contactEmail: string;
+   workspaceId:string;
  };
  
  type FetchAppointmentHistoryResult = {
@@ -122,16 +119,9 @@ export const fetchBookings = async (
  export async function fetchAppointmentHistory({
    userId,
    contactEmail,
+   workspaceId,
  }: FetchAppointmentHistoryParams): Promise<FetchAppointmentHistoryResult> {
   const supabase = createADMINClient()
-
-  let id 
-  if(userId){
-    id = userId
-  } else {
-    const {user} = await getUserData()
-    id = user?.id
-  }
 
    try {
      // Initial query
@@ -141,9 +131,9 @@ export const fetchBookings = async (
          "id, created_at, appointmentDuration, appointmentDate, appointmentName, appointmentTimeStr, appointmentLinkId(locationDetails)",
          { count: "exact" }
        )
-       .eq("createdBy", id)
-       .eq("participantEmail", contactEmail)
-       .range(0, limit - 1);
+      .eq("workspaceId", workspaceId)
+      .eq("participantEmail", contactEmail)
+      .range(0, limit - 1);
  
      // Fetch initial data
      const { data: initialData, error: initialError } = await query;

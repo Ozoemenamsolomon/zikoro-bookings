@@ -301,7 +301,7 @@ const industryList = [
 type SearchParamsType = {
   email: string;
   createdAt: string;
-  role: string;
+  workspaceId?: string;
 };
 
 type FormData = {
@@ -331,7 +331,7 @@ export function generateAlphanumericHash(length?: number): string {
 }
 
 export default function OnboardingForm({
-  searchParams: { email, createdAt, role },
+  searchParams: { email, createdAt, workspaceId },
 }: {
   searchParams: SearchParamsType;
 }) {
@@ -387,7 +387,7 @@ export default function OnboardingForm({
       referredBy: values.referredBy.toUpperCase(),
     };
     try {
-      const path = await registration(payload, email, createdAt, role);
+      const path = await registration(payload, email, createdAt, workspaceId);
       url=path?path:url;
       if(path) handleNext();
     } catch (error) {

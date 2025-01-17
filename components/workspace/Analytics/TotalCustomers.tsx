@@ -1,5 +1,5 @@
 import { CustomerIon, RevenueIcon } from '@/constants';
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import { LongArrowUp, LongArrowDown } from 'styled-icons/fa-solid'; 
 import { SectionOneProps } from './SectionOne';
 import LoadingState from './LoadingState';
@@ -14,36 +14,28 @@ const TotalCustomers: React.FC<SectionOneProps> = ({
   current,
   previous,
 }) => {
-  // Memoize the extraction of unique customers
-  const extractUniqueCustomers = useCallback((bookings: Booking[]) => {
-    const customersSet = new Set();
-    console.log({bookingsLength:bookings.length})
-    bookings.forEach((booking) => {
-      const customerIdentifier = `${booking.email}`;
-      customersSet.add(customerIdentifier);
-    });
-
+  // Function to extract unique customers
+  const extractUniqueCustomers = (bookings: Booking[]) => {
+    const customersSet = new Set(bookings.map((booking) => booking.participantEmail));
     return customersSet.size;
-  }, []);
+  };
 
-  // Memoize combined bookings, total customers, and new customers calculations
+  // Memoized values for performance
   const { totalCustomers, newCustomers, totalCurrentCustomers } = useMemo(() => {
-    const combinedBookings = [...current, ...previous];
-    // total customers combined last and current period
-    const totalCustomers = extractUniqueCustomers(combinedBookings);
-    // total customers in the current period
-    const totalCurrentCustomers = extractUniqueCustomers(current);
-    // total customers difference
-    const newCustomers = extractUniqueCustomers(current) - extractUniqueCustomers(previous);
-    console.log({combinedBookingslength:combinedBookings.length})
+    const totalCurrent = extractUniqueCustomers(current);
+    const totalPrev = extractUniqueCustomers(previous);
+    const totalCombined = extractUniqueCustomers([...current, ...previous]);
+// console.log({totalCombined,totalPrev,totalCurrent,cur:current[0]})
+    return { 
+      totalCustomers: totalCombined,
+      newCustomers: totalCurrent - totalPrev,
+      totalCurrentCustomers: totalCurrent
+    };
+  }, [current, previous]);
 
-    return { totalCustomers, newCustomers, totalCurrentCustomers };
-  }, [current, previous, extractUniqueCustomers]);
-
-  // Memoize arrow icon and color
+  // Determine arrow icon, color, and text
   const { ArrowIcon, arrowColor, newCustomersText } = useMemo(() => {
     const isIncrease = newCustomers > 0;
-    console.log({isIncrease:isIncrease})
 
     return {
       ArrowIcon: isIncrease ? LongArrowUp : LongArrowDown,

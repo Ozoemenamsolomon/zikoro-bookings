@@ -9,7 +9,7 @@ const AnalyticsPage = async ({searchParams,params}:{
 }) => {
   const workspaceAlias = (await params).workspaceAlias!
   const type = (await searchParams).type!
-  const { curList, prevList, } = await fetchAnalytics({type,workspaceId:workspaceAlias})
+  const { curList, prevList, } = await fetchAnalytics({type, workspaceId:workspaceAlias})
   return (
     <AnalyticsProvider typeParam={type} curList={curList} prevList={prevList} >
       <Analytics />

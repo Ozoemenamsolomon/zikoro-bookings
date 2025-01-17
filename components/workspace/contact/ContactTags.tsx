@@ -30,7 +30,7 @@ const ContactTags = () => {
         try {
             setLoading('inserting');
         // new tag
-            const { error } = await PostRequest({url:'/api/bookingsContact/addNewTag',body:{ tag, createdBy: user?.id}})
+            const { error } = await PostRequest({url:'/api/bookingsContact/addNewTag',body:{ tag, createdBy: user?.id, workspaceId:workspaceId}})
             if (error) {
             throw error;
             }
@@ -58,7 +58,7 @@ const ContactTags = () => {
 
     const fetchTags = async () => {
         try {
-          const response = await fetch(`/api/bookingsContact/fetchTags?createdBy=${user?.id}`)
+          const response = await fetch(`/api/bookingsContact/fetchTags?createdBy=${user?.id}&workspaceId=${workspaceId}`)
           const { data, error } = await response.json()
           if (error) throw error;
           setTags(data || []);
@@ -91,7 +91,7 @@ const ContactTags = () => {
             setLoading("updating");
             const { data, error } = await PostRequest({
                 url: "/api/bookingsContact/updateContact",
-                body: { tags: contactTags, id: contact?.id },
+                body: { tags: contactTags, id: contact?.id,  },
             });
     // console.log({data,error})
             if (!error) {

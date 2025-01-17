@@ -4,6 +4,7 @@ import { Booking, BookingsContact, UserType } from '@/types/appointments';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import useUserStore from "@/store/globalUserStore";
 import { wsUrl, wsUrll } from '@/lib/wsUrl';
+import { useRouter } from 'next/navigation';
 
 export interface AppState {
   isLoading: boolean;
@@ -20,8 +21,8 @@ export interface AppState {
   setInactiveSlots: React.Dispatch<React.SetStateAction<string[]>>;
   slotCounts: { [key: string]: number } |null; 
   setSlotCounts: React.Dispatch<React.SetStateAction<{ [key: string]: number }|null>>;
-  user: UserType | null; 
-  setUser: React.Dispatch<React.SetStateAction<UserType|null>>;
+  // user: UserType | null; 
+  // setUser: React.Dispatch<React.SetStateAction<UserType|null>>;
   selectedItem: any; 
   setSelectedItem: React.Dispatch<React.SetStateAction<any>>;
   contact: BookingsContact | null, 
@@ -50,7 +51,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [isLoading, setLoading] = useState<boolean>(false);
   const [isfetching, setIsFetching] = useState<boolean>(true);
   const [isFormUp, setIsFormUp] = useState<string>('');
-  const [user, setUser] = useState<UserType|null>(null);
+  // const [user, setUser] = useState<UserType|null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [activePath, setActivePath] = useState<string>('');
 
@@ -67,10 +68,18 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
 
-  const { currentWorkSpace } = useUserStore();
+  const { currentWorkSpace, user } = useUserStore();
   const workspaceParam = currentWorkSpace?.workspaceAlias ? `${currentWorkSpace.workspaceAlias}` : '';
   
   const getWsUrl = (path: string) =>  wsUrll(path,workspaceParam);
+  
+  // const{push}=useRouter()
+  // useEffect(() => {
+  //   if(!user?.referralCode) push(
+  //           `/onboarding?email=${user?.userEmail}&createdAt=${user?.created_at}`
+  //         )
+  // }, [user])
+  
 
   const contextValue: AppointmentContextProps = {
     isLoading,setLoading,isfetching, setIsFetching,
@@ -78,7 +87,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
     bookingFormData, setBookingFormData,
     inactiveSlots, setInactiveSlots,
     slotCounts, setSlotCounts,
-    user, setUser,
+    // user, setUser,
     selectedType, setselectedType,
     selectedItem, setSelectedItem,
     contact, setContact, contacts, setContacts, show, setShow,
