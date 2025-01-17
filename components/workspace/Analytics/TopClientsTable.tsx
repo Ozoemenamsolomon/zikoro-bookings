@@ -45,7 +45,6 @@ export const TopClients: React.FC<SectionOneProps> = ({
   previous,
 }) => {
   const topClients = React.useMemo(() => calculateTopClients(current), [current])
-console.log({topClients, current})
   return (
 
     <Table className="text-center">

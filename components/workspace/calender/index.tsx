@@ -146,7 +146,6 @@ const CalendarLayout: React.FC<SearchParams> = ({
             <ChevronRight />
           </button>
           </div>
-          
 
           {loading || calendarData.count ? (
             <div className="flex gap-2 max-sm:pl-2">

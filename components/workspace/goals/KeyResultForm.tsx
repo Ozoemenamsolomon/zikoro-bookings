@@ -18,7 +18,8 @@ import { isAfter, isBefore, startOfDay, startOfToday } from 'date-fns'
 import { keyresultStatuses } from '@/constants/status'
 import { useGoalContext } from '@/context/GoalContext'
 
-const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, mode?:string}) => {
+const KeyResultForm = ({goal, isOpen, openModal, mode}:
+    {goal?: Goal, isOpen?:boolean, openModal?:(open:boolean)=>void, mode?:string}) => {
   const {push,refresh} = useRouter()
 
   const {contact,getWsUrl,} =useAppointmentContext()
@@ -75,7 +76,7 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
     return Object.values(newErrors).every(error => !error)
   }
 
-    const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setErrors({})
         setSuccess('')
@@ -131,7 +132,7 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
         } finally {
             setIsSubmitting(false)
         }
-        }
+   }
 
     const isStartDayDisabled = (day: Date) => {
     // Disable days before today
@@ -171,10 +172,12 @@ const KeyResultForm = ({goal, isActive, mode}:{goal?: Goal, isActive?:boolean, m
          return false  
         };
 
+    const [open, setOpen] = useState(false)
   return (
     <CenterModal
         className='rounded-md max-w-2xl w-full px-4 py-8 overflow-auto sm:max-h-[95vh] hide-scrollbar'
-        disabled={!isActive}
+        isOpen={isOpen }
+        onOpenChange={openModal  }
         trigerBtn={
             <button
                 type="button"

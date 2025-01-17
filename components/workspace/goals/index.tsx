@@ -15,7 +15,7 @@ import AddNewGoalBtn from './AddNewGoalBtn'
 const Goals =  ({goalsData,countSize,errorString }:{
   goalsData:Goal[]|null,countSize:number,errorString:string|null
 }) => {
-console.log({goalsData})
+
 //   const {data,count,error} = await fetchGoalsByUserId(contactId!)
   const {contact} = useAppointmentContext()
   const { user } = useUserStore()

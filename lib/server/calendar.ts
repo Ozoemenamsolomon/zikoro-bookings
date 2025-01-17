@@ -110,18 +110,11 @@ export async function fetchCalendarData(workspaceId:string, date: Date | string,
 
   const supabase = createClient()
 
-  // let id;
-  // if(userId){
-  //   id = userId
-  // } else {
-  //   const {user} = await getUserData()
-  //   id = user?.id
-  // }
+  // fetching data (count) for a specifice period out of all data (table count), eg: 23 out of 78
     try {
     const { data, error } = await supabase
       .from('bookings') 
       .select('*, appointmentLinkId(*, createdBy(userEmail, organization, firstName, lastName, phoneNumber))', { count: 'exact' })
-      // .eq("createdBy", id)
       .eq('workspaceId', workspaceId)
       .gte('appointmentDate', startRangeDate.toISOString().split('T')[0])
       .lte('appointmentDate', endRangeDate.toISOString().split('T')[0]);
@@ -129,7 +122,6 @@ export async function fetchCalendarData(workspaceId:string, date: Date | string,
     const {count } = await supabase
       .from('bookings') 
       .select('*', { count: 'exact' } )
-      // .eq("createdBy", id)
       .eq('workspaceId', workspaceId)
   
   // Error handling
@@ -148,11 +140,10 @@ export async function fetchCalendarData(workspaceId:string, date: Date | string,
     };
   }
 
-  // fetch unavailble dates
+  // fetch all unavailble dates
   const { data:unavailableDatesData, error:err,  count:cc } = await supabase
     .from('appointmentUnavailability')
     .select('*',  { count: 'exact' })
-    // .eq("createdBy", id)
     .eq('workspaceId', workspaceId)
   
   // Format the data based on the viewing type

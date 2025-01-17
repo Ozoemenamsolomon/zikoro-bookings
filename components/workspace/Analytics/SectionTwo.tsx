@@ -15,7 +15,7 @@ const SectionTwo =() => {
        if(current) setTableData(generateKPIData(current,previous))
     }, [current])
     
-console.log({current,previous,})
+// console.log({current,previous,})
   return (
     <div className="  p-4 py-8 rounded-lg bg-white border">
         <header className="">

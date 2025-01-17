@@ -1,11 +1,9 @@
 import { KeyResult } from '@/types/goal';
-import React, { Suspense, useState } from 'react';
+import React, { Suspense,  } from 'react';
 import DropDownKeyResultAction from './DropDownKeyResultAction';
 import { fetchMetricsByKeyResultId } from '@/lib/server/goals';
 import MetricLineChart from './MetricLineChart';
 import { Loader2 } from 'lucide-react';
-import { CenterModal } from '@/components/shared/CenterModal';
-import UpdateKeyResultStatus from './UpdateKeyResultStatus';
 import LineClampText from './LineClampText';
 
 const KeyResultCard = async ({ keyResult }: { keyResult: KeyResult }) => {

@@ -29,7 +29,7 @@ const GoalDetails = async ({params}:{params:{workspaceAlias:string,goalId:string
 
             <KeyResultList goalId={goalId}/>
 
-            <AddKeyResult  goal={goal} isActive={true} mode='edit' />
+            <AddKeyResult  goal={goal} mode='edit' />
         </section>
     </section>
   )

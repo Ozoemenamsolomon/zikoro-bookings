@@ -31,7 +31,6 @@ export async function GET(req: NextRequest) {
       .from('appointmentUnavailability')
       .select('*',  { count: 'exact' })
       .eq("workspaceId", workspaceId)
-      .eq("createdBy", userId)
       .eq("appointmentDate", date)
       data=dataa, error=err, count=cc
     } else {

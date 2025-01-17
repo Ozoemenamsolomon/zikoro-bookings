@@ -13,21 +13,6 @@ interface PageProps {
   searchParams: SearchParams;
 }
 
-// Define the return type of fetchCalendarData (adjust based on your actual function return type)
-interface CalendarData {
-  formattedWeekData?: any; // Replace 'any' with specific types if available
-  formattedMonthData?: any;
-  startRangeDate: string;
-  endRangeDate: string;
-  date: string;
-  count?: number;
-  error?: string;
-  dateDisplay: string;
-  unavailableDates?: string[];
-  viewing: "month" | "week";
-  dataCount?: number;
-}
-
 const CalendarPage: React.FC<PageProps> = async ({ params, searchParams }) => {
   const workspaceId  = (await params).workspaceAlias;
   const  date = (await searchParams).date;
