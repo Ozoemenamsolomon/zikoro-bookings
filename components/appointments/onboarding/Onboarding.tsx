@@ -337,7 +337,7 @@ export default function OnboardingForm({
 }) {
   const [isRefferalCode, setIsReferralCode] = useState<boolean>(false);
   const { loading, registration } = useOnboarding();
-  let url ='/'
+  const [url, setUrl] = useState('/')
 
   const [formData, setFormData] = useState({
     referralCode: "",
@@ -388,13 +388,12 @@ export default function OnboardingForm({
     };
     try {
       const path = await registration(payload, email, createdAt, workspaceId);
-      url=path?path:url;
+      setUrl(path?path:url)
       if(path) handleNext();
     } catch (error) {
       console.error("Registration failed:", error);
     }
   }
-
   return (
     <div>
       {/* 1st */}
@@ -411,32 +410,37 @@ export default function OnboardingForm({
             <div className="w-full flex">
               <div className="flex gap-x-[8px] mt-8 mx-auto ">
                 {/* 1st button */}
-                <div className="flex flex-col cursor-pointer rounded-[8px] gap-y-[18px] pt-[11px] bg-white border-[1px] border-gray-200 hover:border-indigo-800 w-[100px] h-[100px]">
-                  <div className="flex mx-auto">
+                <div 
+                  onClick={() => setIsReferralCode(false)} 
+                  className="flex flex-col cursor-pointer rounded-[8px] gap-y-[18px] pt-[14px] bg-white border-[1px] border-gray-200 hover:border-indigo-800 w-[100px] h-[100px]"
+                >
+                  <label className="flex mx-auto cursor-pointer">
                     <input
                       type="radio"
                       name="referral"
-                      id=""
-                      className="text-indigo-600 bg-gray-100 border-gray-300 focus:ring-indigo-600"
-                      size={16}
-                      onClick={() => setIsReferralCode(false)}
+                      className="size-5"
+                      checked={!isRefferalCode} 
+                      readOnly
                     />
-                  </div>
+                  </label>
                   <p className="text-[14px] font-normal text-center">No</p>
                 </div>
 
+
                 {/* 2nd Button */}
-                <div className="flex flex-col cursor-pointer rounded-[8px] gap-y-[18px] pt-[11px] bg-white border-[1px] border-gray-200 hover:border-indigo-800 w-[100px] h-[100px]">
-                  <div className="flex mx-auto">
+                <div 
+                  onClick={() => setIsReferralCode(true)} 
+                  className="flex flex-col cursor-pointer rounded-[8px] gap-y-[18px] pt-[14px] bg-white border-[1px] border-gray-200 hover:border-indigo-800 w-[100px] h-[100px]"
+                >
+                  <label className="flex mx-auto cursor-pointer">
                     <input
                       type="radio"
                       name="referral"
-                      id=""
-                      className="text-indigo-600"
-                      size={16}
-                      onClick={() => setIsReferralCode(true)}
+                      className="size-5"
+                      checked={isRefferalCode} 
+                      readOnly
                     />
-                  </div>
+                  </label>
                   <p className="text-[14px] font-normal text-center">Yes</p>
                 </div>
               </div>

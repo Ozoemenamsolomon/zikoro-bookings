@@ -13,20 +13,10 @@ export async function POST(req: NextRequest) {
         .select('*')
         .single();
 
-      if (error) {
-        return Response.json(
-          {
-            error: error.message,
-          },
-          {
-            status: 400,
-          }
-        );
-      }
-      if (error) throw error;
+        console.log({ data, error, status } )
 
       return NextResponse.json(
-        {data, msg: "user updated successfully" },
+        {data, error:error, status },
         {
           status: 201,
         }

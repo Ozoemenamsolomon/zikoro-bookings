@@ -15,22 +15,23 @@ export async function POST(req: NextRequest) {
   
   try {
     const { email, userId, workspaceId, organization } = await req.json();
-
+console.log( { email, userId, workspaceId, organization })
     if (!email || !userId) {
       return NextResponse.json(
         { error: "Missing required fields: email or userId" },
-        { status: 400 }
+        { status: 200 }
       );
     }
 
     // Update user team details if a workspaceId is provided
-    if (workspaceId!=='none') {
+    if (workspaceId&&workspaceId!=='none') {
       const { data: teamData, error: teamError } = await updateBookingTeamUserId(userId, email, workspaceId);
       if (teamError) {
         console.error("Error updating team user ID:", teamError);
         return NextResponse.json({ error: teamError }, { status: 400 });
       }
-
+      
+      console.log( { teamData, teamError })
       if (teamData) {
         workspaces.push(teamData?.workspaceId);
       }
@@ -38,6 +39,7 @@ export async function POST(req: NextRequest) {
 
     // Assign default workspace
     const { data: workspaceData, error: workspaceError } = await assignMyWorkspace(userId, email, organization);
+    console.log( { workspaceData, workspaceError })
 
     if (workspaceError) {
       console.error("Error assigning workspace:", workspaceError);

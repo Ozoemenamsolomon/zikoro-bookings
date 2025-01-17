@@ -9,7 +9,6 @@ import { PostRequest } from "@/utils/api";
 import useUserStore,  { initializeWorkspaces } from "@/store/globalUserStore";
 import { createClient } from "@/utils/supabase/client";
 import { urls } from "@/constants";
-import { generateSlugg } from "@/lib/generateSlug";
 import { User } from "@/types/appointments";
 import { checkUserExists } from "@/lib/server/workspace";
 import { BookingWorkSpace } from "@/types";
@@ -28,13 +27,24 @@ export function useRegistration() {
         email: values.email,
         password: values.password,
         options: {
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback/${values?.email}/${new Date().toISOString()}/${values.workspaceAlias||'none'}`,
+          // consider adding referal code from the referal link here ... This will be easier to manage for auth and permissions in middleware. To access it = user.user_metadata.referalCode from supabase user account.
+          data:{ referalCode:'referalCode'},
+          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback/${values?.email}/${new Date().toISOString()}/${values?.workspaceAlias||'none'}`,
         },
       });
 
+      // console.log({ data, error } )
+
       if (error) {
-        toast.error(error.message);
+        toast.error(error?.message);
         setLoading(false);
+        return;
+      }
+      // capture emails that are authicated/onboarded ...
+      if(data.user?.aud==="authenticated"){
+        toast.error("This email already exist. Try to signin");
+        setLoading(false);
+        router.push(`/login?email=${values.email}`)
         return;
       }
 
@@ -340,7 +350,7 @@ export function useOnboarding() {
       setLoading("Creating user");
 
       // 🛠️ Create user
-      const { data: user, error: userError } = await PostRequest({
+      const { data: user, error: userError, status } = await PostRequest({
         url: "/api/auth/user",
         body: {
           ...values,
@@ -348,6 +358,12 @@ export function useOnboarding() {
           created_at: createdAt,
         },
       });
+      
+      if (userError?.code==='23505') {
+        toast.error("This data alreay exist! Try to signin.");
+        router.push(`/login?email=${email}`)
+        return null;
+      }
 
       if (userError) {
         console.error("User creation failed:", userError);
