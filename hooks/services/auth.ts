@@ -41,12 +41,12 @@ export function useRegistration() {
         return;
       }
       // capture emails that are authicated/onboarded ...
-      if(data.user?.aud==="authenticated"){
-        toast.error("This email already exist. Try to signin");
-        setLoading(false);
-        router.push(`/login?email=${values.email}`)
-        return;
-      }
+      // if(data.user?.aud==="authenticated"){
+      //   toast.error("This email already exist. Try to signin");
+      //   setLoading(false);
+      //   router.push(`/login?email=${values.email}`)
+      //   return;
+      // }
 
       if (data) {
         //  saveCookie("user", data);
