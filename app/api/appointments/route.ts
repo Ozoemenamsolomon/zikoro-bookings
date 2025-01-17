@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     const workspaceId = searchParams.get('workspaceId')!;
 
     if ( !workspaceId ) {
-      console.error("FETCHAPPOINTMENTBOOKINGS: Missing required parameters: workspaceId")
+      console.error("FETCH APPOINTMENT BOOKINGS: Missing required parameters: workspaceId")
       return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
     }
     try {

@@ -123,16 +123,18 @@ const Slots: React.FC<SlotsType> = ({appointmentLink, timeSlots, selectedDate, h
 
 // TODO: Confirm tha reschedule can still update even without changing when selectedDate change. And what is selecteditem about
   useEffect(() => {
-    if(isBooking){
+    // if(isBooking){
       updateSlots();
-    } 
+    // } 
   }, [selectedDate]);
 
-   useEffect(() => {
-    if(!isBooking){
-      updateSlots();
-    }
-  }, [selectedItem]);
+  //  useEffect(() => {
+  //   console.log('TTTT')
+  //   if(!isBooking){
+  //   console.log('OOOOOOOOOO')
+  //     updateSlots();
+  //   }
+  // }, [selectedItem]);
 
   const isDisabled = !bookingFormData?.appointmentDate || !bookingFormData?.appointmentTime  
 

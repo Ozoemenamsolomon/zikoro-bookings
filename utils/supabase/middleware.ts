@@ -44,14 +44,16 @@ export const updateSession = async (request: NextRequest) => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-  
+
+    
     // Check if the request path starts with /workspace
-    if (path.startsWith("/ws") && !user) {
+    if (path.startsWith("/ws") && !user ) {
       const redirectUrl = new URL("/login", request.url);
       redirectUrl.searchParams.set("redirectedFrom", path);
       return NextResponse.redirect(redirectUrl);
     }
-  
+    
+
     // Check if the request path is included in the protected paths
     const isIncludedPath = includedPaths.some((includedPath) =>
       path.startsWith(includedPath)
@@ -70,6 +72,15 @@ export const updateSession = async (request: NextRequest) => {
         return NextResponse.redirect(redirectUrl);
       }
     }
+
+    // TODO: Apply protection when user from users table is null or without referal code.
+    // AVOID THIS, IT WILL INCREASE THE LOADING TIME, RATHER ADD IT TO THE GLOBAL CONTEXT, WHERE USER ALREADY EXIST IN useUSERSTORE
+    // const {data:userData,error} = await supabase.from('users').select('*').eq('userEmail',user?.email).single()
+    // if(!userData?.referralCode){
+    //   const redirectUrl = new URL(`/onboarding?email=${userData?.userEmail}&createdAt=${userData?.created_at}`, request.url);
+    //   redirectUrl.searchParams.set("redirectedFrom", path);
+    //   return NextResponse.redirect(redirectUrl);
+    // }
 
     return response;
   } catch (e) {

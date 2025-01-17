@@ -13,6 +13,8 @@ const client = new SendMailClient({
 const senderAddress = process.env.NEXT_PUBLIC_EMAIL;
 const senderName = "Zikoro";
 
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 export async function POST(req: NextRequest) {
   const supabase =  createClient()
 
@@ -78,7 +80,6 @@ export async function POST(req: NextRequest) {
       {name:`${firstName} ${lastName}`,email:participantEmail},
       appointment?.summary,
     );
-    
 
     const subject = `Rescheduled Appointment Details for ${appointmentName}`;
     const htmlBody = `
@@ -139,17 +140,23 @@ export async function POST(req: NextRequest) {
               <img src="https://www.zikoro.com/_next/image?url=%2Fzikoro.png&w=128&q=75" alt="zikoro">
             </p>
           </div>
-          <div class="footer">
-            <p>&copy; 2024 Your Company Name. All rights reserved.</p>
-          </div>
+           
         </div>
       </body>
       </html>
     `;
 
+    console.log({uniqueEmailArray})
+
     try {
         for (const email of uniqueEmailArray) {
-          await client.sendMail({
+            console.log('Sending to - ', email)
+            
+          if (!emailRegex.test(email)) {
+            return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
+          }
+
+          const response = await client.sendMail({
             from: {
               address: senderAddress,
               name: senderName,
@@ -172,9 +179,12 @@ export async function POST(req: NextRequest) {
               }
             ]
           });
+
+          console.log("ZeptoMail Response:", {email, response});
         }
+
         console.log('Emails sent successfully');
-        return NextResponse.json({ message: 'Emails sent successfully',data }, { status: 200 });
+        return NextResponse.json({ message: 'Emails sent successfully',  }, { status: 200 });
       } catch (emailError) {
         console.error('Error sending email:', emailError);
         return NextResponse.json({ error: 'Error sending emails: ' + emailError }, { status: 500 });

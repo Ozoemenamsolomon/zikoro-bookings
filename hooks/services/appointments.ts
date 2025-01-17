@@ -3,11 +3,12 @@
 import { AppointmentLink, AppointmentUnavailability, Booking, BookingsContact, } from "@/types/appointments";
 import { useState,   useCallback,  } from "react";
 import useUserStore from "@/store/globalUserStore";
-import { createClient } from "@/utils/supabase/client";
+
 import { settings } from "@/lib/settings";
 import { toast } from "react-toastify";
 import { GroupedBookings } from "@/lib/server/appointments";
 import { getRequest, PostRequest } from "@/utils/api";
+import { useRouter } from "next/navigation";
 
 export const useGetSchedules =  (scheduleData?: { error?: string | null; schedules?: AppointmentLink[] | null; count?: number; } )=> {
   const { user, currentWorkSpace } = useUserStore();
@@ -118,6 +119,7 @@ export const useGetBookingsAnalytics = ({
   typeParam?: string;
 }) => {
   const { user,currentWorkSpace } = useUserStore(); 
+  const {replace} = useRouter()
 
   const [isLoading, setLoading] = useState(false);
   const [type, setType] = useState(typeParam || 'weekly');
@@ -152,7 +154,7 @@ export const useGetBookingsAnalytics = ({
   const handleSetType = useCallback(async (typeToSet: string) => {
     if (type === typeToSet) return;
     setType(typeToSet);
-    await getBookings(typeToSet);
+    await Promise.all([getBookings(typeToSet), replace(`?type=${typeToSet}`, {scroll:false, })])
   }, [type, getBookings]);
 
   return {

@@ -149,10 +149,10 @@ export function generateAppointmentTime({ timeRange, selectedDate }: BookingInpu
     const [startTime] = timeRange.split(' - ');
     
     const appointmentDateTime = parse(startTime, 'hh:mm a', new Date(selectedDate || Date.now()));
-    console.error({timeRange, selectedDate, appointmentDateTime});
+    // console.error({timeRange, selectedDate, appointmentDateTime});
   
     if (isNaN(appointmentDateTime.getTime())) {
-      console.error("Invalid startTime format:", startTime);
+    //   console.error("Invalid startTime format:", startTime);
       return null;
     }
     return format(appointmentDateTime, 'HH:mm:ss');

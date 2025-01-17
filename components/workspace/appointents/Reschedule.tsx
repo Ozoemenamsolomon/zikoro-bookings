@@ -29,6 +29,7 @@ export const Reschedule = ({ refresh, getBookings, setFilter }: { refresh: () =>
     const [error, setError] = useState<string>("");
 
     const {replace} = useRouter()
+
     return (
       <section
         onClick={() => setBookingFormData(null)}
@@ -225,12 +226,12 @@ export const Reschedule = ({ refresh, getBookings, setFilter }: { refresh: () =>
           bookingFormData: newBookingData,
         }),
       });
-      console.log(await res.json())
+      // console.log(await res.json())
       if (res.ok) {
         toast.success("Successfull, email reminder sent");
-        getBookings("upcoming-appointments", bookingFormData.appointmentDate!)
-        setFilter("upcoming-appointments")
-        replace(`${urls.appointments}?refetch=${bookingFormData.appointmentDate}`);
+        await getBookings("upcoming-appointments", bookingFormData.appointmentDate!)
+        setFilter("upcoming")
+        replace(`?refetch=${bookingFormData.appointmentDate}`);
         setBookingFormData(null);
       } else {
         toast.error("Unsuccessfull");
