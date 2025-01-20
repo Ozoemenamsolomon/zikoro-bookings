@@ -68,7 +68,9 @@ interface ReactSelectProps {
   placeholder?: string;
   className?: string;
   index?: number;
+  label?:string;
   error?: string;
+  isRequired?:boolean;
   setError?: React.Dispatch<React.SetStateAction<any>>;
 }
   
@@ -82,8 +84,8 @@ export const ReactSelect: React.FC<ReactSelectProps> = ({
   isSearchable = true,
   placeholder = 'Select...',
   className,
-  index,
-  error,setError,
+  index,label,
+  error,setError,isRequired,
 }) => {
   // Memoize options to prevent unnecessary re-renders
   const memoizedOptions = useMemo(() => options, [options]);
@@ -109,9 +111,14 @@ export const ReactSelect: React.FC<ReactSelectProps> = ({
   };
 
   return (
-    <div>
-    
+    <div className="w-full">
+    {label && (
+        <label htmlFor={name} className="block text-sm   text-gray-600 mb-1">
+          {label} {isRequired && <span className="text-red-500">*</span>}
+        </label>
+      )}
     <Select
+      id={name}
       value={
         isMulti
           ? memoizedOptions.filter(option => (value as (string | number)[]).includes(option.value))

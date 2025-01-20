@@ -8,25 +8,26 @@ export async function POST(req: NextRequest) {
   }
   try {
     const body = await req.json();
- 
+    const { searchParams } = new URL(req.url);
+    const workspaceId = searchParams.get('workspaceAlias')!;  
+    const email = searchParams.get('email')!;  
+
+    if (!workspaceId || !email) {
+      console.error("FETCHING TEAMS: Missing workspaceId and email");
+      return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
+    }
+
     const {data,error}= await supabase
       .from('bookingTeams')
-      .update({
-        userId: body.userId, 
-        email:body.email
-      })
-      .eq('workspaceId', body.workspaceId)
-      .eq('email', body.tokenEmail)
-      .select('*, workspaceId(*)')
+      .update(body)
+      .eq('workspaceId', workspaceId)
+      .eq('email', email)
+      .select('*, workspaceId(*), userId(*)')
       .single()
 
     console.log('Updating bookingTeam member result:', {data,error})
-    if (error) {
-      console.error("Error Updating team member:", error);
-      return NextResponse.json({ data:null, error: error.message }, { status: 400 });
-    }
-
-    return NextResponse.json({ data, error }, { status: 200 });
+ 
+    return NextResponse.json({ data, error:error?.message||null }, { status: 200 });
   } catch (error) {
     console.error("Unhandled bookingTeam error:", error);
     return NextResponse.json(
