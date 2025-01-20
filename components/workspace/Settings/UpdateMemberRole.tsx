@@ -34,6 +34,9 @@ const UpdateMemberRole = ({member, setTeams}:{
             setErrors({ role: 'Role is required' });
             return;
         }
+      if(member.role===formData.role){
+        return 
+      }
         try {
             setLoading('Updating role ...')
             const {error,data,} = await PostRequest({
@@ -58,7 +61,7 @@ const UpdateMemberRole = ({member, setTeams}:{
               setTeams((prev:BookingTeamsTable[])=>{
                   return prev.map((team) => team.id===member.id ? data : team)
               })
-              toast.success('Member role updated.')
+              toast.success('Role was updated.')
               setOpen(false)
             }
         } catch (error) {
@@ -86,7 +89,7 @@ const UpdateMemberRole = ({member, setTeams}:{
         </button>
         <form onSubmit={handleSubmit} className="space-y-8 p-4 sm:p-8">
             <h4 className="text-2xl font-semibold w-full border-b pb-4">
-              Resend invitation
+              Change Member's Role
             </h4>
             
             <CustomInput
