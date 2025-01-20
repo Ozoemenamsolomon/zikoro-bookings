@@ -5,13 +5,14 @@ import {  BookingTeamsTable } from '@/types'
 import DeleteMember from './DeleteMember'
 import useUserStore from '@/store/globalUserStore'
 import ResendInvite from './ResendInvite'
+import UpdateMemberRole from './UpdateMemberRole'
 
 interface TeamsProps {
   teamMembers: BookingTeamsTable[]
 }
 
 const Teams = ({ teamMembers }: TeamsProps) => {
-  const {user} = useUserStore()
+  const {user, currentWorkSpace} = useUserStore()
   const [teams, setTeams] = useState<BookingTeamsTable[]>(teamMembers||[])
   console.log({teams})
   return (
@@ -51,17 +52,27 @@ const Teams = ({ teamMembers }: TeamsProps) => {
 
                   <div className="">{
                     member?.userId ?
-                      <p className="max-sm:text-sm font-semibold leading-tight">{member?.userId?.firstName||''  + ' ' + member?.userId?.lastName||''}</p> :
+                      <p className="max-sm:text-sm font-semibold leading-tight">
+                        {`${member?.userId?.firstName ||''} ${member?.userId?.lastName||''}`}
+                      </p> :
                     <p className=" leading-3">Not Registered</p>
                     }
                       <small className='text-gray-500'>{member?.email}</small>
                   </div>
                 </td>
-                <td className="p-4 w-2/8">{member?.role}</td>
+                <td className="p-4 w-2/8 ">
+                  <span className="flex gap-2 items-center">
+                      {member?.role} 
+                      { member?.userId?.id !== member?.workspaceId?.workspaceOwner  ? <UpdateMemberRole 
+                        member={member}
+                        setTeams={setTeams}
+                      />:null}
+                    </span>
+                </td>
                 <td className="p-4 w-1/8">{member?.userId ? 'Active' : 'Pending'}</td>
                 <td className="p-4 w-1/8  text-center flex items-center">
-                  {user?.workspaceRole==='ADMIN'  && member.role!== 'ADMIN' ? <DeleteMember id={member?.id} setTeams={setTeams}/>:null}
-                  {user?.workspaceRole==='ADMIN' && member.role!== 'ADMIN'? <ResendInvite member={member} setTeams={setTeams}/>:null}
+                  { member?.userId?.id !== currentWorkSpace?.workspaceOwner  ? <DeleteMember id={member?.id} setTeams={setTeams}/>:null}
+                  { member?.userId?.id !== currentWorkSpace?.workspaceOwner ? <ResendInvite member={member} setTeams={setTeams}/>:null}
                 </td>
               </tr>
             ))}

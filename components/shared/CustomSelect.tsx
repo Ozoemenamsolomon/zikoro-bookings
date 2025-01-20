@@ -25,7 +25,7 @@ interface CustomSelectProps {
   className?: string;
   error?: string;
   value?: string;
-  name: string;
+  name?: string;
   noOptionsLabel?:string;
   placeholder?: string;
   isRequired?: boolean // New prop for compulsory fields
@@ -59,7 +59,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         return {
           ...prev,
           general: '',
-          [name]: '',
+          [name!]: '',
         };
       });
     }

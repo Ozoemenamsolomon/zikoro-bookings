@@ -12,291 +12,8 @@ import { useOnboarding } from "@/hooks";
 import { LoaderAlt } from "styled-icons/boxicons-regular";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-
-const countryList = [
-  "Afghanistan",
-  "Åland Islands",
-  "Albania",
-  "Algeria",
-  "American Samoa",
-  "Andorra",
-  "Angola",
-  "Anguilla",
-  "Antarctica",
-  "Antigua and Barbuda",
-  "Argentina",
-  "Armenia",
-  "Aruba",
-  "Australia",
-  "Austria",
-  "Azerbaijan",
-  "Bahamas (the)",
-  "Bahrain",
-  "Bangladesh",
-  "Barbados",
-  "Belarus",
-  "Belgium",
-  "Belize",
-  "Benin",
-  "Bermuda",
-  "Bhutan",
-  "Bolivia (Plurinational State of)",
-  "Bonaire, Sint Eustatius and Saba",
-  "Bosnia and Herzegovina",
-  "Botswana",
-  "Bouvet Island",
-  "Brazil",
-  "British Indian Ocean Territory (the)",
-  "Brunei Darussalam",
-  "Bulgaria",
-  "Burkina Faso",
-  "Burundi",
-  "Cabo Verde",
-  "Cambodia",
-  "Cameroon",
-  "Canada",
-  "Cayman Islands (the)",
-  "Central African Republic (the)",
-  "Chad",
-  "Chile",
-  "China",
-  "Christmas Island",
-  "Cocos (Keeling) Islands (the)",
-  "Colombia",
-  "Comoros (the)",
-  "Congo (the Democratic Republic of the)",
-  "Congo (the)",
-  "Cook Islands (the)",
-  "Costa Rica",
-  "Croatia",
-  "Cuba",
-  "Curaçao",
-  "Cyprus",
-  "Czechia",
-  "Côte d'Ivoire",
-  "Denmark",
-  "Djibouti",
-  "Dominica",
-  "Dominican Republic (the)",
-  "Ecuador",
-  "Egypt",
-  "El Salvador",
-  "Equatorial Guinea",
-  "Eritrea",
-  "Estonia",
-  "Eswatini",
-  "Ethiopia",
-  "Falkland Islands (the) [Malvinas]",
-  "Faroe Islands (the)",
-  "Fiji",
-  "Finland",
-  "France",
-  "French Guiana",
-  "French Polynesia",
-  "French Southern Territories (the)",
-  "Gabon",
-  "Gambia (the)",
-  "Georgia",
-  "Germany",
-  "Ghana",
-  "Gibraltar",
-  "Greece",
-  "Greenland",
-  "Grenada",
-  "Guadeloupe",
-  "Guam",
-  "Guatemala",
-  "Guernsey",
-  "Guinea",
-  "Guinea-Bissau",
-  "Guyana",
-  "Haiti",
-  "Heard Island and McDonald Islands",
-  "Holy See (the)",
-  "Honduras",
-  "Hong Kong",
-  "Hungary",
-  "Iceland",
-  "India",
-  "Indonesia",
-  "Iran (Islamic Republic of)",
-  "Iraq",
-  "Ireland",
-  "Isle of Man",
-  "Israel",
-  "Italy",
-  "Jamaica",
-  "Japan",
-  "Jersey",
-  "Jordan",
-  "Kazakhstan",
-  "Kenya",
-  "Kiribati",
-  "Korea (the Democratic People's Republic of)",
-  "Korea (the Republic of)",
-  "Kuwait",
-  "Kyrgyzstan",
-  "Lao People's Democratic Republic (the)",
-  "Latvia",
-  "Lebanon",
-  "Lesotho",
-  "Liberia",
-  "Libya",
-  "Liechtenstein",
-  "Lithuania",
-  "Luxembourg",
-  "Macao",
-  "Madagascar",
-  "Malawi",
-  "Malaysia",
-  "Maldives",
-  "Mali",
-  "Malta",
-  "Marshall Islands (the)",
-  "Martinique",
-  "Mauritania",
-  "Mauritius",
-  "Mayotte",
-  "Mexico",
-  "Micronesia (Federated States of)",
-  "Moldova (the Republic of)",
-  "Monaco",
-  "Mongolia",
-  "Montenegro",
-  "Montserrat",
-  "Morocco",
-  "Mozambique",
-  "Myanmar",
-  "Namibia",
-  "Nauru",
-  "Nepal",
-  "Netherlands (the)",
-  "New Caledonia",
-  "New Zealand",
-  "Nicaragua",
-  "Niger (the)",
-  "Nigeria",
-  "Niue",
-  "Norfolk Island",
-  "Northern Mariana Islands (the)",
-  "Norway",
-  "Oman",
-  "Pakistan",
-  "Palau",
-  "Palestine, State of",
-  "Panama",
-  "Papua New Guinea",
-  "Paraguay",
-  "Peru",
-  "Philippines (the)",
-  "Pitcairn",
-  "Poland",
-  "Portugal",
-  "Puerto Rico",
-  "Qatar",
-  "Republic of North Macedonia",
-  "Romania",
-  "Russian Federation (the)",
-  "Rwanda",
-  "Réunion",
-  "Saint Barthélemy",
-  "Saint Helena, Ascension and Tristan da Cunha",
-  "Saint Kitts and Nevis",
-  "Saint Lucia",
-  "Saint Martin (French part)",
-  "Saint Pierre and Miquelon",
-  "Saint Vincent and the Grenadines",
-  "Samoa",
-  "San Marino",
-  "Sao Tome and Principe",
-  "Saudi Arabia",
-  "Senegal",
-  "Serbia",
-  "Seychelles",
-  "Sierra Leone",
-  "Singapore",
-  "Sint Maarten (Dutch part)",
-  "Slovakia",
-  "Slovenia",
-  "Solomon Islands",
-  "Somalia",
-  "South Africa",
-  "South Georgia and the South Sandwich Islands",
-  "South Sudan",
-  "Spain",
-  "Sri Lanka",
-  "Sudan (the)",
-  "Suriname",
-  "Svalbard and Jan Mayen",
-  "Sweden",
-  "Switzerland",
-  "Syrian Arab Republic",
-  "Taiwan (Province of China)",
-  "Tajikistan",
-  "Tanzania, United Republic of",
-  "Thailand",
-  "Timor-Leste",
-  "Togo",
-  "Tokelau",
-  "Tonga",
-  "Trinidad and Tobago",
-  "Tunisia",
-  "Turkey",
-  "Turkmenistan",
-  "Turks and Caicos Islands (the)",
-  "Tuvalu",
-  "Uganda",
-  "Ukraine",
-  "United Arab Emirates (the)",
-  "United Kingdom of Great Britain and Northern Ireland (the)",
-  "United States Minor Outlying Islands (the)",
-  "United States of America (the)",
-  "Uruguay",
-  "Uzbekistan",
-  "Vanuatu",
-  "Venezuela (Bolivarian Republic of)",
-  "Viet Nam",
-  "Virgin Islands (British)",
-  "Virgin Islands (U.S.)",
-  "Wallis and Futuna",
-  "Western Sahara",
-  "Yemen",
-  "Zambia",
-  "Zimbabwe",
-];
-
-const industryList = [
-  "Medical Clinics",
-  "Dentists",
-  "Psychologists",
-  "Physiologist",
-  "Acupuncure",
-  "Chiropractor",
-  "Physical Therapists",
-  "Prosthectics and Orthotics",
-  "Coaching",
-  "Charity",
-  "Professional Services",
-  "Government and Public Sector",
-  "Fitness and Sports",
-  "Beauty, Hair and Nair Salons",
-  "Barber",
-  "Spa",
-  "Personal Trainers",
-  "Design Constations",
-  "Counselling",
-  "Cleaning Services",
-  "Religious Consultations",
-  "Interview Scheduling",
-  "Financial Services",
-  "Business Advisory",
-  "Legal Services",
-  "City Councils",
-  "Equipment Rentals",
-  "Restuarants",
-  "Tutoring services",
-  "Education and Non-Profits",
-];
+import { countryList } from "@/constants/countryList";
+import { industryList } from "@/constants/industryList";
 
 type SearchParamsType = {
   email: string;
@@ -336,10 +53,9 @@ export default function OnboardingForm({
 }: {
   searchParams: SearchParamsType;
 }) {
-  const [isRefferalCode, setIsReferralCode] = useState<boolean>(false);
+  const [isReferralCode, setIsReferralCode] = useState<boolean>(false);
   const { loading, registration } = useOnboarding();
   const [url, setUrl] = useState('/')
-
   const [formData, setFormData] = useState({
     referralCode: "",
     referredBy: "",
@@ -395,6 +111,7 @@ export default function OnboardingForm({
       console.error("Registration failed:", error);
     }
   }
+
   return (
     <div>
       {/* 1st */}
@@ -410,45 +127,44 @@ export default function OnboardingForm({
             {/* buttons */}
             <div className="w-full flex">
               <div className="flex gap-x-[8px] mt-8 mx-auto ">
-                {/* 1st button */}
-                <div 
-                  onClick={() => setIsReferralCode(false)} 
-                  className="flex flex-col cursor-pointer rounded-[8px] gap-y-[18px] pt-[14px] bg-white border-[1px] border-gray-200 hover:border-indigo-800 w-[100px] h-[100px]"
+                <div
+                  className="flex flex-col cursor-pointer rounded-[8px] gap-y-[18px] pt-[11px] bg-white border-[1px] border-gray-200 hover:border-indigo-800 w-[100px] h-[100px]"
+                  onClick={() => setIsReferralCode(false)}
                 >
-                  <label className="flex mx-auto cursor-pointer">
+                  <div className="flex mx-auto">
                     <input
                       type="radio"
                       name="referral"
-                      className="size-5"
-                      checked={!isRefferalCode} 
-                      readOnly
+                      id="referral-no"
+                      className="radio-input"
+                      checked={!isReferralCode} // Sync with state
+                      readOnly // Prevent direct manipulation
                     />
-                  </label>
+                  </div>
                   <p className="text-[14px] font-normal text-center">No</p>
                 </div>
 
-
-                {/* 2nd Button */}
-                <div 
-                  onClick={() => setIsReferralCode(true)} 
-                  className="flex flex-col cursor-pointer rounded-[8px] gap-y-[18px] pt-[14px] bg-white border-[1px] border-gray-200 hover:border-indigo-800 w-[100px] h-[100px]"
+                <div
+                  className="flex flex-col cursor-pointer rounded-[8px] gap-y-[18px] pt-[11px] bg-white border-[1px] border-gray-200 hover:border-indigo-800 w-[100px] h-[100px]"
+                  onClick={() => setIsReferralCode(true)}
                 >
-                  <label className="flex mx-auto cursor-pointer">
+                  <div className="flex mx-auto">
                     <input
                       type="radio"
                       name="referral"
-                      className="size-5"
-                      checked={isRefferalCode} 
-                      readOnly
+                      id="referral-yes"
+                      className="radio-input"
+                      checked={isReferralCode} // Sync with state
+                      readOnly // Prevent direct manipulation
                     />
-                  </label>
+                  </div>
                   <p className="text-[14px] font-normal text-center">Yes</p>
                 </div>
               </div>
             </div>
 
             {/* ref code */}
-            {isRefferalCode && (
+            {isReferralCode && (
               <div className="mt-6 w-full md:w-[458px] mx-auto">
                 <p>Referral</p>
                 <input
@@ -741,13 +457,14 @@ export default function OnboardingForm({
                   disabled={currentIndex === stages.length - 1}
                   className="text-white font-semibold text-base bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end py-3 px-4 rounded-lg"
                 >
-                  {loading ? 
+                  {loading ? (
                     <div className="flex">
                       <LoaderAlt size={22} className="animate-spin" />
                       <p>{loading}</p>
-                    </div> :
-                    'Create Profile'
-                  }
+                    </div>
+                  ) : (
+                    "Create Profile"
+                  )}
                 </button>{" "}
               </div>
             </div>
