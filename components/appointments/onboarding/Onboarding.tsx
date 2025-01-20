@@ -302,6 +302,7 @@ type SearchParamsType = {
   email: string;
   createdAt: string;
   workspaceId?: string;
+  workspaceAlias?: string;
 };
 
 type FormData = {
@@ -331,14 +332,13 @@ export function generateAlphanumericHash(length?: number): string {
 }
 
 export default function OnboardingForm({
-  searchParams: { email, createdAt, workspaceId },
+  searchParams: { email, createdAt, workspaceId, workspaceAlias },
 }: {
   searchParams: SearchParamsType;
 }) {
   const [isReferralCode, setIsReferralCode] = useState<boolean>(false);
   const { loading, registration } = useOnboarding();
-  let url = "/";
-
+  const [url, setUrl] = useState('/')
   const [formData, setFormData] = useState({
     referralCode: "",
     referredBy: "",
@@ -387,9 +387,9 @@ export default function OnboardingForm({
       referredBy: values.referredBy.toUpperCase(),
     };
     try {
-      const path = await registration(payload, email, createdAt, workspaceId);
-      url = path ? path : url;
-      if (path) handleNext();
+      const path = await registration(payload, email, createdAt, workspaceAlias);
+      setUrl(path?path:url)
+      if(path) handleNext();
     } catch (error) {
       console.error("Registration failed:", error);
     }
