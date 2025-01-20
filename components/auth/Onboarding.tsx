@@ -178,7 +178,7 @@ export default function Onboarding({
           </div>
 
           <Button
-            disabled={loading}
+            disabled={loading.length>0}
             className="mt-4 w-full gap-x-2 hover:bg-opacity-70 bg-basePrimary h-12 rounded-md text-gray-50 font-medium"
           >
             {loading && <LoaderAlt size={22} className="animate-spin" />}

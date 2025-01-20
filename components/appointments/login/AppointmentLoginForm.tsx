@@ -8,12 +8,12 @@ import { urls } from "@/constants";
 import { LoaderAlt } from "styled-icons/boxicons-regular";
 import { User } from "@/types/appointments";
 
-const AppointmentLoginForm =({userEmail, role ,workspaceName ,workspaceAlias, userData ,}:{ 
-  userEmail:string, 
-  role:string ,
-  workspaceName:string ,
-  workspaceAlias:string ,
-  userData:User|null,
+const AppointmentLoginForm = ({userEmail, role ,workspaceName ,workspaceAlias, userData ,}:{ 
+  userEmail:string;
+  role:string;
+  workspaceName:string;
+  workspaceAlias:string;
+  userData:User|null;
 }) => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);

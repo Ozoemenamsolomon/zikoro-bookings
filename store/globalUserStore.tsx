@@ -62,7 +62,6 @@ export async function initializeWorkspaces(
       // set current workspace to current workspace from the session or to workspace from the token, which is the new workspace user was added to.
       if (assignedWkspace) {
         setCurrentWorkSpace(assignedWkspace);
-        setUser({...user, workspaceRole: assignedWkspace.workspaceOwner===user.id ? 'ADMIN':'MEMBER'})
         return assignedWkspace;
       } else if (currentWorkSpace) {
         // confirm the workspace from the session still exist in 
@@ -70,14 +69,12 @@ export async function initializeWorkspaces(
           (ws: BookingWorkSpace) => ws.workspaceOwner === currentWorkSpace.workspaceOwner
         );
         setCurrentWorkSpace(exists || data[0] || null);
-        setUser({...user, workspaceRole: currentWorkSpace.workspaceOwner===user.id ? 'ADMIN':'MEMBER'})
-
         return exists || data[0] || null;
       } else {
         setCurrentWorkSpace(data[0] || null);
-        setUser({...user, workspaceRole: data[0].workspaceOwner===user.id ? 'ADMIN':'MEMBER'})
         return data[0] || null;
       }
+
     } catch (error) {
       console.error('Failed to fetch workspaces:', error);
       setWorkSpaces([]);

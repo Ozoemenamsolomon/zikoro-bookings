@@ -6,13 +6,15 @@ type SearchParamsType = {
   email: string;
   createdAt: string;
   workspaceId?: string;
+  workspaceAlias?: string;
 };
 
-const AppointmentSignupPage = ({
+const OnboardingPage = ({
   searchParams,
 }: {
   searchParams: SearchParamsType;
 }) => {
+  console.log({searchParams})
   return (
     <div className="bg-[#f9faff] min-h-screen">
       {/* banner */}
@@ -38,4 +40,4 @@ const AppointmentSignupPage = ({
   );
 };
 
-export default AppointmentSignupPage;
+export default OnboardingPage;

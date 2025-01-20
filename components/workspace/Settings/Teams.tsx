@@ -13,7 +13,7 @@ interface TeamsProps {
 const Teams = ({ teamMembers }: TeamsProps) => {
   const {user} = useUserStore()
   const [teams, setTeams] = useState<BookingTeamsTable[]>(teamMembers||[])
-  // console.log({teams})
+  console.log({teams})
   return (
     <section className="sm:py-8 sm:px-8 space-y-5">
       {/* Invite Team Members Section */}
