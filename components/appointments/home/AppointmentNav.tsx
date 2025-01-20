@@ -22,9 +22,10 @@ const AppointmentNav = () => {
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
+
   useEffect(() => {
     const handleScroll = () => {
-      const topSectionHeight = 100; // Adjust this to define the "top section" height
+      const topSectionHeight = 40; // Adjust this to define the "top section" height
       if (window.scrollY > topSectionHeight) {
         setIsScrolled(true);
       } else {
@@ -124,7 +125,7 @@ const AppointmentNav = () => {
             {/* left */}
             <div>
               <p className="bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end gradient-text font-semibold">
-                Zikoro Engagement
+              Zikoro Engagement
               </p>
               <p className="text-[12px] font-medium text-[#31353B]  w-[282px]">
                 Drive interaction with engaging polls, quizzes, and live Q&A.
@@ -230,11 +231,11 @@ const AppointmentNav = () => {
                     {/* left */}
                     <div>
                       <p className="bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end gradient-text font-semibold">
-                        Zikoro Engagement
+                      Zikoro Engagement
                       </p>
                       <p className="text-[11px] font-medium text-[#31353B]  w-[232px]">
-                        Drive interaction with engaging polls, quizzes, and live
-                        Q&A.
+                      Drive interaction with engaging polls, quizzes, and live Q&A.
+
                       </p>
                     </div>
 
