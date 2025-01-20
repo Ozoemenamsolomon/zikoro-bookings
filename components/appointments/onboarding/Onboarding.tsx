@@ -53,10 +53,9 @@ export default function OnboardingForm({
 }: {
   searchParams: SearchParamsType;
 }) {
-  const [isRefferalCode, setIsReferralCode] = useState<boolean>(false);
+  const [isReferralCode, setIsReferralCode] = useState<boolean>(false);
   const { loading, registration } = useOnboarding();
   const [url, setUrl] = useState('/')
-
   const [formData, setFormData] = useState({
     referralCode: "",
     referredBy: "",
@@ -112,6 +111,7 @@ export default function OnboardingForm({
       console.error("Registration failed:", error);
     }
   }
+
   return (
     <div>
       {/* 1st */}
@@ -127,45 +127,44 @@ export default function OnboardingForm({
             {/* buttons */}
             <div className="w-full flex">
               <div className="flex gap-x-[8px] mt-8 mx-auto ">
-                {/* 1st button */}
-                <div 
-                  onClick={() => setIsReferralCode(false)} 
-                  className="flex flex-col cursor-pointer rounded-[8px] gap-y-[18px] pt-[14px] bg-white border-[1px] border-gray-200 hover:border-indigo-800 w-[100px] h-[100px]"
+                <div
+                  className="flex flex-col cursor-pointer rounded-[8px] gap-y-[18px] pt-[11px] bg-white border-[1px] border-gray-200 hover:border-indigo-800 w-[100px] h-[100px]"
+                  onClick={() => setIsReferralCode(false)}
                 >
-                  <label className="flex mx-auto cursor-pointer">
+                  <div className="flex mx-auto">
                     <input
                       type="radio"
                       name="referral"
-                      className="size-5"
-                      checked={!isRefferalCode} 
-                      readOnly
+                      id="referral-no"
+                      className="radio-input"
+                      checked={!isReferralCode} // Sync with state
+                      readOnly // Prevent direct manipulation
                     />
-                  </label>
+                  </div>
                   <p className="text-[14px] font-normal text-center">No</p>
                 </div>
 
-
-                {/* 2nd Button */}
-                <div 
-                  onClick={() => setIsReferralCode(true)} 
-                  className="flex flex-col cursor-pointer rounded-[8px] gap-y-[18px] pt-[14px] bg-white border-[1px] border-gray-200 hover:border-indigo-800 w-[100px] h-[100px]"
+                <div
+                  className="flex flex-col cursor-pointer rounded-[8px] gap-y-[18px] pt-[11px] bg-white border-[1px] border-gray-200 hover:border-indigo-800 w-[100px] h-[100px]"
+                  onClick={() => setIsReferralCode(true)}
                 >
-                  <label className="flex mx-auto cursor-pointer">
+                  <div className="flex mx-auto">
                     <input
                       type="radio"
                       name="referral"
-                      className="size-5"
-                      checked={isRefferalCode} 
-                      readOnly
+                      id="referral-yes"
+                      className="radio-input"
+                      checked={isReferralCode} // Sync with state
+                      readOnly // Prevent direct manipulation
                     />
-                  </label>
+                  </div>
                   <p className="text-[14px] font-normal text-center">Yes</p>
                 </div>
               </div>
             </div>
 
             {/* ref code */}
-            {isRefferalCode && (
+            {isReferralCode && (
               <div className="mt-6 w-full md:w-[458px] mx-auto">
                 <p>Referral</p>
                 <input
@@ -458,13 +457,14 @@ export default function OnboardingForm({
                   disabled={currentIndex === stages.length - 1}
                   className="text-white font-semibold text-base bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end py-3 px-4 rounded-lg"
                 >
-                  {loading ? 
+                  {loading ? (
                     <div className="flex">
                       <LoaderAlt size={22} className="animate-spin" />
                       <p>{loading}</p>
-                    </div> :
-                    'Create Profile'
-                  }
+                    </div>
+                  ) : (
+                    "Create Profile"
+                  )}
                 </button>{" "}
               </div>
             </div>
