@@ -128,7 +128,7 @@ const InviteTeams = ({teams, setTeams}:{teams:BookingTeamsTable[], setTeams: Rea
                   value={formData.role}
                   onChange={handleSelectChange}
                   options={[
-                  // { label: 'Admin Role', value: 'ADMIN' },
+                  { label: 'Admin', value: 'ADMIN' },
                   { label: 'Member', value: 'MEMBER' },
                   ]}
               />

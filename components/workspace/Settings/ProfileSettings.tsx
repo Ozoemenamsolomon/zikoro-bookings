@@ -188,10 +188,11 @@ const handleSubmit = async (e: React.FormEvent) => {
 
 
         <CustomSelect
+          name='country'
           label="Country"
           error={errors.country}
           placeholder="Select a country"
-          value={formData.country}
+          value={formData.country||''}
           onChange={handleSelectChange}
           options={[
             { label: 'USA', value: 'USA' },
