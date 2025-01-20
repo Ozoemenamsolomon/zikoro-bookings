@@ -15,6 +15,8 @@ import CustomInput from '../ui/CustomInput';
 import ProfileImageUpload from '@/components/shared/ProfileImageUpload';
 import { uploadImage } from '@/components/shared/ProfileImageUpload';
 import { TUser } from '@/types';
+import { countryList } from '@/constants/countryList';
+import { ReactSelect } from '@/components/shared/ReactSelect';
 
 const initialFormData:User = {
   firstName: '',
@@ -186,18 +188,15 @@ const handleSubmit = async (e: React.FormEvent) => {
           onChange={handleChange}
         />
 
-
-        <CustomSelect
+        <ReactSelect
           name='country'
           label="Country"
           error={errors.country}
           placeholder="Select a country"
+          className={'w-full h-12 text-4xl'}
           value={formData.country||''}
           onChange={handleSelectChange}
-          options={[
-            { label: 'USA', value: 'USA' },
-            { label: 'Canada', value: 'Canada' },
-          ]}
+          options={countryList.map((_)=>({label:_, value:_}))}
         />
         <CustomInput
             isTextarea
