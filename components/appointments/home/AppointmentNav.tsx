@@ -14,13 +14,17 @@ import Link from "next/link";
 
 const AppointmentNav = () => {
   const router = useRouter();
-  const menuRef = useRef(null);
+  const previewRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isPreviewShowing, setIsPreviewShowing] = useState<boolean>(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+  };
+
+  const togglePreview = () => {
+    setIsPreviewShowing(!isPreviewShowing);
   };
 
   useEffect(() => {
@@ -33,6 +37,15 @@ const AppointmentNav = () => {
       }
     };
 
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        previewRef.current &&
+        !previewRef.current.contains(event.target as Node)
+      ) {
+        setIsPreviewShowing(false);
+      }
+    };
+
     // Trigger handleScroll on scroll and when the browser regains focus
     const handleVisibilityChange = () => {
       if (!document.hidden) {
@@ -42,6 +55,7 @@ const AppointmentNav = () => {
 
     window.addEventListener("scroll", handleScroll);
     document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener("mousedown", handleClickOutside);
 
     // Initial check on mount
     handleScroll();
@@ -49,13 +63,14 @@ const AppointmentNav = () => {
     return () => {
       window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   return (
     <div className="py-6 px-3 md:px-6 relative ">
       <div
-        className={` flex items-center lg:max-w-[970px] xl:max-w-[1165px] py-3 px-3 md:px-6 lg:px-[36px] rounded-[64px] justify-between mx-auto  ${
+        className={`flex items-center lg:max-w-[970px] xl:max-w-[1165px] py-3 px-3 md:px-6 lg:px-[36px] rounded-[64px] justify-between mx-auto ${
           isScrolled ? "bg-white" : "bg-transparent"
         }`}
       >
@@ -71,7 +86,7 @@ const AppointmentNav = () => {
         <div className="gap-x-8 hidden lg:flex ">
           <p
             className="text-base font-medium cursor-pointer flex gap-2 items-center"
-            onClick={() => setIsPreviewShowing(!isPreviewShowing)}
+            onClick={togglePreview}
           >
             <span>Other Products</span> <ChevronDown size={20} />
           </p>
@@ -84,7 +99,7 @@ const AppointmentNav = () => {
           </p>
         </div>
 
-        <div className=" border-[1px] border-gray-200 rounded-[51px] hidden lg:flex gap-x-4 p-3 ">
+        <div className="border-[1px] border-gray-200 rounded-[51px] hidden lg:flex gap-x-4 p-3 ">
           <SignupBtn />
           <SigninBtn />
         </div>
@@ -96,45 +111,42 @@ const AppointmentNav = () => {
         </div>
       </div>
 
-      {/* preview modal */}
+      {/* Preview modal */}
       {isPreviewShowing && (
-        <div className="absolute bg-white  hidden lg:flex flex-col mt-3 gap-y-6 p-3 left-1/2 transform -translate-x-1/2  rounded-[10px]  ">
-          {/* 2nd app */}
+        <div
+          ref={previewRef}
+          className="absolute bg-white hidden lg:flex flex-col mt-3 gap-y-6 p-3 left-1/2 transform -translate-x-1/2 rounded-[10px]"
+        >
+          {/* Zikoro Events */}
           <div className="w-full flex items-center gap-x-4">
-            {/* left */}
             <div>
               <p className="bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end gradient-text font-semibold">
                 Zikoro Events
               </p>
               <p className="text-[12px] font-medium text-[#31353B] w-[282px]">
-                Create event tickets, check-in attendees, send RSVPs and more.{" "}
+                Create event tickets, check-in attendees, send RSVPs, and more.
               </p>
             </div>
-
-            {/* right */}
             <div
-              className="cursor-pointer "
+              className="cursor-pointer"
               onClick={() => window.open("https://www.zikoro.com", "_blank")}
             >
               <NavModalIcon />
             </div>
           </div>
 
-          {/* 3rd app */}
+          {/* Zikoro Engagement */}
           <div className="w-full flex items-center gap-x-4">
-            {/* left */}
             <div>
               <p className="bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end gradient-text font-semibold">
-              Zikoro Engagement
+                Zikoro Engagement
               </p>
-              <p className="text-[12px] font-medium text-[#31353B]  w-[282px]">
+              <p className="text-[12px] font-medium text-[#31353B] w-[282px]">
                 Drive interaction with engaging polls, quizzes, and live Q&A.
               </p>
             </div>
-
-            {/* right */}
             <div
-              className="cursor-pointer "
+              className="cursor-pointer"
               onClick={() =>
                 window.open("https://engagements.zikoro.com/", "_blank")
               }
@@ -143,21 +155,18 @@ const AppointmentNav = () => {
             </div>
           </div>
 
-          {/* 4th app */}
+          {/* Zikoro Credentials */}
           <div className="w-full flex items-center gap-x-4">
-            {/* left */}
             <div>
               <p className="bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end gradient-text font-semibold">
                 Zikoro Credentials
               </p>
-              <p className="text-[12px] font-medium text-[#31353B]  w-[282px]">
+              <p className="text-[12px] font-medium text-[#31353B] w-[282px]">
                 Create, issue certificates and digital badges with ease.
               </p>
             </div>
-
-            {/* right */}
             <div
-              className="cursor-pointer "
+              className="cursor-pointer"
               onClick={() =>
                 window.open("https://credentials.zikoro.com/", "_blank")
               }
@@ -231,11 +240,11 @@ const AppointmentNav = () => {
                     {/* left */}
                     <div>
                       <p className="bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end gradient-text font-semibold">
-                      Zikoro Engagement
+                        Zikoro Engagement
                       </p>
                       <p className="text-[11px] font-medium text-[#31353B]  w-[232px]">
-                      Drive interaction with engaging polls, quizzes, and live Q&A.
-
+                        Drive interaction with engaging polls, quizzes, and live
+                        Q&A.
                       </p>
                     </div>
 
@@ -272,23 +281,20 @@ const AppointmentNav = () => {
 
 export default AppointmentNav;
 
-const SignupBtn = () => {
-  return (
-    <Link
-      href={"/signup"}
-      className="text-base px-[20px] py-[10px] text-white bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end rounded-[28px]"
-    >
-      Sign Up
-    </Link>
-  );
-};
-const SigninBtn = () => {
-  return (
-    <Link
-      href={"/login"}
-      className="text-base px-[20px] py-[10px] text-indigo-700 bg-transparent border border-indigo-800 rounded-[28px]"
-    >
-      Login
-    </Link>
-  );
-};
+const SignupBtn = () => (
+  <Link
+    href={"/signup"}
+    className="text-base px-[20px] py-[10px] text-white bg-gradient-to-tr from-custom-gradient-start to-custom-gradient-end rounded-[28px]"
+  >
+    Sign Up
+  </Link>
+);
+
+const SigninBtn = () => (
+  <Link
+    href={"/login"}
+    className="text-base px-[20px] py-[10px] text-indigo-700 bg-transparent border border-indigo-800 rounded-[28px]"
+  >
+    Login
+  </Link>
+);
