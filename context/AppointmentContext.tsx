@@ -67,8 +67,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [show, setShow] = useState<string>('links')
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
-
-  const { currentWorkSpace, user } = useUserStore();
+  const { currentWorkSpace, user, setUser } = useUserStore();
   const workspaceParam = currentWorkSpace?.workspaceAlias ? `${currentWorkSpace.workspaceAlias}` : '';
   
   const getWsUrl = (path: string) =>  wsUrll(path,workspaceParam);
@@ -80,6 +79,11 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   //         )
   // }, [user])
   
+  useEffect(()=>{
+    if(user) {
+      setUser({...user!, workspaceRole: currentWorkSpace?.workspaceOwner===user?.id ? 'ADMIN':'MEMBER'})
+    }
+  },[user?.id, currentWorkSpace])
 
   const contextValue: AppointmentContextProps = {
     isLoading,setLoading,isfetching, setIsFetching,

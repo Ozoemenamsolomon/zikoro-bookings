@@ -27,7 +27,7 @@ export function useRegistration() {
         email: values.email,
         password: values.password,
         options: {
-          // consider adding referal code from the referal link here ... This will be easier to manage for auth and permissions in middleware. To access it = user.user_metadata.referalCode from supabase user account.
+          // TODO consider adding referal code from the referal link here ... This will be easier to manage for auth and permissions in middleware. To access it = user.user_metadata.referalCode from supabase user account.
           data:{ referalCode:'referalCode'},
           emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback/${values?.email}/${new Date().toISOString()}/${values?.workspaceAlias||'none'}`,
         },
@@ -52,7 +52,7 @@ export function useRegistration() {
         //  saveCookie("user", data);
         toast.success("Registration  Successful");
         router.push(
-          `/verify-email?message=Verify your Account&content= Thank you for signing up! A verification code has been sent to your registered email address. Please check your inbox and enter the code to verify your account.&email=${values.email}&type=verify`
+          `/verify-email?message=Verify your Account&content= Thank you for signing up! A verification code has been sent to your registered email address. Please check your inbox and enter the code to verify your account.&email=${values.email}&type=verify${ values?.workspaceAlias ? `&workspaceAlias=${values?.workspaceAlias}` : ''}`
         );
       }
     } catch (error) {
@@ -64,7 +64,6 @@ export function useRegistration() {
     loading,
   };
 }
-
 
 export function useLogin() {
   const [loading, setLoading] = useState('');
@@ -125,9 +124,11 @@ export function useLogOut(redirectPath: string = "/") {
 }
 
 export const useSetLoggedInUser = () => {
+  const {setUser} = useUserStore()
 
   const setLoggedInUser = async (email: string, tokenEmail:string, workspaceAlias:string, role:string, userData:User|null) => {
     if (!email) return;
+
 
       if(workspaceAlias&&role) {
         // update userId in the workspace team
@@ -261,8 +262,9 @@ export function useResendLink() {
 export function useVerifyCode() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  async function verifyCode(email: string, token: string, type: string | null) {
+  
+  async function verifyCode(email: string, token: string, type: string | null, workspaceAlias?:string) {
+    const createdAt = await new Date().toISOString()
     try {
       setLoading(true);
       const { data, error } = await supabase.auth.verifyOtp({
@@ -280,7 +282,7 @@ export function useVerifyCode() {
       } else {
         router.push(
           `${window.location.origin
-          }/onboarding?email=${email}&createdAt=${new Date().toISOString()}`
+          }/onboarding?email=${email}&createdAt=${createdAt}${workspaceAlias ? `&workspaceAlias=${workspaceAlias}` : ''}`
         );
       }
     } catch (error: any) {
@@ -360,7 +362,7 @@ export function useOnboarding() {
       });
       
       if (userError?.code==='23505') {
-        toast.error("This data alreay exist! Try to signin.");
+        toast.warning("This data alreay exist! Try to signin.");
         router.push(`/login?email=${email}`)
         return null;
       }
@@ -395,13 +397,16 @@ export function useOnboarding() {
         return null;
       }
 
-      // Determine the current workspace
+      // Determine the current workspace safely
       const currentWs =
-        workspaceId
-          ? workspaces.find(
-              (ws: BookingWorkSpace) => ws.workspaceAlias === workspaceId
-            ) || workspaces[0]
-          : workspaces[0];
+        workspaces.length > 0
+          ? workspaces.find((ws: BookingWorkSpace) => ws.workspaceAlias === workspaceId) || workspaces[0]
+          : undefined;
+
+      if (!currentWs) {
+        toast.error("No available workspaces. Please contact support.");
+        return null
+      }
 
       // 🛠️ Update Zustand store
       setCurrentWorkSpace(currentWs);

@@ -13,10 +13,11 @@ type SearchParams = {
   message: string;
   content: any;
   type: any;
+  workspaceAlias?:string,
 };
 
 export default function Page({
-  searchParams: { message, content, email, type },
+  searchParams: { message, content, email, type, workspaceAlias },
 }: {
   searchParams: SearchParams;
 }) {
@@ -40,7 +41,7 @@ export default function Page({
   }, []);
 
   async function verify() {
-    await verifyCode(email!, code, type);
+    await verifyCode(email!, code, type, workspaceAlias);
   }
   return (
     <div className="w-full h-full inset-0 fixed">
