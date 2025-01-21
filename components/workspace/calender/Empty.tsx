@@ -1,11 +1,13 @@
 import { urls } from '@/constants'
 import Link from 'next/link'
 import React from 'react'
+import { useAppointmentContext } from "@/context/AppointmentContext";
 
 
 const Empty = ({
   placeholder='/calender.png',
   text='Your booked appointments will appear here. '}:{placeholder?:string,text?:string}) => {
+    const {getWsUrl} = useAppointmentContext()
   return (
     <section className="w-full min-h-screen relative pt-40 ">
     {/* <div className='absolute top-0 w-full h-full overflow-hidden'>
@@ -23,7 +25,7 @@ const Empty = ({
       </h2>
       <p className='pb-4 font-semibold'>Haven’t created a schedule?</p>
 
-      <Link href={urls.create} className='py-3 px-6 font-semibold text-white rounded-md bg-basePrimary' >Start creating</Link>
+      <Link href={getWsUrl(urls.create)} className='py-3 px-6 font-semibold text-white rounded-md bg-basePrimary' >Start creating</Link>
     </div>
   </section>
   )

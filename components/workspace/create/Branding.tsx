@@ -41,7 +41,7 @@ const Branding: React.FC<FormProps> = ({
 
       <div className='flex gap-2 items-center p-3 border rounded-md'>
         <p className='w-full'>{formData?.businessName || ''}</p>
-        <PenLine size={20} className='shrink-0'/>
+        {/* <PenLine size={20} className='shrink-0'/> */}
       </div>
 
       {/* <CustomInput
