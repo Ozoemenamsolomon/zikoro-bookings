@@ -14,8 +14,7 @@ import { useAppointmentContext } from "@/context/AppointmentContext";
 import { PopoverMenu } from "../../shared/PopoverMenu";
 import Loading from "@/components/shared/Loader";
 import EmptyList from "../ui/EmptyList";
-import useUserStore from "@/store/globalUserStore";
-import { useRouter, usePathname } from "next/navigation";
+ 
 
 const BookingRow = ({
   booking,

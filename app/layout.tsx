@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { montserrat } from "../utils/fonts";
+// import { montserrat } from "../utils/fonts";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { AppointmentProvider } from "@/context/AppointmentContext";
+import { montserrat } from "@/utils/fonts/montserrat";
 
 export const metadata: Metadata = {
   metadataBase: new URL(`https://www.bookings.zikoro.com`),
@@ -40,7 +41,6 @@ export const metadata: Metadata = {
   robots: "index, follow",
 };
 
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -49,7 +49,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${montserrat.className}  antialiased`}
+        className={`${montserrat.variable} font-montserrat antialiased`}
+        // className={`${montserrat.className}  antialiased`}
         >
         <AppointmentProvider> 
           <ToastContainer />
