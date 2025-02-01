@@ -16,6 +16,9 @@ const config: Config = {
 		},
 	  },
   	extend: {
+		fontFamily: {
+			'montserrat': ["var(--font-montserrat)"]
+		  },
 		gradientColorStops: (theme) => ({
 			"custom-gradient-start": "#001FCC",
 			"custom-gradient-end": "#9D00FF",
