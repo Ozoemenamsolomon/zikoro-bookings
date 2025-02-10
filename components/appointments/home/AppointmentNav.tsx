@@ -115,7 +115,7 @@ const AppointmentNav = () => {
       {isPreviewShowing && (
         <div
           ref={previewRef}
-          className="absolute bg-white hidden lg:flex flex-col mt-3 gap-y-6 p-3 left-1/2 transform -translate-x-1/2 rounded-[10px]"
+          className="absolute bg-white hidden lg:flex  flex-col mt-3 gap-y-6 p-3 left-1/2 transform -translate-x-1/2 rounded-[10px]"
         >
           {/* Zikoro Events */}
           <div className="w-full flex items-center gap-x-4">
