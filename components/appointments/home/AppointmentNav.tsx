@@ -204,7 +204,7 @@ const AppointmentNav = () => {
                     <div
                       className="cursor-pointer"
                       onClick={() =>
-                        window.open("https://www.zikoro.com", "_blank")
+                        window.open("https://credentials.zikoro.com/", "_blank")
                       }
                     >
                       <NavModalIcon2 />
