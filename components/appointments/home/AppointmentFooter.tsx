@@ -109,9 +109,7 @@ export default function AppointmentFooter() {
             {/* right */}
             <div
               className="cursor-pointer "
-              onClick={() =>
-                window.open("https://www.zikoro.com/", "_blank")
-              }
+              onClick={() => window.open("https://www.zikoro.com/", "_blank")}
             >
               <NavModalIcon2 />
             </div>

@@ -186,7 +186,10 @@ const AppointmentNav = () => {
             >
               Other Products <ChevronDown size={20} />{" "}
               {isPreviewShowing && (
-                <div className="bg-white flex flex-col mt-3 gap-y-6 p-3 lg:hidden rounded-[10px] w-fit">
+                <div
+                  className="bg-white flex flex-col mt-3 gap-y-6 p-3 lg:hidden rounded-[10px] w-fit"
+                  ref={previewRef}
+                >
                   {/* 1st div */}
                   <div className="w-full flex items-center gap-x-4">
                     {/* left */}
