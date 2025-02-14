@@ -66,8 +66,8 @@ const formdata = {
   timeZone: "",
   timeDetails: daysOfWeek.map(day => ({
     day,
-    from: '',
-    to: '',
+    from: "12:00 AM",
+    to: "11:30 PM",
     enabled: false
   })),
   curency: '',
@@ -100,50 +100,91 @@ const CreateAppointments: React.FC<{teams: {label:string,value:string}[]; appoin
   const {setselectedType,selectedType,getWsUrl,setTeamMembers} = useAppointmentContext()
   const [isOpen, setIsOpen] = useState(appointment? false : true)
 
-  const [formData, setFormData] = useState<AppointmentFormData>(formdata);
+  const [formData, setFormData] = useState<AppointmentFormData>(() => {
+      if (appointment) {
+        return {
+          ...appointment,
+          timeDetails: JSON.parse(appointment.timeDetails || "[]"),
+          category: JSON.parse(appointment.category || `""`),
+          isPaidAppointment: appointment.amount ? true : false,
+          maxBooking: appointment.maxBooking,
+        };
+      }
+      return {
+        ...formdata,
+        category: selectedType === "multiple" ? [] : "",
+      };
+    });
+  
   const [errors, setErrors] = useState<{ [key: string]: string } | any>(serverError ? {'general': serverError} : null);
   const [loading, setLoading] = useState<boolean>(false);
 
   const {user,currentWorkSpace} = useUserStore()
 
   useEffect(() => {
-    if (appointment) {
-      try {
-        // Parse timeDetails and category
-        const parsedTimeDetails = JSON.parse(appointment.timeDetails || "[]") as DaySchedule[];
-        const parsedCategory = JSON.parse(appointment.category || `""`) as string | any[];
-
-         // Update formData with parsed values
-         setFormData({ 
-          ...appointment, 
-          timeDetails: parsedTimeDetails, category: parsedCategory, 
-          isPaidAppointment: appointment.amount ? true : false 
-        });
+    if (!appointment) return;
+    try {
+      setFormData({
+        ...appointment,
+        timeDetails: JSON.parse(appointment.timeDetails || "[]"),
+        category: JSON.parse(appointment.category || `""`),
+        isPaidAppointment: appointment.amount ? true : false,
+        maxBooking: appointment.maxBooking,
+      });
   
-        // Check if parsedCategory is an array and set isOpen
-        if (Array.isArray(parsedCategory)) {
-          setselectedType('multiple')
-        } else {
-          setselectedType('single')
-        }
-  
-        // Debugging output
-        // console.log({ parsedCategory, parsedTimeDetails, formData });
-      } catch (error) {
-        console.error('Error parsing appointment details:', error);
-      } finally {
-        setLoading(false)
+      if (Array.isArray(JSON.parse(appointment.category || `""`))) {
+        setselectedType("multiple");
+      } else {
+        setselectedType("single");
       }
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        createdBy: user?.id,
-        // when creating new item and it is multiple 
-        category: selectedType==='multiple' ? [] : ''
-      }));
+    } catch (error) {
+      console.error("Error parsing appointment details:", error);
     }
-    setTeamMembers(teams)
-  }, [appointment,pathname,selectedType]);
+    setTeamMembers(teams);
+  }, [JSON.stringify(appointment),pathname,selectedType]); // Prevent unnecessary re-renders
+  
+
+  // useEffect(() => {
+  //   if (appointment) {
+  //     try {
+  //       // Parse timeDetails and category
+  //       const parsedTimeDetails = JSON.parse(appointment.timeDetails || "[]") as DaySchedule[];
+  //       const parsedCategory = JSON.parse(appointment.category || `""`) as string | any[];
+
+  //        // Update formData with parsed values
+  //        setFormData({ 
+  //         ...appointment, 
+  //         timeDetails: parsedTimeDetails, 
+  //         category: parsedCategory, 
+  //         isPaidAppointment: appointment.amount ? true : false,
+  //         maxBooking:appointment.maxBooking, 
+  //       });
+  
+  //       // Check if parsedCategory is an array and set isOpen
+  //       if (Array.isArray(parsedCategory)) {
+  //         setselectedType('multiple')
+  //       } else {
+  //         setselectedType('single')
+  //       }
+  
+  //       // Debugging output
+  //       // console.log({ parsedCategory, parsedTimeDetails, formData });
+  //     } catch (error) {
+  //       console.error('Error parsing appointment details:', error);
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   } else {
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       createdBy: user?.id,
+  //       // when creating new item and it is multiple 
+  //       category: selectedType==='multiple' ? [] : ''
+  //     }));
+  //   }
+  //   setTeamMembers(teams)
+  // }, [appointment,pathname,selectedType]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     if (type === 'checkbox') {
@@ -234,7 +275,7 @@ const CreateAppointments: React.FC<{teams: {label:string,value:string}[]; appoin
     try {
       const payload = { 
         ...formData, 
-        appointmentAlias: generateSlug(formData.appointmentName),
+        appointmentAlias: appointment ? appointment.appointmentAlias : generateSlug(formData.appointmentName),
         timeDetails: JSON.stringify(formData.timeDetails), 
         category: JSON.stringify(formData.category), 
         logo: logoUrl || '', 

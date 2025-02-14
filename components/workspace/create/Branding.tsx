@@ -39,12 +39,7 @@ const Branding: React.FC<FormProps> = ({
   return (
     <div className="space-y-4">
 
-      <div className='flex gap-2 items-center p-3 border rounded-md'>
-        <p className='w-full'>{formData?.businessName || ''}</p>
-        {/* <PenLine size={20} className='shrink-0'/> */}
-      </div>
-
-      {/* <CustomInput
+      <CustomInput
           label='Business Name'
           type='text'
           error={errors?.businessName}
@@ -52,9 +47,9 @@ const Branding: React.FC<FormProps> = ({
           value={formData?.businessName || ''}
           placeholder='Enter Business Name'
           className=''
-          disabled
+          // disabled
           onChange={handleChange}
-        /> */}
+        />
 
       <div className="flex">
         <div className="flex gap-2 pb-2 border-b">
