@@ -115,7 +115,7 @@ const AppointmentNav = () => {
       {isPreviewShowing && (
         <div
           ref={previewRef}
-          className="absolute bg-white hidden lg:flex flex-col mt-3 gap-y-6 p-3 left-1/2 transform -translate-x-1/2 rounded-[10px]"
+          className="absolute bg-white hidden lg:flex  flex-col mt-3 gap-y-6 p-3 left-1/2 transform -translate-x-1/2 rounded-[10px]"
         >
           {/* Zikoro Events */}
           <div className="w-full flex items-center gap-x-4">
@@ -186,7 +186,10 @@ const AppointmentNav = () => {
             >
               Other Products <ChevronDown size={20} />{" "}
               {isPreviewShowing && (
-                <div className="bg-white flex flex-col mt-3 gap-y-6 p-3 lg:hidden rounded-[10px] w-fit">
+                <div
+                  className="bg-white flex flex-col mt-3 gap-y-6 p-3 lg:hidden rounded-[10px] w-fit"
+                  ref={previewRef}
+                >
                   {/* 1st div */}
                   <div className="w-full flex items-center gap-x-4">
                     {/* left */}
@@ -204,7 +207,7 @@ const AppointmentNav = () => {
                     <div
                       className="cursor-pointer"
                       onClick={() =>
-                        window.open("https://www.zikoro.com", "_blank")
+                        window.open("https://credentials.zikoro.com/", "_blank")
                       }
                     >
                       <NavModalIcon2 />
