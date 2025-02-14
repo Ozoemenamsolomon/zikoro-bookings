@@ -66,6 +66,8 @@ const DateTimeScheduler = ({setFormData, setErrors, errors,formData}:DateTimeSch
       }
     })
   }
+
+  // console.log({timeOptions,t:formData?.timeDetails})
   return (
     <div className="w-full">
       <div className="pb-6">

@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { AppointmentFormData, FormProps } from '@/types/appointments';
-import { SelectInput } from '../ui/CustomSelect';
-import CustomInput from '../ui/CustomInput';
-import { ReactSelect } from '@/components/shared/ReactSelect';
+ 
 import { CustomSelect } from '@/components/shared/CustomSelect';
 import { useAppointmentContext } from '@/context/AppointmentContext';
 
@@ -12,26 +10,8 @@ const Generalsettings: React.FC<FormProps> = ({
   setErrors,
   errors,
 }) => {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState(false);
   const {teamMembers} = useAppointmentContext()
 
-  // const addTeamMember = (value) => {
-  //   const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   if (email.length > 0 && pattern.test(email)) {
-  //     const newTeamMembers = formData?.teamMembers
-  //       ? `${formData.teamMembers}, ${email}`
-  //       : email;
-  //       setFormData && setFormData((prev:AppointmentFormData)=>{
-  //         return {...prev,
-  //           teamMembers: newTeamMembers,}
-  //         });
-  //     setEmail('');
-  //     setError(false);
-  //   } else {
-  //     setError(true);
-  //   }
-  // };
   const addTeamMember = (value:string) => {
     const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       const newTeamMembers = formData?.teamMembers
@@ -56,14 +36,15 @@ const Generalsettings: React.FC<FormProps> = ({
 
   };
 
-  const handleSelect = (value:any,name?:string)=> {
-    setFormData&&setFormData((prev)=>{
-      return {
+  const handleSelect = (value: any, name?: string) => {
+    setFormData &&
+      setFormData((prev) => ({
         ...prev,
-        [name!]:Number(value)
-      }
-    })
-  }
+        [name!]: isNaN(Number(value)) ? value : Number(value),
+      }));
+  };
+  
+  // console.log({formData })
   return (
     <div className="space-y-4">
       <div className="">
@@ -77,6 +58,7 @@ const Generalsettings: React.FC<FormProps> = ({
           error={errors?.teamMembers}
           onChange={addTeamMember}
           placeholder="Select team member"
+          noOptionsLabel='No team members have been added to this workspace'
           className="w-full h-12"
           setError={setErrors}
         />
