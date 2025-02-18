@@ -72,7 +72,6 @@ const Sidebar = () => {
   // control the activePath for contacts
   const handleClick = () => {
     if (pathanme.includes(urls.contacts)) setActivePath('')
-      console.log({check:pathanme.includes(urls.contacts)})
   }
 
   return (

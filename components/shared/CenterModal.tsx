@@ -25,9 +25,10 @@ export const CenterModal = ({
       <DialogTrigger disabled={disabled} asChild>
         {trigerBtn}
       </DialogTrigger>
-      <DialogContent className={cn("p-0 max-w-4xl w-full sm:max-h-[90vh] overflow-auto", className)}>
-        <DialogTitle className="hidden"></DialogTitle>
-        {children}
+      <DialogContent className={cn("p-0 w-full overflow-hidden max-w-4xl",className)}>
+        <div className={cn("p-0 w-full max-h-screen sm:max-h-[90vh] overflow-auto no-scrollbar", className)}>
+          {children}
+        </div>
       </DialogContent>
     </Dialog>
   )
