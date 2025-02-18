@@ -1,10 +1,10 @@
 "use client";
 
-import { ChevronDown, RefreshCw, SquarePen, XCircle } from "lucide-react";
+import { ChevronDown, Edit, RefreshCw, SquarePen, XCircle } from "lucide-react";
 import React, { Suspense, useRef, useState } from "react";
 import { useGetBookings } from "@/hooks/services/appointments";
 import { format, parseISO } from "date-fns";
-import { Booking } from "@/types/appointments";
+import { Booking, BookingsQuery } from "@/types/appointments";
 import { useEffect } from "react";
 import { useClickOutside } from "@/lib/useClickOutside";
 import Empty from "../calender/Empty";
@@ -14,6 +14,8 @@ import { useAppointmentContext } from "@/context/AppointmentContext";
 import { PopoverMenu } from "../../shared/PopoverMenu";
 import Loading from "@/components/shared/Loader";
 import EmptyList from "../ui/EmptyList";
+import SearchAppointment from "./SearchAppointment";
+import EditAppointment from "./EditAppointment";
  
 
 const BookingRow = ({
@@ -77,26 +79,6 @@ const BookingRow = ({
       <td className="py-2 px-4 w-3/12 flex-1 min-w-0 truncate">
         {appointmentName}
       </td>
-
-      <td className="py-2 px-4 w-1/12 ">
-        {/* <div className="flex justify-center items-center h-full"> */}
-        {notes ? (
-          <PopoverMenu
-            trigerBtn={
-              <button className=" ">
-                <SquarePen className="bg-purple-50 p-1.5 rounded-full text-blue-600" />
-              </button>
-            }
-            className="w-80 p-6"
-          >
-            {notes}
-          </PopoverMenu>
-        ) : (
-          null
-          // <button className="underline text-blue-600 text-sm">Add </button>
-        )}
-        {/* </div> */}
-      </td>
       <td
         className={`py-2 px-4 w-2/12 truncate ${
           bookingStatus === "CANCELLED"
@@ -108,7 +90,7 @@ const BookingRow = ({
       >
         {bookingStatus || "ACTIVE"}
       </td>
-      <td className="py-2 px-4 relative w-1/12">
+      <td className="py-2 px-4 relative w-2/12">
         <div className="flex space-x-2 ">
             <button
               onClick={() => {
@@ -137,6 +119,8 @@ const BookingRow = ({
           >
             <XCircle size={18} />
           </button>
+
+           <EditAppointment/>
         </div>
       </td>
     </tr>
@@ -176,16 +160,10 @@ const BookingTable = ({
               <th className="py-3 px-4 text-left text-sm font-medium w-3/12">
                 Appointment Name
               </th>
-              {/* <th className="py-3 px-4 text-left text-sm font-medium">
-                Appointment Type
-              </th> */}
-              <th className="py-3 px-4 text-left text-sm font-medium w-1/12">
-                Notes
-              </th>
               <th className="py-3 px-4 text-left text-sm font-medium w-2/12">
                 Status
               </th>
-              <th className="py-3 px-4 text-left text-sm font-medium w-1/12"></th>
+              <th className="py-3 px-4 text-left text-sm font-medium w-2/12"></th>
             </tr>
           </thead>
           <tbody>
@@ -220,20 +198,21 @@ const Appointments = ({
   groupedBookingData,
   fetchedcount,
   fetchError,
-  dateHash,
+  searchQuery,
 }: {
   groupedBookingData: GroupedBookings | null;
   fetchError: string | null;
   fetchedcount: number;
-  dateHash?: string;
+  searchQuery: BookingsQuery;
 }) => {
-  const { groupedBookings, count, error, isLoading, getBookings } =
+  const { groupedBookings, count, error, isLoading, getBookings, filterBookings, queryParams } =
     useGetBookings({
       groupedBookingData,
       fetchedcount,
       fetchError,
+      searchQuery,
     });
-   
+  //  console.log({groupedBookings, groupedBookingData, fetchedcount})
   const [drop, setDrop] = useState(false);
   const [filter, setFilter] = useState("upcoming");
   const dropRef = useRef(null);
@@ -243,20 +222,22 @@ const Appointments = ({
   const fetchBookings = () => {
     console.log({filter})
     if (filter === "upcoming") {
-      getBookings("upcoming-appointments");
+      filterBookings({type:"upcoming-appointments"})
+      // getBookings("upcoming-appointments");
     } else {
-      getBookings("past-appointments");
+      filterBookings({type:"past-appointments"})
+      // getBookings("past-appointments");
     }
   };
 
   useEffect(() => {
-    if (dateHash) {
-      const element = document.getElementById(dateHash);
+    if (searchQuery?.date) {
+      const element = document.getElementById(searchQuery?.date);
       if (element) {
         element.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
-  }, [dateHash]);
+  }, [searchQuery?.date]);
 
   const refresh = () => {
     fetchBookings();
@@ -266,19 +247,15 @@ const Appointments = ({
     if (filter === view) return;
     setFilter(view);
     if (view === "upcoming") {
-      getBookings("upcoming-appointments");
+      filterBookings({type:"upcoming-appointments"})
+      // getBookings("upcoming-appointments");
     } else {
-      getBookings("past-appointments");
+      filterBookings({type:"past-appointments"})
+      // getBookings("past-appointments");
     }
   };
 
-  // useEffect(() => {
-  //   if (!user?.referralCode) {
-  //     router.push(
-  //       `/onboarding?email=${user?.userEmail}&createdAt=${user?.created_at}`
-  //     );
-  //   }
-  // }, []);
+
 
   return (
     <>
@@ -359,6 +336,8 @@ const Appointments = ({
         </div>
       </header>
 
+      <SearchAppointment filterBookings={filterBookings} queryParams={queryParams}/>
+
       <Suspense
         fallback={
           <div className="h-screen w-full flex justify-center items-center">
@@ -378,7 +357,9 @@ const Appointments = ({
             text={`You don't have any booked appointment.`}
           />
         ) : groupedBookings && !Object.keys(groupedBookings!)?.length ? (
-          <EmptyList className="h-screen" text={`No appointments available`} />
+          <EmptyList className=" " 
+            text={getEmptyListMessage(queryParams)} 
+            />
         ) : (
           groupedBookings && (
             <GroupedBookingSections groupedBookings={groupedBookings} />
@@ -390,3 +371,18 @@ const Appointments = ({
 };
 
 export default Appointments;
+
+
+const getEmptyListMessage = (searchParams: BookingsQuery) => {
+  const { search, status, type, date, appointmentDate, appointmentName, teamMember } = searchParams;
+
+  if (search) return "🔍 No results found for your search. Try different keywords.";
+  if (status) return `🚦 No bookings found for ${status}. Try selecting a different booking status.`;
+  if (type) return "📅 No upcoming or past appointments found. Try changing the appointment type.";
+  if (date) return `📆 No bookings available for this date. \n ${format(new Date(date),'dd MMMM yyyy')}`;
+  if (appointmentDate) return `🗓️ No appointments scheduled for \n${format(new Date(appointmentDate), 'dd MMMM yyyy')}. Check nearby dates.`;
+  if (appointmentName) return `🔖 No appointments match the name, ${appointmentName}. Ensure it's correct or try another.`;
+  if (teamMember) return `👥 No bookings found for this team member, ${teamMember}. Try selecting someone else.`;
+
+  return "📄 No appointments available.";
+};

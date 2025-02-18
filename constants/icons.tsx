@@ -1970,3 +1970,91 @@ export function StraightLineIcon2() {
     </div>
   );
 }
+
+import { SVGProps } from "react";
+
+export function FilterIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      width={props.width || 32}
+      height={props.height || 32}
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="Filter icon"
+      {...props}
+    >
+      <circle cx="16" cy="16" r="15.5" fill="white" stroke="#EAEAEA" />
+      <mask
+        id="mask0_3134_13645"
+        style={{ maskType: "luminance" }}
+        maskUnits="userSpaceOnUse"
+        x="7"
+        y="8"
+        width="18"
+        height="17"
+      >
+        <path
+          d="M8 9.33301L14.4 16.8077V22.4192L17.6 23.9997V16.8077L24 9.33301H8Z"
+          fill="#555555"
+          stroke="white"
+          strokeLinejoin="round"
+        />
+      </mask>
+      <g mask="url(#mask0_3134_13645)">
+        <path d="M5.33398 5.33301H26.6673V26.6663H5.33398V5.33301Z" fill="#001FCC" />
+      </g>
+    </svg>
+  );
+}
+
+export function TickedBox(props: SVGProps<SVGSVGElement>) {
+  return (<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clipPath="url(#clip0_3152_14712)">
+<path d="M8.53583 13.595L5 10.0583L6.17833 8.87996L8.53583 11.2366L13.2492 6.52246L14.4283 7.70163L8.53583 13.595Z" fill="black"/>
+<path fillRule="evenodd" clipRule="evenodd" d="M0.833984 4.16634C0.833984 3.28229 1.18517 2.43444 1.8103 1.80932C2.43542 1.1842 3.28326 0.833008 4.16732 0.833008H15.834C16.718 0.833008 17.5659 1.1842 18.191 1.80932C18.8161 2.43444 19.1673 3.28229 19.1673 4.16634V15.833C19.1673 16.7171 18.8161 17.5649 18.191 18.19C17.5659 18.8151 16.718 19.1663 15.834 19.1663H4.16732C3.28326 19.1663 2.43542 18.8151 1.8103 18.19C1.18517 17.5649 0.833984 16.7171 0.833984 15.833V4.16634ZM4.16732 2.49967H15.834C16.276 2.49967 16.6999 2.67527 17.0125 2.98783C17.3251 3.30039 17.5006 3.72431 17.5006 4.16634V15.833C17.5006 16.275 17.3251 16.699 17.0125 17.0115C16.6999 17.3241 16.276 17.4997 15.834 17.4997H4.16732C3.72529 17.4997 3.30137 17.3241 2.98881 17.0115C2.67625 16.699 2.50065 16.275 2.50065 15.833V4.16634C2.50065 3.72431 2.67625 3.30039 2.98881 2.98783C3.30137 2.67527 3.72529 2.49967 4.16732 2.49967Z" fill="#1F1F1F"/>
+</g>
+<defs>
+<clipPath id="clip0_3152_14712">
+<rect width="20" height="20" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+  )}
+
+  export function Box(props: SVGProps<SVGSVGElement>) {
+    return (<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clipPath="url(#clip0_3152_14717)">
+<path fill-rule="evenodd" clipRule="evenodd" d="M0.833984 4.16634C0.833984 3.28229 1.18517 2.43444 1.8103 1.80932C2.43542 1.1842 3.28326 0.833008 4.16732 0.833008H15.834C16.718 0.833008 17.5659 1.1842 18.191 1.80932C18.8161 2.43444 19.1673 3.28229 19.1673 4.16634V15.833C19.1673 16.7171 18.8161 17.5649 18.191 18.19C17.5659 18.8151 16.718 19.1663 15.834 19.1663H4.16732C3.28326 19.1663 2.43542 18.8151 1.8103 18.19C1.18517 17.5649 0.833984 16.7171 0.833984 15.833V4.16634ZM4.16732 2.49967H15.834C16.276 2.49967 16.6999 2.67527 17.0125 2.98783C17.3251 3.30039 17.5006 3.72431 17.5006 4.16634V15.833C17.5006 16.275 17.3251 16.699 17.0125 17.0115C16.6999 17.3241 16.276 17.4997 15.834 17.4997H4.16732C3.72529 17.4997 3.30137 17.3241 2.98881 17.0115C2.67625 16.699 2.50065 16.275 2.50065 15.833V4.16634C2.50065 3.72431 2.67625 3.30039 2.98881 2.98783C3.30137 2.67527 3.72529 2.49967 4.16732 2.49967Z" fill="#1F1F1F"/>
+</g>
+<defs>
+<clipPath id="clip0_3152_14717">
+<rect width="20" height="20" fill="white"/>
+</clipPath>
+</defs>
+</svg>)}
+
+
+
+
+export function StatusIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+  <svg
+  width={props.width || 20}
+  height={props.height || 20}
+  viewBox="0 0 20 20" 
+  fill="none" 
+  xmlns="http://www.w3.org/2000/svg"
+  aria-label="Status icon"
+  {...props}
+  >
+<g clipPath="url(#clip0_3161_12986)">
+<path d="M9.99935 8.33366V15.0003M9.99935 5.00033V6.66699M1.66602 3.32533C1.66602 2.41033 2.41435 1.66699 3.32435 1.66699H16.6743C17.5893 1.66699 18.3327 2.41533 18.3327 3.32533V16.6753C18.3327 17.5912 17.5843 18.3337 16.6743 18.3337H3.32435C2.88487 18.3326 2.46371 18.1575 2.15295 17.8467C1.84219 17.536 1.66712 17.1148 1.66602 16.6753V3.32533Z" stroke="#555555" stroke-width="2"/>
+</g>
+<defs>
+<clipPath id="clip0_3161_12986">
+<rect width="20" height="20" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+  )}

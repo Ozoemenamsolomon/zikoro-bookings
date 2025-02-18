@@ -191,3 +191,14 @@ export interface FormattedUnavailability {
 export interface UnavailabilityByDay {
   [dayString: string]: FormattedUnavailability[]; // Array of
 }
+
+export interface BookingsQuery {
+  search?: string | null,
+  status?: string | null,
+  page?: number | null,
+  type?: 'upcoming-appointments' | 'past-appointments' | null,
+  date?: string | null,
+  appointmentDate?: string | null,
+  appointmentName?: string | null,
+  teamMember?: string | null,
+}
