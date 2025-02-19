@@ -8,13 +8,13 @@ import "react-clock/dist/Clock.css"; // Optional for better styling
 
 interface TimePickerProps {
   label?: string;
-  value?: string;
+  value: string;
   className?: string;
   onChange?: (time: string) => void;
 }
 
 const TimePickerP: React.FC<TimePickerProps> = ({ label, value, onChange, className }) => {
-  const [time, setTime] = useState<string>(value || format(new Date(), "hh:mm a"));
+  const [time, setTime] = useState<string>(value);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,7 +37,7 @@ const TimePickerP: React.FC<TimePickerProps> = ({ label, value, onChange, classN
       <span
         className=" cursor-pointer bg-transparent"
       >
-        {time}
+        {time || '_______'}
       </span>
 
       {/* Hidden input for selecting time */}
@@ -58,12 +58,12 @@ export default TimePickerP;
 
 interface CustomTimePickerProps {
   label?: string;
-  value?: string;
+  value: string;
   onChange?: (time: string) => void;
 }
 
 export const CustomTimePicker: React.FC<CustomTimePickerProps> = ({ label, value, onChange }) => {
-  const [time, setTime] = useState<string | null>(value || "12:00");
+  const [time, setTime] = useState<string | null>(value);
 
   const handleChange = (newTime: string | null) => {
     setTime(newTime);

@@ -75,6 +75,7 @@ export interface DetailItem {
 export interface Booking {
   id?: bigint;
   created_at?: string;
+  address?:string;
   appointmentLinkId?: any;
   participantEmail?: string;
   appointmentDate?: Date | string | null;
@@ -102,6 +103,11 @@ export interface Booking {
   appointmentNotes?: Record<string, any> | null; 
   appointmentMedia?: Record<string, any> | null; 
   workspaceId?: string;
+  checkIn?: string;
+  checkOut?: string;
+  contactId?: string;
+  meetingLink?: string;
+  // appointmentNotes?: string;
 }
 
 export interface UserType {

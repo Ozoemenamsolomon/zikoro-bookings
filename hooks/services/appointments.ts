@@ -174,7 +174,7 @@ export const useGetBookings = ({
   };
   
 
-  return { groupedBookings, isLoading, error: errorMessage, count, getBookings, filterBookings,queryParams, setQueryParams };
+  return { groupedBookings,setGroupedBookings, isLoading, error: errorMessage, count, getBookings, filterBookings,queryParams, setQueryParams };
 };
 
 export const useGetBookingsAnalytics = ({
