@@ -1,35 +1,48 @@
-import { DotsIcon } from '@/constants'
+import { DotsIcon, NoFileIcon } from '@/constants'
+import { Booking } from '@/types/appointments'
 import { EllipsisVertical } from 'lucide-react'
 import Image from 'next/image'
 import React, { Dispatch, SetStateAction } from 'react'
+import EmptyList from '../ui/EmptyList'
 
 const sample = [
     {
         title:'Meeting with John Doe for Design consultation',
         media: ['/url','/urls','/imgurl'],
-        createdBy: {name:'Emma Udeji', email:'ecudeji@gmail.com'},
+        createdBy: {firstName:'Emma', lastName:'Udeji', email:'ecudeji@gmail.com', id:127},
         creaedAT: '',
         updatedAt:'',
+        contactId:'',
         note: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus fugiat, ratione id corporis non quisquam nulla nam? Explicabo, cupiditate magni!',
     },
     {
         title:'Meeting with John Doe for Design consultation',
         media: ['/url','/urls','/imgurl'],
-        createdBy: {name:'Emma Udeji', email:'ecudeji@gmail.com'},
         creaedAT: '',
         updatedAt:'',
         note: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus fugiat, ratione id corporis non quisquam nulla nam? Explicabo, cupiditate magni!',
+        contactId:'',
+        createdBy: {firstName:'Emma', lastName:'Udeji', email:'ecudeji@gmail.com', id:127},
     },
 ]
 
-const Notes = ({setIsAddNote}:{
+const Notes = ({setIsAddNote, booking}:{
     setIsAddNote:Dispatch<SetStateAction<boolean>>
+    booking:Booking
 }) => {
   return (
     <div className='w-full max-w-lg mx-auto space-y-4 text-start text-[12px]'>
         <div className="p-4 text-[13px] border rounded-md">
             <h6 className="font-semibold text-center  pb-2">Notes from guest</h6>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus fugiat, ratione id corporis non quisquam nulla nam? Explicabo, cupiditate magni!
+             {
+                booking?.notes ?
+                booking.notes :
+                <EmptyList
+                    icon={<NoFileIcon/>}
+                    className='h-24 text-[12px]'
+                    text='No note from guest'
+                /> 
+             }
         </div>
         
         <div className="grid sm:grid-cols-2 gap-2 ">
@@ -63,7 +76,7 @@ const Notes = ({setIsAddNote}:{
                                         MP
                                     </div>
                                     <div className="flex-1">
-                                        <p className=' capitalize'>{item.createdBy.name}</p>
+                                        <p className=' capitalize'>{item.createdBy.firstName + " " + item.createdBy.lastName}</p>
                                         <small className="text-gray-500">{item.createdBy.email}</small>
                                     </div>
                                 </div>

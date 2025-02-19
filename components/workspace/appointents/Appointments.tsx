@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown, Edit, RefreshCw, SquarePen, XCircle } from "lucide-react";
-import React, { Suspense, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, Suspense, useRef, useState } from "react";
 import { useGetBookings } from "@/hooks/services/appointments";
 import { format, parseISO } from "date-fns";
 import { Booking, BookingsQuery } from "@/types/appointments";
@@ -16,16 +16,19 @@ import Loading from "@/components/shared/Loader";
 import EmptyList from "../ui/EmptyList";
 import SearchAppointment from "./SearchAppointment";
 import EditAppointment from "./EditAppointment";
+import { formatTimeSafely } from "@/lib/formatTime";
  
 
 const BookingRow = ({
   booking,
   showNote,
   setShowNote,
+  setGroupedBookings
 }: {
   booking: Booking;
   showNote: any;
   setShowNote: (any: any) => void;
+  setGroupedBookings: Dispatch<SetStateAction<GroupedBookings | null>>
 }) => {
   const {
     participantEmail,
@@ -40,6 +43,7 @@ const BookingRow = ({
     bookingStatus,
     appointmentType,
     id,
+    checkIn,checkOut
   } = booking;
   const dateTimeString = `${appointmentDate}T${appointmentTime}`;
   const dateTime = new Date(dateTimeString);
@@ -47,8 +51,9 @@ const BookingRow = ({
 
   const { setBookingFormData, setSelectedItem } = useAppointmentContext();
   useClickOutside(notesRef, () => setShowNote(null));
-
+  
   return (
+    <>
     <tr className="bg-white border-b relative w-full flex">
       <td className="py-4 px-4 w-3/12  ">
         <div className="flex items-center">
@@ -120,19 +125,32 @@ const BookingRow = ({
             <XCircle size={18} />
           </button>
 
-           <EditAppointment/>
+           <EditAppointment booking={booking} setGroupedBookings={setGroupedBookings}/>
         </div>
       </td>
     </tr>
+
+    {(checkIn || checkOut) && (
+      <tr className="bg-gray-50 text-gray-700">
+        <td colSpan={5} className="py-2 px-4 text-center text-sm flex gap-5 justify-center w-full">
+          <span>{checkIn ? `Check-in: ${formatTimeSafely(checkIn)}` : "Check-in: N/A"}</span>
+          <span>{checkOut ? `Check-out: ${formatTimeSafely(checkOut)}` : "Check-out: N/A"}</span>
+        </td>
+      </tr>
+    )}
+  </>
   );
 };
 
 const BookingTable = ({
   date,
   bookings,
+  setGroupedBookings
 }: {
   date: string;
   bookings: Booking[];
+  setGroupedBookings: Dispatch<SetStateAction<GroupedBookings | null>>
+
 }) => {
   const formattedDate = format(parseISO(date), "EEEE, d MMMM, yyyy");
   const [showNote, setShowNote] = useState<any>(null);
@@ -173,6 +191,7 @@ const BookingTable = ({
                 booking={booking}
                 showNote={showNote}
                 setShowNote={setShowNote}
+                setGroupedBookings={setGroupedBookings}
               />
             ))}
           </tbody>
@@ -184,12 +203,14 @@ const BookingTable = ({
 
 const GroupedBookingSections = ({
   groupedBookings,
+  setGroupedBookings
 }: {
   groupedBookings: GroupedBookings;
+  setGroupedBookings: Dispatch<SetStateAction<GroupedBookings | null>>
 }) => (
   <div className="space-y-6 ">
     {Object.entries(groupedBookings).map(([date, bookings]) => (
-      <BookingTable key={date} date={date} bookings={bookings} />
+      <BookingTable key={date} date={date} bookings={bookings} setGroupedBookings={setGroupedBookings} />
     ))}
   </div>
 );
@@ -205,7 +226,7 @@ const Appointments = ({
   fetchedcount: number;
   searchQuery: BookingsQuery;
 }) => {
-  const { groupedBookings, count, error, isLoading, getBookings, filterBookings, queryParams } =
+  const { groupedBookings,setGroupedBookings, count, error, isLoading, getBookings, filterBookings, queryParams } =
     useGetBookings({
       groupedBookingData,
       fetchedcount,
@@ -254,8 +275,6 @@ const Appointments = ({
       // getBookings("past-appointments");
     }
   };
-
-
 
   return (
     <>
@@ -345,7 +364,8 @@ const Appointments = ({
           </div>
         }
       >
-        {isLoading ? (
+        {
+          isLoading ? (
           <div className="h-screen w-full flex justify-center items-center">
             <Loading size={40} />
           </div>
@@ -362,7 +382,7 @@ const Appointments = ({
             />
         ) : (
           groupedBookings && (
-            <GroupedBookingSections groupedBookings={groupedBookings} />
+            <GroupedBookingSections groupedBookings={groupedBookings} setGroupedBookings={setGroupedBookings} />
           )
         )}
       </Suspense>
