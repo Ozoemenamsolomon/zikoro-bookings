@@ -5,9 +5,9 @@ export * from "./settings"
 
 export const AppointmentStatuses = [
   { label: "In attendance", value: "IN ATTENDANCE" },
-  { label: "Upcoming", value: "UPCOMING" },
-  { label: "Rescheduled", value: "RESCHEDULED" },
-  { label: "Cancelled", value: "CANCELLED" },
+  // { label: "Upcoming", value: "UPCOMING" },
+  // { label: "Rescheduled", value: "RESCHEDULED" },
+  // { label: "Cancelled", value: "CANCELLED" },
   { label: "No show", value: "NO SHOW" },
 ];
 

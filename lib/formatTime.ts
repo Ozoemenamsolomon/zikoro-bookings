@@ -1,35 +1,22 @@
 import { format, parse } from "date-fns";
 
-export const formatTime = (time: string): string | null => {
+export const formatTime = (time: string, date: string | Date): string | null => {
   try {
-    // Remove extra spaces and normalize the format
-    const cleanedTime = time.replace(/\s*:\s*/g, ":").trim(); // Fix "12 : 22 PM" to "12:22 PM"
+    // Normalize time format (e.g., "12 : 22 PM" → "12:22 PM")
+    const cleanedTime = time.replace(/\s*:\s*/g, ":").trim();
 
-    // Parse time from "hh:mm a" (e.g., "12:22 PM") into a Date object
-    const parsedTime = parse(cleanedTime, "hh:mm a", new Date());
+    // Parse time from "hh:mm a" (e.g., "12:22 PM") and merge with the given date
+    const parsedDate = parse(cleanedTime, "hh:mm a", new Date(date));
 
-    // Format the parsed time as "HH:mm:ss" for PostgreSQL
-    return format(parsedTime, "HH:mm:ss");
+    // Ensure valid date before formatting
+    if (isNaN(parsedDate.getTime())) {
+      throw new Error("Invalid parsed date");
+    }
+
+    // Return ISO string (e.g., "2025-02-20T12:22:00.000Z")
+    return parsedDate.toISOString();
   } catch (error) {
-    console.error("Invalid time format:", time);
+    console.error("Invalid time or date format:", time, date, error);
     return null;
   }
 };
-
-export const formatTimeSafely = (time: string | null | undefined) => {
-    if (!time) return "N/A";
-    
-    try {
-      // Extracting only the time portion
-      const [hours, minutes, seconds] = time.split("+")[0].split(":"); 
-      const formattedTime = new Date();
-      
-      formattedTime.setHours(parseInt(hours, 10));
-      formattedTime.setMinutes(parseInt(minutes, 10));
-      formattedTime.setSeconds(parseInt(seconds, 10));
-  
-      return format(formattedTime, "hh : mm a"); // Convert to 12-hour format
-    } catch (error) {
-      return "Invalid time";
-    }
-  };

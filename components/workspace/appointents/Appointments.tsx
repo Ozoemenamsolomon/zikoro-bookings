@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Edit, RefreshCw, SquarePen, XCircle } from "lucide-react";
+import { ChevronDown, Edit, RefreshCw, RotateCw, SquarePen, XCircle } from "lucide-react";
 import React, { Dispatch, SetStateAction, Suspense, useRef, useState } from "react";
 import { useGetBookings } from "@/hooks/services/appointments";
 import { format, parseISO } from "date-fns";
@@ -16,8 +16,7 @@ import Loading from "@/components/shared/Loader";
 import EmptyList from "../ui/EmptyList";
 import SearchAppointment from "./SearchAppointment";
 import EditAppointment from "./EditAppointment";
-import { formatTimeSafely } from "@/lib/formatTime";
- 
+import { RotateClockIcon } from "@/constants";
 
 const BookingRow = ({
   booking,
@@ -108,7 +107,7 @@ const BookingRow = ({
               }}
               className="text-blue-500 hover:text-blue-700"
             >
-              <RefreshCw size={18} />
+              <RotateClockIcon size={22} />
             </button>
           <button
             disabled={bookingStatus === "CANCELLED"}
@@ -122,7 +121,7 @@ const BookingRow = ({
             }}
             className="text-red-500 hover:text-red-700 disabled:text-slate-300"
           >
-            <XCircle size={18} />
+            <XCircle size={21} />
           </button>
 
            <EditAppointment booking={booking} setGroupedBookings={setGroupedBookings}/>
@@ -133,8 +132,8 @@ const BookingRow = ({
     {(checkIn || checkOut) && (
       <tr className="bg-gray-50 text-gray-700">
         <td colSpan={5} className="py-2 px-4 text-center text-sm flex gap-5 justify-center w-full">
-          <span>{checkIn ? `Check-in: ${formatTimeSafely(checkIn)}` : "Check-in: N/A"}</span>
-          <span>{checkOut ? `Check-out: ${formatTimeSafely(checkOut)}` : "Check-out: N/A"}</span>
+          <span>{checkIn ? `Check-in: ${format(checkIn,'hh : mm a')}` : "Check-in: N/A"}</span>
+          <span>{checkOut ? `Check-out: ${format(checkOut, 'hh : mm a')}` : "Check-out: N/A"}</span>
         </td>
       </tr>
     )}
@@ -295,9 +294,9 @@ const Appointments = ({
           <div className="">
             <button
               onClick={refresh}
-              className="p-1.5 rounded-md bg-slate-200 text-slate-700 hover:shadow duration-200"
+              className="p-2 border border-slate-300 bg-white rounded-full text-zikoroBlue hover:shadow duration-200"
             >
-              <RefreshCw size={20} />
+              <RotateCw  size={20} />
             </button>
           </div>
 
@@ -396,13 +395,13 @@ export default Appointments;
 const getEmptyListMessage = (searchParams: BookingsQuery) => {
   const { search, status, type, date, appointmentDate, appointmentName, teamMember } = searchParams;
 
-  if (search) return "🔍 No results found for your search. Try different keywords.";
-  if (status) return `🚦 No bookings found for ${status}. Try selecting a different booking status.`;
-  if (type) return "📅 No upcoming or past appointments found. Try changing the appointment type.";
+  if (search) return "🔍 No results found for your search.";
+  if (status) return `🚦 No bookings found for "${status}".`;
+  if (type) return "📅 No upcoming or past appointments found.";
   if (date) return `📆 No bookings available for this date. \n ${format(new Date(date),'dd MMMM yyyy')}`;
-  if (appointmentDate) return `🗓️ No appointments scheduled for \n${format(new Date(appointmentDate), 'dd MMMM yyyy')}. Check nearby dates.`;
-  if (appointmentName) return `🔖 No appointments match the name, ${appointmentName}. Ensure it's correct or try another.`;
-  if (teamMember) return `👥 No bookings found for this team member, ${teamMember}. Try selecting someone else.`;
+  if (appointmentDate) return `🗓️ No appointments scheduled for \n${format(new Date(appointmentDate), 'dd MMMM yyyy')}.`;
+  if (appointmentName) return `🔖 No appointments match the name, ${appointmentName}.`;
+  if (teamMember) return `👥 No bookings found for this team member, ${teamMember}.`;
 
   return "📄 No appointments available.";
 };

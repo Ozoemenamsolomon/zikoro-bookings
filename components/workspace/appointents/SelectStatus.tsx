@@ -5,8 +5,9 @@ import { ChevronDown } from 'lucide-react';
 import { Booking } from '@/types/appointments';
 import { PostRequest } from '@/utils/api';
 import { toast } from 'react-toastify';
-import { formatTime, formatTimeSafely } from '@/lib/formatTime';
+import { formatTime } from '@/lib/formatTime';
 import { GroupedBookings } from '@/lib/server/appointments';
+import { format } from 'date-fns';
 
 const SelectStatus = ({booking, setGroupedBookings}:{
 booking:Booking,
@@ -21,21 +22,64 @@ setGroupedBookings: Dispatch<SetStateAction<GroupedBookings | null>>
     }
 
     const [timeData, setTimeData] = useState({
-      checkIn: formatTimeSafely(booking.checkIn)||'',
-      checkOut: formatTimeSafely(booking.checkOut)||'',
+      checkIn: booking.checkIn ? format(new Date(booking.checkIn), "hh : mm a") : '',
+      checkOut: booking.checkOut ? format(new Date(booking.checkOut), "hh : mm a") : '',
     })
+
+    const updateStatusOnly = async () => {
+      try {
+        setIsSubmitting(true)
+
+        const { data, error } = await PostRequest<{ data: Booking | null; error: string | null }>({
+          url: "/api/appointments/update",
+          body: {
+            id: booking.id,
+            bookingStatus: selectedStatus,
+            checkIn: null,  
+            checkOut: null,
+          },
+        });
+
+        if (data) {
+          setGroupedBookings((prev) => {
+            if (!booking.appointmentDate) return prev; // Ensure appointmentDate exists
+    
+            const dateKey =
+              typeof booking.appointmentDate === "string"
+                ? booking.appointmentDate
+                : booking.appointmentDate.toISOString().split("T")[0];
+    
+            return {
+              ...prev,
+              [dateKey]: prev?.[dateKey]?.map((b) =>
+                b.id === booking.id
+                  ? { ...b, 
+                      bookingStatus: selectedStatus,
+                      checkIn: null, checkOut: null,}
+                  : b
+              ) || [],
+            };
+          });
+    
+          toast.success("Updated successfully");
+        } else {
+          toast.error(error || "Failed to update");
+        }
+
+      } catch (error) {
+        console.log(error)
+        toast.error('Failed to update status')
+      } finally {
+        setIsSubmitting(false)
+      }
+    }
 
     const updateCheckinTime = async () => {
       try {
         setIsSubmitting(true);
     
-        const formattedCheckIn = formatTime(timeData.checkIn);
-        const formattedCheckOut = formatTime(timeData.checkOut);
-    
-        if (!formattedCheckIn || !formattedCheckOut) {
-          toast.error("Invalid time format.");
-          return;
-        }
+        const formattedCheckIn = timeData.checkIn ? formatTime(timeData.checkIn, booking?.appointmentDate!) : null;
+        const formattedCheckOut = timeData.checkOut ? formatTime(timeData.checkOut,  booking?.appointmentDate!) : null;
     
         const { data, error } = await PostRequest<{ data: Booking | null; error: string | null }>({
           url: "/api/appointments/update",
@@ -43,6 +87,7 @@ setGroupedBookings: Dispatch<SetStateAction<GroupedBookings | null>>
             checkIn: formattedCheckIn,  
             checkOut: formattedCheckOut,
             id: booking.id,
+            bookingStatus: 'IN ATTENDANCE',
           },
         });
     
@@ -59,7 +104,7 @@ setGroupedBookings: Dispatch<SetStateAction<GroupedBookings | null>>
               ...prev,
               [dateKey]: prev?.[dateKey]?.map((b) =>
                 b.id === booking.id
-                  ? { ...b, checkIn: formattedCheckIn, checkOut: formattedCheckOut }
+                  ? { ...b, checkIn: formattedCheckIn!, checkOut: formattedCheckOut!, bookingStatus: selectedStatus }
                   : b
               ) || [],
             };
@@ -76,6 +121,14 @@ setGroupedBookings: Dispatch<SetStateAction<GroupedBookings | null>>
         setIsSubmitting(false);
       }
     };
+
+    const handleUpdate = async () => {
+      if(selectedStatus==='IN ATTENDANCE'){
+        updateCheckinTime()
+      } else {
+        updateStatusOnly()
+      }
+    }
     
   return (
       <div className="text-center flex flex-col gap-6 justify-center">
@@ -97,7 +150,6 @@ setGroupedBookings: Dispatch<SetStateAction<GroupedBookings | null>>
                   {AppointmentStatuses.map(({label,value}, i) => (
                     <button
                       key={i}
-                      
                       className={`flex hover:font-semibold duration-300 items-center gap-3 w- `}
                       onClick={() => handleClick(value)}
                     >
@@ -117,7 +169,7 @@ setGroupedBookings: Dispatch<SetStateAction<GroupedBookings | null>>
         </div>
         <div className="flex justify-center">
           <button 
-            onClick={updateCheckinTime} 
+            onClick={handleUpdate} 
             className="bg-basePrimary text-white font-semibold text-sm px-6 py-3 rounded-md">
               {isSubmitting ? 'Updating...' : 'Update'}
           </button>
