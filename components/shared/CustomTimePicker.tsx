@@ -37,7 +37,7 @@ const TimePickerP: React.FC<TimePickerProps> = ({ label, value, onChange, classN
       <span
         className=" cursor-pointer bg-transparent"
       >
-        {time || '_______'}
+        {time || '-- : -- --'}
       </span>
 
       {/* Hidden input for selecting time */}

@@ -1,14 +1,15 @@
 import { DotsIcon, NoFileIcon } from '@/constants'
-import { Booking } from '@/types/appointments'
+import { Booking, BookingNote } from '@/types/appointments'
 import { EllipsisVertical } from 'lucide-react'
 import Image from 'next/image'
-import React, { Dispatch, SetStateAction } from 'react'
+import React, { Dispatch, SetStateAction, useEffect } from 'react'
 import EmptyList from '../ui/EmptyList'
+import NoteOptions from './NoteOptions'
 
 const sample = [
     {
         title:'Meeting with John Doe for Design consultation',
-        media: ['/url','/urls','/imgurl'],
+        media: [{url:'/url',type:'image'},{url:'/url',type:'image'},{url:'/url',type:'image'},],
         createdBy: {firstName:'Emma', lastName:'Udeji', email:'ecudeji@gmail.com', id:127},
         creaedAT: '',
         updatedAt:'',
@@ -17,7 +18,7 @@ const sample = [
     },
     {
         title:'Meeting with John Doe for Design consultation',
-        media: ['/url','/urls','/imgurl'],
+        media: [{url:'/url',type:'image'},{url:'/url',type:'image'},{url:'/url',type:'image'},],
         creaedAT: '',
         updatedAt:'',
         note: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus fugiat, ratione id corporis non quisquam nulla nam? Explicabo, cupiditate magni!',
@@ -26,10 +27,23 @@ const sample = [
     },
 ]
 
-const Notes = ({setIsAddNote, booking}:{
+const Notes = ({setIsAddNote, booking, bookingNotes, setBookingNotes}:{
     setIsAddNote:Dispatch<SetStateAction<boolean>>
-    booking:Booking
+    booking:Booking,
+    bookingNotes: BookingNote[],
+    setBookingNotes: Dispatch<SetStateAction<BookingNote[]>>
 }) => {
+    
+    const fetchNotes = async () => {
+        const response = await fetch(`/api/appointments/notes/?bookingId=${booking.id}`)
+        const {data,error,count} = await response.json()
+        setBookingNotes(data)
+    }
+
+    useEffect(() => {
+        fetchNotes()
+    }, [])
+    
   return (
     <div className='w-full max-w-lg mx-auto space-y-4 text-start text-[12px]'>
         <div className="p-4 text-[13px] border rounded-md">
@@ -52,7 +66,8 @@ const Notes = ({setIsAddNote, booking}:{
                         <div key={idx} className="border rounded-md p-2 space-y-2 ">
                             <div className="flex gap-4">
                                 <h6 className="font-medium flex-1">{item.title}</h6>
-                                <button className="flex items-center justify-center h-8 w-8 border rounded-full bg-white"><EllipsisVertical size={14} /></button>
+                                <NoteOptions setIsAddNote={setIsAddNote} note={item} />
+                                
                             </div>
                             <p className="text-gray-500">{item.note}</p>
 
@@ -60,7 +75,7 @@ const Notes = ({setIsAddNote, booking}:{
                                 <h6 className="font-medium pb-1 pl-1 ">Media</h6>
                                 <div className="w-full flex gap-1 items-center ">
                                     {
-                                        item.media.map((url,i)=>{
+                                        item.media.map(({url},i)=>{
                                             return (
                                                 <Image src={url} alt='imgurl' height={300} width={300} className='object-cover border h-16 w-24 rounded overflow-clip shrink-0' />
 

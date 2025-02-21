@@ -1106,6 +1106,24 @@ export const AntiClock = () => {
   );
 };
 
+export const RotateClockIcon = ({ size = 21 }: { size?: number }) => {
+  return (
+    <svg width={size} height={size} viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.36553 3.54395L3.76953 7.29795L7.51453 6.64495L4.36553 3.54395Z" fill="#001FCC" stroke="#001FCC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M10 7.5V10.5L12 12.5" stroke="#001FCC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M4.99931 5.601C6.27031 4.304 8.04031 3.5 9.99931 3.5C13.8653 3.5 16.9993 6.634 16.9993 10.5C16.9993 14.366 13.8653 17.5 9.99931 17.5C6.47331 17.5 3.55531 14.892 3.07031 11.5" stroke="#001FCC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+  )}
+
+  export const EditIcon = ({ size = 21 }: { size?: number }) => {
+    return (
+      <svg width={size} height={size} viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10 3H4.16667C3.72464 3 3.30072 3.17559 2.98816 3.48816C2.67559 3.80072 2.5 4.22464 2.5 4.66667V16.3333C2.5 16.7754 2.67559 17.1993 2.98816 17.5118C3.30072 17.8244 3.72464 18 4.16667 18H15.8333C16.2754 18 16.6993 17.8244 17.0118 17.5118C17.3244 17.1993 17.5 16.7754 17.5 16.3333V10.5" stroke="#1F1F1F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M15.3132 2.68769C15.6447 2.35617 16.0944 2.16992 16.5632 2.16992C17.0321 2.16992 17.4817 2.35617 17.8132 2.68769C18.1448 3.01921 18.331 3.46885 18.331 3.93769C18.331 4.40653 18.1448 4.85617 17.8132 5.18769L10.3024 12.6994C10.1045 12.8971 9.86007 13.0418 9.59156 13.1202L7.1974 13.8202C7.12569 13.8411 7.04968 13.8424 6.97732 13.8238C6.90496 13.8053 6.83892 13.7676 6.7861 13.7148C6.73328 13.662 6.69564 13.596 6.6771 13.5236C6.65856 13.4512 6.65981 13.3752 6.68073 13.3035L7.38073 10.9094C7.4595 10.6411 7.60451 10.3969 7.8024 10.1994L15.3132 2.68769Z" stroke="#1F1F1F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>)}
+
+
 export const CancelX = () => {
   return (
     <svg
@@ -1417,8 +1435,8 @@ export function ListView() {
         d="M3 5L4.5 6.5L7.5 3.5M3 12L4.5 13.5L7.5 10.5M3 19L4.5 20.5L7.5 17.5M11 12H22M11 19H22M11 5H22"
         stroke="#1F1F1F"
         strokeWidth="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -1942,7 +1960,7 @@ export function StraightLineIcon() {
         <path
           d="M1 0.5H900"
           stroke="white"
-          stroke-linecap="round"
+          strokeLinecap="round"
           stroke-dasharray="2 2"
         />
       </svg>
@@ -1963,7 +1981,7 @@ export function StraightLineIcon2() {
         <path
           d="M1 0.5H694"
           stroke="white"
-          stroke-linecap="round"
+          strokeLinecap="round"
           stroke-dasharray="2 2"
         />
       </svg>
@@ -2049,7 +2067,7 @@ export function StatusIcon(props: SVGProps<SVGSVGElement>) {
   {...props}
   >
 <g clipPath="url(#clip0_3161_12986)">
-<path d="M9.99935 8.33366V15.0003M9.99935 5.00033V6.66699M1.66602 3.32533C1.66602 2.41033 2.41435 1.66699 3.32435 1.66699H16.6743C17.5893 1.66699 18.3327 2.41533 18.3327 3.32533V16.6753C18.3327 17.5912 17.5843 18.3337 16.6743 18.3337H3.32435C2.88487 18.3326 2.46371 18.1575 2.15295 17.8467C1.84219 17.536 1.66712 17.1148 1.66602 16.6753V3.32533Z" stroke="#555555" stroke-width="2"/>
+<path d="M9.99935 8.33366V15.0003M9.99935 5.00033V6.66699M1.66602 3.32533C1.66602 2.41033 2.41435 1.66699 3.32435 1.66699H16.6743C17.5893 1.66699 18.3327 2.41533 18.3327 3.32533V16.6753C18.3327 17.5912 17.5843 18.3337 16.6743 18.3337H3.32435C2.88487 18.3326 2.46371 18.1575 2.15295 17.8467C1.84219 17.536 1.66712 17.1148 1.66602 16.6753V3.32533Z" stroke="#555555" strokeWidth="2"/>
 </g>
 <defs>
 <clipPath id="clip0_3161_12986">
@@ -2062,7 +2080,7 @@ export function StatusIcon(props: SVGProps<SVGSVGElement>) {
 
   export function NoFileIcon(props: SVGProps<SVGSVGElement>) {
     return (<svg className={props.className} width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M17.3333 26.6667L22.0067 21.9933M17.3333 26.6667H8C7.29276 26.6667 6.61448 26.3857 6.11438 25.8856C5.61428 25.3855 5.33333 24.7072 5.33333 24V8C5.33333 7.27067 5.624 6.61333 6.09733 6.13333M17.3333 26.6667V18.6667C17.3333 18.304 17.4787 17.9747 17.7133 17.7347M24.6733 19.3267L26.6747 17.3253M22.6667 17.3333H26.6667V8C26.6667 7.29276 26.3857 6.61448 25.8856 6.11438C25.3855 5.61428 24.7072 5.33333 24 5.33333H10.6667M4 4L28 28" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M17.3333 26.6667L22.0067 21.9933M17.3333 26.6667H8C7.29276 26.6667 6.61448 26.3857 6.11438 25.8856C5.61428 25.3855 5.33333 24.7072 5.33333 24V8C5.33333 7.27067 5.624 6.61333 6.09733 6.13333M17.3333 26.6667V18.6667C17.3333 18.304 17.4787 17.9747 17.7133 17.7347M24.6733 19.3267L26.6747 17.3253M22.6667 17.3333H26.6667V8C26.6667 7.29276 26.3857 6.61448 25.8856 6.11438C25.3855 5.61428 24.7072 5.33333 24 5.33333H10.6667M4 4L28 28" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
     )}
 
@@ -2086,7 +2104,7 @@ export function StatusIcon(props: SVGProps<SVGSVGElement>) {
 export function NoAppointmentIcon(props: SVGProps<SVGSVGElement>) {
   return (<svg className={props.className} width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_2337_7029)">
-<path d="M7.46641 0V10.6667M24.5331 0V10.6667M11.7331 13.8667L20.2664 22.4M11.7331 22.4L20.2664 13.8667M3.19974 5.33333H28.7997C29.3655 5.33333 29.9082 5.55809 30.3082 5.95817C30.7083 6.35825 30.9331 6.90087 30.9331 7.46667V28.8C30.9331 29.3658 30.7083 29.9084 30.3082 30.3085C29.9082 30.7086 29.3655 30.9333 28.7997 30.9333H3.19974C2.63394 30.9333 2.09132 30.7086 1.69125 30.3085C1.29117 29.9084 1.06641 29.3658 1.06641 28.8V7.46667C1.06641 6.90087 1.29117 6.35825 1.69125 5.95817C2.09132 5.55809 2.63394 5.33333 3.19974 5.33333Z" stroke="black" stroke-width="1.5"/>
+<path d="M7.46641 0V10.6667M24.5331 0V10.6667M11.7331 13.8667L20.2664 22.4M11.7331 22.4L20.2664 13.8667M3.19974 5.33333H28.7997C29.3655 5.33333 29.9082 5.55809 30.3082 5.95817C30.7083 6.35825 30.9331 6.90087 30.9331 7.46667V28.8C30.9331 29.3658 30.7083 29.9084 30.3082 30.3085C29.9082 30.7086 29.3655 30.9333 28.7997 30.9333H3.19974C2.63394 30.9333 2.09132 30.7086 1.69125 30.3085C1.29117 29.9084 1.06641 29.3658 1.06641 28.8V7.46667C1.06641 6.90087 1.29117 6.35825 1.69125 5.95817C2.09132 5.55809 2.63394 5.33333 3.19974 5.33333Z" stroke="black" strokeWidth="1.5"/>
 </g>
 <defs>
 <clipPath id="clip0_2337_7029">
@@ -2098,6 +2116,6 @@ export function NoAppointmentIcon(props: SVGProps<SVGSVGElement>) {
 
 export function NoMediaIcon(props: SVGProps<SVGSVGElement>) {
   return (<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M20.0007 2.66602H8.00065C7.29341 2.66602 6.61513 2.94697 6.11503 3.44706C5.61494 3.94716 5.33398 4.62544 5.33398 5.33268V26.666C5.33398 27.3733 5.61494 28.0515 6.11503 28.5516C6.61513 29.0517 7.29341 29.3327 8.00065 29.3327H24.0007C24.7079 29.3327 25.3862 29.0517 25.8863 28.5516C26.3864 28.0515 26.6673 27.3733 26.6673 26.666V9.33268L20.0007 2.66602Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M18.668 2.66602V7.99935C18.668 8.70659 18.9489 9.38487 19.449 9.88497C19.9491 10.3851 20.6274 10.666 21.3346 10.666H26.668M19.3346 16.666L12.668 23.3327M12.668 16.666L19.3346 23.3327" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M20.0007 2.66602H8.00065C7.29341 2.66602 6.61513 2.94697 6.11503 3.44706C5.61494 3.94716 5.33398 4.62544 5.33398 5.33268V26.666C5.33398 27.3733 5.61494 28.0515 6.11503 28.5516C6.61513 29.0517 7.29341 29.3327 8.00065 29.3327H24.0007C24.7079 29.3327 25.3862 29.0517 25.8863 28.5516C26.3864 28.0515 26.6673 27.3733 26.6673 26.666V9.33268L20.0007 2.66602Z" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M18.668 2.66602V7.99935C18.668 8.70659 18.9489 9.38487 19.449 9.88497C19.9491 10.3851 20.6274 10.666 21.3346 10.666H26.668M19.3346 16.666L12.668 23.3327M12.668 16.666L19.3346 23.3327" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>)}

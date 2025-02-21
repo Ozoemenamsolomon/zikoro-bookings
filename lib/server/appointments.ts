@@ -1,4 +1,4 @@
-import { Booking, BookingsQuery, } from "@/types/appointments";
+import { Booking, BookingNote, BookingsQuery, } from "@/types/appointments";
 import { createADMINClient } from "@/utils/supabase/no-caching";
 import { getUserData } from ".";
 import { endOfMonth, startOfDay, startOfMonth, startOfToday, startOfWeek } from "date-fns";
@@ -133,7 +133,7 @@ export const fetchAppointmentNames = async (
       .from("bookings")
       .select(`appointmentName, appointmentLinkId(businessName)`, { count: 'exact' })
       .eq("workspaceId", workspaceId);
-console.log({ data, error, count })
+// console.log({ data, error, count })
     if (error) {
       console.error('APPOINTMENT NAMES:', error);
       return { data: null, error: error.message, count: 0 };
@@ -156,8 +156,6 @@ console.log({ data, error, count })
     return { data: null, error: 'Error fetching appointments', count: 0 };
   }
 };
-
-
 
 
 export const fetchBookings = async (
@@ -186,7 +184,6 @@ export const fetchBookings = async (
    }
  };
  
-
  type FetchAppointmentHistoryParams = {
    userId?: string;
    contactEmail: string;
@@ -234,4 +231,24 @@ export const fetchBookings = async (
    }
  }
  
- 
+ export const fetchBookingNotes = async (bookingId:string): Promise<{data:BookingNote[]|null, error:string|null,  count:number|null}> => {
+  const supabase = createADMINClient()
+    try {
+    const { data, error, count } = await supabase
+      .from("bookingNote")
+      // .select("*", {count:'exact'})
+      .select("*, createdBy(id, userEmail, organization, firstName, lastName, phoneNumber)", {count:'exact'})
+      .eq("bookingId", bookingId)
+      .order('created_at', { ascending: false });
+
+      console.log({ data, error,});
+      if (error) {
+        console.error('Error fetching bookings:', error);
+        return { data: null, error: error.message,count:null };
+      }
+      return { data, error: null, count };
+    } catch (error) {
+      console.error('Server error:', error);
+      return { data: null, error: 'Server error', count:null };
+    }
+};

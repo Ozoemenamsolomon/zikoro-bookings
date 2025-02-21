@@ -14,20 +14,20 @@ export async function POST(req: NextRequest) {
 
     try {
       const { data, error } = await supabase
-      .from('bookingNotes')
+      .from('bookingNote')
       .insert([body])
       .select()
-      .single()
+      // .single()
 
-        // console.log('Favorite contact result', {data,error})
+        console.log('Favorite contact result', {data,error})
         if (error) {
-          console.error("Error adding new tag", error);
+          console.error("Error adding new note", error);
           return NextResponse.json({ data:null, error: error.message }, { status: 400 });
         }
     
         return NextResponse.json({ data, error:null }, { status: 200 });
       } catch (error) {
-        console.error("Unhandled adding new tag:", error);
+        console.error("Unhandled adding new note:", error);
         return NextResponse.json(
           { error: "An error occurred while processing the request" },
           { status: 500 }
