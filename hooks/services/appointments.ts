@@ -136,7 +136,8 @@ export const useGetBookings = ({
       if (params.page) apiQueryParams.append('page', String(params.page));
       if (params.type) apiQueryParams.append('type', params.type);
       if (params.date) apiQueryParams.append('date', params.date);
-      if (params.appointmentDate) apiQueryParams.append('appointmentDate', params.appointmentDate);
+      if (params.from) apiQueryParams.append('from', params.from);
+      if (params.to) apiQueryParams.append('to', params.to);
       if (params.appointmentName) apiQueryParams.append('appointmentName', params.appointmentName);
       if (params.teamMember) apiQueryParams.append('teamMember', params.teamMember);
   

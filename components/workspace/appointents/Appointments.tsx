@@ -225,7 +225,8 @@ const Appointments = ({
   fetchedcount: number;
   searchQuery: BookingsQuery;
 }) => {
-  const { groupedBookings,setGroupedBookings, count, error, isLoading, getBookings, filterBookings, queryParams } =
+  const {dateRange, setDateRange} = useAppointmentContext()
+  const { groupedBookings,setGroupedBookings, count, error, isLoading, getBookings, filterBookings, setQueryParams, queryParams } =
     useGetBookings({
       groupedBookingData,
       fetchedcount,
@@ -240,7 +241,7 @@ const Appointments = ({
   useClickOutside(dropRef, () => setDrop(false));
 
   const fetchBookings = () => {
-    console.log({filter})
+    setDateRange(undefined)
     if (filter === "upcoming") {
       filterBookings({type:"upcoming-appointments"})
       // getBookings("upcoming-appointments");
@@ -354,7 +355,7 @@ const Appointments = ({
         </div>
       </header>
 
-      <SearchAppointment filterBookings={filterBookings} queryParams={queryParams}/>
+      <SearchAppointment filterBookings={filterBookings} queryParams={queryParams} filter={filter} setQueryParams={setQueryParams}/>
 
       <Suspense
         fallback={
@@ -393,13 +394,13 @@ export default Appointments;
 
 
 const getEmptyListMessage = (searchParams: BookingsQuery) => {
-  const { search, status, type, date, appointmentDate, appointmentName, teamMember } = searchParams;
+  const { search, status, type, date, from, to, appointmentName, teamMember } = searchParams;
 
   if (search) return "🔍 No results found for your search.";
   if (status) return `🚦 No bookings found for "${status}".`;
-  if (type) return "📅 No upcoming or past appointments found.";
+  if (type) return "📅 No appointments found.";
   if (date) return `📆 No bookings available for this date. \n ${format(new Date(date),'dd MMMM yyyy')}`;
-  if (appointmentDate) return `🗓️ No appointments scheduled for \n${format(new Date(appointmentDate), 'dd MMMM yyyy')}.`;
+  if (from&&to) return `🗓️ No appointments scheduled between \n${format(new Date(from), 'dd MMMM yyyy')} and ${format(new Date(to), 'dd MMMM yyyy')}.`;
   if (appointmentName) return `🔖 No appointments match the name, ${appointmentName}.`;
   if (teamMember) return `👥 No bookings found for this team member, ${teamMember}.`;
 

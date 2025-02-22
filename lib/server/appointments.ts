@@ -1,7 +1,6 @@
 import { Booking, BookingNote, BookingsQuery, } from "@/types/appointments";
 import { createADMINClient } from "@/utils/supabase/no-caching";
-import { getUserData } from ".";
-import { endOfMonth, startOfDay, startOfMonth, startOfToday, startOfWeek } from "date-fns";
+import { endOfMonth,  startOfMonth, startOfToday,  } from "date-fns";
 import { limit } from "@/constants";
 import { settings } from "../settings";
 
@@ -73,23 +72,39 @@ export const fetchAppointments = async (
         query.gte('appointmentDate', today)
       }
 
-      if (param?.appointmentDate){
-        const date =  new Date(param?.appointmentDate).toISOString()
-        query.eq('appointmentDate', date)
+      if (param?.from && param?.to){
+        const from =  new Date(param?.from).toISOString()
+        const to =  new Date(param?.to).toISOString()
+        query.gte('appointmentDate', from)
+        query.lte('appointmentDate', to)
       }
 
-      if (param?.appointmentName){
-        query.eq('appointmentName', param.appointmentName)
+      if (param?.appointmentName) {
+        let appointmentName = JSON.parse(param.appointmentName); // Parse input array
+        const searchConditions = appointmentName.map((name:string) => `appointmentName.ilike.%${name}%`);
+        
+        query.or(searchConditions.join(","));
       }
 
       if (param?.status){
-        query.eq('bookingStatus', param.status)
+        let statusList = JSON.parse(param.status); // Parse input array
+        const searchConditions = statusList.map((status:string) => `bookingStatus.ilike.%${status}%`);
+        
+        query.or(searchConditions.join(","))
       }
 
       if (param?.teamMember) {
-        query.ilike('teamMembers::text', `%${param.teamMember}%`);
-        // query.containedBy('teamMembers', JSON.stringify([param.teamMember]));
+        let teamMembersList = JSON.parse(param.teamMember); // Parse input array
+
+        query.ilike("teamMembers::text", `%${teamMembersList}%`);
       }
+      
+      // if (param?.teamMember) {
+      //   query.contains("teamMembers", [param.teamMember]); // Works for JSONB array filtering
+      // }
+      // if (param?.teamMember) {
+      //   query.filter("teamMembers::jsonb", "@>", JSON.stringify([param.teamMember]));
+      // }
       
       // Pagination handling
       const start = param?.page ? (param?.page - 1) * settings.countLimit : 0;

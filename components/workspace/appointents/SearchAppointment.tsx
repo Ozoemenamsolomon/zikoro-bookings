@@ -1,15 +1,17 @@
 import { FilterIcon } from '@/constants'
-import React, { useState } from 'react'
+import React, { Dispatch, SetStateAction, useState } from 'react'
 import FitlerByDate from './FitlerByDate'
 import FilterByName from './FilterByName'
 import FilterByTeamMemebr from './FilterByTeamMemebr'
 import FilterByStatus from './FilterByStatus'
 import { BookingsQuery } from '@/types/appointments'
 import { Search } from 'lucide-react'
+import { DateRange } from 'react-day-picker'
 
-const SearchAppointment = ({ filterBookings, queryParams }: {
+const SearchAppointment = ({ filterBookings, queryParams,setQueryParams, filter }: {
     filterBookings: (param: BookingsQuery) => any,
-    queryParams?: BookingsQuery
+    queryParams: BookingsQuery, filter:string
+    setQueryParams: Dispatch<SetStateAction<BookingsQuery>>
 }) => {
     const [query, setQuery] = useState('')
     const [drop, setDrop] = useState(true)
@@ -17,7 +19,7 @@ const SearchAppointment = ({ filterBookings, queryParams }: {
     const handleChange = async (q: string) => {
         setQuery(q)
         if (q === '') {
-            await filterBookings({ type: 'upcoming-appointments' })
+            await filterBookings({ type: filter==='upcoming'?'upcoming-appointments':'past-appointments' })
         }
     }
 
@@ -56,12 +58,27 @@ const SearchAppointment = ({ filterBookings, queryParams }: {
             >
                 <div className="pt-4 flex w-full overflow-auto no-scrollbar gap-4 items-center justify-between max-w-3xl mx-auto">
                     <FitlerByDate
-                        onChange={async (date: Date | undefined) => await filterBookings({ appointmentDate: date?.toISOString() })}
-                        value={queryParams?.appointmentDate ? new Date(queryParams?.appointmentDate!) : new Date()}
+                        onChange={
+                            async (date: DateRange | undefined) => 
+                                await filterBookings({ from: date?.from?.toISOString(), to: date?.to?.toISOString() })}
+                        value={queryParams?.from && queryParams?.to ? 
+                            {from :  new Date(queryParams?.from!), to: new Date(queryParams?.to!)} : undefined}
                     />
-                    <FilterByName onChange={async (appointmentName: string) => await filterBookings({ appointmentName })} />
-                    <FilterByTeamMemebr onChange={async (teamMember: string) => await filterBookings({ teamMember })} />
-                    <FilterByStatus onChange={async (status: string) => await filterBookings({ status })} />
+                    <FilterByName 
+                        onChange={async (appointmentName: string|null) => await filterBookings({ appointmentName })}
+                        queryParams={queryParams!}
+                        setQueryParams={setQueryParams}
+                    />
+                    <FilterByTeamMemebr 
+                        onChange={async (teamMember: string|null) => await filterBookings({ teamMember })} 
+                        queryParams={queryParams!}
+                        setQueryParams={setQueryParams}
+                    />
+                    <FilterByStatus 
+                        onChange={async (status: string|null) => await filterBookings({ status })}
+                        queryParams={queryParams!}
+                        setQueryParams={setQueryParams}
+                    />
                 </div>
             </div>
         </section>
