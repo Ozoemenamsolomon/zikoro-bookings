@@ -1,7 +1,6 @@
 import { Booking, BookingNote, BookingsQuery, } from "@/types/appointments";
 import { createADMINClient } from "@/utils/supabase/no-caching";
-import { getUserData } from ".";
-import { endOfMonth, startOfDay, startOfMonth, startOfToday, startOfWeek } from "date-fns";
+import { endOfMonth,  startOfMonth, startOfToday,  } from "date-fns";
 import { limit } from "@/constants";
 import { settings } from "../settings";
 
@@ -80,10 +79,6 @@ export const fetchAppointments = async (
         query.lte('appointmentDate', to)
       }
 
-      // if (param?.appointmentName) {
-      //   query.ilike("appointmentName", `%${param.appointmentName}%`);
-      // }
-
       if (param?.appointmentName) {
         let appointmentName = JSON.parse(param.appointmentName); // Parse input array
         const searchConditions = appointmentName.map((name:string) => `appointmentName.ilike.%${name}%`);
@@ -96,7 +91,6 @@ export const fetchAppointments = async (
         const searchConditions = statusList.map((status:string) => `bookingStatus.ilike.%${status}%`);
         
         query.or(searchConditions.join(","))
-        // query.eq('bookingStatus', param.status)
       }
 
       if (param?.teamMember) {
