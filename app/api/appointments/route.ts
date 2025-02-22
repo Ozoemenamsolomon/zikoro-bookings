@@ -25,7 +25,8 @@ export async function GET(req: NextRequest) {
     search: searchParams.get("search") || null,
     status: searchParams.get("status") || null,
     page: searchParams.get("page") ? Number(searchParams.get("page")) : null,
-    appointmentDate: searchParams.get("appointmentDate") || null,
+    from: searchParams.get("from") || null,
+    to: searchParams.get("to") || null,
     appointmentName: searchParams.get("appointmentName") || null,
     teamMember: searchParams.get("teamMember") || null,
   };

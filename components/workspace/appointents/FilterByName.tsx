@@ -1,75 +1,219 @@
-import { DropMenu } from '@/components/shared/DropMenu'
-import { BookingSlotSkeleton } from '@/components/shared/Loader';
-import { fetchAppointmentNames } from '@/lib/server/appointments';
-import useUserStore from '@/store/globalUserStore';
-import { Briefcase, Users2 } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+// import { DropMenu } from '@/components/shared/DropMenu';
+// import { BookingSlotSkeleton } from '@/components/shared/Loader';
+// import { PopoverMenu } from '@/components/shared/PopoverMenu';
+// import { fetchAppointmentNames } from '@/lib/server/appointments';
+// import useUserStore from '@/store/globalUserStore';
+// import { BookingsQuery } from '@/types/appointments';
+// import { Briefcase } from 'lucide-react';
+// import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
-const FilterByName = ({onChange}:{onChange:(appointmentName:string)=>void}) => {
-    const [appointmentNames, setAppointmentNames] = useState< { appointmentName: string; businessName: string | null }[] | null>([]);
-    const [isFetching, setIsFetching] = useState(false);
-    const [error, setError] = useState('');
-    const { currentWorkSpace } = useUserStore();
-  
-    useEffect(() => {
-      if (!currentWorkSpace?.workspaceAlias) return;
-  
-      const fetchData = async () => {
-        setIsFetching(true);
-        setError('');
+// interface Appointment {
+//   appointmentName: string;
+//   businessName: string | null;
+// }
+
+// const FilterByName = ({ onChange, queryParams, setQueryParams}: { 
+//   onChange: (appointmentNames: string|null) => void,
+//   queryParams: BookingsQuery,
+//   setQueryParams: Dispatch<SetStateAction<BookingsQuery>>
+// } ) => {
+//   const [appointmentNames, setAppointmentNames] = useState<Appointment[] | null>([]);
+//   const [selectedAppointments, setSelectedAppointments] = useState<string[]>([]);
+//   const [isFetching, setIsFetching] = useState(false);
+//   const [error, setError] = useState('');
+//   const { currentWorkSpace } = useUserStore();
+
+//   useEffect(() => {
+//     if (!currentWorkSpace?.workspaceAlias) return;
+    
+//     const fetchData = async () => {
+//       setIsFetching(true);
+//       setError('');
+
+//       try {
+//         const { data, error } = await fetchAppointmentNames(currentWorkSpace.workspaceAlias);
+
+//         if (error) {
+//           setError(error || 'Failed to fetch appointment names');
+//           return;
+//         }
         
-        try {
-          const { data, error, count } = await fetchAppointmentNames(currentWorkSpace.workspaceAlias);
-// console.log({ data, error, count })
+//         setAppointmentNames(data);
+//       } catch (err: any) {
+//         setError(err.message || 'Failed to fetch appointment names');
+//       } finally {
+//         setIsFetching(false);
+//       }
+//     };
 
-          if (error) {
-            setError(error|| 'Failed to fetch appointment names');
-          };
-          setAppointmentNames(data);
-        } catch (err: any) {
-          setError(err.message || 'Failed to fetch appointment names');
-        } finally {
-          setIsFetching(false);
-        }
-      };
-      
-  
-      fetchData();
-    }, [currentWorkSpace?.workspaceAlias]);
-  
-    return (
-      <DropMenu
-        trigerBtn={
-          <button className="  flex gap-2 items-center">
-                <Briefcase size={16} />
-                <small>Appointment name</small>
-            </button>
-        }
-      >
-        <div className="p-4 py-5  max-w-60 overflow-auto text-wrap no-scrollbar text-[12px] ">
-          {isFetching ? (
-            <BookingSlotSkeleton size={4} />
-          ) : error ? (
-            <div className="text-red-500 py-24 text-center  text-wrap ">{error}</div>
-          ) : appointmentNames?.length === 0 ? (
-            <div className="text-gray-500 py-24 text-center  text-wrap ">No team members found.</div>
-          ) : (
-            <div className="flex flex-col gap-1">
-              {appointmentNames?.map(({appointmentName, businessName}, i) => (
-                <button
-                  key={i}
-                  className="px-2 py-1 hover:bg-gray-50 flex flex-col rounded text-left w-full"
-                  onClick={() => onChange(appointmentName!)}
-                >
-                  <span>{appointmentName}</span>
-                  <small>{businessName}</small>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </DropMenu>
-    );
+//     fetchData();
+//   }, [currentWorkSpace?.workspaceAlias]);
+
+//   const toggleSelection = (appointmentName: string) => {
+//     setSelectedAppointments((prevSelected) => {
+//       const isAlreadySelected = prevSelected.includes(appointmentName);
+//       const updatedSelection = isAlreadySelected
+//         ? prevSelected.filter((name) => name !== appointmentName) // Remove if already selected
+//         : [...prevSelected, appointmentName]; // Add if not selected
+
+//         onChange(updatedSelection.length>0 ? JSON.stringify(updatedSelection) : null); // Pass updated array as JSON string
+//         return updatedSelection;
+//     });
+//   };
+
+//   return (
+//     <PopoverMenu
+//       trigerBtn={
+//         <button className="flex gap-2 items-center">
+//           <Briefcase size={16} />
+//           <small>
+//              Appointment name
+//           </small>
+//         </button>
+//       }
+//       className="w-44 overflow-auto no-scrollbar "
+//     >
+//       <div className="p-4 py-5 text-wrap text-[12px]">
+//         {isFetching ? (
+//           <BookingSlotSkeleton size={4} />
+//         ) : error ? (
+//           <div className="text-red-500 py-24 text-center">{error}</div>
+//         ) : appointmentNames?.length === 0 ? (
+//           <div className="text-gray-500 py-24 text-center">No appointments found.</div>
+//         ) : (
+//           <div className="flex flex-col gap-1">
+//             {appointmentNames?.map(({ appointmentName, businessName }, i) => (
+//               <button
+//                 key={i}
+//                 className={`px-2 py-1 hover:bg-gray-50 flex flex-col rounded text-left w-full ${
+//                   selectedAppointments.includes(appointmentName) ? 'bg-gray-100 font-semibold' : ''
+//                 }`}
+//                 onClick={() => toggleSelection(appointmentName)}
+//               >
+//                 <span>{appointmentName}</span>
+//                 <small>{businessName}</small>
+//               </button>
+//             ))}
+//           </div>
+//         )}
+//       </div>
+//     </PopoverMenu>
+//   );
+// };
+
+// export default FilterByName;
+
+
+import { PopoverMenu } from "@/components/shared/PopoverMenu";
+import { BookingSlotSkeleton } from "@/components/shared/Loader";
+import { fetchAppointmentNames } from "@/lib/server/appointments";
+import useUserStore from "@/store/globalUserStore";
+import { BookingsQuery } from "@/types/appointments";
+import { Briefcase } from "lucide-react";
+import React, { Dispatch, SetStateAction, useEffect, useState, useMemo } from "react";
+
+interface Appointment {
+  appointmentName: string;
+  businessName: string | null;
 }
 
-export default FilterByName
+interface FilterByNameProps {
+  onChange: (appointmentName: string | null) => void;
+  queryParams: BookingsQuery;
+  setQueryParams: Dispatch<SetStateAction<BookingsQuery>>;
+}
+
+const FilterByName = ({ onChange, queryParams, setQueryParams }: FilterByNameProps) => {
+  const [appointmentNames, setAppointmentNames] = useState<Appointment[] | null>([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const [error, setError] = useState("");
+  const { currentWorkSpace } = useUserStore();
+
+  useEffect(() => {
+    if (!currentWorkSpace?.workspaceAlias) return;
+
+    const fetchData = async () => {
+      setIsFetching(true);
+      setError("");
+
+      try {
+        const { data, error } = await fetchAppointmentNames(currentWorkSpace.workspaceAlias);
+
+        if (error) {
+          setError(error || "Failed to fetch appointment names");
+          return;
+        }
+
+        setAppointmentNames(data);
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch appointment names");
+      } finally {
+        setIsFetching(false);
+      }
+    };
+
+    fetchData();
+  }, [currentWorkSpace?.workspaceAlias]);
+
+  // Extract selected team members from queryParams when page loads
+  const selectedAppointments = useMemo(() => {
+    return queryParams.appointmentName ? JSON.parse(queryParams.appointmentName) : [];
+  }, [queryParams.appointmentName]);
+
+  // Toggle selection and update queryParams + trigger filtering
+  const toggleSelection = (appointmentName: string) => {
+    setQueryParams((prev) => {
+      const isAlreadySelected = selectedAppointments.includes(appointmentName);
+      const updatedSelection = isAlreadySelected
+        ? selectedAppointments.filter((name: string) => name !== appointmentName)
+        : [...selectedAppointments, appointmentName];
+
+      const newQueryParams = {
+        // ...prev,
+        appointmentName: updatedSelection.length > 0 ? JSON.stringify(updatedSelection) : null,
+      };
+
+      onChange(newQueryParams.appointmentName); // Trigger filtering
+      return newQueryParams;
+    });
+  };
+
+  return (
+    <PopoverMenu
+      trigerBtn={
+        <button className="flex gap-2 items-center">
+          <Briefcase size={16} />
+          <small>Appointment name</small>
+        </button>
+      }
+      className="w-44 overflow-auto no-scrollbar"
+    >
+      <div className="p-4 py-5 text-wrap text-[12px]">
+        {isFetching ? (
+          <BookingSlotSkeleton size={4} />
+        ) : error ? (
+          <div className="text-red-500 py-24 text-center">{error}</div>
+        ) : appointmentNames?.length === 0 ? (
+          <div className="text-gray-500 py-24 text-center">No appointments found.</div>
+        ) : (
+          <div className="flex flex-col gap-1">
+            {appointmentNames?.map(({ appointmentName, businessName }, i) => (
+              <button
+                key={i}
+                className={`px-2 py-1 hover:bg-gray-50 flex flex-col rounded text-left w-full ${
+                  selectedAppointments.includes(appointmentName) ? "bg-gray-100 font-semibold" : ""
+                }`}
+                onClick={() => toggleSelection(appointmentName)}
+              >
+                <span>{appointmentName}</span>
+                <small>{businessName}</small>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </PopoverMenu>
+  );
+};
+
+export default FilterByName;

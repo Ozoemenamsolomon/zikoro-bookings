@@ -204,7 +204,8 @@ export interface BookingsQuery {
   page?: number | null,
   type?: 'upcoming-appointments' | 'past-appointments' | null,
   date?: string | null,
-  appointmentDate?: string | null,
+  from?: string | null,
+  to?: string | null,
   appointmentName?: string | null,
   teamMember?: string | null,
 }

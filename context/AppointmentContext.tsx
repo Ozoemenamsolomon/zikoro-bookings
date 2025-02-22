@@ -5,6 +5,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import useUserStore from "@/store/globalUserStore";
 import { wsUrl, wsUrll } from '@/lib/wsUrl';
 import { useRouter } from 'next/navigation';
+import { DateRange } from 'react-day-picker';
 
 export interface AppState {
   isLoading: boolean;
@@ -37,6 +38,8 @@ export interface AppState {
   setSearchTerm:React.Dispatch<React.SetStateAction<string>>;
   activePath: string, 
   setActivePath:React.Dispatch<React.SetStateAction<string>>;
+  dateRange: DateRange|undefined, 
+  setDateRange:React.Dispatch<React.SetStateAction<DateRange|undefined>>;
   isOpen:boolean, setIsOpen:React.Dispatch<React.SetStateAction<boolean>>;
   getWsUrl: (path:string) => string
 }
@@ -66,6 +69,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [contacts, setContacts] = useState<BookingsContact[] | null>(null);
   const [show, setShow] = useState<string>('links')
   const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [dateRange, setDateRange] = useState<DateRange|undefined>()
 
   const { currentWorkSpace, user, setUser } = useUserStore();
   const workspaceParam = currentWorkSpace?.workspaceAlias ? `${currentWorkSpace.workspaceAlias}` : '';
@@ -99,6 +103,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
     isOpen, setIsOpen,
     getWsUrl,
     teamMembers, setTeamMembers,
+    dateRange, setDateRange,
   };
 
   return (
