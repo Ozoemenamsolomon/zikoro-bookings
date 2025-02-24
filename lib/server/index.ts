@@ -1,3 +1,5 @@
+'use server'
+
 import { createClient } from "@/utils/supabase/server"; 
 import { PostgrestError } from "@supabase/supabase-js";
 import { settings } from "../settings";
@@ -98,16 +100,32 @@ export const fetchAllData = async (table: string, orderBy?: string, start:number
     return { data: updatedData, error };
   };
 
-  export const deleteRow = async (table: string,  column: string, value: any, log?:string): Promise<{ status: number; statusText: string; }> => {
-    const supabase = createClient();
-    // console.log({table, column,value, log})
-    
-    const {status,statusText} = await supabase 
+  export const deleteRow = async (
+    table: string,
+    column: string,
+    value: any,
+    log?: string
+  ): Promise<{ data: any | null; error: string | null; status: number; statusText: string }> => {
+    try {
+      const supabase = createClient();
+
+      if (log) console.log(`[${log}] Deleting from ${table} where ${column}=${value}`);
+  
+      const { data, error, status, statusText } = await supabase
         .from(table)
         .delete()
         .eq(column, value)
-
-    return {status,statusText};
+        .select()
+        .single(); // Return the deleted row
+  
+      if (error) {
+        return { data: null, error: error.message, status, statusText };
+      }
+  
+      return { data, error: null, status, statusText };
+    } catch (err) {
+      return { data: null, error: "An unexpected error occurred.", status: 500, statusText: "Internal Server Error" };
+    }
   };
 
   export const deleteManyRows = async (table: string,  column: string, value: any[], log?:string): Promise<{ status: number; statusText: string; }> => {

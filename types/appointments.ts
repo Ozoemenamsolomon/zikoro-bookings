@@ -226,7 +226,7 @@ export interface BookingNote {
   bookingId?: bigint | null;
   title?: string | null;
   note?: string | null;
-  createdBy?: bigint| number | User;
+  createdBy?: User;
   lastEditDate?: string | null; // ISO timestamp
   media?: { type: string; url: string; }[] | null; // JSONB type
   workspaceId?: string | null;

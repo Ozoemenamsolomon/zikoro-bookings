@@ -2114,8 +2114,10 @@ export function NoAppointmentIcon(props: SVGProps<SVGSVGElement>) {
 </svg>)}
 
 
-export function NoMediaIcon(props: SVGProps<SVGSVGElement>) {
-  return (<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M20.0007 2.66602H8.00065C7.29341 2.66602 6.61513 2.94697 6.11503 3.44706C5.61494 3.94716 5.33398 4.62544 5.33398 5.33268V26.666C5.33398 27.3733 5.61494 28.0515 6.11503 28.5516C6.61513 29.0517 7.29341 29.3327 8.00065 29.3327H24.0007C24.7079 29.3327 25.3862 29.0517 25.8863 28.5516C26.3864 28.0515 26.6673 27.3733 26.6673 26.666V9.33268L20.0007 2.66602Z" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M18.668 2.66602V7.99935C18.668 8.70659 18.9489 9.38487 19.449 9.88497C19.9491 10.3851 20.6274 10.666 21.3346 10.666H26.668M19.3346 16.666L12.668 23.3327M12.668 16.666L19.3346 23.3327" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-</svg>)}
+export const NoMediaIcon = ({ size = 21 }: { size?: number }) => {
+  return (
+    <svg width={size} height={size}  viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20.0007 2.66602H8.00065C7.29341 2.66602 6.61513 2.94697 6.11503 3.44706C5.61494 3.94716 5.33398 4.62544 5.33398 5.33268V26.666C5.33398 27.3733 5.61494 28.0515 6.11503 28.5516C6.61513 29.0517 7.29341 29.3327 8.00065 29.3327H24.0007C24.7079 29.3327 25.3862 29.0517 25.8863 28.5516C26.3864 28.0515 26.6673 27.3733 26.6673 26.666V9.33268L20.0007 2.66602Z" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M18.668 2.66602V7.99935C18.668 8.70659 18.9489 9.38487 19.449 9.88497C19.9491 10.3851 20.6274 10.666 21.3346 10.666H26.668M19.3346 16.666L12.668 23.3327M12.668 16.666L19.3346 23.3327" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  )}
