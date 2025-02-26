@@ -6,7 +6,7 @@ import NoteOptions from './NoteOptions'
 import { getInitials } from '@/lib'
 import { format } from 'date-fns'
 import { renderAttachment } from '@/components/shared/Fileuploader'
-import Loading, { BlockSlotSkeleton } from '@/components/shared/Loader'
+import { BlockSlotSkeleton } from '@/components/shared/Loader'
 
 const Notes = ({setIsAddNote, booking, bookingNotes, setBookingNotes}:{
     setIsAddNote:Dispatch<SetStateAction<''|'create'|'edit'|'preview'|'delete'>>
@@ -33,7 +33,7 @@ const Notes = ({setIsAddNote, booking, bookingNotes, setBookingNotes}:{
         }
     }
 
-    useMemo(() => {
+    useEffect(() => {
         fetchNotes()
     }, [])
     // console.log({bookingNotes})

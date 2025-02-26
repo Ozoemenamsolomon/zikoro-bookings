@@ -169,7 +169,7 @@ const FilterByName = ({ onChange, queryParams, setQueryParams }: FilterByNamePro
         : [...selectedAppointments, appointmentName];
 
       const newQueryParams = {
-        // ...prev,
+        ...prev,
         appointmentName: updatedSelection.length > 0 ? JSON.stringify(updatedSelection) : null,
       };
 

@@ -1,5 +1,5 @@
 import { FilterIcon } from '@/constants'
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { Dispatch, SetStateAction, useMemo, useState } from 'react'
 import FitlerByDate from './FitlerByDate'
 import FilterByName from './FilterByName'
 import FilterByTeamMemebr from './FilterByTeamMemebr'
@@ -27,7 +27,23 @@ const SearchAppointment = ({ filterBookings, queryParams,setQueryParams, filter 
         if (query === '') return
         await filterBookings({ search: query })
     }
+    
+    const formatBookingsQuery = (query: BookingsQuery): string[] => {
+        const { from, to, page, type, date, ...rest } = query
+      
+        // Construct the list of values, filtering out null/undefined values
+        const values = Object.values(rest).filter((v): v is string => Boolean(v))
+      
+        // Add formatted "from-to" string if both exist
+        if (from && to) values.push(`${from}-${to}`)
+      
+        return values
+      }
 
+    useMemo(()=>{
+        formatBookingsQuery(queryParams)
+    }, [queryParams])
+      
     return (
         <section className="pb-8 w-full">
             <div className="flex max-w-md mx-auto w-full gap-2 items-end">
@@ -79,8 +95,14 @@ const SearchAppointment = ({ filterBookings, queryParams,setQueryParams, filter 
                         queryParams={queryParams!}
                         setQueryParams={setQueryParams}
                     />
+
+                    <div className="w-full flex justify-center items-center">
+
+                    </div>
                 </div>
             </div>
+
+
         </section>
     )
 }
