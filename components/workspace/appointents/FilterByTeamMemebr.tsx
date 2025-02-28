@@ -9,7 +9,7 @@ import { Dispatch, SetStateAction } from "react";
 import { BookingsQuery } from "@/types/appointments";
 
 interface FilterByTeamMemberProps {
-  onChange: (teamMembers: string | null) => void;
+  onChange: (queryParams: BookingsQuery) => void;
   queryParams: BookingsQuery;
   setQueryParams: Dispatch<SetStateAction<BookingsQuery>>;
 }
@@ -58,7 +58,7 @@ const FilterByTeamMember = ({ onChange, queryParams, setQueryParams }: FilterByT
         teamMembers: updatedSelection.length > 0 ? JSON.stringify(updatedSelection) : null,
       };
 
-      onChange(newQueryParams.teamMembers); // Trigger filtering
+      onChange(newQueryParams); // Trigger filtering
       return newQueryParams;
     });
   };

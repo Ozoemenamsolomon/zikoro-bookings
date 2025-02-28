@@ -5,7 +5,7 @@ import { BookingsQuery } from "@/types/appointments";
 import { Dispatch, SetStateAction } from "react";
 
 interface FilterByStatusProps {
-  onChange: (status: string | null) => void;
+  onChange: (queryParams: BookingsQuery) => void;
   queryParams: BookingsQuery;
   setQueryParams: Dispatch<SetStateAction<BookingsQuery>>;
 }
@@ -28,7 +28,7 @@ const FilterByStatus = ({ onChange, queryParams, setQueryParams }: FilterByStatu
         status: updatedSelection.length > 0 ? JSON.stringify(updatedSelection) : null,
       };
 
-      onChange(newQueryParams.status); // Trigger filtering
+      onChange(newQueryParams); // Trigger filtering
       return newQueryParams;
     });
   };

@@ -118,7 +118,7 @@ interface Appointment {
 }
 
 interface FilterByNameProps {
-  onChange: (appointmentName: string | null) => void;
+  onChange: (queryParams: BookingsQuery) => void;
   queryParams: BookingsQuery;
   setQueryParams: Dispatch<SetStateAction<BookingsQuery>>;
 }
@@ -173,7 +173,7 @@ const FilterByName = ({ onChange, queryParams, setQueryParams }: FilterByNamePro
         appointmentName: updatedSelection.length > 0 ? JSON.stringify(updatedSelection) : null,
       };
 
-      onChange(newQueryParams.appointmentName); // Trigger filtering
+      onChange(newQueryParams); // Trigger filtering
       return newQueryParams;
     });
   };

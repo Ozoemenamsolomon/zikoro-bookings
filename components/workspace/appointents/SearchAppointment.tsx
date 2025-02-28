@@ -7,6 +7,7 @@ import FilterByStatus from './FilterByStatus'
 import { BookingsQuery } from '@/types/appointments'
 import { Search } from 'lucide-react'
 import { DateRange } from 'react-day-picker'
+import SearchParams from './SearchParams'
 
 const SearchAppointment = ({ filterBookings, queryParams,setQueryParams, filter }: {
     filterBookings: (param: BookingsQuery) => any,
@@ -81,24 +82,29 @@ const SearchAppointment = ({ filterBookings, queryParams,setQueryParams, filter 
                             {from :  new Date(queryParams?.from!), to: new Date(queryParams?.to!)} : undefined}
                     />
                     <FilterByName 
-                        onChange={async (appointmentName: string|null) => await filterBookings({ appointmentName })}
+                        onChange={filterBookings}
                         queryParams={queryParams!}
                         setQueryParams={setQueryParams}
                     />
                     <FilterByTeamMemebr 
-                        onChange={async (teamMember: string|null) => await filterBookings({ teamMember })} 
+                        onChange={filterBookings}
+
+                        // onChange={async (teamMember: string|null) => await filterBookings({ teamMember })} 
                         queryParams={queryParams!}
                         setQueryParams={setQueryParams}
                     />
                     <FilterByStatus 
-                        onChange={async (status: string|null) => await filterBookings({ status })}
+                        onChange={filterBookings}
+                        // onChange={async (status: string|null) => await filterBookings({ status })}
                         queryParams={queryParams!}
                         setQueryParams={setQueryParams}
                     />
 
-                    <div className="w-full flex justify-center items-center">
-
-                    </div>
+                    
+                </div>
+                
+                <div className="w-full flex justify-center items-center">
+                    <SearchParams params={queryParams} filterBookings={filterBookings} setQueryParams={setQueryParams}/>
                 </div>
             </div>
 
