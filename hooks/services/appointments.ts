@@ -174,8 +174,12 @@ export const useGetBookings = ({
     }
   };
   
+  const handlePageChange = (page:number) => {
+    setCurrentPage(page)
+    filterBookings({...queryParams, page})
+  }
 
-  return { groupedBookings,setGroupedBookings, isLoading, error: errorMessage, count, getBookings, filterBookings,queryParams, setQueryParams };
+  return { groupedBookings,setGroupedBookings, currentPage,totalPages,handlePageChange, isLoading, error: errorMessage, count, getBookings, filterBookings,queryParams, setQueryParams, setCurrentPage };
 };
 
 export const useGetBookingsAnalytics = ({

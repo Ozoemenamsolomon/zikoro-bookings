@@ -1,3 +1,4 @@
+import { cn } from '@/lib'
 import { Loader2 } from 'lucide-react'
 
 const Loading = ({size}:{size?:number}) => {
@@ -7,6 +8,16 @@ const Loading = ({size}:{size?:number}) => {
 }
 
 export default Loading
+
+export const BlockSlotSkeleton = ({size=2,className}:{size?:number, className?:string}) => {
+  return (
+     <div className={cn(`grid sm:grid-cols-2 w-full gap-3`,className)}>
+       {
+        [...Array(size)].map((_,i)=>(<div key={i} className='w-full h-44 rounded bg-slate-100 animate-pulse'></div>))
+       }
+     </div>
+  )
+}
 
 export const BookingSlotSkeleton = ({size=8}:{size?:number}) => {
   return (

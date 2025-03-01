@@ -118,12 +118,12 @@ interface Appointment {
 }
 
 interface FilterByNameProps {
-  onChange: (appointmentName: string | null) => void;
+  onChange: (queryParams: BookingsQuery) => void;
   queryParams: BookingsQuery;
-  setQueryParams: Dispatch<SetStateAction<BookingsQuery>>;
+  setCurrentPage: Dispatch<SetStateAction<number>>;
 }
 
-const FilterByName = ({ onChange, queryParams, setQueryParams }: FilterByNameProps) => {
+const FilterByName = ({ onChange, queryParams, setCurrentPage }: FilterByNameProps) => {
   const [appointmentNames, setAppointmentNames] = useState<Appointment[] | null>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState("");
@@ -155,6 +155,7 @@ const FilterByName = ({ onChange, queryParams, setQueryParams }: FilterByNamePro
     fetchData();
   }, [currentWorkSpace?.workspaceAlias]);
 
+
   // Extract selected team members from queryParams when page loads
   const selectedAppointments = useMemo(() => {
     return queryParams.appointmentName ? JSON.parse(queryParams.appointmentName) : [];
@@ -162,20 +163,19 @@ const FilterByName = ({ onChange, queryParams, setQueryParams }: FilterByNamePro
 
   // Toggle selection and update queryParams + trigger filtering
   const toggleSelection = (appointmentName: string) => {
-    setQueryParams((prev) => {
       const isAlreadySelected = selectedAppointments.includes(appointmentName);
       const updatedSelection = isAlreadySelected
         ? selectedAppointments.filter((name: string) => name !== appointmentName)
         : [...selectedAppointments, appointmentName];
 
+      // remove page to avoid offset errors
+      const { type, date, page, ...rest } = queryParams
       const newQueryParams = {
-        // ...prev,
+        ...rest,
         appointmentName: updatedSelection.length > 0 ? JSON.stringify(updatedSelection) : null,
       };
-
-      onChange(newQueryParams.appointmentName); // Trigger filtering
-      return newQueryParams;
-    });
+      setCurrentPage(1)
+      onChange(newQueryParams); // Trigger filtering
   };
 
   return (

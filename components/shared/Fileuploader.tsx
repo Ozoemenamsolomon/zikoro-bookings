@@ -158,9 +158,9 @@ export const renderAttachment = (url: string, type: string) => {
   } else if (type.startsWith('video')) {
     return <video controls className="w-full h-full"><source src={url} /></video>;
   } else if (type === 'application/pdf') {
-    return <iframe src={url} className="w-full h-full"></iframe>;
+    return <iframe src={url} title="PDF Preview" className="w-full h-full no-scrollbar border"></iframe>;
   }
-  return <a href={url} target="_blank" className="text-blue-500 underline">View File</a>;
+  return <a href={url} target="_blank" className="text-blue-500 underline" rel="noopener noreferrer">View File</a>;
 };
 
 export const handleFileUpload = async ({
