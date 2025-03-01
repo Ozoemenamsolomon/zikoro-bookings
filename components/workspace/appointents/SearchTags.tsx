@@ -3,22 +3,23 @@
 import { useAppointmentContext } from "@/context/AppointmentContext";
 import { BookingsQuery } from "@/types/appointments";
 import { format, isValid, parseISO } from "date-fns";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
 
 const SearchTags = ({
   params,
-  setQueryParams,
+  setQuery,
   filterBookings,
+  setCurrentPage,
+  filter,
 }: {
   params: BookingsQuery;
   filterBookings: (param: BookingsQuery) => any;
-  setQueryParams: Dispatch<SetStateAction<BookingsQuery>>;
+  setQuery: Dispatch<SetStateAction<string>>;
+  setCurrentPage: Dispatch<SetStateAction<number>>;
+  filter:string;
+  
 }) => {
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
-  const {setDateRange} = useAppointmentContext()
+  const { setDateRange } = useAppointmentContext();
 
   // Filter out unwanted keys
   const filteredEntries = Object.entries(params).filter(
@@ -29,36 +30,51 @@ const SearchTags = ({
       !["type", "date", "page"].includes(key)
   );
 
+  // Function to parse JSON lists safely
+  const parseJSONList = (value: string) => {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed.join(", ") : value;
+    } catch {
+      return value; // Return as-is if not valid JSON
+    }
+  };
+
   // Handle Date Range
   const fromDate = params.from ? parseISO(params.from) : null;
   const toDate = params.to ? parseISO(params.to) : null;
   const hasDateRange = isValid(fromDate) && isValid(toDate);
 
-  // Function to remove a query parameter
-  const removeFilter = async (key: string) => {
-    const updatedParams = { ...params };
+  const removeFilter = async (key: keyof BookingsQuery) => {
+    const updatedParams: Partial<BookingsQuery> = { ...params };
     delete updatedParams[key];
 
     // If removing the date range, remove both "from" and "to"
     if (key === "from" || key === "to") {
-      delete updatedParams.from;
-      delete updatedParams.to;
+        delete updatedParams.from;
+        delete updatedParams.to;
+        setDateRange(undefined);
     }
 
-    // Update state and refetch
-    setQueryParams(updatedParams);
-    await filterBookings(updatedParams);
-
-    // Update URL search params
-    const newParams = new URLSearchParams(searchParams.toString());
-    newParams.delete(key);
-    if (key === "from" || key === "to") {
-      newParams.delete("from");
-      newParams.delete("to");
-      setDateRange(undefined)
+    if (key === "search") {
+        setQuery("");
     }
-    replace(`${pathname}?${newParams.toString()}`);
-  };
+
+    // Remove page to avoid offset issues and reset pagination
+    const { page, ...removedPage } = updatedParams;
+    setCurrentPage(1);
+
+    // If no filters remain, reset to default filter state
+    if (Object.keys(removedPage).length === 0) {
+      if (filter === "upcoming") {
+        filterBookings({type:"upcoming-appointments"})
+      } else {
+        filterBookings({type:"past-appointments"})
+      }
+    } else {
+        filterBookings(removedPage as BookingsQuery);
+    }
+};
 
   if (filteredEntries.length === 0) return null;
 
@@ -72,10 +88,11 @@ const SearchTags = ({
             className="flex items-center gap-2 bg-blue-100 text-blue-600 px-3 py-0.5 rounded-full"
           >
             <span className="capitalize">
-              {key}: {value}
+              {parseJSONList(value as string)}
+              {/* {key}: {parseJSONList(value as string)} */}
             </span>
             <button
-              onClick={() => removeFilter(key)}
+              onClick={() => removeFilter(key as keyof BookingsQuery)}
               className="text-red-600 hover:text-red-800"
             >
               ✕
@@ -87,8 +104,7 @@ const SearchTags = ({
       {hasDateRange && (
         <div className="flex items-center gap-2 bg-blue-100 text-blue-600 px-3 py-0.5 rounded-full">
           <span>
-            Date: {format(fromDate!, "MMM dd, yyyy")} -{" "}
-            {format(toDate!, "MMM dd, yyyy")}
+            {format(fromDate!, "MMM dd, yyyy")} -{" "}{format(toDate!, "MMM dd, yyyy")}
           </span>
           <button
             onClick={() => removeFilter("from")}

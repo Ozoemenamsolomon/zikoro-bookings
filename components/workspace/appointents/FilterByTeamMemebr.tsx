@@ -11,10 +11,10 @@ import { BookingsQuery } from "@/types/appointments";
 interface FilterByTeamMemberProps {
   onChange: (queryParams: BookingsQuery) => void;
   queryParams: BookingsQuery;
-  setQueryParams: Dispatch<SetStateAction<BookingsQuery>>;
+  setCurrentPage: Dispatch<SetStateAction<number>>;
 }
 
-const FilterByTeamMember = ({ onChange, queryParams, setQueryParams }: FilterByTeamMemberProps) => {
+const FilterByTeamMember = ({ onChange, queryParams, setCurrentPage }: FilterByTeamMemberProps) => {
   const [teamMembers, setTeamMembers] = useState<BookingTeamMember[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState("");
@@ -47,20 +47,20 @@ const FilterByTeamMember = ({ onChange, queryParams, setQueryParams }: FilterByT
 
   // toggle and trigger filtering
   const toggleSelection = (email: string) => {
-    setQueryParams((prev) => {
       const isAlreadySelected = selectedTeamMembers.includes(email);
       const updatedSelection = isAlreadySelected
         ? selectedTeamMembers.filter((item: string) => item !== email) // Remove if already selected
         : [...selectedTeamMembers, email]; // Add if not selected
 
+      // remove and reset page to 1 to avoid ofset errors
+      const { type, date,page, ...rest } = queryParams
       const newQueryParams = {
-        ...prev,
+          ...rest,
         teamMembers: updatedSelection.length > 0 ? JSON.stringify(updatedSelection) : null,
       };
+      setCurrentPage(1)
 
       onChange(newQueryParams); // Trigger filtering
-      return newQueryParams;
-    });
   };
 
   return (

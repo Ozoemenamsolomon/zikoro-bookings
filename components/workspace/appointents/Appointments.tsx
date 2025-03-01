@@ -17,6 +17,7 @@ import EmptyList from "../ui/EmptyList";
 import SearchAppointment from "./SearchAppointment";
 import EditAppointment from "./EditAppointment";
 import { RotateClockIcon } from "@/constants";
+import PaginationMain from "@/components/shared/PaginationMain";
 
 const BookingRow = ({
   booking,
@@ -226,7 +227,7 @@ const Appointments = ({
   searchQuery: BookingsQuery;
 }) => {
   const {dateRange, setDateRange} = useAppointmentContext()
-  const { groupedBookings,setGroupedBookings, count, error, isLoading, getBookings, filterBookings, setQueryParams, queryParams } =
+  const { groupedBookings,setGroupedBookings, count, error, isLoading, getBookings, filterBookings, setQueryParams, queryParams,currentPage,totalPages,handlePageChange, setCurrentPage} =
     useGetBookings({
       groupedBookingData,
       fetchedcount,
@@ -269,10 +270,8 @@ const Appointments = ({
     setFilter(view);
     if (view === "upcoming") {
       filterBookings({type:"upcoming-appointments"})
-      // getBookings("upcoming-appointments");
     } else {
       filterBookings({type:"past-appointments"})
-      // getBookings("past-appointments");
     }
   };
 
@@ -355,7 +354,7 @@ const Appointments = ({
         </div>
       </header>
 
-      <SearchAppointment filterBookings={filterBookings} queryParams={queryParams} filter={filter} setQueryParams={setQueryParams}/>
+      <SearchAppointment filterBookings={filterBookings} queryParams={queryParams} filter={filter} setQueryParams={setQueryParams} setCurrentPage={setCurrentPage}/>
 
       <Suspense
         fallback={
@@ -366,7 +365,7 @@ const Appointments = ({
       >
         {
           isLoading ? (
-          <div className="h-screen w-full flex justify-center items-center">
+          <div className="h-60 w-full flex justify-center items-center">
             <Loading size={40} />
           </div>
         ) : error ? (
@@ -382,7 +381,10 @@ const Appointments = ({
             />
         ) : (
           groupedBookings && (
+            <>
             <GroupedBookingSections groupedBookings={groupedBookings} setGroupedBookings={setGroupedBookings} />
+            <PaginationMain currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+            </>
           )
         )}
       </Suspense>
@@ -395,10 +397,11 @@ export default Appointments;
 
 const getEmptyListMessage = (searchParams: BookingsQuery) => {
   const { search, status, type, date, from, to, appointmentName, teamMember } = searchParams;
-
+  
   if (search) return "🔍 No results found for your search.";
   if (status) return `🚦 No bookings found for "${status}".`;
-  if (type) return "📅 No appointments found.";
+  if (type==='upcoming-appointments') return "📅 No upcoming appointments found.";
+  if (type==='past-appointments') return "📅 No past appointments found.";
   if (date) return `📆 No bookings available for this date. \n ${format(new Date(date),'dd MMMM yyyy')}`;
   if (from&&to) return `🗓️ No appointments scheduled between \n${format(new Date(from), 'dd MMMM yyyy')} and ${format(new Date(to), 'dd MMMM yyyy')}.`;
   if (appointmentName) return `🔖 No appointments match the name, ${appointmentName}.`;

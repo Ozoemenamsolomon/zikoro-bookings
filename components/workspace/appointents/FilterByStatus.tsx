@@ -7,30 +7,29 @@ import { Dispatch, SetStateAction } from "react";
 interface FilterByStatusProps {
   onChange: (queryParams: BookingsQuery) => void;
   queryParams: BookingsQuery;
-  setQueryParams: Dispatch<SetStateAction<BookingsQuery>>;
+  setCurrentPage: Dispatch<SetStateAction<number>>;
 }
 
-const FilterByStatus = ({ onChange, queryParams, setQueryParams }: FilterByStatusProps) => {
+const FilterByStatus = ({ onChange, queryParams, setCurrentPage }: FilterByStatusProps) => {
   // Extract selected team members from queryParams when page loads
   const selectedStatuses = useMemo(() => {
     return queryParams.status ? JSON.parse(queryParams.status) : [];
   }, [queryParams.status]);
 
   const toggleSelection = (status: string) => {
-    setQueryParams((prev) => {
       const isAlreadySelected = selectedStatuses.includes(status);
       const updatedSelection = isAlreadySelected
         ? selectedStatuses.filter((s: string) => s !== status) // Remove if already selected
         : [...selectedStatuses, status]; // Add if not selected
-
-      const newQueryParams = {
-        ...prev,
+        // remove page to avoid ofset errors
+        const { type, date,page, ...rest } = queryParams
+        const newQueryParams = {
+          ...rest,
         status: updatedSelection.length > 0 ? JSON.stringify(updatedSelection) : null,
       };
+      setCurrentPage(1)
 
       onChange(newQueryParams); // Trigger filtering
-      return newQueryParams;
-    });
   };
 
   return (

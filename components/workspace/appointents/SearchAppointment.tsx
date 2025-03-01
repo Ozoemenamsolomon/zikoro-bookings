@@ -7,15 +7,18 @@ import FilterByStatus from './FilterByStatus'
 import { BookingsQuery } from '@/types/appointments'
 import { Search } from 'lucide-react'
 import { DateRange } from 'react-day-picker'
-import SearchParams from './SearchParams'
+import SearchTags from './SearchTags'
 
-const SearchAppointment = ({ filterBookings, queryParams,setQueryParams, filter }: {
+const SearchAppointment = ({ filterBookings, queryParams,setQueryParams, filter, setCurrentPage }: {
     filterBookings: (param: BookingsQuery) => any,
-    queryParams: BookingsQuery, filter:string
+    queryParams: BookingsQuery,
     setQueryParams: Dispatch<SetStateAction<BookingsQuery>>
+    setCurrentPage: Dispatch<SetStateAction<number>>
+    filter:string,
 }) => {
     const [query, setQuery] = useState('')
     const [drop, setDrop] = useState(true)
+    // console.log({queryParams})
 
     const handleChange = async (q: string) => {
         setQuery(q)
@@ -24,27 +27,20 @@ const SearchAppointment = ({ filterBookings, queryParams,setQueryParams, filter 
         }
     }
 
-    const handleSearch = async () => {
-        if (query === '') return
-        await filterBookings({ search: query })
-    }
-    
-    const formatBookingsQuery = (query: BookingsQuery): string[] => {
-        const { from, to, page, type, date, ...rest } = query
-      
-        // Construct the list of values, filtering out null/undefined values
-        const values = Object.values(rest).filter((v): v is string => Boolean(v))
-      
-        // Add formatted "from-to" string if both exist
-        if (from && to) values.push(`${from}-${to}`)
-      
-        return values
-      }
+    const handleSearch = () => {
+        setCurrentPage(1)
+        const { type, date, page, ...rest } = queryParams
 
-    useMemo(()=>{
-        formatBookingsQuery(queryParams)
-    }, [queryParams])
-      
+        if (query === '') return
+        filterBookings({ ...rest, search: query })
+    }
+
+    const handleDateSearch= (dateRange: DateRange | undefined) => {
+        setCurrentPage(1)
+        const { type, date, page, ...rest } = queryParams
+        filterBookings({ ...rest,  from: dateRange?.from?.toISOString(), to: dateRange?.to?.toISOString() })
+    }
+     
     return (
         <section className="pb-8 w-full">
             <div className="flex max-w-md mx-auto w-full gap-2 items-end">
@@ -75,37 +71,28 @@ const SearchAppointment = ({ filterBookings, queryParams,setQueryParams, filter 
             >
                 <div className="pt-4 flex w-full overflow-auto no-scrollbar gap-4 items-center justify-between max-w-3xl mx-auto">
                     <FitlerByDate
-                        onChange={
-                            async (date: DateRange | undefined) => 
-                                await filterBookings({ from: date?.from?.toISOString(), to: date?.to?.toISOString() })}
+                        onChange={(date: DateRange | undefined) => handleDateSearch(date)}
                         value={queryParams?.from && queryParams?.to ? 
                             {from :  new Date(queryParams?.from!), to: new Date(queryParams?.to!)} : undefined}
                     />
                     <FilterByName 
                         onChange={filterBookings}
                         queryParams={queryParams!}
-                        setQueryParams={setQueryParams}
+                        setCurrentPage={setCurrentPage}
                     />
                     <FilterByTeamMemebr 
                         onChange={filterBookings}
-
-                        // onChange={async (teamMember: string|null) => await filterBookings({ teamMember })} 
                         queryParams={queryParams!}
-                        setQueryParams={setQueryParams}
+                        setCurrentPage={setCurrentPage}
                     />
                     <FilterByStatus 
                         onChange={filterBookings}
-                        // onChange={async (status: string|null) => await filterBookings({ status })}
                         queryParams={queryParams!}
-                        setQueryParams={setQueryParams}
+                        setCurrentPage={setCurrentPage}
                     />
-
-                    
                 </div>
                 
-                <div className="w-full flex justify-center items-center">
-                    <SearchParams params={queryParams} filterBookings={filterBookings} setQueryParams={setQueryParams}/>
-                </div>
+                <SearchTags params={queryParams} filterBookings={filterBookings} setQuery={setQuery} setCurrentPage={setCurrentPage} filter={filter}/>
             </div>
 
 
