@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       .select('*, workspaceAlias(*)')
       .single()
 
-    console.log('Updating bookingTeam member result:', {data,error})
+    // console.log('Updating bookingTeam member result:', {data,error})
     if (error) {
       console.error("Error Updating team member:", error);
       return NextResponse.json({ data:null, error: error.message }, { status: 400 });

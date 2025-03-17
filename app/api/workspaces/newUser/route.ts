@@ -14,8 +14,8 @@ export async function POST(req: NextRequest) {
   const workspaces: Organization[] = [];
   
   try {
-    const { email, userId, workspaceId, organization, name } = await req.json();
-    console.log( { email, userId, workspaceId, organization })
+    const { email, userId, workspaceAlias, organization, name } = await req.json();
+    console.log( { email, userId, workspaceAlias, organization })
 
     if (!email || !userId) {
       return NextResponse.json(
@@ -25,8 +25,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Update user team details if a workspaceId is provided
-    if (workspaceId&&workspaceId!=='none') {
-      const { data: teamData, error: teamError } = await updateBookingTeamUserId(userId, email, workspaceId);
+    if (workspaceAlias&&workspaceAlias!=='none') {
+      const { data: teamData, error: teamError } = await updateBookingTeamUserId(userId, email, workspaceAlias);
       if (teamError) {
         console.error("Error updating team user ID:", teamError);
         return NextResponse.json({ error: teamError }, { status: 400 });
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Assign default workspace
+    // Assign a default workspace
     const { data: workspaceData, error: workspaceError } = await assignMyWorkspace(userId, email, organization, name||'');
 
     if (workspaceError) {

@@ -148,7 +148,7 @@ export async function checkUserExists(email: string): Promise<User|null> {
     .select('*')
     .eq('userEmail', email)
     .single();
-    console.log({ data, error })
+    // console.log({ data, error })
   if (error) {
     console.error('Error checking user existence:', error);
   }

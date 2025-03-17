@@ -11,7 +11,8 @@ import { createClient } from "@/utils/supabase/client";
 import { urls } from "@/constants";
 import { User } from "@/types/appointments";
 import { checkUserExists } from "@/lib/server/workspace";
-import { BookingWorkSpace } from "@/types";
+import { Organization } from "@/types";
+import { generateAlphanumericHash } from "@/utils/helpers";
 
 const supabase = createClient();
 
@@ -28,12 +29,14 @@ export function useRegistration() {
         password: values.password,
         options: {
           // TODO consider adding referal code from the referal link here ... This will be easier to manage for auth and permissions in middleware. To access it = user.user_metadata.referalCode from supabase user account.
-          data:{ referalCode:'referalCode'},
+          data:{ 
+            referalCode:'referalCode',
+            platform:'Bookings',
+            verification_token: generateAlphanumericHash()
+          },
           emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback/${values?.email}/${new Date().toISOString()}/${values?.workspaceAlias||'none'}`,
         },
       });
-
-      // console.log({ data, error } )
 
       if (error) {
         toast.error(error?.message);
@@ -131,12 +134,12 @@ export const useSetLoggedInUser = () => {
 
 
       if(workspaceAlias&&role) {
-        // update userId in the workspace team
+        //This implies that this is a user that was added to team. update userId in the workspace team
         const {data:bookingTeam,error} = await PostRequest({
           url:'/api/workspaces/team/update',
           body: {
             email,
-            workspaceId:workspaceAlias,
+            workspaceAlias,
             userId:userData?.id,
             tokenEmail,
           }
@@ -147,7 +150,7 @@ export const useSetLoggedInUser = () => {
         }
         // initializing user with assignWorkspace
         const wkspace = await initializeWorkspaces(userData, bookingTeam?.workspaceId!);
-        return `/ws/${wkspace?.workspaceAlias}/${urls.schedule}`;
+        return `/ws/${wkspace?.organizationAlias}/${urls.schedule}`;
       } else {
         // This is normal login without tokens.
         const user = await checkUserExists(email)
@@ -158,7 +161,7 @@ export const useSetLoggedInUser = () => {
         }
         // initializing user-currentworkspace with currentworkspace from the store
         const wkspace = await initializeWorkspaces(user);
-        return `/ws/${wkspace?.workspaceAlias}/${urls.schedule}`;
+        return `/ws/${wkspace?.organizationAlias}/${urls.schedule}`;
       }
   };
 
@@ -346,12 +349,12 @@ export function useOnboarding() {
     values: FormData,
     email: string | null,
     createdAt: string | null,
-    workspaceId?: string
+    workspaceAlias?: string
   ): Promise<string | null> {
     try {
       setLoading("Creating user");
 
-      // 🛠️ Create user
+      // Create user
       const { data: user, error: userError, status } = await PostRequest({
         url: "/api/auth/user",
         body: {
@@ -375,14 +378,15 @@ export function useOnboarding() {
 
       setLoading("Setting up your workspace");
 
-      // 🛠️ Create and setup workspaces
+      // Create and setup workspaces
       const { data: workspaces, error: workspaceError } = await PostRequest({
         url: "/api/workspaces/newUser",
         body: {
           email,
           userId: user?.id,
-          workspaceId,
+          workspaceAlias,
           organization: values?.organization,
+          name: values.firstName + ' ' + values.lastName
         },
       });
 
@@ -400,7 +404,7 @@ export function useOnboarding() {
       // Determine the current workspace safely
       const currentWs =
         workspaces.length > 0
-          ? workspaces.find((ws: BookingWorkSpace) => ws.workspaceAlias === workspaceId) || workspaces[0]
+          ? workspaces.find((ws: Organization) => ws.organizationAlias === workspaceAlias) || workspaces[0]
           : undefined;
 
       if (!currentWs) {
@@ -408,19 +412,19 @@ export function useOnboarding() {
         return null
       }
 
-      // 🛠️ Update Zustand store
+      // Update Zustand store
       setCurrentWorkSpace(currentWs);
       setWorkSpaces(workspaces);
       setUser({
         ...user,
-        workspaceRole: workspaceId ? "MEMBER" : "ADMIN",
+        workspaceRole: workspaceAlias ? "MEMBER" : "ADMIN",
       });
 
       setLoading("");
       toast.success("Profile updated successfully");
 
       // Redirect to schedule page
-      return `/ws/${currentWs?.workspaceAlias}/schedule`;
+      return `/ws/${currentWs?.organizationAlias}/schedule`;
     } catch (error: any) {
       console.error("Registration error:", error);
       toast.error("An error occurred during registration. Please try again.");
