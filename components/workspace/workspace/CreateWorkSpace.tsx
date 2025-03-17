@@ -3,7 +3,7 @@ import { ArrowLeft, Check, ChevronDown, Plus, PlusCircle } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Toggler } from '../ui/SwitchToggler';
 import CustomInput from '../ui/CustomInput';
-import { BookingWorkSpace } from '@/types';
+import { Organization, OrganizationInput } from '@/types';
 import useUserStore from '@/store/globalUserStore';
 import { FileUploader, handleFileUpload } from '@/components/shared/Fileuploader';
 import { CustomSelect } from '@/components/shared/CustomSelect';
@@ -13,23 +13,26 @@ import { toast } from 'react-toastify';
 import { generateSlugg } from '@/lib/generateSlug';
 import { useRouter } from 'next/navigation';
 
-const initialFormData: BookingWorkSpace = {
-  workspaceName: '',
-  workspaceOwner: null,
+const initialFormData: OrganizationInput = {
+  organizationName: '',
+  organizationOwner: '',
   subscriptionPlan: '',
   subscriptionEndDate: null,
-  workspaceLogo: '',
-  workspaceAlias:'',
-  workspaceDescription: '',
+  organizationLogo: '',
+  organizationAlias:'',
+  organizationOwnerId:'',
+  organizationType:'',
+  country:'',
 };
 
-const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh }: { workSpaceData?: BookingWorkSpace, button?: React.ReactNode, redirectTo?:string, onClose?:(k:boolean)=>void, isRefresh?:boolean}) => {
+const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh }: { workSpaceData?: Organization, button?: React.ReactNode, redirectTo?:string, onClose?:(k:boolean)=>void, isRefresh?:boolean}) => {
   const {user, setUser, setWorkSpaces, setCurrentWorkSpace, currentWorkSpace, workspaces } = useUserStore();
   const {push} = useRouter()
 
-  const [formData, setFormData] = useState<BookingWorkSpace>({
+  const [formData, setFormData] = useState<OrganizationInput>({
     ...initialFormData,
-    workspaceOwner: user?.id,
+    organizationOwnerId: user?.id!,
+    organizationOwner: user?.firstName! + ' ' + user?.lastName,
   });
   const [files, setFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<{ type: string; url: string }[]>([]);
@@ -41,9 +44,24 @@ const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh }: { workSp
   /** Initialize Form Data */
   useEffect(() => {
     if (workSpaceData) {
-      setFormData((prev) => ({ ...prev, ...workSpaceData }));
-      if (workSpaceData?.workspaceLogo) {
-        setPreviewUrls([{ url: workSpaceData?.workspaceLogo, type: 'image' }]);
+
+      setFormData((prev) => { 
+        return { 
+          ...prev,
+          organizationName: workSpaceData?.organizationName!,
+          organizationOwner: workSpaceData?.organizationOwner!,
+          organizationLogo: workSpaceData.organizationLogo,
+          organizationAlias: workSpaceData?.organizationAlias!,
+          organizationOwnerId: workSpaceData?.organizationOwnerId!,
+          organizationType: workSpaceData?.organizationType,
+          country: workSpaceData?.country,
+          subscriptionPlan:workSpaceData?.subscriptionPlan,
+          subscriptionEndDate: workSpaceData?.subscriptionEndDate,
+          subscritionStartDate:workSpaceData?.subscritionStartDate, 
+        }
+       });
+      if (workSpaceData?.organizationLogo) {
+        setPreviewUrls([{ url: workSpaceData?.organizationLogo, type: 'image' }]);
       }
       setIsDisabled(true);
     }
@@ -65,9 +83,9 @@ const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh }: { workSp
   /** Validation Logic */
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!formData.workspaceName) newErrors.workspaceName = 'Workspace Name is required';
+    if (!formData.organizationName) newErrors.workspaceName = 'Workspace Name is required';
     if (!formData.subscriptionPlan) newErrors.subscriptionPlan = 'Subscription Plan is required';
-    if (!formData.workspaceDescription) newErrors.workspaceDescription = 'Description is required';
+    // if (!formData.organizationType) newErrors.workspaceDescription = 'Description is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -100,8 +118,8 @@ const handleSubmit = async (e: React.FormEvent) => {
         url: "/api/workspaces/edit",
         body: {
           ...formData,
-          workspaceLogo: uploadedFiles ? uploadedFiles?.[0].url! : formData?.workspaceLogo,
-          // workspaceAlias: generateSlugg(formData?.workspaceName!),
+          id:workSpaceData.id,
+          organizationLogo: uploadedFiles ? uploadedFiles?.[0].url! : formData?.organizationLogo,
         },
       });
 
@@ -135,12 +153,12 @@ const handleSubmit = async (e: React.FormEvent) => {
         body: {
           workspaceData:{
             ...formData,
-            workspaceLogo: uploadedFiles ? uploadedFiles?.[0].url! : '',
-            workspaceAlias: generateSlugg(formData?.workspaceName!),},
+            organizationLogo: uploadedFiles ? uploadedFiles?.[0].url! : '',
+            organizationAlias: generateSlugg(formData?.organizationName!),},
           userData:{
             userId:user?.id,
-            role:'ADMIN',
-            email:user?.userEmail,
+            userRole:'ADMIN',
+            userEmail:user?.userEmail,
           }
         },
       });
@@ -156,7 +174,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         // Add new workspace to the list directly
         setWorkSpaces([...workspaces, data]);
 
-        // Set the new workspace as current if it's the first one
+        // Set the new workspace as current  
         
         setCurrentWorkSpace(data);
         setUser({...user!, workspaceRole:'ADMIN'})
@@ -164,7 +182,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         setFormData(initialFormData);
         setPreviewUrls([]);
         setIsOpen(false);
-        !isRefresh ? push(`/ws/${data?.workspaceAlias}/schedule`) : null
+        !isRefresh ? push(`/ws/${data?.organizationAlias}/schedule`) : null
       }
     }
   } catch (error) {
@@ -241,14 +259,14 @@ const handleSubmit = async (e: React.FormEvent) => {
           <h5 className="font-semibold text-xl pb-2">Workspace Information</h5>
           <CustomInput
             type="text"
-            name="workspaceName"
+            name="organizationName"
             label="Workspace Name"
             isRequired
-            value={formData.workspaceName!}
+            value={formData.organizationName!}
             placeholder="Workspace name"
             onChange={handleChange}
           />
-          {errors.workspaceName && <small className="text-red-500">{errors.workspaceName}</small>}
+          {errors.organizationName && <small className="text-red-500">{errors.organizationName}</small>}
 
           {!isRefresh&&<CustomSelect
             name='subscriptionPlan'
@@ -265,11 +283,11 @@ const handleSubmit = async (e: React.FormEvent) => {
 
           {!isRefresh && <CustomInput
             type="text"
-            name="workspaceDescription"
+            name="organizationType"
             label="Workspace Description"
             isRequired
             isTextarea
-            value={formData.workspaceDescription!}
+            value={formData.organizationType!}
             placeholder="Workspace description"
             onChange={handleChange}
           />}

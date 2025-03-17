@@ -72,7 +72,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [dateRange, setDateRange] = useState<DateRange|undefined>()
 
   const { currentWorkSpace, user, setUser } = useUserStore();
-  const workspaceParam = currentWorkSpace?.workspaceAlias ? `${currentWorkSpace.workspaceAlias}` : '';
+  const workspaceParam = currentWorkSpace?.organizationAlias ? `${currentWorkSpace.organizationAlias}` : '';
   
   const getWsUrl = (path: string) =>  wsUrll(path,workspaceParam);
   
@@ -85,7 +85,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   
   useEffect(()=>{
     if(user) {
-      setUser({...user!, workspaceRole: currentWorkSpace?.workspaceOwner===user?.id ? 'ADMIN':'MEMBER'})
+      setUser({...user!, workspaceRole: currentWorkSpace?.organizationOwnerId===user?.id ? 'ADMIN':'MEMBER'})
     }
   },[user?.id, currentWorkSpace])
 

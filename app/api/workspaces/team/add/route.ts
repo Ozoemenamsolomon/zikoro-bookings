@@ -10,10 +10,10 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     // check if this data has been implemented 
     const {data:existingData,error:err}= await supabase
-      .from('bookingTeams')
-      .select('*, workspaceId(*)')
-      .eq('workplaceId', body.workplaceAlias)
-      .eq('email', body.email)
+      .from('organizationTeamMembers_Bookings')
+      .select('*, workplaceAlias(*)')
+      .eq('workplaceAlias', body.workplaceAlias)
+      .eq('userEmail', body.email)
       .single()
 
     if(existingData){
@@ -21,9 +21,9 @@ export async function POST(req: NextRequest) {
     }
  
     const {data,error}= await supabase
-      .from('bookingTeams')
+      .from('organizationTeamMembers_Bookings')
       .insert(body)
-      .select('*, workspaceId(*)')
+      .select('*, workplaceAlias(*)')
       .single()
 
     console.log('Inserting bookingTeam member result:', {data,error})

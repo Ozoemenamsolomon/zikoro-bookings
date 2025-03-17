@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
  
     const {data,error,status,statusText}= await supabase
-      .from('bookingTeams')
+      .from('organizationTeamMembers_Bookings')
       .delete()
       .eq('id', body.id)
       .select('id')

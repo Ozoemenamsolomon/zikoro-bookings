@@ -41,7 +41,7 @@ const InviteTeams = ({teams, setTeams}:{teams:BookingTeamsTable[], setTeams: Rea
     }
     // make sure user email is not included ...
     const uniqueEmails = formData?.emails?.filter(email => {
-      return teams?.some((team:BookingTeamMember) => team.email === email);
+      return teams?.some((team:BookingTeamMember) => team.userEmail === email);
     });
     
     if(uniqueEmails.length>0) {
@@ -55,7 +55,7 @@ const InviteTeams = ({teams, setTeams}:{teams:BookingTeamsTable[], setTeams: Rea
         url:'/api/email/inviteTeam',
         body: {
           ...formData, 
-          emails:formData?.emails, workspaceName:currentWorkSpace?.workspaceName, workspaceAlias:currentWorkSpace?.workspaceAlias
+          emails:formData?.emails, workspaceName:currentWorkSpace?.organizationName, workspaceAlias:currentWorkSpace?.organizationAlias
         },
       })
       // console.log({error,data,success,failedEmails,dbErrors})

@@ -24,7 +24,7 @@ const SelectWorkspace = () => {
 
   /** Handle Workspace Selection */
   const handleWorkspaceChange = (wsAlias: string) => {
-    setCurrentWorkSpace(workspaces.find((ws) => ws.workspaceAlias === wsAlias)!);
+    setCurrentWorkSpace(workspaces.find((ws) => ws.organizationAlias === wsAlias)!);
     router.push(getWorkspacePath(wsAlias, pathname.split('/').slice(3).join('/')));
     setIsOpen(false)
   };
@@ -41,7 +41,7 @@ const SelectWorkspace = () => {
           className="rounded-md w-full py-2 px-4 border flex justify-between gap-4 items-center"
         >
           <p className="w-full truncate min-w-0 text-start font-semibold">
-            {currentWorkSpace?.workspaceName}
+            {currentWorkSpace?.organizationName}
           </p>
           <ChevronDown size={14} className="shrink-0" />
         </button>
@@ -51,15 +51,15 @@ const SelectWorkspace = () => {
         {workspaces?.map((ws) => (
           <div  key={ws?.id} className="flex gap-2 items-center">
             <button
-              onClick={() => handleWorkspaceChange(ws.workspaceAlias)}
+              onClick={() => handleWorkspaceChange(ws.organizationAlias!)}
               className={`block w-full truncate min-w-0 hover:bg-baseLight hover:text-zikoroBlue duration-300 px-3 py-1.5 rounded-md text-start ${
                 currentWorkSpace?.id === ws?.id ? 'bg-baseLight text-zikoroBlue' : ''
               }`}
             >
-              {ws?.workspaceName}
+              {ws?.organizationName}
             </button>
 
-            {ws?.workspaceOwner===user?.id ? 
+            {ws?.organizationOwnerId===user?.id ? 
             <CreateWorkSpace
               onClose={setIsOpen}
               workSpaceData={ws!}

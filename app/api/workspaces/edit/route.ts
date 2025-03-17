@@ -1,4 +1,4 @@
-import { BookingWorkSpace } from "@/types";
+import { OrganizationInput } from "@/types";
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -8,12 +8,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
   }
   try {
-    const body:BookingWorkSpace = await req.json();
+    const body:OrganizationInput = await req.json();
     // console.log(body)
     const {data,error}= await supabase
-      .from('bookingWorkSpace')
+      .from('organization')
       .update(body)
-      .eq('id',body?.id)
+      .eq('organizationAlias',body.organizationAlias)
       .select('*')
       .single()
 

@@ -1,5 +1,5 @@
 import { assignMyWorkspace, updateBookingTeamUserId } from "@/lib/server/workspace";
-import { BookingWorkSpace } from "@/types";
+import { Organization } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
 
@@ -11,11 +11,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
   }
 
-  const workspaces: BookingWorkSpace[] = [];
+  const workspaces: Organization[] = [];
   
   try {
-    const { email, userId, workspaceId, organization } = await req.json();
-console.log( { email, userId, workspaceId, organization })
+    const { email, userId, workspaceId, organization, name } = await req.json();
+    console.log( { email, userId, workspaceId, organization })
+
     if (!email || !userId) {
       return NextResponse.json(
         { error: "Missing required fields: email or userId" },
@@ -30,16 +31,14 @@ console.log( { email, userId, workspaceId, organization })
         console.error("Error updating team user ID:", teamError);
         return NextResponse.json({ error: teamError }, { status: 400 });
       }
-      
-      console.log( { teamData, teamError })
+ 
       if (teamData) {
-        workspaces.push(teamData?.workspaceId);
+        workspaces.push(teamData?.workspaceAlias);
       }
     }
 
     // Assign default workspace
-    const { data: workspaceData, error: workspaceError } = await assignMyWorkspace(userId, email, organization);
-    console.log( { workspaceData, workspaceError })
+    const { data: workspaceData, error: workspaceError } = await assignMyWorkspace(userId, email, organization, name||'');
 
     if (workspaceError) {
       console.error("Error assigning workspace:", workspaceError);

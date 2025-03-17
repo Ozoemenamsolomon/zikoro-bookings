@@ -11,14 +11,13 @@ export async function POST(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const workspaceId = searchParams.get('workspaceAlias')!;  
     const email = searchParams.get('email')!;  
-
     if (!workspaceId || !email) {
       console.error("FETCHING TEAMS: Missing workspaceId and email");
       return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
     }
 
     const {data,error}= await supabase
-      .from('bookingTeams')
+      .from('organizationTeamMembers_Bookings')
       .update(body)
       .eq('workspaceId', workspaceId)
       .eq('email', email)

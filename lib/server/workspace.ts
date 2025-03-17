@@ -2,13 +2,13 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { getUserData } from ".";
-import { BookingWorkSpace } from "@/types";
+import { BookingTeamInput, BookingTeams, Organization, OrganizationInput } from "@/types";
 import { User } from "@/types/appointments";
 import { generateSlugg } from "../generateSlug";
 import { createADMINClient } from "@/utils/supabase/no-caching";
  
 type ResultProp = {
-  data: BookingWorkSpace[] | null;
+  data: Organization[] | null;
   error: string | null;
   count: number;
 };
@@ -28,40 +28,47 @@ export const fetchWorkspaces = async (
   }
 
   try {
-    // Fetch workspaces directly owned by the user
+    // Fetch organization/workspaces directly owned by the user
     const { data: workspaces, count: workspaceCount, error: workspaceError } = await supabase
-      .from('bookingWorkSpace')
+      .from('organization')
       .select('*', { count: 'exact' })
-      .eq('workspaceOwner', id)
-      .order('created_at', { ascending: false })
+      .eq('organizationOwnerId', id)
+      .order('created_at', { ascending: false });
 
     if (workspaceError) {
-      console.error('Error fetching bookingWorkSpace:', workspaceError);
+      console.error('Error fetching organization:', workspaceError);
       return { data: null, error: workspaceError.message, count: 0 };
     }
 
-    // Fetch workspaces that user belong to using the bookingTeams table.
+    // Fetch workspaces that the user belongs to using organizationTeamMembers_Bookings
     const { data: teamWorkspaces, error: teamError } = await supabase
-      .from('bookingTeams')
-      .select('id, workspaceId(*)', { count: 'exact' })
+      .from('organizationTeamMembers_Bookings')
+      .select(
+        'id, workspaceAlias(*)',
+        { count: 'exact' }
+      )
       .eq('userId', id)
       .order('created_at', { ascending: false });
 
     if (teamError) {
-      console.error('Error fetching bookingTeams:', teamError);
+      console.error('Error fetching organizationTeamMembers_Bookings:', teamError);
       return { data: null, error: teamError.message, count: 0 };
     }
 
+    // Extract workspaceAlias properly (ensure it's an array of Organization objects)
+    const teamWorkspaceOrganizations: Organization[] = (teamWorkspaces || [])
+      .flatMap((teamWorkspace) => teamWorkspace.workspaceAlias)
+      .filter((workspace)  => workspace !== null);
+
     // Combine both workspaces and remove duplicates by `id`
-    const combinedWorkspaces: BookingWorkSpace[] = [
+    const combinedWorkspaces: Organization[] = [
       ...(workspaces || []),
-      ...(teamWorkspaces || []).map((teamWorkspace) => teamWorkspace.workspaceId),
+      ...teamWorkspaceOrganizations
     ].filter(
-      (workspace, index, self) => 
+      (workspace, index, self) =>
         self.findIndex((w) => w.id === workspace.id) === index
     );
-
-    // console.log({combinedWorkspaces, workspaces, teamWorkspaces })
+console.log({combinedWorkspaces})
     return { 
       data: combinedWorkspaces, 
       error: null, 
@@ -73,6 +80,7 @@ export const fetchWorkspaces = async (
   }
 };
 
+// .select('id,organizationAlias,created_at,organizationName,subscriptionPlan,subscritionStartDate,subscriptionEndDate, organizationOwner,organizationOwnerId,BillingAddress,TaxID,payoutAccountDetails,organizationType,organizationLogo,country')
 export const fetchWorkspace = async (
   alias: string
 ) => {
@@ -80,11 +88,11 @@ export const fetchWorkspace = async (
 
     try {
     const { data, error }  = await supabase
-      .from('bookingWorkSpace')
+      .from('organization')
       .select('*') 
-      .eq('workspaceAlias', alias)
+      .eq('organizationAlias', alias)
       .single()
-// TODO: consider getting user team membership role
+ 
     console.error({ data, error });
     return { data, error: error?.message};
   } catch (error) {
@@ -100,40 +108,39 @@ export const createWorkspaceTeamMember = async (
 
     try {
     const { data, error }  = await supabase
-      .from('bookingTeams')
+      .from('organizationTeamMembers_Bookings')
       .insert(body) 
-      .select('*, workspaceId(*)')
+      .select('*, workspaceAlias(*)')
       .single()
 
     return { data, error: error?.message};
   } catch (error) {
-    console.error('bookingTeams Server error:', error);
+    console.error('organizationTeamMembers_Bookings Server error:', error);
     return { data: null, error: 'Server error'};
   }
 };
 
 export const updateBookingTeamUserId = async (
-  userId: string, email:string, workspaceId:string
+  userId: string, email:string, workspaceAlias:string
 ) => {
     const supabase = createClient()
 
     try {
     const { data, error }  = await supabase
-      .from('bookingTeams')
+      .from('organizationTeamMembers_Bookings')
       .update({'userId': userId}) 
-      .eq('workspaceId', workspaceId)
-      .eq('email', email)
-      .select('*, workspaceId(*)')
+      .eq('workspaceAlias', workspaceAlias)
+      .eq('userEmail', email)
+      .select('*, workspaceAlias(*)')
       .single()
 
     return { data, error: error?.message};
   } catch (error) {
-    console.error('bookingTeams Server error:', error);
+    console.error('organizationTeamMembers_Bookings Server error:', error);
     return { data: null, error: 'Server error'};
   }
 };
 
-// Mock database check function (replace with real implementation)
 export async function checkUserExists(email: string): Promise<User|null> {
   const supabase = createClient();
   const { data, error } = await supabase
@@ -148,23 +155,27 @@ export async function checkUserExists(email: string): Promise<User|null> {
 
   return data 
 }
+
 export const assignMyWorkspace = async (
-  userId: string, email:string, organization:string
+  userId: string, email:string, organization:string, name:string
 ) => {
     const supabase = createClient()
 
 // and assign a default workspace = 'myworkspace'
     try {
     const { data, error }  = await supabase
-      .from('bookingWorkSpace')
+      .from('organization')
       .insert({
-        workspaceName: organization||'My Workspace',
-        workspaceOwner: userId,
+        organizationName: organization||'My Workspace',
+        organizationOwner: name||'',
+        organizationOwnerId: userId,
         subscriptionPlan: 'FREE',
         subscriptionEndDate:null,
-        workspaceLogo: '',
-        workspaceAlias: generateSlugg(organization||'My Workspace'),
+        organizationLogo: '',
+        organizationAlias: generateSlugg(organization||'My Workspace'),
         workspaceDescription: 'Default workpsace',
+        organizationType: '',
+        country:'',
       }) 
       .select('*')
       .single()
@@ -175,14 +186,14 @@ export const assignMyWorkspace = async (
         let newTeam, newTeamError
         if(data) {
           const {data:newTeamMember, error}= await supabase
-          .from('bookingTeams')
+          .from('organizationTeamMembers_Bookings')
           .insert({
-            workspaceId: data?.workspaceAlias,
+            workspaceAlias: data?.organizationAlias,
             userId,
-            role:'ADMIN',
-            email,
+            userRole:'ADMIN',
+            userEmail:email,
           })
-          .select('*, workspaceId(*)')
+          .select('*, workspaceAlias(*)')
     
           if(error) {
             newTeamError='Error occured while adding user to workspace team.'
@@ -195,17 +206,19 @@ export const assignMyWorkspace = async (
 
     return {data, error:error?.message||null, newTeam, newTeamError}
   } catch (error) {
-    console.error('bookingWorkSpace Server error:', error);
+    console.error('organization Server error:', error);
     return { data: null, error: 'Server error'};
   }
 };
 
-export const createWorkspace = async (body:any) => {
+export const createWorkspace = async (body:{
+  workspaceData:OrganizationInput, userData:BookingTeamInput
+}) => {
   // body.workspaceData, body.userData
   const supabase = createClient()
   try {
     const {data,error}= await supabase
-    .from('bookingWorkSpace')
+    .from('organization')
     .insert(body.workspaceData)
     .select('*')
     .single()
@@ -215,14 +228,11 @@ export const createWorkspace = async (body:any) => {
     // add user as admin to the default workspace team members
     let newTeam, newTeamError
     if(data) {
-      const {data:newTeamMemebr,error}= await supabase
-      .from('bookingTeams')
-      .insert({...body.userData, workspaceId: data?.workspaceAlias,})
-      .select('*, workspaceId(*)')
+      const {data:newTeamMemebr,errors} = await upsertTeamMembers({...body.userData, workspaceAlias: data?.organizationAlias, userRole:'ADMIN'})
 
-      if(error) {
+      if(errors) {
         newTeamError='Error occured while adding user to workspace team.'
-        console.log('Error adding team member to workspace: ', error)
+        console.log('Error adding team member to workspace: ', errors)
       }
       newTeam=newTeamMemebr
     }
@@ -236,24 +246,65 @@ export const createWorkspace = async (body:any) => {
   }
 }
 
+export async function upsertTeamMembers(data: any) {
+  const supabase = createClient();
+
+  try {
+    const [engagementRes, credentialsRes, membersRes, bookingsRes] = await Promise.all([
+      supabase.from("organizationTeamMembers_Engagement").upsert([data]),
+      supabase.from("organizationTeamMembers_Credentials").upsert([data]),
+      supabase.from("organizationTeamMembers").upsert([data]),
+      supabase.from("organizationTeamMembers_Bookings").upsert([data]),
+    ]);
+
+    // if(engagementRes.error||credentialsRes.error||membersRes.error||bookingsRes.error){
+    //   return {
+    //     data:null,
+    //     errors: {
+    //       engagement: engagementRes.error?.message || null,
+    //       credentials: credentialsRes.error?.message || null,
+    //       members: membersRes.error?.message || null,
+    //       bookings: bookingsRes.error?.message || null,
+    //     },
+    //   }
+    // }
+
+    console.log({engagementRes,credentialsRes, membersRes,bookingsRes})
+
+    return {
+      data: bookingsRes.data,
+      errors: {
+        engagement: engagementRes.error?.message || null,
+        credentials: credentialsRes.error?.message || null,
+        members: membersRes.error?.message || null,
+        bookings: bookingsRes.error?.message || null,
+      },
+    };
+  } catch (error) {
+    console.error("Error in upserting team members:", error);
+    return {
+      data: null,
+      errors: { general: "An unexpected error occurred" },
+    };
+  }
+}
+
+
 
 export const fetchTeamMembers = async (workspaceAlias: string) => {
   const supabase = createADMINClient();
 
   try {
     const { data, error } = await supabase
-      .from("bookingTeams")
+      .from("organizationTeamMembers_Bookings")
       .select(
         `
         *,
-        workspaceId (
-          workspaceOwner,
-          workspaceAlias
-        ),
+        workspaceAlias (*),
         userId (*)
       `
       )
-      .eq("workspaceId", workspaceAlias) // Match workspaceAlias
+      .eq("workspaceAlias", workspaceAlias) // Match workspaceAlias
       .not("userId", "is", null) // Correctly skip users with null userId
       .order("created_at", { ascending: false }); // Order by creation date
 

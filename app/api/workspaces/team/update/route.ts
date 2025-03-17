@@ -10,14 +10,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
  
     const {data,error}= await supabase
-      .from('bookingTeams')
+      .from('organizationTeamMembers_Bookings')
       .update({
         userId: body.userId, 
-        email:body.email
+        userEmail:body.email
       })
-      .eq('workspaceId', body.workspaceId)
-      .eq('email', body.tokenEmail)
-      .select('*, workspaceId(*)')
+      .eq('workspaceAlias', body.workspaceAlias)
+      .eq('userEmail', body.tokenEmail)
+      .select('*, workspaceAlias(*)')
       .single()
 
     console.log('Updating bookingTeam member result:', {data,error})
