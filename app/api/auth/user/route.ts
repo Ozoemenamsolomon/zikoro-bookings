@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
         .select('*')
         .single();
 
-        console.log({ data, error, status } )
+        console.log('NEW ADDED USER: ', { data, error, status } )
 
       return NextResponse.json(
         {data, error:error, status },

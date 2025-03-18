@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AppointmentFormData, FormProps } from '@/types/appointments';
  
 import { CustomSelect } from '@/components/shared/CustomSelect';
 import { useAppointmentContext } from '@/context/AppointmentContext';
+import { fetchActiveTeamMembers, fetchTeamMembers } from '@/lib/server/workspace';
+import useUserStore from '@/store/globalUserStore';
+import { BookingTeamMember } from '@/types';
 
 const Generalsettings: React.FC<FormProps> = ({
   formData,
@@ -10,18 +13,50 @@ const Generalsettings: React.FC<FormProps> = ({
   setErrors,
   errors,
 }) => {
-  const {teamMembers} = useAppointmentContext()
+  const [teamMembers,setTeamMembers] = useState<{label:string,value:string}[]>([])
+  const {user, currentWorkSpace} = useUserStore()
 
-  const addTeamMember = (value:string) => {
-    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const newTeamMembers = formData?.teamMembers
-        ? `${formData.teamMembers}, ${value}`
-        : value;
-        setFormData && setFormData((prev:AppointmentFormData)=>{
-          return {...prev,
-            teamMembers: newTeamMembers,}
-          });
+  useEffect(() => {
+    const fetchTeamMembers = async () => {
+      if (!currentWorkSpace?.organizationAlias) return; // Avoid unnecessary calls
+  
+      const { data, error } = await fetchActiveTeamMembers(currentWorkSpace.organizationAlias);
+      
+      if (error) {
+        console.error("Error fetching team members:", error);
+        return;
+      }
+  
+      const teams = data
+        ?.filter((team: BookingTeamMember) => user?.id !== team.userId?.id) // Ensure user is not included
+        .map((team: BookingTeamMember) => ({
+          label: `${team.userId?.firstName} ${team.userId?.lastName}`,
+          value: team.userEmail || "",
+        }));
+  
+      setTeamMembers(teams || []); // Ensure fallback empty array to avoid crashes
+    };
+  
+    fetchTeamMembers();
+  }, [currentWorkSpace?.organizationAlias,])
+  
+  const addTeamMember = (value: string) => {
+  
+    // Ensure formData.teamMembers is an array
+    const existingMembers = formData?.teamMembers ? formData.teamMembers.split(", ") : [];
+  
+    // Prevent duplicate selections
+    if (existingMembers.includes(value)) return;
+  
+    const newTeamMembers = [...existingMembers, value].join(", ");
+  
+    setFormData &&
+      setFormData((prev: AppointmentFormData) => ({
+        ...prev,
+        teamMembers: newTeamMembers,
+      }));
   };
+  
 
   const removeEmail = (selected: string) => {
     const newTeamList = formData?.teamMembers

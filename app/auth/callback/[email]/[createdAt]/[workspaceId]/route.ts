@@ -1,15 +1,16 @@
-// import { cookies } from "next/headers";
+// NOT IN USE
+
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { email: string; createdAt: string, workspaceId:string } }
+  { params }: { params: { email: string; createdAt: string, workspaceAlias:string } }
 ) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
   const error = requestUrl.searchParams.get("error_description");
-  const { email, createdAt, workspaceId } = params;
+  const { email, createdAt, workspaceAlias } = params;
 
   // console.log('error ', error);
 
@@ -29,5 +30,5 @@ export async function GET(
     }
   }
 
-  return NextResponse.redirect(`${requestUrl.origin}/onboarding?email=${email}&createdAt=${createdAt}&workspaceId=${workspaceId}`);
+  return NextResponse.redirect(`${requestUrl.origin}/onboarding?email=${email}&createdAt=${createdAt}&workspaceAlias=${workspaceAlias}`);
 }

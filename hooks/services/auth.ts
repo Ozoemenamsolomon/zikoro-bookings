@@ -4,7 +4,7 @@ import { loginSchema, onboardingSchema } from "@/schemas/auth";
 import { useState, } from "react";
 import { toast } from "react-toastify";
 import * as z from "zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { PostRequest } from "@/utils/api";
 import useUserStore,  { initializeWorkspaces } from "@/store/globalUserStore";
 import { createClient } from "@/utils/supabase/client";
@@ -22,18 +22,19 @@ export function useRegistration() {
 
   async function register(values: z.infer<typeof loginSchema>) {
     setLoading(true);
+    const verification_token = generateAlphanumericHash()
+    console.log({verification_token})
     try {
-      // added workspaceAlias to pass the condition to know if this user was added to a workspace or not
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
         options: {
-          // TODO consider adding referal code from the referal link here ... This will be easier to manage for auth and permissions in middleware. To access it = user.user_metadata.referalCode from supabase user account.
           data:{ 
-            referalCode:'referalCode',
             platform:'Bookings',
-            verification_token: generateAlphanumericHash()
+            verification_token,
+            workspaceAlias:values?.workspaceAlias||'',
           },
+          //IRRELEVANT, SINCE WE ARE NOW USING VERIFYCODE INSTEAD OF VERIFYEMAIL added workspaceAlias to pass the condition to know if this user was added to a workspace or not
           emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback/${values?.email}/${new Date().toISOString()}/${values?.workspaceAlias||'none'}`,
         },
       });
@@ -43,19 +44,11 @@ export function useRegistration() {
         setLoading(false);
         return;
       }
-      // capture emails that are authicated/onboarded ...
-      // if(data.user?.aud==="authenticated"){
-      //   toast.error("This email already exist. Try to signin");
-      //   setLoading(false);
-      //   router.push(`/login?email=${values.email}`)
-      //   return;
-      // }
-
+ 
       if (data) {
-        //  saveCookie("user", data);
         toast.success("Registration  Successful");
         router.push(
-          `/verify-email?message=Verify your Account&content= Thank you for signing up! A verification code has been sent to your registered email address. Please check your inbox and enter the code to verify your account.&email=${values.email}&type=verify${ values?.workspaceAlias ? `&workspaceAlias=${values?.workspaceAlias}` : ''}`
+          `/verify-email?message=Verify your Account&content=Thank you for signing up! A verification code has been sent to your registered email address. Please check your inbox and enter the code to verify your account.&email=${values.email}&type=verify${ values?.workspaceAlias ? `&workspaceAlias=${values?.workspaceAlias}` : ''}`
         );
       }
     } catch (error) {
@@ -127,13 +120,11 @@ export function useLogOut(redirectPath: string = "/") {
 }
 
 export const useSetLoggedInUser = () => {
-  const {setUser} = useUserStore()
 
   const setLoggedInUser = async (email: string, tokenEmail:string, workspaceAlias:string, role:string, userData:User|null) => {
     if (!email) return;
 
-
-      if(workspaceAlias&&role) {
+      if(workspaceAlias && role) {
         //This implies that this is a user that was added to team. update userId in the workspace team
         const {data:bookingTeam,error} = await PostRequest({
           url:'/api/workspaces/team/update',
@@ -149,7 +140,7 @@ export const useSetLoggedInUser = () => {
           toast.error('Process error. Try again')
         }
         // initializing user with assignWorkspace
-        const wkspace = await initializeWorkspaces(userData, bookingTeam?.workspaceId!);
+        const wkspace = await initializeWorkspaces(userData, bookingTeam?.workspaceAlias!);
         return `/ws/${wkspace?.organizationAlias}/${urls.schedule}`;
       } else {
         // This is normal login without tokens.
@@ -167,7 +158,6 @@ export const useSetLoggedInUser = () => {
 
   return { setLoggedInUser };
 };
-
 
 export function useForgotPassword() {
   const [loading, setLoading] = useState(false);
@@ -334,25 +324,36 @@ type FormData = {
   organization: string;
 };
 
-type CreateUser = {
-  values: z.infer<typeof onboardingSchema>;
-  email: string | null;
-  createdAt: string | null;
-};
-
 export function useOnboarding() {
   const [loading, setLoading] = useState<string>("");
   const { setUser, setCurrentWorkSpace, setWorkSpaces } = useUserStore();
   const router = useRouter();
+  const params = useSearchParams();
 
   async function registration(
     values: FormData,
     email: string | null,
     createdAt: string | null,
-    workspaceAlias?: string
+    workspaceId?: string
   ): Promise<string | null> {
     try {
       setLoading("Creating user");
+
+      let workspaceAlias = workspaceId||''
+
+      // update user email verification if the param has a token
+      if(params.get("token")){
+        const token = params.get("token")
+        const userId = params.get("userId")
+
+        const {data, status} = await PostRequest<any>({
+          url: `/verifyuser/${userId}/${token}`,
+          body:""
+        })
+        console.log('Verification check: ',{data, status})
+        // update workspaceAlias if it exists
+        workspaceAlias=data?.workspaceAlias||''
+      }
 
       // Create user
       const { data: user, error: userError, status } = await PostRequest({
@@ -386,7 +387,10 @@ export function useOnboarding() {
           userId: user?.id,
           workspaceAlias,
           organization: values?.organization,
-          name: values.firstName + ' ' + values.lastName
+          name: values.firstName + ' ' + values.lastName,
+          organizationType: values?.industry,
+          country:values.country,
+          phoneNumber:values?.phoneNumber,
         },
       });
 

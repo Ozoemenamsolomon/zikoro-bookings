@@ -7,6 +7,7 @@ export async function POST(req: NextRequest) {
   if (req.method !== "POST") {
     return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
   }
+
   try {
     const body:User = await req.json();
     // console.log(body)
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest) {
       .select('*')
       .single()
 
-    console.log('Inserting userProfile result:', {data,error})
+    console.log('Inserting userProfile result:', {data,error,body})
     if (error) {
       console.error("Error updating user Profile:", error);
       return NextResponse.json({ data:null, error: error.message }, { status: 400 });
