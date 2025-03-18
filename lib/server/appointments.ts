@@ -39,7 +39,7 @@ export const fetchAppointments = async (
 
     const supabase = createADMINClient()
     if(!payload?.workspaceId){
-      console.error('APPOINTMENT BOOKINGS: workspaceId is missing')
+      console.error('APPOINTMENT BOOKINGS: workspaceAlias is missing')
     }
     
     let today = startOfToday().toISOString()
@@ -48,7 +48,7 @@ export const fetchAppointments = async (
     let query = supabase
       .from("bookings")
       .select(`*, appointmentLinkId(*, createdBy(id, userEmail,organization,firstName,lastName,phoneNumber))`, { count: 'exact' })
-      .eq("workspaceId", payload?.workspaceId)
+      .eq("workspaceAlias", payload?.workspaceId)
 
       const {count} = await query
 
@@ -139,7 +139,7 @@ export const fetchAppointmentNames = async (
   const supabase = createADMINClient();
 
   if (!workspaceId) {
-    console.error('APPOINTMENT BOOKINGS: workspaceId is missing');
+    console.error('APPOINTMENT BOOKINGS: workspaceAlias is missing');
     return { data: null, error: 'Workspace ID is required', count: 0 };
   }
 
@@ -147,7 +147,7 @@ export const fetchAppointmentNames = async (
     let { data, error, count } = await supabase
       .from("bookings")
       .select(`appointmentName, appointmentLinkId(businessName)`, { count: 'exact' })
-      .eq("workspaceId", workspaceId);
+      .eq("workspaceAlias", workspaceId);
 // console.log({ data, error, count })
     if (error) {
       console.error('APPOINTMENT NAMES:', error);
@@ -227,7 +227,7 @@ export const fetchBookings = async (
          "id, created_at, appointmentDuration, appointmentDate, appointmentName, appointmentTimeStr, appointmentLinkId(locationDetails)",
          { count: "exact" }
        )
-      .eq("workspaceId", workspaceId)
+      .eq("workspaceAlias", workspaceId)
       .eq("participantEmail", contactEmail)
       .range(0, limit - 1);
  
