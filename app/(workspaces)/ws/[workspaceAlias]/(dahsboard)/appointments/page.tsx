@@ -17,36 +17,35 @@ const AppointmentsPage = async ({
     page,
     date,
     search,
-    appointmentDate,
-    appointmentName,
+    from,
+    to,
     teamMember,
     status,
     type,
   } = await searchParams;
 
   // Check if any of the listed fields exist
-  const hasFilters = date || search || appointmentDate || appointmentName || teamMember || status;
+  const hasFilters = date || search || from || to || teamMember || status;
 
   const searchQuery: BookingsQuery = {
     page: Number(page) || 1,
     type: !hasFilters ? type || 'upcoming-appointments' : null, // ✅ Do not set default if filters exist
     date: date || null,
     search: search?.length ? search : null,
-    appointmentDate: appointmentDate || null,
-    appointmentName: appointmentName || null,
+    from: from || null,
+    to: to || null,
     teamMember: teamMember || null,
     status: status?.length ? status : null,
   };
 
   const workspaceAlias = (await params).workspaceAlias;
-
   // Fetch appointments
   const { data, count, error, querySize } = await fetchAppointments({
     workspaceId: workspaceAlias!,
     searchQuery,
   });
 
-  console.log({ data, count, error, searchParams, querySize });
+  // console.log({ data, count, error, searchParams, querySize });
 
   return (
     <Appointments

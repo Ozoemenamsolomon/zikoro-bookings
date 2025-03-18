@@ -94,7 +94,7 @@ export const useGetBookings = ({
     setError(null);  
   
     try {
-      const  response = await fetch(`/api/appointments?type=${type}&userId=${user?.id}&date=${date}&workspaceId=${currentWorkSpace?.workspaceAlias}`);
+      const  response = await fetch(`/api/appointments?type=${type}&userId=${user?.id}&date=${date}&workspaceId=${currentWorkSpace?.organizationAlias}`);
       if (response.status!==200) {
         throw new Error('Error fetching appointments');
       }
@@ -130,7 +130,7 @@ export const useGetBookings = ({
       const apiQueryParams = new URLSearchParams();
   
       if (user?.id) apiQueryParams.append('userId', String(user.id));
-      if (currentWorkSpace?.workspaceAlias) apiQueryParams.append('workspaceId', currentWorkSpace.workspaceAlias);
+      if (currentWorkSpace?.organizationAlias) apiQueryParams.append('workspaceId', currentWorkSpace.organizationAlias);
       if (params.search) apiQueryParams.append('search', params.search);
       if (params.status) apiQueryParams.append('status', params.status);
       if (params.page) apiQueryParams.append('page', String(params.page));
@@ -204,7 +204,7 @@ export const useGetBookingsAnalytics = ({
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/analytics/?type=${fetchType}&userId=${user?.id}&workspaceId=${currentWorkSpace?.workspaceAlias}`);
+      const response = await fetch(`/api/analytics/?type=${fetchType}&userId=${user?.id}&workspaceId=${currentWorkSpace?.organizationAlias}`);
       if ( !response.ok) {
         throw new Error('Error fetching appointments');
       }
