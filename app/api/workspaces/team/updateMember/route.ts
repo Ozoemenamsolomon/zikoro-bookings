@@ -9,19 +9,23 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { searchParams } = new URL(req.url);
-    const workspaceId = searchParams.get('workspaceAlias')!;  
-    const email = searchParams.get('email')!;  
-    if (!workspaceId || !email) {
+    const workspaceAlias = searchParams.get('workspaceAlias')!;  
+    const userEmail = searchParams.get('email')!;  
+    if (!workspaceAlias || !userEmail) {
       console.error("FETCHING TEAMS: Missing workspaceId and email");
       return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
     }
 
     const {data,error}= await supabase
       .from('organizationTeamMembers_Bookings')
-      .update(body)
-      .eq('workspaceId', workspaceId)
-      .eq('email', email)
-      .select('*, workspaceId(*), userId(*)')
+      .update({userRole:body.role})
+      .eq('workspaceAlias', workspaceAlias)
+      .eq('userEmail', userEmail)
+      .select(`
+        *,
+        workspaceAlias (organizationOwnerId,organizationName,organizationAlias),
+        userId (id,userEmail,firstName,lastName,profilePicture)
+        `)
       .single()
 
     console.log('Updating bookingTeam member result:', {data,error})

@@ -1,6 +1,6 @@
 import { CenterModal } from '@/components/shared/CenterModal'
 import { BookingTeamsTable } from '@/types'
-import { PenBox, Send, X } from 'lucide-react'
+import { Loader2, PenBox, Send, X } from 'lucide-react'
 import React, { useCallback, useState } from 'react'
 import CustomInput from '../ui/CustomInput'
 import { CustomSelect } from '@/components/shared/CustomSelect'
@@ -15,8 +15,8 @@ const UpdateMemberRole = ({member, setTeams}:{
 }) => {
     // console.log({member})
     const [formData, setFormData] = useState({
-        email: member.email || '',
-        role: member.role || '',
+        email: member.userEmail || '',
+        role: member.userRole || '',
     });
     const [loading, setLoading] = useState('')
     const [errors, setErrors] = useState<Record<string, string>|null>(null);
@@ -34,18 +34,18 @@ const UpdateMemberRole = ({member, setTeams}:{
             setErrors({ role: 'Role is required' });
             return;
         }
-      if(member.role===formData.role){
+      if(member.userRole===formData.role){
         return 
       }
         try {
             setLoading('Updating role ...')
             const {error,data,} = await PostRequest({
-                    url:`/api/workspaces/team/updateMember?workspaceAlias=${member?.workspaceId?.workspaceAlias}&email=${member?.email}`,
+                    url:`/api/workspaces/team/updateMember?workspaceAlias=${member?.workspaceAlias?.organizationAlias}&email=${member?.userEmail}`,
                     body: {
                       role: formData.role
                     },
                   })
-            //   console.log({error,data,})
+              console.log({error,data,})
             if(error){
                 setErrors({general:error})
                 return
@@ -120,7 +120,7 @@ const UpdateMemberRole = ({member, setTeams}:{
             <div className="flex flex-col items-center">
               {errors?.general && <small className='text-red-600 w-full block text-center'>{errors?.general}</small>}
               <Button type="submit" className="bg-basePrimary h-12 px-6 text-white w-full">
-                {loading ? loading : 'Chande Member Role'}
+                {loading ?  <span className='flex items-center gap-2'> <Loader2 size={20} className='animate-spin'/>{loading}</span>  : 'Chande Member Role'}
               </Button>
           </div>
 

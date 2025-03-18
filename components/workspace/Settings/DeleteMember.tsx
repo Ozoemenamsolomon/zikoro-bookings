@@ -43,7 +43,7 @@ const DeleteMember: React.FC<DeleteMemberProps> = ({ id, setTeams }) => {
         <Trash2 className={`w-5 h-5 ${isDeleting ? 'text-gray-400 animate-pulse' : 'text-red-500'}`} />
       </Button>
     }>
-      <div className=" text-center flex flex-col items-center  ">
+      <div className=" text-center space-y- ">
         <p className="pb-6">You are about to remove a member</p>
         
         <Button

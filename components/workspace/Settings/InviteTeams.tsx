@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import useUserStore from '@/store/globalUserStore';
 import { BookingTeamMember, BookingTeamsTable } from '@/types';
 import { PostRequest } from '@/utils/api';
-import { X } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 
@@ -58,7 +58,7 @@ const InviteTeams = ({teams, setTeams}:{teams:BookingTeamsTable[], setTeams: Rea
           emails:formData?.emails, workspaceName:currentWorkSpace?.organizationName, workspaceAlias:currentWorkSpace?.organizationAlias
         },
       })
-      // console.log({error,data,success,failedEmails,dbErrors})
+      console.log({error,data, })
       if(error){
         setErrors({general:error})
         return
@@ -137,7 +137,7 @@ const InviteTeams = ({teams, setTeams}:{teams:BookingTeamsTable[], setTeams: Rea
             <div className="flex flex-col items-center">
               {errors?.general && <small className='text-red-600 w-full block text-center'>{errors?.general}</small>}
               <Button type="submit" className="bg-basePrimary h-12 px-6 text-white w-full">
-                {loading ? 'Sending...' : 'Send Invite'}
+                {loading ? <span className='flex items-center gap-2'> <Loader2 size={20} className='animate-spin'/> Sending...</span> : 'Send Invite'}
               </Button>
           </div>
         </form>

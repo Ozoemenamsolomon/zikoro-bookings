@@ -110,9 +110,12 @@ export const createWorkspaceTeamMember = async (
     const { data, error }  = await supabase
       .from('organizationTeamMembers_Bookings')
       .insert(body) 
-      .select('*, workspaceAlias(*)')
+      .select(`
+        *,
+        workspaceAlias (organizationOwnerId,organizationName,organizationAlias),
+        userId (id,userEmail,firstName,lastName,profilePicture)`)
       .single()
-
+// console.log({data,error})
     return { data, error: error?.message};
   } catch (error) {
     console.error('organizationTeamMembers_Bookings Server error:', error);
@@ -300,12 +303,12 @@ export const fetchTeamMembers = async (workspaceAlias: string) => {
       .select(
         `
         *,
-        workspaceAlias (*),
-        userId (*)
+        workspaceAlias (organizationOwnerId,organizationName,organizationAlias),
+        userId (id,userEmail,firstName,lastName,profilePicture)
       `
       )
       .eq("workspaceAlias", workspaceAlias) // Match workspaceAlias
-      .not("userId", "is", null) // Correctly skip users with null userId
+      // .not("userId", "is", null) // Correctly skip users with null userId
       .order("created_at", { ascending: false }); // Order by creation date
 
     if (error) {

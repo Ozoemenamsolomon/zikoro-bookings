@@ -14,7 +14,7 @@ interface TeamsProps {
 const Teams = ({ teamMembers }: TeamsProps) => {
   const {user, currentWorkSpace} = useUserStore()
   const [teams, setTeams] = useState<BookingTeamsTable[]>(teamMembers||[])
- 
+  // console.log({teams})
   return (
     <section className="sm:py-8 sm:px-8 space-y-5">
       {/* Invite Team Members Section */}
@@ -39,9 +39,9 @@ const Teams = ({ teamMembers }: TeamsProps) => {
                 <td className="p-4 w-5/8 flex gap-2 items-center">
                   
                   {
-                    member.userId?.profilePicture ? 
+                    member?.userId?.profilePicture ? 
                     <img
-                      src={member.userId?.profilePicture}
+                      src={member?.userId?.profilePicture}
                       alt={`${member?.userId?.firstName || 'profile pic'}'s profile`}
                       className="w-12 h-12 rounded-full object-cover"
                     /> :
