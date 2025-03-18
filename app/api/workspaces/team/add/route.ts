@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     // check if this data has been implemented 
     const {data:existingData,error:err}= await supabase
       .from('organizationTeamMembers_Bookings')
-      .select('*, workplaceAlias(*)')
+      .select("*, workspaceAlias(organizationAlias,organizationName,organizationOwner,organizationOwnerId), userId(profilePicture,id,firstName,lastName,userEmail)")
       .eq('workplaceAlias', body.workplaceAlias)
       .eq('userEmail', body.email)
       .single()

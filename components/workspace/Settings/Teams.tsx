@@ -35,7 +35,7 @@ const Teams = ({ teamMembers }: TeamsProps) => {
           </thead>
           <tbody>
             {teams?.map((member) => (
-              <tr key={member.id} className="border-t hover:bg-gray-50">
+              <tr key={member?.id} className="border-t hover:bg-gray-50">
                 <td className="p-4 w-5/8 flex gap-2 items-center">
                   
                   {

@@ -30,8 +30,8 @@ const Branding: React.FC<FormProps> = ({
     setFormData&&setFormData((prev)=>{
       return {
         ...prev,
-        businessName: currentWorkSpace?.workspaceName! || '',
-        logo: currentWorkSpace?.workspaceLogo! || '',
+        businessName: currentWorkSpace?.organizationName! || '',
+        logo: currentWorkSpace?.organizationLogo! || '',
       }
     })
   }, [currentWorkSpace])
@@ -54,8 +54,8 @@ const Branding: React.FC<FormProps> = ({
       <div className="flex">
         <div className="flex gap-2 pb-2 border-b">
         {
-          currentWorkSpace?.workspaceLogo  ?
-          <Image src={currentWorkSpace?.workspaceLogo || ''} alt='logo' width={300} height={300} className='object-cover w-14 rounded-md'/>
+          currentWorkSpace?.organizationLogo  ?
+          <Image src={currentWorkSpace?.organizationLogo || ''} alt='logo' width={300} height={300} className='object-cover w-14 rounded-md'/>
           :
           <ImageUp size={36} className='text-gray-500'/>
         }

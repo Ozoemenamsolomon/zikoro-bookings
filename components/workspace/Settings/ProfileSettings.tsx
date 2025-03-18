@@ -1,20 +1,18 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { ArrowLeft, Check, Plus, PlusCircle } from 'lucide-react';
-import { FileUploader, handleFileUpload } from '@/components/shared/Fileuploader';
-import { CustomSelect } from '@/components/shared/CustomSelect';
+ 
 import { Button } from '@/components/ui/button';
 import { PostRequest } from '@/utils/api';
 import { toast } from 'react-toastify';
-import Image from 'next/image';
+ 
 import useUserStore from '@/store/globalUserStore';
 import { User } from '@/types/appointments';
-import { Toggler } from '../ui/SwitchToggler';
+ 
 import CustomInput from '../ui/CustomInput';
 import ProfileImageUpload from '@/components/shared/ProfileImageUpload';
 import { uploadImage } from '@/components/shared/ProfileImageUpload';
-import { TUser } from '@/types';
+ 
 import { countryList } from '@/constants/countryList';
 import { ReactSelect } from '@/components/shared/ReactSelect';
 
@@ -39,7 +37,17 @@ const ProfileSettings = () => {
   useEffect(() => {
     if (user) {
       setFormData({
-        ...user,
+        id:user?.id,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+        jobTitle: user?.jobTitle,
+        organization: user?.organization,
+        city: user?.city,
+        country: user?.country,
+        phoneNumber: user?.phoneNumber,
+        whatsappNumber: user?.whatsappNumber,
+        profilePicture: user?.profilePicture,
+        bio: user?.bio,
         created_at: user.created_at ? new Date(user.created_at) : new Date(), // Convert to Date
       });
     }

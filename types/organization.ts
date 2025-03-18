@@ -15,6 +15,7 @@ import { User } from "./appointments";
 export interface Organization {
   id: number;
   created_at: string; // ISO timestamp
+  organizationAlias?: string | null;
   organizationName: string;
   subscriptionPlan?: string | null;
   subscritionStartDate?: string | null; // Date as string (ISO format)
@@ -39,7 +40,6 @@ export interface Organization {
   teamMembers?: Record<string, any> | null; // JSON object
   favicon?: string | null;
   subDomain?: string | null;
-  organizationAlias?: string | null;
   subscriptionExpiryDate?: string | null; // Date as string (ISO format)
   socialLinks?: Record<string, any> | null; // JSON object
 }
@@ -59,15 +59,6 @@ export interface OrganizationInput {
   payoutAccountDetails?: Record<string, any> | null; // JSON object
 }
 
-
-// export interface BookingTeams {
-//   id: number; // bigint represented as number in TypeScript
-//   created_at: string; // ISO timestamp string
-//   workspaceId?: string | null; // Optional UUID represented as string
-//   userId?: number | null; // Optional bigint represented as number
-//   role?: string | null; // Optional text field
-//   email?: string | null; // Optional text field
-// }
 export interface BookingTeams {
   id: number;
   created_at: string; // ISO timestamp
@@ -76,6 +67,7 @@ export interface BookingTeams {
   userEmail?: string | null;
   workspaceAlias?: string | null;
 }
+
 export interface BookingTeamInput {
   userId?: number | null;
   userRole?: string | null;

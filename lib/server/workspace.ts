@@ -101,27 +101,6 @@ export const fetchWorkspace = async (
   }
 };
 
-export const createWorkspaceTeamMember = async (
-  body:any
-) => {
-    const supabase = createClient()
-
-    try {
-    const { data, error }  = await supabase
-      .from('organizationTeamMembers_Bookings')
-      .insert(body) 
-      .select(`
-        *,
-        workspaceAlias (organizationOwnerId,organizationName,organizationAlias),
-        userId (id,userEmail,firstName,lastName,profilePicture)`)
-      .single()
-// console.log({data,error})
-    return { data, error: error?.message};
-  } catch (error) {
-    console.error('organizationTeamMembers_Bookings Server error:', error);
-    return { data: null, error: 'Server error'};
-  }
-};
 
 export const updateBookingTeamUserId = async (
   userId: string, email:string, workspaceAlias:string
@@ -160,7 +139,7 @@ export async function checkUserExists(email: string): Promise<User|null> {
 }
 
 export const assignMyWorkspace = async (
-  userId: string, email:string, organization:string, name:string
+  userId: string, email:string, organization:string, name:string, organizationType?:string,phoneNumber?:string,country?:string
 ) => {
     const supabase = createClient()
 
@@ -176,9 +155,9 @@ export const assignMyWorkspace = async (
         subscriptionEndDate:null,
         organizationLogo: '',
         organizationAlias: generateSlugg(organization||'My Workspace'),
-        workspaceDescription: 'Default workpsace',
-        organizationType: '',
-        country:'',
+        organizationType: organizationType||'',
+        country:country||'',
+        eventPhoneNumber:phoneNumber||'',
       }) 
       .select('*')
       .single()
@@ -292,6 +271,24 @@ export async function upsertTeamMembers(data: any) {
   }
 }
 
+export const createWorkspaceTeamMember = async (
+  body:any
+) => {
+    const supabase = createClient()
+
+    try {
+    const { data, error }  = await supabase
+      .from('organizationTeamMembers_Bookings')
+      .insert(body) 
+      .select("*, workspaceAlias(organizationAlias,organizationName,organizationOwner,organizationOwnerId), userId(profilePicture,id,firstName,lastName,userEmail)")
+      .single()
+
+      return { data, error: error?.message};
+  } catch (error) {
+    console.error('organizationTeamMembers_Bookings Server error:', error);
+    return { data: null, error: 'Server error'};
+  }
+};
 
 
 export const fetchTeamMembers = async (workspaceAlias: string) => {
@@ -303,11 +300,11 @@ export const fetchTeamMembers = async (workspaceAlias: string) => {
       .select(
         `
         *,
-        workspaceAlias (organizationOwnerId,organizationName,organizationAlias),
-        userId (id,userEmail,firstName,lastName,profilePicture)
+        workspaceAlias(organizationAlias,organizationName,organizationOwner,organizationOwnerId), 
+        userId(profilePicture,id,firstName,lastName,userEmail) 
       `
       )
-      .eq("workspaceAlias", workspaceAlias) // Match workspaceAlias
+      .eq("workspaceAlias", workspaceAlias) 
       // .not("userId", "is", null) // Correctly skip users with null userId
       .order("created_at", { ascending: false }); // Order by creation date
 
@@ -317,6 +314,35 @@ export const fetchTeamMembers = async (workspaceAlias: string) => {
     }
 
     // console.log("Fetched team members:", data);
+    return { data, error: null };
+  } catch (error: any) {
+    console.error("Server error in fetchTeamMembers:", error);
+    return { data: null, error: "Server error" };
+  }
+};
+
+export const fetchActiveTeamMembers = async (workspaceAlias: string) => {
+  const supabase = createADMINClient();
+
+  try {
+    const { data, error } = await supabase
+      .from("organizationTeamMembers_Bookings")
+      .select(
+        `
+        *,
+        workspaceAlias(organizationAlias,organizationName,organizationOwner,organizationOwnerId), 
+        userId(profilePicture,id,firstName,lastName,userEmail) 
+      `
+      )
+      .eq("workspaceAlias", workspaceAlias) 
+      .not("userId", "is", null) // Correctly skip users with null userId
+      .order("created_at", { ascending: false }); // Order by creation date
+
+    if (error) {
+      console.error("Error fetching team members:", error);
+      return { data: null, error: error.message || "Failed to fetch team members" };
+    }
+ 
     return { data, error: null };
   } catch (error: any) {
     console.error("Server error in fetchTeamMembers:", error);

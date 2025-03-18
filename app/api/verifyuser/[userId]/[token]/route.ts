@@ -32,6 +32,7 @@ export async function POST(
 
     const userMetadata = data.user.user_metadata;
     const userToken = userMetadata?.verification_token;
+    const workspaceAlias = userMetadata?.workspaceAlias||'';
 
     if (userToken !== token) {
       return NextResponse.json(
@@ -53,7 +54,7 @@ export async function POST(
       );
     }
 
-    return NextResponse.json({ msg: "Success" }, { status: 200 });
+    return NextResponse.json({data: {workspaceAlias} }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { error: "An unexpected error occurred." },

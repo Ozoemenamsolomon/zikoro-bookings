@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       .select('id')
       .single()
 
-    console.log('Deleting bookingTeam member result:', {data,error,statusText})
+    // console.log('Deleting bookingTeam member result:', {data,error,statusText})
     if (error) {
       console.error("Error inserting team member:", error);
       return NextResponse.json({ data:null, error: error.message }, { status: 400 });
