@@ -22,3 +22,10 @@
 <!-- - enable users to be able to directly add key results from the goal	 -->
 <!-- - Key resuöt: place the status as a tag at the top left corner.	 -->
 <!-- - Replace update status with update key results -->
+
+
+
+
+<!-- CONCERNS -->
+What happens to user when he is removed from the team
+How do we handle the browser path when the workspaceAlias is not incorrect or does not exist

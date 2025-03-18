@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import useUserStore from '@/store/globalUserStore';
 import { BookingTeamMember, BookingTeamsTable } from '@/types';
 import { PostRequest } from '@/utils/api';
-import { X } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 
@@ -39,9 +39,9 @@ const InviteTeams = ({teams, setTeams}:{teams:BookingTeamsTable[], setTeams: Rea
       setErrors({ emails: 'At least one email is required' });
       return;
     }
-    // make sure user email is not included ...
+    // make sure an existying email was not added ...
     const uniqueEmails = formData?.emails?.filter(email => {
-      return teams?.some((team:BookingTeamMember) => team.email === email);
+      return teams?.some((team:BookingTeamMember) => team.userEmail === email);
     });
     
     if(uniqueEmails.length>0) {
@@ -55,10 +55,12 @@ const InviteTeams = ({teams, setTeams}:{teams:BookingTeamsTable[], setTeams: Rea
         url:'/api/email/inviteTeam',
         body: {
           ...formData, 
-          emails:formData?.emails, workspaceName:currentWorkSpace?.workspaceName, workspaceAlias:currentWorkSpace?.workspaceAlias
+          emails:formData?.emails, 
+          workspaceName:currentWorkSpace?.organizationName, 
+          workspaceAlias:currentWorkSpace?.organizationAlias
         },
       })
-      // console.log({error,data,success,failedEmails,dbErrors})
+      console.log({error,data, })
       if(error){
         setErrors({general:error})
         return
@@ -137,7 +139,7 @@ const InviteTeams = ({teams, setTeams}:{teams:BookingTeamsTable[], setTeams: Rea
             <div className="flex flex-col items-center">
               {errors?.general && <small className='text-red-600 w-full block text-center'>{errors?.general}</small>}
               <Button type="submit" className="bg-basePrimary h-12 px-6 text-white w-full">
-                {loading ? 'Sending...' : 'Send Invite'}
+                {loading ? <span className='flex items-center gap-2'><Loader2 size={20} className='animate-spin' /> Sending...</span> : 'Send Invite'}
               </Button>
           </div>
         </form>

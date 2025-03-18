@@ -1,6 +1,6 @@
 'use client'
 
-import { urls } from '@/constants'
+import { FilterIcon, urls } from '@/constants'
 import useUserStore from '@/store/globalUserStore'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -8,8 +8,8 @@ import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import CreateWorkSpace from './CreateWorkSpace'
 import { Button } from '@/components/ui/button'
-import { Refresh } from 'styled-icons/fa-solid'
-import { PlusCircle } from 'lucide-react'
+ 
+import { PlusCircle, RotateCw } from 'lucide-react'
 
 const WsComponent = () => {
     const { push } = useRouter()
@@ -19,11 +19,11 @@ const WsComponent = () => {
     // Handle redirection
     useEffect(() => {
         if (currentWorkSpace) {
-            push(`/ws/${currentWorkSpace.workspaceAlias}/schedule`)
+            push(`/ws/${currentWorkSpace.organizationAlias}/schedule`)
         } else if (workspaces[0]) {
-            push(`/ws/${workspaces[0].workspaceAlias}/schedule`)
+            push(`/ws/${workspaces[0].organizationAlias}/schedule`)
         }
-    }, [currentWorkSpace, workspaces, push])
+    }, [currentWorkSpace, workspaces,])
 
     // Handle Refresh with Loader Simulation
     const handleRefresh = () => {
@@ -62,7 +62,7 @@ const WsComponent = () => {
                         className="bg-basePrimary text-white flex items-center"
                         disabled={isRefreshing}
                     >
-                        <Refresh className={isRefreshing ? 'animate-spin':''}/>
+                        <RotateCw className={isRefreshing ? 'animate-spin':''}/>
                         <span> Refresh</span>
                     </Button>
                 </div>
