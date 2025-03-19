@@ -10,7 +10,7 @@ import { useAppointmentContext } from '@/context/AppointmentContext'
 
 const UpcomingAppointments = ({ contact }: { contact: BookingsContact }) => {
   const { user,currentWorkSpace } = useUserStore()
-  const workspaceId = currentWorkSpace?.workspaceAlias
+  const workspaceId = currentWorkSpace?.organizationAlias
   const {show} = useAppointmentContext()
   const [bookings, setBookings] = useState<any[]>([])
   const [totalPages, setTotalPages] = useState<number>(0)
