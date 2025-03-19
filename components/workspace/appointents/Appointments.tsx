@@ -16,8 +16,9 @@ import Loading from "@/components/shared/Loader";
 import EmptyList from "../ui/EmptyList";
 import SearchAppointment from "./SearchAppointment";
 import EditAppointment from "./EditAppointment";
-import { RotateClockIcon } from "@/constants";
+import { NoAppointmentListsIcon, RotateClockIcon, urls } from "@/constants";
 import PaginationMain from "@/components/shared/PaginationMain";
+import Link from "next/link";
 
 const BookingRow = ({
   booking,
@@ -226,7 +227,8 @@ const Appointments = ({
   fetchedcount: number;
   searchQuery: BookingsQuery;
 }) => {
-  const {dateRange, setDateRange} = useAppointmentContext()
+  const { getWsUrl, setDateRange} = useAppointmentContext() 
+  
   const { groupedBookings,setGroupedBookings, count, error, isLoading, getBookings, filterBookings, setQueryParams, queryParams,currentPage,totalPages,handlePageChange, setCurrentPage} =
     useGetBookings({
       groupedBookingData,
@@ -274,6 +276,16 @@ const Appointments = ({
       filterBookings({type:"past-appointments"})
     }
   };
+
+  if(!count){
+    return <EmptyList
+    icon={<NoAppointmentListsIcon/>}
+    heading='No Appointments Yet!'
+    text='Your upcoming appointments will appear here once clients start booking with you.'
+    CTA={<Link href={getWsUrl(urls.schedule)} className='py-3 px-6 font-semibold text-white rounded-md bg-basePrimary' >Share Your Booking Link</Link>}
+    className='lg:h-[40em] '
+  />
+  }
 
   return (
     <>

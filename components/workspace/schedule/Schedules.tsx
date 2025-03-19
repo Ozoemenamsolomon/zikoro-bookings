@@ -9,13 +9,13 @@ import PaginationMain from '@/components/shared/PaginationMain'
 import { Loader2 } from 'lucide-react'
 import { useGetSchedules } from '@/hooks/services/appointments'
 import EmptyList from '../ui/EmptyList'
-
+ 
 const Schedules = ({schedules, count, error}:{
     schedules:AppointmentLink[] |null, count:number, error:string|null
 }) => {
-
+ 
   const {handlePageChange, totalPages, loading, currentPage, scheduleList, isError } = useGetSchedules({schedules, count, error})
-
+   
   return (
     <>
     {

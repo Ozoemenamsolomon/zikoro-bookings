@@ -115,12 +115,12 @@ const Sidebar = () => {
           {navlinks.map(({ icon, label, link, newTab }, idx) => {
             const Icon = icon;
             return (
-              <Link key={idx} href={getWsUrl(link)} onClick={handleClick} target={newTab ? '_blank' : ''}  className={`${pathanme===link?'bg-gradient-to-r from-slate-200 to-purple-200':''} flex gap-4 items-center px-3 py-2 rounded-md hover:bg-gradient-to-r hover:from-slate-200  hover:to-purple-200 duration-300 group `}>
+              <Link key={idx} href={getWsUrl(link)} onClick={handleClick} target={newTab ? '_blank' : ''}  className={`${pathanme.includes(link)?'bg-gradient-to-r from-slate-200 to-purple-200':''} flex gap-4 items-center px-3 py-2 rounded-md hover:bg-gradient-to-r hover:from-slate-200  hover:to-purple-200 duration-300 group `}>
                 <div>
-                  <Icon size={18} className={`${pathanme===link?'text-purple-800':''} group-hover:text-purple-800 duration-300 `}
+                  <Icon size={18} className={`${pathanme.includes(link)?'text-purple-800':''} group-hover:text-purple-800 duration-300 `}
                   />
                 </div>
-                <p className={`${pathanme===link?'text-blue-700':''} group-hover:text-blue-700 font-medium duration-300 `}>{label}</p>
+                <p className={`${pathanme.includes(link)?'text-blue-700':''} group-hover:text-blue-700 font-medium duration-300 `}>{label}</p>
 
                 {label === 'Notification' ? (
                   <div className="w-6 h-6 rounded-full text-white flex items-center justify-center bg-gradient-to-l from-purple-700 to-blue-700">

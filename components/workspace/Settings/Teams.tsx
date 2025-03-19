@@ -6,6 +6,8 @@ import DeleteMember from './DeleteMember'
 import useUserStore from '@/store/globalUserStore'
 import ResendInvite from './ResendInvite'
 import UpdateMemberRole from './UpdateMemberRole'
+import EmptyList from '../ui/EmptyList'
+import { NoTeamsIcon } from '@/constants'
 
 interface TeamsProps {
   teamMembers: BookingTeamsTable[]
@@ -15,11 +17,22 @@ const Teams = ({ teamMembers }: TeamsProps) => {
   const {user, currentWorkSpace} = useUserStore()
   const [teams, setTeams] = useState<BookingTeamsTable[]>(teamMembers||[])
   // console.log({teams})
+
+  if(teams.length<2){
+    return <EmptyList
+      icon={<NoTeamsIcon/>}
+      text='Invite your team members here to collaborate and manage your bookings together.'
+      heading='No Team Members Added Yet'
+      CTA={<InviteTeams teams={teams} setTeams={setTeams} text='Invite team members'/>}
+      className='lg:h-[40em] '
+    />
+  }
+
   return (
     <section className="sm:py-8 sm:px-8 space-y-5">
       {/* Invite Team Members Section */}
       <div className="flex justify-end w-full ">
-        {user?.workspaceRole==='ADMIN'? <InviteTeams teams={teams} setTeams={setTeams}/> : null }
+        {user?.workspaceRole==='OWNER'? <InviteTeams teams={teams} setTeams={setTeams}/> : null }
       </div>
 
       {/* Team Members Table */}

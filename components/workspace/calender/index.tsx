@@ -10,6 +10,10 @@ import Loading from "@/components/shared/Loader";
 import Empty from "./Empty";
 import MonthlyView from "./MonthlyView";
 import WeeklyView from "./WeeklyView";
+import EmptyList from "../ui/EmptyList";
+import { NoCalendarIcon, urls } from "@/constants";
+import Link from "next/link";
+import { useAppointmentContext } from "@/context/AppointmentContext";
 
 interface SearchParams {
     viewing: 'month' | 'week';
@@ -27,6 +31,8 @@ interface SearchParams {
 
 const CalendarLayout: React.FC<SearchParams> = ({
   viewing,date,formattedWeekData,formattedMonthData,count,startRangeDate,endRangeDate,errorMsg,dateString,unavailableDates,}) => {
+  const {getWsUrl} = useAppointmentContext()
+
   const {
     calendarData,
     currentDate,
@@ -122,6 +128,16 @@ const CalendarLayout: React.FC<SearchParams> = ({
     updateCalendarData(currentDate, view);
     setDataCount(getAppointmentCount())
   }, [view, currentDate]);
+
+  if(!calendarData.count ){
+    return <EmptyList
+    icon={<NoCalendarIcon/>}
+    heading='Your Calendar is Waiting!'
+    text='Booked appointments will show up here to keep your schedule organized and easy to manage.'
+    CTA={<Link href={getWsUrl(urls.create)} className='py-3 px-6 font-semibold text-white rounded-md bg-basePrimary' >Start creating</Link>}
+    className='lg:h-[40em] '
+  />
+  }
 
   return (
     <div className="flex flex-col gap-8 h-full">

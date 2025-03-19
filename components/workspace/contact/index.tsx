@@ -2,7 +2,7 @@ import React, { Suspense } from "react";
 import ContactList from "./ContactList";
 import ContactNav from "./ContactNav";
 import EmptyContact from "./EmptyContact";
-import { fetchContacts } from "@/lib/server/contacts";
+ 
 import Loading from "@/components/shared/Loader";
 import ContactWrapper from "./ContactWrapper";
 import ContactName from "./ContactName";
