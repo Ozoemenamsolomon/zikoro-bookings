@@ -13,13 +13,13 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-      const { data, error } = await supabase
-      .from('bookingNotes')
+      const { data, error ,status,statusText} = await supabase
+      .from('bookingTags')
       .insert([body])
       .select()
       .single()
 
-        // console.log('Favorite contact result', {data,error})
+        console.log('Favorite contact result', {data,error,status,statusText})
         if (error) {
           console.error("Error adding new tag", error);
           return NextResponse.json({ data:null, error: error.message }, { status: 400 });

@@ -13,14 +13,7 @@ export const fetchCalendar = async (
  {view, userId}: {view?:string, userId?:string} 
 ): Promise<FetchBookingsResult> => {
     const supabase = createClient()
-
-    // let id;
-    // if(userId){
-    //   id = userId
-    // } else {
-    //   const {user} = await getUserData()
-    //   id = user?.id
-    // }
+ 
     try {
       const { data, error, count } = await supabase
       .from('bookings')

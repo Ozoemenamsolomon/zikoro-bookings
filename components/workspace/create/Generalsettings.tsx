@@ -13,8 +13,8 @@ const Generalsettings: React.FC<FormProps> = ({
   setErrors,
   errors,
 }) => {
-  const [teamMembers,setTeamMembers] = useState<{label:string,value:string}[]>([])
   const {user, currentWorkSpace} = useUserStore()
+  const [teamMembers,setTeamMembers] = useState<{label:string,value:string}[]>([])
 
   useEffect(() => {
     const fetchTeamMembers = async () => {
