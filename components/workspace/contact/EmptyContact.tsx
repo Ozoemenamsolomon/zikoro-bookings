@@ -1,19 +1,17 @@
-import { FolderOpen } from 'lucide-react'
+import { NoContsctsIcon,   } from '@/constants'
 import React from 'react'
+import EmptyList from '../ui/EmptyList'
 
 const EmptyContact = () => {
+  
   return (
     <section className="  h-screen w-full  flex pt-32 items-center gap-4 flex-col">
-    <div className="bg-baseLight rounded-full h-24 w-24 flex items-center justify-center text-purple-700/50">
-      <FolderOpen size={60}  />
-    </div>
-    <h2 className="text-2xl sm:text-4xl font-bold  text-center max-w-96 mx-auto" 
-      style={{
-        background: 'linear-gradient(269.83deg, #9C00FE 0.14%, #001FCB 99.85%)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-      }}>You do not have any contact in this workspace</h2>
-      <small className="font-semibold">Contact gets updated when a user books an appointment</small>
+      <EmptyList
+        icon={<NoContsctsIcon/>}
+        heading='Your Contact List is Empty'
+        text='Clients you’ve had appointments with will be saved here automatically. You can view and manage their details all in one place.'
+        className='lg:h-[30em] '
+      />
 </section>
   )
 }

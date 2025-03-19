@@ -10,7 +10,7 @@ import { Loader2, X } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 
-const InviteTeams = ({teams, setTeams}:{teams:BookingTeamsTable[], setTeams: React.Dispatch<React.SetStateAction<BookingTeamsTable[]>>}) => {
+const InviteTeams = ({teams, setTeams, text}:{teams:BookingTeamsTable[], setTeams: React.Dispatch<React.SetStateAction<BookingTeamsTable[]>>, text?:string}) => {
   const {user,currentWorkSpace} = useUserStore()
   const [formData, setFormData] = useState({
     emails: [] as string[],
@@ -86,7 +86,7 @@ const InviteTeams = ({teams, setTeams}:{teams:BookingTeamsTable[], setTeams: Rea
     onOpenChange={setOpen}
       className="overflow-hidden max-w-2xl"
       trigerBtn={
-        <Button className="bg-basePrimary text-white">Invite</Button>
+        <Button className="bg-basePrimary text-white">{text||'Invite'}</Button>
       }
     >
       <div className="">
