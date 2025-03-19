@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback, useEffect, useMemo } from 'react'
+import React, { useState, useCallback, useEffect,   } from 'react'
 import CustomInput from '../ui/CustomInput'
 import { CustomSelect } from '@/components/shared/CustomSelect'
 import useUserStore from '@/store/globalUserStore'
@@ -39,6 +39,7 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
       setGoalData(initialFormData)
     }
   }, [user,goal])
+
   // console.log({goalData})
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -140,7 +141,7 @@ const GoalsForm = ({ goal,mode, children }: { goal?: Goal,mode?:string, children
         isTextarea
         onChange={handleChange}
       />
-
+ 
       {/* Owner */}
       <CustomSelect
         label="Owner"

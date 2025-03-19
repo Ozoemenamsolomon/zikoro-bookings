@@ -210,7 +210,7 @@ export const createWorkspace = async (body:{
     // add user as admin to the default workspace team members
     let newTeam, newTeamError
     if(data) {
-      const {data:newTeamMemebr,errors} = await upsertTeamMembers({...body.userData, workspaceAlias: data?.organizationAlias, userRole:'ADMIN'})
+      const {data:newTeamMemebr,errors} = await upsertTeamMembers({...body.userData, workspaceAlias: data?.organizationAlias, userRole:'OWNER'})
 
       if(errors) {
         newTeamError='Error occured while adding user to workspace team.'
@@ -251,7 +251,7 @@ export async function upsertTeamMembers(data: any) {
     //   }
     // }
 
-    console.log({engagementRes,credentialsRes, membersRes,bookingsRes})
+    // console.log({engagementRes,credentialsRes, membersRes,bookingsRes})
 
     return {
       data: bookingsRes.data,

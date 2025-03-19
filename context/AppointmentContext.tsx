@@ -85,7 +85,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   
   useEffect(()=>{
     if(user) {
-      setUser({...user!, workspaceRole: currentWorkSpace?.organizationOwnerId===user?.id ? 'ADMIN':'MEMBER'})
+      setUser({...user!, workspaceRole: currentWorkSpace?.organizationOwnerId===user?.id ? 'OWNER':'MEMBER'})
     }
   },[user?.id, currentWorkSpace])
 

@@ -30,21 +30,22 @@ const ChartGoal = ({goal}:{goal:Goal}) => {
         try {
           const response = await fetch(`/api/goals/fetchKeyresults?goalId=${goal.id}`)
            const {data:keyResults,count,error }:{data:KeyResult[],count:number,error:string|null} = await response.json()
-  
+
           // Calculate completed key results
           const totalKeyResults = keyResults.length
           const completedKeyResults = keyResults.filter((kr) => {
+
             const isCompleted = kr.status === "Completed"
-            const isOverdueCompleted =
-              kr.status !== "Archived" && kr.status !== "Completed" &&
-              new Date(kr.endDate!) > new Date() &&
-              kr.currentValue! >= kr.targetValue!
+            // const isOverdueCompleted =
+            //   kr.status !== "Archived" && kr.status !== "Completed" &&
+            //   new Date(kr.endDate!) > new Date() &&
+            //   kr.currentValue! >= kr.targetValue!
               // consider
-            return isCompleted || isOverdueCompleted
+            return isCompleted  
           }).length
   
           const percentage = totalKeyResults > 0 ? Math.round((completedKeyResults / totalKeyResults) * 100) : 0
-  
+          // console.log({completedKeyResults,count,percentage, totalKeyResults,})
           setChartData({ percentage, label: `${percentage}% Completed` })
           setError(null)
         } catch (err) {
