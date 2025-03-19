@@ -122,7 +122,7 @@ export async function fetchCalendarData(workspaceId:string, date: Date | string,
     const {count } = await supabase
       .from('bookings') 
       .select('*', { count: 'exact' } )
-      .eq('workspaceId', workspaceId)
+
   
   // Error handling
   if (error) {

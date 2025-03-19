@@ -44,7 +44,7 @@ const TimePicker = ({
       endDateTime: generateAppointmentTime({ time: slot.to, selectedDate: dayString }),
       createdBy: user?.id!,
       appointmentDate: format(dayString, 'yyyy-MM-dd'),
-      workspaceId : currentWorkSpace?.workspaceAlias,
+      workspaceId : currentWorkSpace?.organizationAlias,
     };
 
     if (formData?.startDateTime! >= formData?.endDateTime!) {
@@ -54,7 +54,7 @@ const TimePicker = ({
 
     try {
       setLoading(true);
-      const response = await fetch(`/api/calendar/addunavailability?workspaceId=${currentWorkSpace?.workspaceAlias}`, {
+      const response = await fetch(`/api/calendar/addunavailability?workspaceId=${currentWorkSpace?.organizationAlias}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ const TimePicker = ({
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/calendar/deleteUnavailability?id=${item?.id}&userId=${user?.id!}&workspaceId=${currentWorkSpace?.workspaceAlias}`, {
+      const response = await fetch(`/api/calendar/deleteUnavailability?id=${item?.id}&userId=${user?.id!}&workspaceId=${currentWorkSpace?.organizationAlias}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
       });

@@ -29,7 +29,7 @@ export const useGetSchedules =  (scheduleData?: { error?: string | null; schedul
         setLoading(true);
 
         const offset = (page - 1) * limit;
-        const  response = await fetch(`/api/schedules?userId=${user?.id}&start=${offset}&end=${offset + limit - 1}&workspaceId=${currentWorkSpace?.workspaceAlias}`);
+        const  response = await fetch(`/api/schedules?userId=${user?.id}&start=${offset}&end=${offset + limit - 1}&workspaceId=${currentWorkSpace?.organizationAlias}`);
         if (response.status!==200) {
           throw new Error('Error fetching appointments');
         }
@@ -311,7 +311,7 @@ export const useCalendarData = ({viewing, date, count, formattedWeekData,formatt
     setError(null);
     setLoading(true);
     try {
-      const response = await fetch(`/api/calendar?date=${date}&viewing=${viewingType}&userId=${user?.id}&workspaceId=${currentWorkSpace?.workspaceAlias}`);
+      const response = await fetch(`/api/calendar?date=${date}&viewing=${viewingType}&userId=${user?.id}&workspaceId=${currentWorkSpace?.organizationAlias}`);
       if (!response.ok) {
         // console.log(`Error fetching calendar data: ${response.statusText}`);
         throw new Error(`Error fetching calendar data: ${response.statusText}`);
@@ -355,7 +355,7 @@ export function useBookingsContact() {
     }, []);
 
     const fetchAllContacts = async () => {
-      const response = await fetch(`/api/bookingsContact?workspaceId=${currentWorkSpace?.workspaceAlias}`)
+      const response = await fetch(`/api/bookingsContact?workspaceId=${currentWorkSpace?.organizationAlias}`)
        const {data,error,count} = await response.json()
        return {data,error,count} 
     }
