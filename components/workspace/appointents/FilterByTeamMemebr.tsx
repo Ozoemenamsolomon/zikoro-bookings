@@ -21,13 +21,13 @@ const FilterByTeamMember = ({ onChange, queryParams, setCurrentPage }: FilterByT
   const { currentWorkSpace } = useUserStore();
 
   useEffect(() => {
-    if (!currentWorkSpace?.workspaceAlias) return;
+    if (!currentWorkSpace?.organizationAlias) return;
 
     const fetchData = async () => {
       setIsFetching(true);
       setError("");
       try {
-        const { data, error } = await fetchTeamMembers(currentWorkSpace.workspaceAlias);
+        const { data, error } = await fetchTeamMembers(currentWorkSpace.organizationAlias!);
         if (error) throw new Error(error);
         setTeamMembers(data || []);
       } catch (err: any) {
@@ -38,7 +38,7 @@ const FilterByTeamMember = ({ onChange, queryParams, setCurrentPage }: FilterByT
     };
 
     fetchData();
-  }, [currentWorkSpace?.workspaceAlias]);
+  }, [currentWorkSpace?.organizationAlias]);
 
   // Extract selected team members  
   const selectedTeamMembers = useMemo(() => {
@@ -82,16 +82,16 @@ const FilterByTeamMember = ({ onChange, queryParams, setCurrentPage }: FilterByT
           <div className="text-gray-500 py-24 text-center">No team members found.</div>
         ) : (
           <div className="flex flex-col gap-1">
-            {teamMembers.map(({ userId, email }, i) => (
+            {teamMembers.map(({ userId, userEmail }, i) => (
               <button
                 key={i}
                 className={`px-2 py-1 hover:bg-gray-50 flex flex-col rounded text-left w-full ${
-                  selectedTeamMembers.includes(email!) ? "bg-gray-100 font-semibold" : ""
+                  selectedTeamMembers.includes(userEmail!) ? "bg-gray-100 font-semibold" : ""
                 }`}
-                onClick={() => toggleSelection(email!)}
+                onClick={() => toggleSelection(userEmail!)}
               >
                 <span>{userId?.firstName + " " + userId?.lastName}</span>
-                <small className="text-gray-500">{email}</small>
+                <small className="text-gray-500">{userEmail}</small>
               </button>
             ))}
           </div>

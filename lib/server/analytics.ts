@@ -11,12 +11,12 @@ interface FetchBookingsResult {
 }
 
 export const fetchAnalytics = async (
- {type='weekly',userId, workspaceAlias}: {type?: string, userId?:string, workspaceAlias:string} 
+ {type='weekly',userId, workspaceId}: {type?: string, userId?:string, workspaceId:string} 
 ): Promise<FetchBookingsResult> => {
     const supabase = createADMINClient()
-    if ( !workspaceAlias ) {
-      console.error(" ANALYTICS ERROR: workspaceAlias missing")
-      throw new Error('workspaceAlias is missing');
+    if ( !workspaceId ) {
+      console.error(" ANALYTICS ERROR: workspaceId missing")
+      throw new Error('workspaceId is missing');
     }
     try {
       let currentStart, currentEnd, previousStart, previousEnd, id;
@@ -43,7 +43,7 @@ export const fetchAnalytics = async (
     const { data: curList, error: curErr } = await supabase
       .from('bookings')
       .select('*, appointmentLinkId(id,appointmentName,brandColour,amount, locationDetails)')
-      .eq("workspaceAlias", workspaceAlias)
+      .eq("workspaceId", workspaceId)
       .gte('appointmentDate', currentStart)
       .lte('appointmentDate', currentEnd)
       // .order("appointmentDate", { ascending: true })
@@ -55,7 +55,7 @@ export const fetchAnalytics = async (
     const { data: prevList, error: prevErr } = await supabase
       .from('bookings')
       .select('*, appointmentLinkId(id,appointmentName,brandColour,amount, locationDetails)')
-      .eq("workspaceAlias", workspaceAlias)
+      .eq("workspaceId", workspaceId)
       .gte('appointmentDate', previousStart)
       .lte('appointmentDate', previousEnd);
       // .order("appointmentDate", { ascending: true })
