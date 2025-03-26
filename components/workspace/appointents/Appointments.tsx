@@ -22,7 +22,7 @@ import Link from "next/link";
 
 const BookingRow = ({
   booking,
-  showNote,
+  showNote, 
   setShowNote,
   setGroupedBookings
 }: {
