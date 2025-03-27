@@ -79,21 +79,30 @@ const Generalsettings: React.FC<FormProps> = ({
       }));
   };
 
-  const sendeSmsApi = async () => {
-      const res = await fetch("/api/sms/sendSms", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          recipients: "2348032787601",
-          message: "Hello from Next.js!",
-        }),
-      });
+  const sendSmsApi = async () => {
+    if (!setFormData) return null; 
+  
+    setFormData((prev) => ({
+      ...prev,
+      smsNotification: prev?.smsNotification?.length > 0 ? "" : "PENDING",
+    }));
+  };
+
+       // const res = await fetch("/api/sms/sendSms", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     recipients: "2348032787601",
+      //     message: "Hello from Next.js!",
+      //   }),
+      // });
     
-      const data = await res.json();
-      console.log(data);
-  }
+      // const data = await res.json();
+      // console.log(data);
+
+  
   
   // console.log({formData })
   return (
@@ -169,14 +178,12 @@ const Generalsettings: React.FC<FormProps> = ({
         />
       </div>
 
-      <div className="space-y-2 flex flex-col items-center w-full" onClick={sendeSmsApi}>
+      <div className="space-y-2 flex flex-col items-center w-full" onClick={sendSmsApi}>
         <button type="button" className='py-2 w-full text-center border border-basePrimary rounded-lg'>
-          Send SMS reminder to attendee
+          Send SMS reminder to attendee {"  "} <span>{formData?.smsNotification ? "✅" : null}</span>
         </button>
         <small>This attracts extra charges</small>
-      </div>
-
-      
+      </div>    
     </div>
   );
 };
