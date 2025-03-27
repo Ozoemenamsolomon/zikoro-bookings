@@ -24,6 +24,7 @@ export interface AppointmentLink {
     teamMembers: string | null;
     zikoroBranding: string | null;
     isPaidAppointment?: boolean;
+    smsNotification?:string;
 }
 export interface AppointmentFormData {
   id?: bigint;
@@ -53,6 +54,7 @@ export interface AppointmentFormData {
   zikoroBranding: string | null | boolean;
   files?:File[] | null;
   isPaidAppointment?: boolean;
+  smsNotification?:string;
 }
 
 export interface FormProps {
