@@ -78,6 +78,22 @@ const Generalsettings: React.FC<FormProps> = ({
         [name!]: isNaN(Number(value)) ? value : Number(value),
       }));
   };
+
+  const sendeSmsApi = async () => {
+      const res = await fetch("/api/sms/sendSms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          recipients: "2348032787601",
+          message: "Hello from Next.js!",
+        }),
+      });
+    
+      const data = await res.json();
+      console.log(data);
+  }
   
   // console.log({formData })
   return (
@@ -151,6 +167,13 @@ const Generalsettings: React.FC<FormProps> = ({
           className="w-48 h-12"
           setError={setErrors}
         />
+      </div>
+
+      <div className="space-y-2 flex flex-col items-center w-full" onClick={sendeSmsApi}>
+        <button type="button" className='py-2 w-full text-center border border-basePrimary rounded-lg'>
+          Send SMS reminder to attendee
+        </button>
+        <small>This attracts extra charges</small>
       </div>
 
       
