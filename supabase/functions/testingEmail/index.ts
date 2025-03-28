@@ -187,388 +187,134 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.0";
 const supabaseUrl = "https://ddlepujpbqjoogkmiwfu.supabase.co"
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkbGVwdWpwYnFqb29na21pd2Z1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwMTYwNjQ5NCwiZXhwIjoyMDE3MTgyNDk0fQ.Z4cc23CFZ8Ra7YLsphgvbEW6d_nrOKKCmYao6sA7_Jc"
 
-const supabase = createClient(supabaseUrl, supabaseKey);
-
 const KUDISMS_API_KEY="tjwRx5iS6JMGnU749FBDAh3Nbd1KceYWsZLTIkXCfzVrmPHlpOQoqEyv0au8g2"
 const KUDISMS_SENDER_ID="Zikoro"
 
-const SENDER_EMAIL="support@zikoro.com"
-const ZEPTOMAIL_API_TOKEN="Zoho-enczapikey wSsVR61380X1W60symCrIr87mg9QVA6nRkx42FSo6Sf9F/jCosc8lUzOAVWkHaQfQmdhFDARo7oqnBYE1DVY3dh7m1AEDSiF9mqRe1U4J3x17qnvhDzOV2lfmxqJK44NxwpinWdgGs4k+g=="
+const supabase = createClient(supabaseUrl, supabaseKey);
 
+const MAX_RETRY_ATTEMPTS = 3;
+
+async function sendSms(recipients: string, message: string) {
+  try {
+    const url = `https://my.kudisms.net/api/sms?token=${KUDISMS_API_KEY}&senderID=${KUDISMS_SENDER_ID}&recipients=${recipients}&message=${encodeURIComponent(message)}&gateway=2`;
+    const data = new FormData();
+    data.append("token", KUDISMS_API_KEY as string);
+    data.append("senderID", KUDISMS_SENDER_ID as string);
+    data.append("recipients", recipients);
+    data.append("message", message);
+    data.append("gateway", "2");
+
+    const response = await fetch(url, {
+      method: "POST",
+      body: data, 
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to send SMS: ${response.statusText}`);
+    }
+
+    const responseData = await response.json();
+    console.log({ responseData, data });
+
+    return responseData;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}
+
+// Deno.serve(async (req) => {
+//   try {
+//       if (req.method !== "POST") {
+//           return new Response("Method Not Allowed", { status: 405 });
+//       }
+
+//       const smsResponse = await sendSms('2348032787601', `From the edge function testing`);
+
+//       return new Response(JSON.stringify({ success: "SMS Reminders processed", smsResponse }), {
+//           status: 200,
+//           headers: { "Content-Type": "application/json" },
+//       });
+
+//   } catch (error) {
+//       console.error("Function error:", error);
+//       return new Response(JSON.stringify({ error: "Internal Server Error", errorMsg:error?.message }), { status: 500 });
+//   }
+// });
 
 // @ts-ignore
 Deno.serve(async (req) => {
-  try {
-      if (req.method !== "POST") {
-          return new Response("Method Not Allowed", { status: 405 });
-      }
-
-       const now = new Date();
-            const time24HoursFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-            const time25HoursFromNow = new Date(now.getTime() + 25 * 60 * 60 * 1000);
-    
-            // Function to format date to YYYY-MM-DD (valid SQL DATE format)
-            function formatDateToYYYYMMDD(date: Date): string {
-                return date.toISOString().slice(0, 10); // Extracts only YYYY-MM-DD
-                }
-                          
-            const formattedTime24 = formatDateToYYYYMMDD(time24HoursFromNow);
-            const formattedTime25 = formatDateToYYYYMMDD(time25HoursFromNow);
-    
-            // Fetch pending email reminders
-            const { data, error } = await supabase
-                .from("bookings")
-                .select(`id, phone, appointmentDate, appointmentTime, appointmentName, participantEmail,firstName,lastName, appointmentLinkId!inner(id, smsNotification, locationDetails)`)
-                .eq("appointmentLinkId.smsNotification", "PENDING")
-                .lte("appointmentDate", formattedTime25)
-                .gte("appointmentDate", formattedTime24);
-    
-            if (error) {
-                console.error("Error fetching reminders:", error);
-                return { error };
-            }
-    
-            if (!data || data.length === 0) {
-                return { message: "No reminders to send" };
-            }
-    
-            // Group bookings
-            const groupedEmailData = groupBookingsForEmail(data);
-            let emailResponses = [];
-    
-            for (const [appointmentLinkId, { formattedMail, recipients }] of groupedEmailData) {
-                const subject = "Reminder: Your Upcoming Appointment";
-                const res = await sendEmail(recipients, subject, formattedMail);
-                emailResponses.push(res);
-            }
-      
-          console.log({groupedEmailData, emailResponses })
-      return new Response(JSON.stringify({ success: "SMS Reminders processed",  groupedEmailData }), {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-      });
-
-  } catch (error) {
-      console.error("Function error:", error);
-      // @ts-ignore
-      return new Response(JSON.stringify({ error: "Internal Server Error", errorMsg:error?.message }), { status: 500 });
-  }
-});
-
-function formatAppointmentDate(appointmentDate: string, appointmentTime: string) {
-  const date = new Date(appointmentDate);
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  return `${monthNames[date.getMonth()]} ${date.getDate()} at ${appointmentTime}`;
-}
-// email reminder service
-function groupBookingsForEmail(bookings: any[]) {
-  const groupedData = new Map<
-      string,
-      { formattedMail: string; recipients: string[] }
-  >();
-
-  bookings.forEach((booking) => {
-      const {
-          appointmentLinkId,
-          participantEmail,
-          firstName,
-          lastName,
-          appointmentDate,
-          appointmentTime,
-          appointmentName,
-          appointmentLinkId: { locationDetails },
-      } = booking;
-
-      if (!appointmentLinkId?.id || !participantEmail) return;
-
-      // Format date & time for readability
-      const formattedDate = formatAppointmentDate(appointmentDate, appointmentTime);
-
-      // Generate email content
-      const formattedMail = generateAppointmentEmail({
-          firstName,
-          lastName,
-          appointmentName,
-          appointmentDate: formattedDate,
-          appointmentTime,
-          locationDetails,
-      });
-
-      if (!groupedData.has(appointmentLinkId.id)) {
-          groupedData.set(appointmentLinkId.id, { formattedMail, recipients: [] });
-      }
-
-      const group = groupedData.get(appointmentLinkId.id)!;
-
-      // Ensure unique recipients
-      if (!group.recipients.includes(participantEmail)) {
-          group.recipients.push(participantEmail);
-      }
-  });
-
-  return groupedData;
-}
-
-function generateAppointmentEmail({
-  firstName,
-  lastName,
-  appointmentName,
-  appointmentDate,
-  appointmentTime,
-  locationDetails,
-}: {
-  firstName: string;
-  lastName: string;
-  appointmentName: string;
-  appointmentDate: string;
-  appointmentTime: string;
-  locationDetails: string;
-}) {
-  return `
-      <div style="background-color: #f4f4f4; padding: 20px;">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" align="center">
-          <tr><td align="center">
-            <img src="https://res.cloudinary.com/dkdrbjfdt/image/upload/v1740654461/logo_rogdwe.webp" alt="Company Logo" width="150" style="margin-bottom: 20px;">
-          </td></tr>
-          <tr><td align="center">
-            <div style="background: #fff; padding: 20px; border-radius: 8px; max-width: 600px; text-align: start;">
-              <p style="color: #555;">Hi ${firstName} ${lastName},</p>
-              <p style="color: #555; margin-top: 20px; margin-bottom: 20px;">
-                You have an upcoming appointment: <strong>${appointmentName}</strong>.
-              </p>
-              <p><strong>Date:</strong> ${appointmentDate}</p>
-              <p><strong>Time:</strong> ${appointmentTime}</p>
-              <p><strong>Location:</strong> ${locationDetails}</p>
-              <p>Need help? 📲 <a href="https://wa.me/+2347041497076">Chat with us on WhatsApp</a>!</p>
-              <p>Best Regards,</p>
-              <p>The Zikoro Team</p>
-            </div>
-          </td></tr>
-        </table>
-      </div>`;
-}
-
-async function sendEmail(
-  recipients: string[], 
-  subject: string, 
-  htmlBody: string
-) {
     try {
-        const response = await fetch("https://api.zeptomail.com/v1.1/email", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: ZEPTOMAIL_API_TOKEN!,
-            },
-            body: JSON.stringify({
-                from: { 
-                    address: SENDER_EMAIL, 
-                    name: "Zikoro" 
-                },
-                to: recipients.map(email => ({
-                    email_address: { address: email }
-                })),
-                subject,
-                htmlbody: htmlBody,
-            }),
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            console.error("Failed to send email:", result);
-            throw new Error(result.message || "Email sending failed");
+        if (req.method !== "POST") {
+            return new Response("Method Not Allowed", { status: 405 });
         }
 
-        return { success: true, response: result };
-    } catch (error) {
-        console.error("Error in sendEmail:", error);
+        const now = new Date();
+        const time24HoursFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+        const time25HoursFromNow = new Date(now.getTime() + 25 * 60 * 60 * 1000);
+        
+        // Function to format date to YYYY-MM-DD (valid SQL DATE format)
+        function formatDateToYYYYMMDD(date: Date): string {
+          return date.toISOString().slice(0, 10); // Extracts only YYYY-MM-DD
+        }
+        
+        const formattedTime24 = formatDateToYYYYMMDD(time24HoursFromNow);
+        const formattedTime25 = formatDateToYYYYMMDD(time25HoursFromNow);
+
+        // Fetch pending reminders
+        const { data, error } = await supabase
+            .from("bookings")
+            .select("id, phone,  appointmentLinkId(id, smsNotification)")
+            .eq("appointmentLinkId.smsNotification", "PENDING")
+            // .lte("appointmentDate", formattedTime25)
+            // .gte("appointmentDate", formattedTime24);
+
+        if (error) {
+            console.error("Error fetching reminders:", error);
+            return new Response(JSON.stringify({ error }), { status: 500 });
+        }
+
+        if (!data || data.length === 0) {
+            return new Response("No reminders to send", { status: 200 });
+        }
+
+        // Prepare message
+        const message = "Reminder: Your appointment is scheduled within the next 24 hours.";
         // @ts-ignore
-        return { success: false, error: error.message };
+        const recipients = data.map(({ phone }) => phone).join(", ");
+
+        // Send SMS
+        // const smsResponse = await sendSms(recipients, message);
+
+        // Update status in appointmentLink
+        const appointmentIds = [...new Set(data.map(d => d.appointmentLinkId?.id).filter(id => id))];
+
+        let updateStatus = "No updates made";
+        
+        if (appointmentIds.length > 0) {
+            const { error: updateError } = await supabase
+                .from("appointmentLinks")
+                .update({ smsNotification: "SENT" })
+                .in("id", appointmentIds);
+
+            updateStatus = updateError ? updateError.message : "Status updated to SENT";
+        }
+
+        return new Response(JSON.stringify({ success: "SMS Reminders processed", updateStatus,  appointmentIds, recipients, data }), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+        });
+
+    } catch (error) {
+        console.error("Function error:", error);
+        // @ts-ignore
+        return new Response(JSON.stringify({ error: "Internal Server Error", errorMsg:error?.message }), { status: 500 });
     }
-}
+});
 
 
 
 
 
-
-
-
-
-
-
-
-// const MAX_RETRY_ATTEMPTS = 3;
-
-// @ts-ignore
-// Deno.serve(async (req) => {
-//     try {
-//         if (req.method !== "POST") {
-//             return new Response("Method Not Allowed", { status: 405 });
-//         }
-
-//         const now = new Date();
-//         const time24HoursFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-//         const time25HoursFromNow = new Date(now.getTime() + 25 * 60 * 60 * 1000);
-        
-//         // Function to format date to YYYY-MM-DD (valid SQL DATE format)
-//         function formatDateToYYYYMMDD(date: Date): string {
-//           return date.toISOString().slice(0, 10); // Extracts only YYYY-MM-DD
-//         }
-        
-//         const formattedTime24 = formatDateToYYYYMMDD(time24HoursFromNow);
-//         const formattedTime25 = formatDateToYYYYMMDD(time25HoursFromNow);
-
-//         // Fetch pending reminders
-//         const { data, error } = await supabase
-//                   .from("bookings")
-//                   .select(`id, phone, appointmentDate, appointmentTime, appointmentName, participantEmail,firstName,lastName, appointmentLinkId!inner(id, smsNotification, locationDetails)`)
-//                   .eq('appointmentLinkId.smsNotification', "PENDING")
-//                   .lte("appointmentDate", formattedTime25)
-//                   .gte("appointmentDate", formattedTime24);
-
-//         if (error) {
-//             console.error("Error fetching reminders:", error);
-//             return new Response(JSON.stringify({ error }), { status: 500 });
-//         }
-
-//         if (!data || data.length === 0) {
-//             return new Response("No reminders to send", { status: 200 });
-//         }
-
-//         // Send SMS
-//         let smsResponse = []
-//         const groupedSmsData = groupBookingsForSms(data) 
-          
-//         for (const [appointmentLinkId, { formattedMsg, recipients }] of groupedSmsData) {
-//           const res = await sendSms(recipients.join(", "), formattedMsg);
-//           smsResponse.push(res)
-//         }
-
-//         // Update status in appointmentLink
-//         // @ts-ignore
-//         const appointmentIds = [...new Set(data.map(d => d.appointmentLinkId?.id).filter(id => id))];
-
-//         let updateStatus = "No updates made";
-        
-//         if (appointmentIds.length > 0) {
-//             const { error: updateError } = await supabase
-//                 .from("appointmentLinks")
-//                 .update({ smsNotification: "SENT" })
-//                 .in("id", appointmentIds);
-
-//             updateStatus = updateError ? updateError.message : "Status updated to SENT";
-//         }
-
-//         return new Response(JSON.stringify({ success: "SMS Reminders processed",  groupedSmsData }), {
-//             status: 200,
-//             headers: { "Content-Type": "application/json" },
-//         });
-
-//     } catch (error) {
-//         console.error("Function error:", error);
-//         // @ts-ignore
-//         return new Response(JSON.stringify({ error: "Internal Server Error", errorMsg:error?.message }), { status: 500 });
-//     }
-// });
-
-// function normalizePhoneNumber(phone: string): string {
-//   // Remove non-digit characters
-//   let cleaned = phone.replace(/\D/g, "");
-
-//   // Convert local format (0803...) to international format (234803...)
-//   if (cleaned.startsWith("0") && cleaned.length === 11) {
-//       cleaned = "234" + cleaned.slice(1);
-//   } else if (cleaned.startsWith("234") && cleaned.length === 13) {
-//       cleaned = "234" + cleaned.slice(3);
-//   }
-
-//   return cleaned;
-// }
-
-// function formatAppointmentDate(appointmentDate: string, appointmentTime: string) {
-//   const date = new Date(appointmentDate);
-//   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-//   return `${monthNames[date.getMonth()]} ${date.getDate()} at ${appointmentTime}`;
-// }
-
-// function truncateText(text: string, maxLength: number): string {
-//   return text.length > maxLength ? text.slice(0, maxLength - 3) + "..." : text;
-// }
-
-// function groupBookingsForSms(bookings: any[]) {
-//   const groupedData = new Map<
-//       string,
-//       { formattedMsg: string; recipients: string[] }
-//   >();
-
-//   bookings.forEach((booking) => {
-//       const {
-//           appointmentLinkId,
-//           phone,
-//           appointmentDate,
-//           appointmentTime,
-//           appointmentName,
-//           appointmentLinkId: { locationDetails },
-//       } = booking;
-
-//       if (!appointmentLinkId?.id || !phone) return;
-
-//       // Normalize phone number
-//       const normalizedPhone = normalizePhoneNumber(phone);
-
-//       // Format date to avoid blocked messages
-//       const formattedDate = formatAppointmentDate(appointmentDate, appointmentTime);
-
-//       // Truncate location details
-//       const shortLocation = truncateText(locationDetails, 30);
-
-//       if (!groupedData.has(appointmentLinkId.id)) {
-//           const formattedMsg = `Hello, you have an appointment: "${appointmentName}" on ${formattedDate}. Location: ${shortLocation}. Please be on time.`;
-//           groupedData.set(appointmentLinkId.id, { formattedMsg, recipients: [] });
-//       }
-
-//       const group = groupedData.get(appointmentLinkId.id)!;
-
-//       // Ensure phone numbers are unique
-//       if (!group.recipients.includes(normalizedPhone)) {
-//           group.recipients.push(normalizedPhone);
-//       }
-//   });
-
-//   return groupedData;
-// }
-
-// async function sendSms(recipients: string, message: string) {
-//   try {
-//     const url = `https://my.kudisms.net/api/sms?token=${KUDISMS_API_KEY}&senderID=${KUDISMS_SENDER_ID}&recipients=${recipients}&message=${encodeURIComponent(message)}&gateway=2`;
-//     const data = new FormData();
-//     data.append("token", KUDISMS_API_KEY as string);
-//     data.append("senderID", KUDISMS_SENDER_ID as string);
-//     data.append("recipients", recipients);
-//     data.append("message", message);
-//     data.append("gateway", "2");
-
-//     const response = await fetch(url, {
-//       method: "POST",
-//       body: data, 
-//     });
-
-//     if (!response.ok) {
-//       throw new Error(`Failed to send SMS: ${response.statusText}`);
-//     }
-
-//     const responseData = await response.json();
-//     console.log({ responseData, data });
-
-//     return responseData;
-//   } catch (error: any) {
-//     throw new Error(error.message);
-//   }
-// }
-
- 
 /* To invoke locally:
 
   1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
