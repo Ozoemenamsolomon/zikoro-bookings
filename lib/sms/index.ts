@@ -1,35 +1,36 @@
-<<<<<<< HEAD
-const numbers = [`2348032787601,2348139667165,2349114993947`]
-=======
+import axios from "axios";
 
+      const KUDISMS_API_KEY='tjwRx5iS6JMGnU749FBDAh3Nbd1KceYWsZLTIkXCfzVrmPHlpOQoqEyv0au8g2'
+      const KUDISMS_SENDER_ID='Zikoro'
+      const SENDER_EMAIL="support@zikoro.com"
+      const ZEPTOMAIL_API_TOKEN="Zoho-enczapikey wSsVR61380X1W60symCrIr87mg9QVA6nRkx42FSo6Sf9F/jCosc8lUzOAVWkHaQfQmdhFDARo7oqnBYE1DVY3dh7m1AEDSiF9mqRe1U4J3x17qnvhDzOV2lfmxqJK44NxwpinWdgGs4k+g=="
+ 
+      
+// export async function sendSms(recipients: string, message: string) {
+//   try {
+//     const url = `https://my.kudisms.net/api/sms?token=${process.env.KUDISMS_API_KEY}&senderID=${process.env.KUDISMS_SENDER_ID}&recipients=${recipients}&message=${encodeURIComponent(message)}&gateway=2`;
 
-import axios from 'axios';
+//     const data = new FormData();
+//     data.append("token", process.env.KUDISMS_API_KEY as string);
+//     data.append("senderID", process.env.KUDISMS_SENDER_ID as string);
+//     data.append("recipients", recipients);
+//     data.append("message", message);
+//     data.append("gateway", "2");
 
-export async function sendSms(recipients: string, message: string) {
-  try {
-    const url = `https://my.kudisms.net/api/sms?token=${process.env.KUDISMS_API_KEY}&senderID=${process.env.KUDISMS_SENDER_ID}&recipients=${recipients}&message=${encodeURIComponent(message)}&gateway=2`;
+//     const response = await fetch(url, {
+//       method: "POST",
+//       body: data, // ✅ Send FormData directly (no need for headers)
+//     });
 
-    const data = new FormData();
-    data.append("token", process.env.KUDISMS_API_KEY as string);
-    data.append("senderID", process.env.KUDISMS_SENDER_ID as string);
-    data.append("recipients", recipients);
-    data.append("message", message);
-    data.append("gateway", "2");
+//     const responseData = await response.json();
+//     console.log({ responseData, data });
 
-    const response = await fetch(url, {
-      method: "POST",
-      body: data, // ✅ Send FormData directly (no need for headers)
-    });
-
-    const responseData = await response.json();
-    console.log({ responseData, data });
-
-    return responseData;
-  } catch (error: any) {
-    console.error("SMS Sending Error:", error.message);
-    throw new Error(error.message);
-  }
-}
+//     return responseData;
+//   } catch (error: any) {
+//     console.error("SMS Sending Error:", error.message);
+//     throw new Error(error.message);
+//   }
+// }
 
 
 // export async function sendSms(recipients: string, message: string) {
@@ -70,33 +71,35 @@ export async function sendSms(recipients: string, message: string) {
 //   }
 // }
 
-// export async function sendSms(recipients: string, message: string) {
-//     try {
- 
-//       const url = `https://my.kudisms.net/api/sms?token=${process.env.KUDISMS_API_KEY}&senderID=${process.env.KUDISMS_SENDER_ID}&recipients=${recipients}&message=${encodeURIComponent(message)}&gateway=2`;
+export async function sendSms(recipients: string, message: string) {
+    try {
 
-//       const data = new FormData();
-//             data.append("token", process.env.KUDISMS_API_KEY as string);
-//             data.append("senderID", process.env.KUDISMS_SENDER_ID as string);
-//             data.append("recipients", recipients);
-//             data.append("message", message); 
-//             data.append("gateway", "2");
 
-//             const config = {
-//                 method: 'post',
-//                 maxBodyLength: Infinity,
-//                 url,
-//                 data : data
-//               };
+
+      const url = `https://my.kudisms.net/api/sms?token=${KUDISMS_API_KEY}&senderID=${KUDISMS_SENDER_ID}&recipients=${recipients}&message=${encodeURIComponent(message)}&gateway=2`;
+
+      const data = new FormData();
+            data.append("token", KUDISMS_API_KEY as string);
+            data.append("senderID", KUDISMS_SENDER_ID as string);
+            data.append("recipients", recipients);
+            data.append("message", message); 
+            data.append("gateway", "2");
+
+            const config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url,
+                data : data
+              };
           
-//           const response = await axios(config);
-//           console.log({response})
-//           return response.data;
+          const response = await axios(config);
+          console.log({response})
+          return response.data
   
-//     } catch (error: any) {
-//       throw new Error(error.message);
-//     }
-//   }
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
   
 
   export async function submitSenderId(senderID: string, message: string) {
@@ -214,4 +217,44 @@ export async function checkSenderId(senderID: string) {
 //     console.log(data);
 //   }
   
->>>>>>> 1185201ccefd11fefd6a67870335966c7a1388d3
+
+
+export async function sendEmail(
+  recipients: string[], 
+  subject: string, 
+  htmlBody: string
+) {
+    try {
+        const response = await fetch("https://api.zeptomail.com/v1.1/email", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: ZEPTOMAIL_API_TOKEN!,
+            },
+            body: JSON.stringify({
+                from: { 
+                    address: SENDER_EMAIL, 
+                    name: "Zikoro" 
+                },
+                to: recipients.map(email => ({
+                    email_address: { address: email }
+                })),
+                subject,
+                htmlbody: htmlBody,
+            }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            console.error("Failed to send email:", result);
+            throw new Error(result.message || "Email sending failed");
+        }
+
+        return { success: true, response: result };
+    } catch (error) {
+        console.error("Error in sendEmail:", error);
+        // @ts-ignore
+        return { success: false, error: error.message };
+    }
+}

@@ -136,7 +136,7 @@ const Sidebar = () => {
         <div  className="space-y-2 py-4 border-y">
           <SelectWorkspace/>
           <MenuBox />
-          <Testing />
+          <Testing/>
           
           {/* <Link href={'/appointments/help'} className={`flex gap-4 items-center p-2 rounded-md  hover:bg-gradient-to-r hover:from-slate-200  hover:to-purple-200 duration-300 group`}>
             <div className="group-hover:text-purple-800 duration-300">
