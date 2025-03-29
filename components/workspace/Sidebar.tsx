@@ -95,7 +95,7 @@ const Sidebar = () => {
           <div>
             <p className="text-ash leading-tight">Hello,</p>
             <p className="text-base font-medium">{user?.firstName}</p>
-            <small>{user?.workspaceRole}</small>
+            <small className='uppercase'>{user?.workspaceRole}</small>
           </div>
         </div>
 

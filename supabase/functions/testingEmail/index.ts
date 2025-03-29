@@ -314,7 +314,6 @@ Deno.serve(async (req) => {
 
 
 
-
 /* To invoke locally:
 
   1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
@@ -325,7 +324,6 @@ Deno.serve(async (req) => {
     --header 'Content-Type: application/json' \
     --data '{"name":"Emma Udeji"}'
 
-  
   // @ts-ignore
   const supabaseUrl = Deno.env.get("_SUPABASE_URL") as string;
   // @ts-ignore

@@ -6,6 +6,7 @@ import useUserStore from "@/store/globalUserStore";
 import { wsUrl, wsUrll } from '@/lib/wsUrl';
 import { useRouter } from 'next/navigation';
 import { DateRange } from 'react-day-picker';
+import { fetchOneTeamMember, fetchTeamMembers } from '@/lib/server/workspace';
 
 export interface AppState {
   isLoading: boolean;
@@ -84,9 +85,17 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   // }, [user])
   
   useEffect(()=>{
-    if(user) {
-      setUser({...user!, workspaceRole: currentWorkSpace?.organizationOwnerId===user?.id ? 'OWNER':'MEMBER'})
+    const updateRole = async () => {
+      if(user) {
+        if(currentWorkSpace?.organizationOwnerId!==user?.id){
+          const {data,error} = await fetchOneTeamMember(currentWorkSpace?.organizationAlias!, user?.userEmail!)
+          setUser({...user!, workspaceRole: data?.userRole! || 'COLLABORATOR'})
+        } else {
+          setUser({...user!, workspaceRole: 'OWNER'})
+        }
+      }
     }
+    updateRole()
   },[user?.id, currentWorkSpace])
 
   const contextValue: AppointmentContextProps = {

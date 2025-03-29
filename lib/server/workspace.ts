@@ -2,7 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { getUserData } from ".";
-import { BookingTeamInput, BookingTeams, Organization, OrganizationInput } from "@/types";
+import { BookingTeamInput, BookingTeamMember, BookingTeams, Organization, OrganizationInput } from "@/types";
 import { User } from "@/types/appointments";
 import { generateSlugg } from "../generateSlug";
 import { createADMINClient } from "@/utils/supabase/no-caching";
@@ -320,6 +320,37 @@ export const fetchTeamMembers = async (workspaceAlias: string) => {
     return { data: null, error: "Server error" };
   }
 };
+
+export const fetchOneTeamMember = async (workspaceAlias: string, userEmail:string):Promise<{data:BookingTeamMember|null, error:string|null}> => {
+  const supabase = createADMINClient();
+
+  try {
+    const { data, error } = await supabase
+      .from("organizationTeamMembers_Bookings")
+      .select(
+        `
+        *,
+        workspaceAlias(organizationAlias,organizationName,organizationOwner,organizationOwnerId), 
+        userId(profilePicture,id,firstName,lastName,userEmail) 
+      `
+      )
+      .eq("workspaceAlias", workspaceAlias) 
+      .eq("userEmail", userEmail)
+      .single()
+
+    if (error) {
+      console.error("Error fetching team members:", error);
+      return { data: null, error: error.message || "Failed to fetch team members" };
+    }
+
+    // console.log("Fetched team member:", data);
+    return { data, error: null };
+  } catch (error: any) {
+    console.error("Server error in fetchTeamMembers:", error);
+    return { data: null, error: "Server error" };
+  }
+};
+
 
 export const fetchActiveTeamMembers = async (workspaceAlias: string) => {
   const supabase = createADMINClient();

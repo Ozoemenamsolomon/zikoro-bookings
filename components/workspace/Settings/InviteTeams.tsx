@@ -122,7 +122,7 @@ const InviteTeams = ({teams, setTeams, text}:{teams:BookingTeamsTable[], setTeam
             </div>
 
             <div className="">
-              <label htmlFor="role" className='font-medium '>Assign role</label>
+              <label htmlFor="role" className='font-medium '>Assign a role</label>
               <CustomSelect
                   name='role'
                   error={errors?.role}
@@ -130,8 +130,9 @@ const InviteTeams = ({teams, setTeams, text}:{teams:BookingTeamsTable[], setTeam
                   value={formData.role}
                   onChange={handleSelectChange}
                   options={[
-                    { label: 'Owner', value: 'OWNER' },
-                  { label: 'Member', value: 'MEMBER' },
+                    { label: 'Owner', value: 'owner' },
+                    { label: 'Editor', value: 'editor' },
+                    { label: 'Collaborator', value: 'collaborator' },
                   ]}
               />
             </div>

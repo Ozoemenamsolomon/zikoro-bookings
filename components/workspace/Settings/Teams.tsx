@@ -74,7 +74,7 @@ const Teams = ({ teamMembers }: TeamsProps) => {
                   </div>
                 </td>
                 <td className="p-4 w-2/8 ">
-                  <span className="flex gap-2 items-center">
+                  <span className="flex gap-2 items-center capitalize">
                       {member?.userRole} 
                       { member?.userId?.id !== member?.workspaceAlias?.organizationOwnerId  ? <UpdateMemberRole 
                         member={member}
