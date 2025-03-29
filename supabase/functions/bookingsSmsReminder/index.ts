@@ -27,25 +27,54 @@ Deno.serve(async (req) => {
             return new Response("Method Not Allowed", { status: 405 });
         }
 
-        const now = new Date();
-        const time24HoursFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-        const time25HoursFromNow = new Date(now.getTime() + 25 * 60 * 60 * 1000);
+        // const now = new Date();
+        // const time24HoursFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+        // const time25HoursFromNow = new Date(now.getTime() + 25 * 60 * 60 * 1000);
         
+        // // Function to format date to YYYY-MM-DD (valid SQL DATE format)
+        // function formatDateToYYYYMMDD(date: Date): string {
+        //   return date.toISOString().slice(0, 10); // Extracts only YYYY-MM-DD
+        // }
+        
+        // const formattedTime24 = formatDateToYYYYMMDD(time24HoursFromNow);
+        // const formattedTime25 = formatDateToYYYYMMDD(time25HoursFromNow);
+
+        // // Fetch pending reminders
+        // const { data, error } = await supabase
+        //           .from("bookings")
+        //           .select(`id, phone, appointmentDate, appointmentTime, appointmentName, participantEmail,firstName,lastName, appointmentLinkId!inner(id, smsNotification, locationDetails)`)
+        //           .eq('appointmentLinkId.smsNotification', "PENDING")
+        //           .lte("appointmentDate", formattedTime25)
+        //           .gte("appointmentDate", formattedTime24);
+        const now = new Date();
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1); // Move to the next day
+        tomorrow.setHours(0, 0, 0, 0); // Start of the next day
+
+        const dayAfterTomorrow = new Date(tomorrow);
+        dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1); // Move to the day after
+        dayAfterTomorrow.setHours(0, 0, 0, 0); // Start of the day after tomorrow
+
         // Function to format date to YYYY-MM-DD (valid SQL DATE format)
         function formatDateToYYYYMMDD(date: Date): string {
           return date.toISOString().slice(0, 10); // Extracts only YYYY-MM-DD
         }
-        
-        const formattedTime24 = formatDateToYYYYMMDD(time24HoursFromNow);
-        const formattedTime25 = formatDateToYYYYMMDD(time25HoursFromNow);
 
-        // Fetch pending reminders
+        const formattedTomorrow = formatDateToYYYYMMDD(tomorrow);
+        const formattedDayAfterTomorrow = formatDateToYYYYMMDD(dayAfterTomorrow);
+
+        // Fetch pending reminders for the next calendar day
         const { data, error } = await supabase
-                  .from("bookings")
-                  .select(`id, phone, appointmentDate, appointmentTime, appointmentName, participantEmail,firstName,lastName, appointmentLinkId!inner(id, smsNotification, locationDetails)`)
-                  .eq('appointmentLinkId.smsNotification', "PENDING")
-                  .lte("appointmentDate", formattedTime25)
-                  .gte("appointmentDate", formattedTime24);
+          .from("bookings")
+          .select(`
+            id, phone, appointmentDate, appointmentTime, appointmentName, 
+            participantEmail, firstName, lastName, 
+            appointmentLinkId!inner(id, smsNotification, locationDetails)
+          `)
+          .eq("appointmentLinkId.smsNotification", "PENDING")
+          .gte("appointmentDate", formattedTomorrow) // Start of tomorrow (00:00)
+          .lt("appointmentDate", formattedDayAfterTomorrow); // Before the day after (00:00)
+
 
         if (error) {
             console.error("Error fetching reminders:", error);
@@ -60,10 +89,10 @@ Deno.serve(async (req) => {
         let smsResponse = []
         const groupedSmsData = groupBookingsForSms(data) 
           
-        // for (const [appointmentLinkId, { formattedMsg, recipients }] of groupedSmsData) {
-        //   const res = await sendSms(recipients.join(", "), formattedMsg);
-        //   smsResponse.push(res)
-        // }
+        for (const [appointmentLinkId, { formattedMsg, recipients }] of groupedSmsData) {
+          const res = await sendSms(recipients.join(", "), formattedMsg);
+          smsResponse.push(res)
+        }
 
         // Update status in appointmentLink
         // @ts-ignore
@@ -71,16 +100,16 @@ Deno.serve(async (req) => {
 
         let updateStatus = "No updates made";
         
-        // if (appointmentIds.length > 0) {
-        //     const { error: updateError } = await supabase
-        //         .from("appointmentLinks")
-        //         .update({ smsNotification: "SENT" })
-        //         .in("id", appointmentIds);
+        if (appointmentIds.length > 0) {
+            const { error: updateError } = await supabase
+                .from("appointmentLinks")
+                .update({ smsNotification: "SENT" })
+                .in("id", appointmentIds);
 
-        //     updateStatus = updateError ? updateError.message : "Status updated to SENT";
-        // }
+            updateStatus = updateError ? updateError.message : "Status updated to SENT";
+        }
 
-        return new Response(JSON.stringify({ success: "SMS Reminders processed",  groupedSmsData }), {
+        return new Response(JSON.stringify({ success: "SMS Reminders processed",smsResponse,  groupedSmsData, data }), {
             status: 200,
             headers: { "Content-Type": "application/json" },
         });
@@ -88,7 +117,7 @@ Deno.serve(async (req) => {
     } catch (error) {
         console.error("Function error:", error);
         // @ts-ignore
-        return new Response(JSON.stringify({ error: "Internal Server Error", errorMsg:error?.message }), { status: 500 });
+        return new Response(JSON.stringify({ error: "Internal Server Error", error }), { status: 500 });
     }
 });
 
@@ -188,6 +217,7 @@ async function sendSms(recipients: string, message: string) {
 }
 
 
+
 /* To invoke locally:
 
   1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
@@ -204,3 +234,8 @@ POSSIBLE LIVE URL
     --header 'Content-Type: application/json'
 
 */
+
+
+// supabase functions new function-name  
+// supabase functions deploy function-name --project-ref ddlepujpbqjoogkmiwfu
+//  export SUPABASE_ACCESS_TOKEN="sbp_02b68a015bee083fd8c48422d26384407fea3084"   
