@@ -1,6 +1,6 @@
 "use client";
 
-import { AppointmentLink, AppointmentUnavailability, Booking, BookingsContact, } from "@/types/appointments";
+import { AppointmentLink, AppointmentUnavailability, Booking, BookingsContact, BookingsQuery, } from "@/types/appointments";
 import { useState,   useCallback,  } from "react";
 import useUserStore from "@/store/globalUserStore";
 
@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { GroupedBookings } from "@/lib/server/appointments";
 import { getRequest, PostRequest } from "@/utils/api";
 import { useRouter } from "next/navigation";
+import { useAppointmentContext } from "@/context/AppointmentContext";
 
 export const useGetSchedules =  (scheduleData?: { error?: string | null; schedules?: AppointmentLink[] | null; count?: number; } )=> {
   const { user, currentWorkSpace } = useUserStore();
@@ -28,7 +29,7 @@ export const useGetSchedules =  (scheduleData?: { error?: string | null; schedul
         setLoading(true);
 
         const offset = (page - 1) * limit;
-        const  response = await fetch(`/api/schedules?userId=${user?.id}&start=${offset}&end=${offset + limit - 1}&workspaceId=${currentWorkSpace?.workspaceAlias}`);
+        const  response = await fetch(`/api/schedules?userId=${user?.id}&start=${offset}&end=${offset + limit - 1}&workspaceId=${currentWorkSpace?.organizationAlias}`);
         if (response.status!==200) {
           throw new Error('Error fetching appointments');
         }
@@ -66,23 +67,34 @@ export const useGetBookings = ({
   groupedBookingData,
   fetchedcount,
   fetchError,
+  searchQuery,
 }: {
   groupedBookingData: GroupedBookings | null;
   fetchedcount: number;
   fetchError: string | null;
+  searchQuery: BookingsQuery;
 }) => {
   const { user,currentWorkSpace } = useUserStore(); 
+  const {getWsUrl} = useAppointmentContext()
+
   const [groupedBookings, setGroupedBookings] = useState<GroupedBookings | null>(groupedBookingData);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [count, setCount] = useState<number>(fetchedcount);
   const [errorMessage, setError] = useState<string | null>(fetchError);
+  const [queryParams, setQueryParams] = useState<BookingsQuery>(searchQuery);
+
+  const [totalPages, setTotalPages] = useState(Math.ceil((fetchedcount || 0) / settings.countLimit));
+  const [currentPage, setCurrentPage] = useState( 
+    searchQuery?.page || 1);
+
+  const {replace} = useRouter()
 
   const getBookings = async (type: string = '', date:string='') => {
     setLoading(true);
     setError(null);  
   
     try {
-      const  response = await fetch(`/api/appointments?type=${type}&userId=${user?.id}&date=${date}&workspaceId=${currentWorkSpace?.workspaceAlias}`);
+      const  response = await fetch(`/api/appointments?type=${type}&userId=${user?.id}&date=${date}&workspaceId=${currentWorkSpace?.organizationAlias}`);
       if (response.status!==200) {
         throw new Error('Error fetching appointments');
       }
@@ -97,6 +109,7 @@ export const useGetBookings = ({
       setGroupedBookings(data);
       setCount(count);
   
+      
       return data;
       
     } catch (err) {
@@ -106,7 +119,67 @@ export const useGetBookings = ({
       setLoading(false);
     }
   };
-  return { groupedBookings, isLoading, error: errorMessage, count, getBookings };
+
+  const filterBookings = async (params: BookingsQuery) => {
+    try {
+      setError('');
+      setLoading(true);
+      setQueryParams(params)
+  
+      // Query parameters for the API request (includes userId & workspaceId)
+      const apiQueryParams = new URLSearchParams();
+  
+      if (user?.id) apiQueryParams.append('userId', String(user.id));
+      if (currentWorkSpace?.organizationAlias) apiQueryParams.append('workspaceId', currentWorkSpace.organizationAlias);
+      if (params.search) apiQueryParams.append('search', params.search);
+      if (params.status) apiQueryParams.append('status', params.status);
+      if (params.page) apiQueryParams.append('page', String(params.page));
+      if (params.type) apiQueryParams.append('type', params.type);
+      if (params.date) apiQueryParams.append('date', params.date);
+      if (params.from) apiQueryParams.append('from', params.from);
+      if (params.to) apiQueryParams.append('to', params.to);
+      if (params.appointmentName) apiQueryParams.append('appointmentName', params.appointmentName);
+      if (params.teamMember) apiQueryParams.append('teamMember', params.teamMember);
+  
+      // Fetch data from API
+      const response = await fetch(`/api/appointments?${apiQueryParams.toString()}`);
+  
+      if (response.status !== 200) {
+        console.error(await response.json());
+        setError('Error fetching appointments');
+      }
+  
+      const { data, error, count } = await response.json();
+  // console.log( { data, error, count , params })
+      setGroupedBookings(data);
+      setCount(count);
+      setTotalPages(Math.ceil((count || 0) / settings.countLimit));
+      setError(error);
+  
+      // Query parameters for the browser URL (EXCLUDES userId & workspaceId)
+      const urlQueryParams = new URLSearchParams(apiQueryParams);
+  
+      urlQueryParams.delete('userId');
+      urlQueryParams.delete('workspaceId');
+  
+      // Update browser URL without userId & workspaceId
+      replace(`${getWsUrl('/appointments')}?${urlQueryParams.toString()}`, { scroll: false });
+  
+      return data;
+    } catch (err) {
+      console.log(err);
+      setError('Error fetching appointments');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handlePageChange = (page:number) => {
+    setCurrentPage(page)
+    filterBookings({...queryParams, page})
+  }
+
+  return { groupedBookings,setGroupedBookings, currentPage,totalPages,handlePageChange, isLoading, error: errorMessage, count, getBookings, filterBookings,queryParams, setQueryParams, setCurrentPage };
 };
 
 export const useGetBookingsAnalytics = ({
@@ -131,7 +204,7 @@ export const useGetBookingsAnalytics = ({
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/analytics/?type=${fetchType}&userId=${user?.id}&workspaceId=${currentWorkSpace?.workspaceAlias}`);
+      const response = await fetch(`/api/analytics/?type=${fetchType}&userId=${user?.id}&workspaceId=${currentWorkSpace?.organizationAlias}`);
       if ( !response.ok) {
         throw new Error('Error fetching appointments');
       }
@@ -238,7 +311,7 @@ export const useCalendarData = ({viewing, date, count, formattedWeekData,formatt
     setError(null);
     setLoading(true);
     try {
-      const response = await fetch(`/api/calendar?date=${date}&viewing=${viewingType}&userId=${user?.id}&workspaceId=${currentWorkSpace?.workspaceAlias}`);
+      const response = await fetch(`/api/calendar?date=${date}&viewing=${viewingType}&userId=${user?.id}&workspaceId=${currentWorkSpace?.organizationAlias}`);
       if (!response.ok) {
         // console.log(`Error fetching calendar data: ${response.statusText}`);
         throw new Error(`Error fetching calendar data: ${response.statusText}`);
@@ -282,7 +355,7 @@ export function useBookingsContact() {
     }, []);
 
     const fetchAllContacts = async () => {
-      const response = await fetch(`/api/bookingsContact?workspaceId=${currentWorkSpace?.workspaceAlias}`)
+      const response = await fetch(`/api/bookingsContact?workspaceId=${currentWorkSpace?.organizationAlias}`)
        const {data,error,count} = await response.json()
        return {data,error,count} 
     }

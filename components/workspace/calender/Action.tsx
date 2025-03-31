@@ -3,6 +3,7 @@ import { MoveUpRight, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import TimePicker from './TimePicker';
+import { useAppointmentContext } from '@/context/AppointmentContext';
 
 const Action = ({
   appointment,
@@ -18,6 +19,7 @@ const Action = ({
   handleUnavailabilityChange: (dayString: string, newData: AppointmentUnavailability|null, deleteId?: number|bigint) => void; 
 }) => {
   const [isOpen, setIsOpen] = useState<string>('');
+  const {getWsUrl} = useAppointmentContext()
 
   return (
     <React.Fragment>
@@ -26,7 +28,7 @@ const Action = ({
           <>
             <div className="flex justify-center">
               <Link
-                href={`/workspace/appointments/?date=${appointment?.appointmentDate}&dt=${appointment?.appointmentTime}`}
+                href={`${getWsUrl('/appointments')}?date=${appointment?.appointmentDate}&dt=${appointment?.appointmentTime}`}
                 className="bg-zikoroBlue flex-nowrap overflow-hidden text-[10px] xl:text-sm text-white flex items-center px-2 py-1 rounded-full justify-center gap-1"
               >
                 <p className="shrink-0 flex-nowrap">View appointments</p>

@@ -6,6 +6,8 @@ import DeleteMember from './DeleteMember'
 import useUserStore from '@/store/globalUserStore'
 import ResendInvite from './ResendInvite'
 import UpdateMemberRole from './UpdateMemberRole'
+import EmptyList from '../ui/EmptyList'
+import { NoTeamsIcon } from '@/constants'
 
 interface TeamsProps {
   teamMembers: BookingTeamsTable[]
@@ -14,12 +16,23 @@ interface TeamsProps {
 const Teams = ({ teamMembers }: TeamsProps) => {
   const {user, currentWorkSpace} = useUserStore()
   const [teams, setTeams] = useState<BookingTeamsTable[]>(teamMembers||[])
-  console.log({teams})
+  // console.log({teams})
+
+  if(teams.length<2){
+    return <EmptyList
+      icon={<NoTeamsIcon/>}
+      text='Invite your team members here to collaborate and manage your bookings together.'
+      heading='No Team Members Added Yet'
+      CTA={<InviteTeams teams={teams} setTeams={setTeams} text='Invite team members'/>}
+      className='lg:h-[40em] '
+    />
+  }
+
   return (
     <section className="sm:py-8 sm:px-8 space-y-5">
       {/* Invite Team Members Section */}
       <div className="flex justify-end w-full ">
-        {user?.workspaceRole==='ADMIN'? <InviteTeams teams={teams} setTeams={setTeams}/> : null }
+        {user?.workspaceRole==='OWNER'? <InviteTeams teams={teams} setTeams={setTeams}/> : null }
       </div>
 
       {/* Team Members Table */}
@@ -29,19 +42,19 @@ const Teams = ({ teamMembers }: TeamsProps) => {
             <tr>
               <th className="p-4 w-4/8">Name</th>
               <th className="p-4 w-2/8">Role</th>
-              <th className="p-4 w-1/8"> Status</th>
+              <th className="p-4 w-1/8">Status</th>
               <th className="p-4 w-1/8"> </th>
             </tr>
           </thead>
           <tbody>
             {teams?.map((member) => (
-              <tr key={member.id} className="border-t hover:bg-gray-50">
+              <tr key={member?.id} className="border-t hover:bg-gray-50">
                 <td className="p-4 w-5/8 flex gap-2 items-center">
                   
                   {
-                    member.userId?.profilePicture ? 
+                    member?.userId?.profilePicture ? 
                     <img
-                      src={member.userId?.profilePicture}
+                      src={member?.userId?.profilePicture}
                       alt={`${member?.userId?.firstName || 'profile pic'}'s profile`}
                       className="w-12 h-12 rounded-full object-cover"
                     /> :
@@ -57,13 +70,13 @@ const Teams = ({ teamMembers }: TeamsProps) => {
                       </p> :
                     <p className=" leading-3">Not Registered</p>
                     }
-                      <small className='text-gray-500'>{member?.email}</small>
+                      <small className='text-gray-500'>{member?.userEmail}</small>
                   </div>
                 </td>
                 <td className="p-4 w-2/8 ">
-                  <span className="flex gap-2 items-center">
-                      {member?.role} 
-                      { member?.userId?.id !== member?.workspaceId?.workspaceOwner  ? <UpdateMemberRole 
+                  <span className="flex gap-2 items-center capitalize">
+                      {member?.userRole} 
+                      { member?.userId?.id !== member?.workspaceAlias?.organizationOwnerId  ? <UpdateMemberRole 
                         member={member}
                         setTeams={setTeams}
                       />:null}
@@ -71,8 +84,8 @@ const Teams = ({ teamMembers }: TeamsProps) => {
                 </td>
                 <td className="p-4 w-1/8">{member?.userId ? 'Active' : 'Pending'}</td>
                 <td className="p-4 w-1/8  text-center flex items-center">
-                  { member?.userId?.id !== currentWorkSpace?.workspaceOwner  ? <DeleteMember id={member?.id} setTeams={setTeams}/>:null}
-                  { member?.userId?.id !== currentWorkSpace?.workspaceOwner ? <ResendInvite member={member} setTeams={setTeams}/>:null}
+                  { member?.userId?.id !== currentWorkSpace?.organizationOwnerId  ? <DeleteMember id={member?.id} setTeams={setTeams}/>:null}
+                  { member?.userId?.id !== currentWorkSpace?.organizationOwnerId ? <ResendInvite member={member} setTeams={setTeams}/>:null}
                 </td>
               </tr>
             ))}

@@ -28,20 +28,6 @@ import { BookingSlotSkeleton } from '@/components/shared/Loader';
 function classNames(...classes: (string | false)[]): string {
     return classes.filter(Boolean).join(' ');
 }
-// export interface TimeDetail {
-//     day: string;
-//     from: string;
-//     to: string;
-//     enabled: boolean;
-// }
-// interface Slot {
-//     label: string;
-//     value: string;
-//   }
-// export interface SlotsResult {
-// selectDay: string;
-// slots: Slot[];
-// }
 
 export interface TimeDetail {
   day: string;

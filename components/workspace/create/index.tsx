@@ -2,7 +2,7 @@
 
 import { AtmCardIcon, BentArrowLeft, CalenderIcon, ClockIcon, SettingsIcon, ThemeIcon, urls } from '@/constants';
 import Link from 'next/link';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {  useEffect, useState } from 'react';
 import Details from './Details';
 import SetAvailability from './SetAvailability';
 import Payment from './Payment';
@@ -13,15 +13,13 @@ import { AppointmentFormData, AppointmentLink, DetailItem } from '@/types/appoin
 import { usePathname, useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 
-import { DaySchedule } from '../ui/DateTimeScheduler';
 import SelectType from './SelectType';
 import { uploadImage } from './uploadImage';
 import { useAppointmentContext } from '@/context/AppointmentContext';
 import useUserStore from '@/store/globalUserStore';
 import Loading from '@/components/shared/Loader';
 import { generateSlug } from '@/lib/generateSlug';
-import { fetchTeamMembers } from '@/lib/server/workspace';
-import { BookingTeamMember } from '@/types';
+ 
 
 const detailsArray: DetailItem[] = [
   {
@@ -57,6 +55,7 @@ const detailsArray: DetailItem[] = [
 ];
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", ];
+
 const formdata = {
   appointmentName: '',
   category: "",
@@ -66,8 +65,8 @@ const formdata = {
   timeZone: "",
   timeDetails: daysOfWeek.map(day => ({
     day,
-    from: '',
-    to: '',
+    from: "12:00 AM",
+    to: "11:30 PM",
     enabled: false
   })),
   curency: '',
@@ -92,58 +91,57 @@ interface ValidationErrors {
   [key: string]: string;
 }
 
-const CreateAppointments: React.FC<{teams: {label:string,value:string}[]; appointment?: AppointmentLink, serverError?:string|null, alias?:string }> = 
-  ({ appointment,alias, teams, serverError }) => 
+const CreateAppointments: React.FC<{ appointment?: AppointmentLink, serverError?:string|null, alias?:string }> = 
+  ({ appointment,alias,   serverError }) => 
     {
   const { push } = useRouter();
   const pathname = usePathname();
   const {setselectedType,selectedType,getWsUrl,setTeamMembers} = useAppointmentContext()
   const [isOpen, setIsOpen] = useState(appointment? false : true)
 
-  const [formData, setFormData] = useState<AppointmentFormData>(formdata);
+  const [formData, setFormData] = useState<AppointmentFormData>(() => {
+      if (appointment) {
+        return {
+          ...appointment,
+          timeDetails: JSON.parse(appointment.timeDetails || "[]"),
+          category: JSON.parse(appointment.category || `""`),
+          isPaidAppointment: appointment.amount ? true : false,
+          maxBooking: appointment.maxBooking,
+        };
+      }
+      return {
+        ...formdata,
+        category: selectedType === "multiple" ? [] : "",
+      };
+    });
+  
   const [errors, setErrors] = useState<{ [key: string]: string } | any>(serverError ? {'general': serverError} : null);
   const [loading, setLoading] = useState<boolean>(false);
 
   const {user,currentWorkSpace} = useUserStore()
 
   useEffect(() => {
-    if (appointment) {
-      try {
-        // Parse timeDetails and category
-        const parsedTimeDetails = JSON.parse(appointment.timeDetails || "[]") as DaySchedule[];
-        const parsedCategory = JSON.parse(appointment.category || `""`) as string | any[];
-
-         // Update formData with parsed values
-         setFormData({ 
-          ...appointment, 
-          timeDetails: parsedTimeDetails, category: parsedCategory, 
-          isPaidAppointment: appointment.amount ? true : false 
-        });
+    if (!appointment) return;
+    try {
+      setFormData({
+        ...appointment,
+        timeDetails: JSON.parse(appointment.timeDetails || "[]"),
+        category: JSON.parse(appointment.category || `""`),
+        isPaidAppointment: appointment.amount ? true : false,
+        maxBooking: appointment.maxBooking,
+      });
   
-        // Check if parsedCategory is an array and set isOpen
-        if (Array.isArray(parsedCategory)) {
-          setselectedType('multiple')
-        } else {
-          setselectedType('single')
-        }
-  
-        // Debugging output
-        // console.log({ parsedCategory, parsedTimeDetails, formData });
-      } catch (error) {
-        console.error('Error parsing appointment details:', error);
-      } finally {
-        setLoading(false)
+      if (Array.isArray(JSON.parse(appointment.category || `""`))) {
+        setselectedType("multiple");
+      } else {
+        setselectedType("single");
       }
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        createdBy: user?.id,
-        // when creating new item and it is multiple 
-        category: selectedType==='multiple' ? [] : ''
-      }));
+    } catch (error) {
+      console.error("Error parsing appointment details:", error);
     }
-    setTeamMembers(teams)
-  }, [appointment,pathname,selectedType]);
+     
+  }, [JSON.stringify(appointment),pathname,selectedType,]); // Prevent unnecessary re-renders
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     if (type === 'checkbox') {
@@ -234,11 +232,12 @@ const CreateAppointments: React.FC<{teams: {label:string,value:string}[]; appoin
     try {
       const payload = { 
         ...formData, 
-        appointmentAlias: generateSlug(formData.appointmentName),
+        appointmentAlias: appointment ? appointment.appointmentAlias : generateSlug(formData.appointmentName),
         timeDetails: JSON.stringify(formData.timeDetails), 
         category: JSON.stringify(formData.category), 
         logo: logoUrl || '', 
       };
+      console.log({payload})
       let response;
 // console.log({formData,payload})
       let success='New appointment schedule created';
@@ -257,7 +256,7 @@ const CreateAppointments: React.FC<{teams: {label:string,value:string}[]; appoin
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({...payload, workspaceId:currentWorkSpace?.workspaceAlias, createdBy:user?.id}),
+          body: JSON.stringify({...payload, workspaceId:currentWorkSpace?.organizationAlias, createdBy:user?.id}),
         });
       }
       const result = await response.json();

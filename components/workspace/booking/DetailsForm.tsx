@@ -101,7 +101,7 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
       // do not insert contact in contact page
       insertBookingsContact:  isContactPage ? null : insertBookingsContact,
       setShow,
-      setIsFormUp,
+      // setIsFormUp,
     });
   };
 // console.log({price:bookingFormData})

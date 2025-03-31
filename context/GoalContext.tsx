@@ -1,6 +1,6 @@
 "use client"
 
-import { fetchTeamMembers } from '@/lib/server/workspace';
+import { fetchActiveTeamMembers, fetchTeamMembers } from '@/lib/server/workspace';
 import useUserStore from '@/store/globalUserStore';
 import { BookingTeamMember,   } from '@/types';
 import { Goal, KeyResult } from '@/types/goal';
@@ -87,17 +87,16 @@ export const GoalProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     useEffect(() => {
       const fetchTeamMembers = async () => {
-        if (!currentWorkSpace?.workspaceAlias) return;
+        if (!currentWorkSpace?.organizationAlias) return;
   
         try {
-          const response = await fetch(`/api/workspaces/team?workspaceId=${currentWorkSpace.workspaceAlias}`);
-          const { data, error } = await response.json();
+          const { data, error }  = await fetchActiveTeamMembers(currentWorkSpace.organizationAlias);
   
-          if (error) {
+          if (!data ) {
             console.error("Error fetching team members:", error);
             setTeamMembers([]);
           } else {
-            const teams = data.map((team: BookingTeamMember) => ({
+            const teams = data?.map((team: BookingTeamMember) => ({
               label: `${team?.userId?.firstName} ${team?.userId?.lastName}`,
               value: `${team?.id}`,
             }));

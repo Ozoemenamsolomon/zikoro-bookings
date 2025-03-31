@@ -1,8 +1,8 @@
-import { Booking, } from "@/types/appointments";
+import { Booking, BookingNote, BookingsQuery, } from "@/types/appointments";
 import { createADMINClient } from "@/utils/supabase/no-caching";
-import { getUserData } from ".";
-import { endOfMonth, startOfDay, startOfMonth, startOfToday, startOfWeek } from "date-fns";
+import { endOfMonth,  startOfMonth, startOfToday,  } from "date-fns";
 import { limit } from "@/constants";
+import { settings } from "../settings";
 
 export interface GroupedBookings {
   [date: string]: Booking[];
@@ -32,38 +32,90 @@ const groupBookingsByDate = (bookings: Booking[]): GroupedBookings => {
 };
 
 export const fetchAppointments = async (
-   payload?: {workspaceId:string, userId?: string, date?: string, type?: string} 
+   payload?: {workspaceId:string, searchQuery: BookingsQuery,  userId?: string, } 
 ): Promise<FetchBookingsResult> => {
+
+    const param = payload?.searchQuery
+
     const supabase = createADMINClient()
     if(!payload?.workspaceId){
       console.error('APPOINTMENT BOOKINGS: workspaceId is missing')
     }
     
     let today = startOfToday().toISOString()
+
   try {
     let query = supabase
       .from("bookings")
       .select(`*, appointmentLinkId(*, createdBy(id, userEmail,organization,firstName,lastName,phoneNumber))`, { count: 'exact' })
       .eq("workspaceId", payload?.workspaceId)
-      .order("appointmentDate", { ascending: true })
 
       const {count} = await query
 
-      if (payload?.date && !payload?.type){
-        query.gte('appointmentDate', startOfMonth(new Date(payload?.date!)).toISOString())
-             .lte('appointmentDate', endOfMonth(new Date(payload?.date!)).toISOString())                   
-      } else if (payload?.type==='past-appointments'){
+      if (param?.search) {
+        query = query.or(
+          `appointmentName.ilike.%${param.search}%,appointmentType.ilike.%${param.search}%,bookingStatus.ilike.%${param.search}%,firstName.ilike.%${param.search}%,lastName.ilike.%${param.search}%,participantEmail.ilike.%${param.search}%,phone.ilike.%${param.search}%`
+        );
+      }
+
+      // filters data within the range of selected date's start of month and end of month
+      if (param?.date){
+        query.gte('appointmentDate', startOfMonth(new Date(param?.date!)).toISOString())
+             .lte('appointmentDate', endOfMonth(new Date(param?.date!)).toISOString())                   
+      }
+
+      if (param?.type==='past-appointments'){
         query.lt('appointmentDate', today)
-      } else {
-        // default when there is no searchParam - UPCOMING APPOINTMENTS
+      }
+
+      if (param?.type==='upcoming-appointments'){
         query.gte('appointmentDate', today)
       }
 
-    const { data, error, count:querySize } = await query;
-    // console.log({date: startOfWeek(new Date(payload?.date!)).toISOString(), data, }, 'REFETCHING')
+      if (param?.from && param?.to){
+        const from =  new Date(param?.from).toISOString()
+        const to =  new Date(param?.to).toISOString()
+        query.gte('appointmentDate', from)
+        query.lte('appointmentDate', to)
+      }
+
+      if (param?.appointmentName) {
+        let appointmentName = JSON.parse(param.appointmentName); // Parse input array
+        const searchConditions = appointmentName.map((name:string) => `appointmentName.ilike.%${name}%`);
+        
+        query.or(searchConditions.join(","));
+      }
+
+      if (param?.status){
+        let statusList = JSON.parse(param.status); // Parse input array
+        const searchConditions = statusList.map((status:string) => `bookingStatus.ilike.%${status}%`);
+        
+        query.or(searchConditions.join(","))
+      }
+
+      if (param?.teamMember) {
+        let teamMembersList = JSON.parse(param.teamMember); // Parse input array
+
+        query.ilike("teamMembers::text", `%${teamMembersList}%`);
+      }
+      
+      // if (param?.teamMember) {
+      //   query.contains("teamMembers", [param.teamMember]); // Works for JSONB array filtering
+      // }
+      // if (param?.teamMember) {
+      //   query.filter("teamMembers::jsonb", "@>", JSON.stringify([param.teamMember]));
+      // }
+      
+      // Pagination handling
+      const start = param?.page ? (param?.page - 1) * settings.countLimit : 0;
+      const limit = start + settings.countLimit || 20; 
+
+      query = query.range(start, start + limit - 1); // Supabase uses 0-based indexes
+
+      const { data, count:querySize, error } = await query.order('appointmentDate', {ascending:false});
 
     if (error) {
-      console.error('Error fetching appointments:', error);
+      console.error('Error fetching appointments:', error, param);
       return { data: null, error: error.message, count: 0, querySize:0 };
     }
 
@@ -75,6 +127,51 @@ export const fetchAppointments = async (
   }
 
 };
+
+export const fetchAppointmentNames = async (
+  workspaceId: string, 
+  userId?: string
+): Promise<{
+  data: { appointmentName: string; businessName: string | null }[] | null;
+  error: string | null;
+  count: number | null;
+}> => {
+  const supabase = createADMINClient();
+
+  if (!workspaceId) {
+    console.error('APPOINTMENT BOOKINGS: workspaceId is missing');
+    return { data: null, error: 'Workspace ID is required', count: 0 };
+  }
+
+  try {
+    let { data, error, count } = await supabase
+      .from("bookings")
+      .select(`appointmentName, appointmentLinkId(businessName)`, { count: 'exact' })
+      .eq("workspaceId", workspaceId);
+// console.log({ data, error, count })
+    if (error) {
+      console.error('APPOINTMENT NAMES:', error);
+      return { data: null, error: error.message, count: 0 };
+    }
+
+    // Ensure data exists and map correctly
+    const formattedData = (data || []).map(item => ({
+      appointmentName: item.appointmentName,
+      businessName: item.appointmentLinkId?.businessName || null, // Handle array case
+    }));
+
+    // Use Map to filter unique values based on appointmentName
+    const uniqueNames = Array.from(
+      new Map(formattedData.map(item => [item.appointmentName, item])).values()
+    );
+
+    return { data: uniqueNames, error: null, count };
+  } catch (err) {
+    console.error('Error fetching appointments:', err);
+    return { data: null, error: 'Error fetching appointments', count: 0 };
+  }
+};
+
 
 export const fetchBookings = async (
   {appointmentDate, appointmentLinkId}:{appointmentDate:string, appointmentLinkId:string} 
@@ -102,7 +199,6 @@ export const fetchBookings = async (
    }
  };
  
-
  type FetchAppointmentHistoryParams = {
    userId?: string;
    contactEmail: string;
@@ -150,4 +246,24 @@ export const fetchBookings = async (
    }
  }
  
- 
+ export const fetchBookingNotes = async (bookingId:string): Promise<{data:BookingNote[]|null, error:string|null,  count:number|null}> => {
+  const supabase = createADMINClient()
+    try {
+    const { data, error, count } = await supabase
+      .from("bookingNote")
+      // .select("*", {count:'exact'})
+      .select("*, createdBy(id, userEmail, organization, firstName, lastName, phoneNumber)", {count:'exact'})
+      .eq("bookingId", bookingId)
+      .order('created_at', { ascending: false });
+
+      console.log({ data, error,});
+      if (error) {
+        console.error('Error fetching bookings:', error);
+        return { data: null, error: error.message,count:null };
+      }
+      return { data, error: null, count };
+    } catch (error) {
+      console.error('Server error:', error);
+      return { data: null, error: 'Server error', count:null };
+    }
+};

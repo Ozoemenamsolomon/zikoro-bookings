@@ -2,11 +2,13 @@
 
 import { PopoverMenu } from '@/components/shared/PopoverMenu';
 import { ChevronDown, SquarePen } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CreateWorkSpace from './CreateWorkSpace';
 import useUserStore from '@/store/globalUserStore';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { fetchCurrencies } from '@/lib/server/workspace';
+import { BookingsCurrencyConverter } from '@/types';
 // import { getWorkspacePath } from '@/utils/urlHelpers';
 
 
@@ -17,17 +19,29 @@ export const getWorkspacePath = (workspaceAlias: string, path: string = '') => {
 
 
 const SelectWorkspace = () => {
-  const { user, currentWorkSpace, workspaces, setCurrentWorkSpace } = useUserStore();
+  const { user, currentWorkSpace,  workspaces, setCurrentWorkSpace } = useUserStore();
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [currencies, setCurrencies] = useState<BookingsCurrencyConverter[]>([])
 
   /** Handle Workspace Selection */
   const handleWorkspaceChange = (wsAlias: string) => {
-    setCurrentWorkSpace(workspaces.find((ws) => ws.workspaceAlias === wsAlias)!);
+    setCurrentWorkSpace(workspaces.find((ws) => ws.organizationAlias === wsAlias)!);
     router.push(getWorkspacePath(wsAlias, pathname.split('/').slice(3).join('/')));
     setIsOpen(false)
   };
+
+    console.log('dddddd')
+  
+    useEffect(() => {
+      const fetching = async() => {
+        const {data} = await fetchCurrencies()
+        console.log({data})
+        setCurrencies(data)
+      }
+      fetching()
+    }, [])
 
   return (
     <PopoverMenu
@@ -41,7 +55,7 @@ const SelectWorkspace = () => {
           className="rounded-md w-full py-2 px-4 border flex justify-between gap-4 items-center"
         >
           <p className="w-full truncate min-w-0 text-start font-semibold">
-            {currentWorkSpace?.workspaceName}
+            {currentWorkSpace?.organizationName}
           </p>
           <ChevronDown size={14} className="shrink-0" />
         </button>
@@ -51,15 +65,15 @@ const SelectWorkspace = () => {
         {workspaces?.map((ws) => (
           <div  key={ws?.id} className="flex gap-2 items-center">
             <button
-              onClick={() => handleWorkspaceChange(ws.workspaceAlias)}
+              onClick={() => handleWorkspaceChange(ws.organizationAlias!)}
               className={`block w-full truncate min-w-0 hover:bg-baseLight hover:text-zikoroBlue duration-300 px-3 py-1.5 rounded-md text-start ${
                 currentWorkSpace?.id === ws?.id ? 'bg-baseLight text-zikoroBlue' : ''
               }`}
             >
-              {ws?.workspaceName}
+              {ws?.organizationName}
             </button>
 
-            {ws?.workspaceOwner===user?.id ? 
+            {ws?.organizationOwnerId===user?.id ? 
             <CreateWorkSpace
               onClose={setIsOpen}
               workSpaceData={ws!}
@@ -82,4 +96,4 @@ const SelectWorkspace = () => {
   );
 };
 
-export default SelectWorkspace;
+export default React.memo(SelectWorkspace);

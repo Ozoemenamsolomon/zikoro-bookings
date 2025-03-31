@@ -15,7 +15,7 @@ const ScheduleAppointment = ({ contact }: { contact: BookingsContact, appointmen
   const {setShow,setIsFormUp, show} = useAppointmentContext()
   const [selectedBookingLink, setSelectedBookingLink] = useState<AppointmentLink | null>(null)
   const { user,currentWorkSpace } = useUserStore()
-  const workspaceId = currentWorkSpace?.workspaceAlias
+  const workspaceId = currentWorkSpace?.organizationAlias
   // Fetching schedule data using custom hook
   const { fetchSchedules, handlePageChange, totalPages, loading, currentPage, scheduleList, isError } = useGetSchedules()
 

@@ -11,8 +11,9 @@ import { PostRequest } from '@/utils/api';
 import { KeyResult, KeyResultsTimeline } from '@/types/goal';
 import { useRouter } from 'next/navigation';
 import useUserStore from '@/store/globalUserStore';
-import UpdateKeyResultStatus from './UpdateKeyResultStatus';
+
 import UpdateKeyResultStatusTimeline from './UpdateKeyResultStatusTimeline';
+import { reactquilToolbar } from '@/constants';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
@@ -222,26 +223,9 @@ const MetricForm = ({
       setLoading("");
     }
   };
-  
 
-  const memoizedToolbar = useMemo(
-    () => ({
-      toolbar: [
-        [{ font: ['sans-serif', 'serif', 'monospace', 'cursive'] }],
-        [{ header: [1, 2, 3, 4, 5, 6, false] }],
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ color: [] }, { background: [] }],
-        [{ script: 'sub' }, { script: 'super' }],
-        ['blockquote', 'code-block'],
-        [{ list: 'ordered' }, { list: 'bullet' }],
-        [{ indent: '-1' }, { indent: '+1' }],
-        [{ direction: 'rtl' }],
-        [{ align: ['', 'center', 'right', 'justify'] }],
-        ['clean'],
-      ],
-    }),
-    []
-  );
+  const memoizedToolbar = useMemo(reactquilToolbar, [])
+
   return (
     <CenterModal
       className="max-w-2xl w-full overflow-hidden"
@@ -329,3 +313,5 @@ const MetricForm = ({
 };
 
 export default MetricForm;
+
+

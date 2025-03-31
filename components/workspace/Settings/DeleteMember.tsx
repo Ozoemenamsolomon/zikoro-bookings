@@ -4,8 +4,10 @@ import { CenterModal } from '@/components/shared/CenterModal'
 import { Button } from '@/components/ui/button'
 import { handleDeleteTeamMember } from '@/lib/deleteFunctions'
 import { BookingTeamsTable } from '@/types'
+import { PostRequest } from '@/utils/api'
 import { Loader2, Trash2, X } from 'lucide-react'
 import React, { useState } from 'react'
+import { toast } from 'react-toastify'
  
 interface DeleteMemberProps {
   id: number
@@ -19,8 +21,15 @@ const DeleteMember: React.FC<DeleteMemberProps> = ({ id, setTeams }) => {
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      await handleDeleteTeamMember(id)
-      setTeams((prev) => prev.filter((member) => member.id !== id))
+       const {error,data,} = await PostRequest({
+        url:'/api/workspaces/team/deleteMember', 
+        body:{id,status:'ARCHIVED'}})
+
+        if(!error){
+          setTeams((prev) => prev.filter((member) => member.id !== id))
+        } else {
+          toast.error('Item could not delete. Check your network')
+        }
     } catch (error) {
       console.error('Failed to delete team member:', error)
     } finally {
@@ -31,7 +40,7 @@ const DeleteMember: React.FC<DeleteMemberProps> = ({ id, setTeams }) => {
 
   return (
     <CenterModal
-      className='w-80 px-6 py-8'
+      className='max-w-md px-6 py-8'
       isOpen={isOpen}
       onOpenChange={setIsOpen}
       trigerBtn={
@@ -43,7 +52,7 @@ const DeleteMember: React.FC<DeleteMemberProps> = ({ id, setTeams }) => {
         <Trash2 className={`w-5 h-5 ${isDeleting ? 'text-gray-400 animate-pulse' : 'text-red-500'}`} />
       </Button>
     }>
-      <div className=" text-center flex flex-col items-center  ">
+      <div className=" text-center space-y- ">
         <p className="pb-6">You are about to remove a member</p>
         
         <Button

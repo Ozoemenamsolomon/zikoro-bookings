@@ -37,7 +37,7 @@ Zikoro is an event scheduling and booking application designed to facilitate use
 1. User signs up and confirms their email.
 2. A default workspace (`My Workspace`) is created or named after an optional organization name provided during onboarding.
 3. The user is redirected to `/ws/[workspaceId]` to access the workspace.
-4. If `[workspaceId]` is invalid, the user lands on an error/landing page at `/ws`.
+4. If `[workspaceId]` is invalid, then redirects to an error handling page at `/ws`.
 
 ### **3.2 Inviting Team Members**
 1. From `/ws/[workspaceId]/settings/teams`, users invite team members.

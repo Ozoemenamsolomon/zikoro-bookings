@@ -1,9 +1,9 @@
 import { createWorkspace } from "@/lib/server/workspace";
-import { createClient } from "@/utils/supabase/server";
+
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const supabase = createClient()
+ 
   if (req.method !== "POST") {
     return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
   }

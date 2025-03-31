@@ -1,45 +1,99 @@
 import { User } from "./appointments";
 
-export interface BookingWorkSpace {
-  id?: string; // UUID represented as a string
-  created_at?: string; // ISO timestamp string
-  workspaceName?: string | null; // Optional text field
-  workspaceOwner?: bigint | null; // Optional bigint, represented as number in TypeScript
-  subscriptionPlan?: string | null; // Optional text field
-  subscriptionEndDate?: string | null; // Optional date represented as ISO string
-  workspaceLogo?: string ; // Optional text field
-  workspaceAlias: string ; // Optional text field
-  workspaceDescription?: string | null; // Optional text field
+// export interface BookingWorkSpace {
+//   id?: string; // UUID represented as a string
+//   created_at?: string; // ISO timestamp string
+//   workspaceName?: string | null; // Optional text field
+//   workspaceOwner?: bigint | null; // Optional bigint, represented as number in TypeScript
+//   subscriptionPlan?: string | null; // Optional text field
+//   subscriptionEndDate?: string | null; // Optional date represented as ISO string
+//   workspaceLogo?: string ; // Optional text field
+//   workspaceAlias: string ; // Optional text field
+//   workspaceDescription?: string | null; // Optional text field
+// }
+
+export interface Organization {
+  id: number;
+  created_at: string; // ISO timestamp
+  organizationAlias?: string | null;
+  organizationName: string;
+  subscriptionPlan?: string | null;
+  subscritionStartDate?: string | null; // Date as string (ISO format)
+  subscriptionEndDate?: string | null; // Date as string (ISO format)
+  organizationOwner?: string | null;
+  BillingAddress?: string | null;
+  TaxID?: string | null;
+  payoutAccountDetails?: Record<string, any> | null; // JSON object
+  organizationOwnerId?: number | null;
+  organizationType?: string | null;
+  organizationLogo?: string | null;
+  country?: string | null;
+  eventPhoneNumber?: string | null;
+  eventWhatsApp?: string | null;
+  eventContactEmail?: string | null;
+  x?: string | null;
+  linkedIn?: string | null;
+  instagram?: string | null;
+  facebook?: string | null;
+  certificateAsset?: Record<string, any> | null; // JSON object
+  tiktok?: string | null;
+  teamMembers?: Record<string, any> | null; // JSON object
+  favicon?: string | null;
+  subDomain?: string | null;
+  subscriptionExpiryDate?: string | null; // Date as string (ISO format)
+  socialLinks?: Record<string, any> | null; // JSON object
 }
- 
+export interface OrganizationInput {
+  organizationAlias: string;
+  organizationName: string;
+  organizationOwner: string;
+  organizationOwnerId: bigint | number | string;  
+  organizationLogo?: string | null;
+  organizationType?: string | null;
+  country?: string|null;
+  subscriptionPlan?: 'FREE' | string|null; // Default is 'FREE', but allows other values
+  subscriptionEndDate?: string | null; // Date in string format or null
+  subscritionStartDate?: string|null;
+  BillingAddress?: string | null;
+  TaxID?: string | null;
+  payoutAccountDetails?: Record<string, any> | null; // JSON object
+}
+
 export interface BookingTeams {
-  id: number; // bigint represented as number in TypeScript
-  created_at: string; // ISO timestamp string
-  workspaceId?: string | null; // Optional UUID represented as string
-  userId?: number | null; // Optional bigint represented as number
-  role?: string | null; // Optional text field
-  email?: string | null; // Optional text field
+  id: number;
+  created_at: string; // ISO timestamp
+  userId?: number | null;
+  userRole?: string | null;
+  userEmail?: string | null;
+  workspaceAlias?: string | null;
+}
+
+export interface BookingTeamInput {
+  userId?: number | null;
+  userRole?: string | null;
+  userEmail?: string | null;
+  workspaceAlias?: string | null;
 }
 
 export interface BookingTeamMember {
   id: number; // bigint represented as number in TypeScript
   created_at: string; // ISO timestamp string
-  workspaceId?: BookingWorkSpace ; // Optional UUID represented as string
+  workspaceAlias?: Organization ; // Optional UUID represented as string
   userId?: User | null; // Optional bigint represented as number
-  role?: string | null; // Optional text field
-  email?: string | null; // Optional text field
+  userRole?: string | null; // Optional text field
+  userEmail?: string | null; // Optional text field
 }
 
 export interface BookingTeamsTable {
   id: number; // bigint represented as number in TypeScript
   created_at: string; // ISO timestamp string
-  workspaceId?: BookingWorkSpace; // Optional UUID represented as string
+  workspaceAlias?: Organization; // Optional UUID represented as string
   userId?: User | null; // Optional bigint represented as number
-  role?: string | null; // Optional text field
-  email?: string | null; // Optional text field
+  userRole?: string | null; // Optional text field
+  userEmail?: string | null; // Optional text field
 }
 
- export interface CredentialTokenBalance {
+ export interface BookenTokenBalance {
   id: number
   created_at: string // ISO timestamp (e.g., "2024-06-27T12:34:56Z")
   workspaceId?: number | null
@@ -49,33 +103,25 @@ export interface BookingTeamsTable {
   availableBalance?: number | null
   lastactivityUserId?: number | null
 }
+export interface BookingsCurrencyConverter {
+  id: number; // bigint
+  created_at: string; // timestamp with time zone (ISO string format)
+  currency: string | null; // text
+  amount: number | null; // numeric
+}
 
-// export interface TOrganization {
-//   id: number;
-//   created_at: string;
-//   organizationName: string;
-//   organizationSlug: string;
-//   subscriptionPlan: string;
-//   subscritionStartDate: string;
-//   subscriptionEndDate: string;
-//   organizationOwner: string;
-//   organizationAlias: string;
-//   BillingAddress: string;
-//   TaxID: string;
-//   payoutAccountDetails: IPayoutAccountDetails | null;
-//   organizationOwnerId: number;
-//   organizationType: string;
-//   organizationLogo: string;
-//   favicon: string;
-//   country: string;
-//   eventPhoneNumber: string;
-//   eventWhatsApp: string;
-//   eventContactEmail: string;
-//   x: string;
-//   linkedIn: string;
-//   instagram: string;
-//   facebook: string;
-//   subDomain: string;
-//   certificateAsset: TCertificateAsset;
-//   teamMembers: TOrganizationTeamMember[];
-// }
+export interface SubscriptionBooking {
+  id: number;
+  created_at: string; // ISO timestamp format
+  userId?: number | null;
+  subscriptionType?: string | null;
+  amountPaid?: number | null;
+  startDate?: string | null; // ISO timestamp format
+  expirationDate?: string | null; // ISO timestamp format
+  discountCode?: string | null;
+  discountValue?: number | null;
+  currency?: string | null;
+  monthYear?: string | null;
+  planPrice?: number | null;
+  workspaceAlias?: string | null;
+}

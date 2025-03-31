@@ -1,10 +1,10 @@
 import { CenterModal } from '@/components/shared/CenterModal'
 import { BookingTeamsTable } from '@/types'
-import { PenBox, Send, X } from 'lucide-react'
+import { Loader2, PenBox, X } from 'lucide-react'
 import React, { useCallback, useState } from 'react'
 import CustomInput from '../ui/CustomInput'
 import { CustomSelect } from '@/components/shared/CustomSelect'
-import useUserStore from '@/store/globalUserStore'
+
 import { PostRequest } from '@/utils/api'
 import { Button } from '@/components/ui/button'
 import { toast } from 'react-toastify'
@@ -13,39 +13,39 @@ const UpdateMemberRole = ({member, setTeams}:{
     member:BookingTeamsTable, 
     setTeams: React.Dispatch<React.SetStateAction<BookingTeamsTable[]>>
 }) => {
-    // console.log({member})
+    console.log({member})
     const [formData, setFormData] = useState({
-        email: member.email || '',
-        role: member.role || '',
+      userEmail: member?.userEmail || '',
+      userRole: member?.userRole || '',
     });
     const [loading, setLoading] = useState('')
     const [errors, setErrors] = useState<Record<string, string>|null>(null);
     const [open, setOpen] = useState(false)
 
     const handleSelectChange = useCallback((value: string) => {
-    setFormData((prev) => ({ ...prev, role: value }));
-    setErrors((prev) => ({ ...prev, role: '' }));
+    setFormData((prev) => ({ ...prev, userRole: value }));
+    setErrors((prev) => ({ ...prev, userRole: '' }));
     }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors(null)
-        if (!formData.role) {
-            setErrors({ role: 'Role is required' });
+        if (!formData.userRole) {
+            setErrors({ userRole: 'Role is required' });
             return;
         }
-      if(member.role===formData.role){
+      if(member.userRole===formData.userRole){
         return 
       }
         try {
             setLoading('Updating role ...')
             const {error,data,} = await PostRequest({
-                    url:`/api/workspaces/team/updateMember?workspaceAlias=${member?.workspaceId?.workspaceAlias}&email=${member?.email}`,
+                    url:`/api/workspaces/team/updateMember?workspaceAlias=${member?.workspaceAlias?.organizationAlias}&userEmail=${member?.userEmail}`,
                     body: {
-                      role: formData.role
+                      userRole: formData.userRole
                     },
                   })
-            //   console.log({error,data,})
+              console.log({error,data,})
             if(error){
                 setErrors({general:error})
                 return
@@ -94,25 +94,26 @@ const UpdateMemberRole = ({member, setTeams}:{
             
             <CustomInput
                 label='Email'
-                name='email'
-                value={formData.email}
+                name='userEmail'
+                value={formData.userEmail}
                 onChange={(e)=>setFormData(prev => {
                     return { ...prev,
-                        email: e.target.value}
+                      userEmail: e.target.value}
                 })}
             />
 
             <div className="">
-                <label htmlFor="role" className='font-medium '>Assign role</label>
+                <label htmlFor="userRole" className='font-medium '>Assign role</label>
                 <CustomSelect
-                    name='role'
-                    error={errors?.role}
+                    name='userRole'
+                    error={errors?.userRole}
                     placeholder="Select"
-                    value={formData.role}
+                    value={formData.userRole}
                     onChange={handleSelectChange}
                     options={[
-                    { label: 'Admin', value: 'ADMIN' },
-                    { label: 'Member', value: 'MEMBER' },
+                      { label: 'Owner', value: 'owner' },
+                      { label: 'Editor', value: 'editor' },
+                      { label: 'Collaborator', value: 'collaborator' },
                     ]}
                 />
             </div>
@@ -120,7 +121,7 @@ const UpdateMemberRole = ({member, setTeams}:{
             <div className="flex flex-col items-center">
               {errors?.general && <small className='text-red-600 w-full block text-center'>{errors?.general}</small>}
               <Button type="submit" className="bg-basePrimary h-12 px-6 text-white w-full">
-                {loading ? loading : 'Chande Member Role'}
+                {loading ? <span className='flex items-center gap-2'><Loader2 size={20} className='animate-spin' />{loading}</span> : 'Chande Member Role'}
               </Button>
           </div>
 

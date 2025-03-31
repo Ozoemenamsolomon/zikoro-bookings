@@ -10,7 +10,7 @@ import { PostRequest } from '@/utils/api'
 const ContactTags = () => {
     const {contact, setContact,contacts, setContacts} = useAppointmentContext()
     const { user,currentWorkSpace } = useUserStore()
-    const workspaceId = currentWorkSpace?.workspaceAlias
+    const workspaceId = currentWorkSpace?.organizationAlias
 
     const [tags, setTags] = useState<{tag:string}[]>([])
  

@@ -1,4 +1,4 @@
-import { urls } from '@/constants'
+import { NoCalendarIcon, urls } from '@/constants'
 import Link from 'next/link'
 import React from 'react'
 import { useAppointmentContext } from "@/context/AppointmentContext";
@@ -15,7 +15,8 @@ const Empty = ({
     </div>  */}
 
     <div className="relative max-w-xl mx-auto p-6 flex flex-col text-center  items-center justify-center">
-      <h2 className="text-2xl sm:text-4xl font-bold pb-12" 
+ 
+      <h2 className="text-2xl lg:text-4xl font-bold pb-12" 
       style={{
         background: 'linear-gradient(269.83deg, #9C00FE 0.14%, #001FCB 99.85%)',
         WebkitBackgroundClip: 'text',

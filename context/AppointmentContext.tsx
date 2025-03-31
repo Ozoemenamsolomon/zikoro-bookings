@@ -5,6 +5,8 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import useUserStore from "@/store/globalUserStore";
 import { wsUrl, wsUrll } from '@/lib/wsUrl';
 import { useRouter } from 'next/navigation';
+import { DateRange } from 'react-day-picker';
+import { fetchOneTeamMember, fetchTeamMembers } from '@/lib/server/workspace';
 
 export interface AppState {
   isLoading: boolean;
@@ -37,6 +39,8 @@ export interface AppState {
   setSearchTerm:React.Dispatch<React.SetStateAction<string>>;
   activePath: string, 
   setActivePath:React.Dispatch<React.SetStateAction<string>>;
+  dateRange: DateRange|undefined, 
+  setDateRange:React.Dispatch<React.SetStateAction<DateRange|undefined>>;
   isOpen:boolean, setIsOpen:React.Dispatch<React.SetStateAction<boolean>>;
   getWsUrl: (path:string) => string
 }
@@ -66,9 +70,10 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [contacts, setContacts] = useState<BookingsContact[] | null>(null);
   const [show, setShow] = useState<string>('links')
   const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [dateRange, setDateRange] = useState<DateRange|undefined>()
 
   const { currentWorkSpace, user, setUser } = useUserStore();
-  const workspaceParam = currentWorkSpace?.workspaceAlias ? `${currentWorkSpace.workspaceAlias}` : '';
+  const workspaceParam = currentWorkSpace?.organizationAlias ? `${currentWorkSpace.organizationAlias}` : '';
   
   const getWsUrl = (path: string) =>  wsUrll(path,workspaceParam);
   
@@ -78,11 +83,21 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   //           `/onboarding?email=${user?.userEmail}&createdAt=${user?.created_at}`
   //         )
   // }, [user])
+
+  console.log('dddddd')
   
   useEffect(()=>{
-    if(user) {
-      setUser({...user!, workspaceRole: currentWorkSpace?.workspaceOwner===user?.id ? 'ADMIN':'MEMBER'})
+    const updateRole = async () => {
+      if(user) {
+        if(currentWorkSpace?.organizationOwnerId!==user?.id){
+          const {data,error} = await fetchOneTeamMember(currentWorkSpace?.organizationAlias!, user?.userEmail!)
+          setUser({...user!, workspaceRole: data?.userRole! || 'COLLABORATOR'})
+        } else {
+          setUser({...user!, workspaceRole: 'OWNER'})
+        }
+      }
     }
+    updateRole()
   },[user?.id, currentWorkSpace])
 
   const contextValue: AppointmentContextProps = {
@@ -99,6 +114,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
     isOpen, setIsOpen,
     getWsUrl,
     teamMembers, setTeamMembers,
+    dateRange, setDateRange,
   };
 
   return (

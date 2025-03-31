@@ -24,6 +24,7 @@ export interface AppointmentLink {
     teamMembers: string | null;
     zikoroBranding: string | null;
     isPaidAppointment?: boolean;
+    smsNotification?:string;
 }
 export interface AppointmentFormData {
   id?: bigint;
@@ -53,6 +54,7 @@ export interface AppointmentFormData {
   zikoroBranding: string | null | boolean;
   files?:File[] | null;
   isPaidAppointment?: boolean;
+  smsNotification?:string;
 }
 
 export interface FormProps {
@@ -75,6 +77,7 @@ export interface DetailItem {
 export interface Booking {
   id?: bigint;
   created_at?: string;
+  address?:string;
   appointmentLinkId?: any;
   participantEmail?: string;
   appointmentDate?: Date | string | null;
@@ -102,6 +105,11 @@ export interface Booking {
   appointmentNotes?: Record<string, any> | null; 
   appointmentMedia?: Record<string, any> | null; 
   workspaceId?: string;
+  checkIn?: string | null;
+  checkOut?: string | null;
+  contactId?: string;
+  meetingLink?: string;
+  // appointmentNotes?: string;
 }
 
 export interface UserType {
@@ -190,4 +198,39 @@ export interface FormattedUnavailability {
 }
 export interface UnavailabilityByDay {
   [dayString: string]: FormattedUnavailability[]; // Array of
+}
+
+export interface BookingsQuery {
+  search?: string | null,
+  status?: string | null,
+  page?: number | null,
+  type?: 'upcoming-appointments' | 'past-appointments' | null,
+  date?: string | null,
+  from?: string | null,
+  to?: string | null,
+  appointmentName?: string | null,
+  teamMember?: string | null,
+}
+
+export interface AppointmentNotes {
+  note: string,
+  title: string,
+  createdBy: any,
+  createdAt?: string,
+  updatedAt?: string,
+  contactId?: bigint|number|string,
+  media?: { url: string; type: string }[];
+}
+
+export interface BookingNote {
+  id?: bigint;
+  created_at?: string; // ISO timestamp
+  bookingId?: bigint | null;
+  title?: string | null;
+  note?: string | null;
+  createdBy?: User;
+  lastEditDate?: string | null; // ISO timestamp
+  media?: { type: string; url: string; }[] | null; // JSONB type
+  workspaceId?: string | null;
+  bookingContactId?: string | null;
 }

@@ -1,10 +1,10 @@
 "use client";
 
-import { ChevronDown, RefreshCw, SquarePen, XCircle } from "lucide-react";
-import React, { Suspense, useRef, useState } from "react";
+import { ChevronDown, Edit, RefreshCw, RotateCw, SquarePen, XCircle } from "lucide-react";
+import React, { Dispatch, SetStateAction, Suspense, useRef, useState } from "react";
 import { useGetBookings } from "@/hooks/services/appointments";
 import { format, parseISO } from "date-fns";
-import { Booking } from "@/types/appointments";
+import { Booking, BookingsQuery } from "@/types/appointments";
 import { useEffect } from "react";
 import { useClickOutside } from "@/lib/useClickOutside";
 import Empty from "../calender/Empty";
@@ -14,16 +14,22 @@ import { useAppointmentContext } from "@/context/AppointmentContext";
 import { PopoverMenu } from "../../shared/PopoverMenu";
 import Loading from "@/components/shared/Loader";
 import EmptyList from "../ui/EmptyList";
- 
+import SearchAppointment from "./SearchAppointment";
+import EditAppointment from "./EditAppointment";
+import { NoAppointmentListsIcon, RotateClockIcon, urls } from "@/constants";
+import PaginationMain from "@/components/shared/PaginationMain";
+import Link from "next/link";
 
 const BookingRow = ({
   booking,
-  showNote,
+  showNote, 
   setShowNote,
+  setGroupedBookings
 }: {
   booking: Booking;
   showNote: any;
   setShowNote: (any: any) => void;
+  setGroupedBookings: Dispatch<SetStateAction<GroupedBookings | null>>
 }) => {
   const {
     participantEmail,
@@ -38,6 +44,7 @@ const BookingRow = ({
     bookingStatus,
     appointmentType,
     id,
+    checkIn,checkOut
   } = booking;
   const dateTimeString = `${appointmentDate}T${appointmentTime}`;
   const dateTime = new Date(dateTimeString);
@@ -45,8 +52,9 @@ const BookingRow = ({
 
   const { setBookingFormData, setSelectedItem } = useAppointmentContext();
   useClickOutside(notesRef, () => setShowNote(null));
-
+  
   return (
+    <>
     <tr className="bg-white border-b relative w-full flex">
       <td className="py-4 px-4 w-3/12  ">
         <div className="flex items-center">
@@ -77,26 +85,6 @@ const BookingRow = ({
       <td className="py-2 px-4 w-3/12 flex-1 min-w-0 truncate">
         {appointmentName}
       </td>
-
-      <td className="py-2 px-4 w-1/12 ">
-        {/* <div className="flex justify-center items-center h-full"> */}
-        {notes ? (
-          <PopoverMenu
-            trigerBtn={
-              <button className=" ">
-                <SquarePen className="bg-purple-50 p-1.5 rounded-full text-blue-600" />
-              </button>
-            }
-            className="w-80 p-6"
-          >
-            {notes}
-          </PopoverMenu>
-        ) : (
-          null
-          // <button className="underline text-blue-600 text-sm">Add </button>
-        )}
-        {/* </div> */}
-      </td>
       <td
         className={`py-2 px-4 w-2/12 truncate ${
           bookingStatus === "CANCELLED"
@@ -108,7 +96,7 @@ const BookingRow = ({
       >
         {bookingStatus || "ACTIVE"}
       </td>
-      <td className="py-2 px-4 relative w-1/12">
+      <td className="py-2 px-4 relative w-2/12">
         <div className="flex space-x-2 ">
             <button
               onClick={() => {
@@ -121,7 +109,7 @@ const BookingRow = ({
               }}
               className="text-blue-500 hover:text-blue-700"
             >
-              <RefreshCw size={18} />
+              <RotateClockIcon size={22} />
             </button>
           <button
             disabled={bookingStatus === "CANCELLED"}
@@ -135,20 +123,35 @@ const BookingRow = ({
             }}
             className="text-red-500 hover:text-red-700 disabled:text-slate-300"
           >
-            <XCircle size={18} />
+            <XCircle size={21} />
           </button>
+
+           <EditAppointment booking={booking} setGroupedBookings={setGroupedBookings}/>
         </div>
       </td>
     </tr>
+
+    {(checkIn || checkOut) && (
+      <tr className="bg-gray-50 text-gray-700">
+        <td colSpan={5} className="py-2 px-4 text-center text-sm flex gap-5 justify-center w-full">
+          <span>{checkIn ? `Check-in: ${format(checkIn,'hh : mm a')}` : "Check-in: N/A"}</span>
+          <span>{checkOut ? `Check-out: ${format(checkOut, 'hh : mm a')}` : "Check-out: N/A"}</span>
+        </td>
+      </tr>
+    )}
+  </>
   );
 };
 
 const BookingTable = ({
   date,
   bookings,
+  setGroupedBookings
 }: {
   date: string;
   bookings: Booking[];
+  setGroupedBookings: Dispatch<SetStateAction<GroupedBookings | null>>
+
 }) => {
   const formattedDate = format(parseISO(date), "EEEE, d MMMM, yyyy");
   const [showNote, setShowNote] = useState<any>(null);
@@ -176,16 +179,10 @@ const BookingTable = ({
               <th className="py-3 px-4 text-left text-sm font-medium w-3/12">
                 Appointment Name
               </th>
-              {/* <th className="py-3 px-4 text-left text-sm font-medium">
-                Appointment Type
-              </th> */}
-              <th className="py-3 px-4 text-left text-sm font-medium w-1/12">
-                Notes
-              </th>
               <th className="py-3 px-4 text-left text-sm font-medium w-2/12">
                 Status
               </th>
-              <th className="py-3 px-4 text-left text-sm font-medium w-1/12"></th>
+              <th className="py-3 px-4 text-left text-sm font-medium w-2/12"></th>
             </tr>
           </thead>
           <tbody>
@@ -195,6 +192,7 @@ const BookingTable = ({
                 booking={booking}
                 showNote={showNote}
                 setShowNote={setShowNote}
+                setGroupedBookings={setGroupedBookings}
               />
             ))}
           </tbody>
@@ -206,12 +204,14 @@ const BookingTable = ({
 
 const GroupedBookingSections = ({
   groupedBookings,
+  setGroupedBookings
 }: {
   groupedBookings: GroupedBookings;
+  setGroupedBookings: Dispatch<SetStateAction<GroupedBookings | null>>
 }) => (
   <div className="space-y-6 ">
     {Object.entries(groupedBookings).map(([date, bookings]) => (
-      <BookingTable key={date} date={date} bookings={bookings} />
+      <BookingTable key={date} date={date} bookings={bookings} setGroupedBookings={setGroupedBookings} />
     ))}
   </div>
 );
@@ -220,20 +220,23 @@ const Appointments = ({
   groupedBookingData,
   fetchedcount,
   fetchError,
-  dateHash,
+  searchQuery,
 }: {
   groupedBookingData: GroupedBookings | null;
   fetchError: string | null;
   fetchedcount: number;
-  dateHash?: string;
+  searchQuery: BookingsQuery;
 }) => {
-  const { groupedBookings, count, error, isLoading, getBookings } =
+  const { getWsUrl, setDateRange} = useAppointmentContext() 
+  
+  const { groupedBookings,setGroupedBookings, count, error, isLoading, getBookings, filterBookings, setQueryParams, queryParams,currentPage,totalPages,handlePageChange, setCurrentPage} =
     useGetBookings({
       groupedBookingData,
       fetchedcount,
       fetchError,
+      searchQuery,
     });
-   
+  //  console.log({groupedBookings, groupedBookingData, fetchedcount})
   const [drop, setDrop] = useState(false);
   const [filter, setFilter] = useState("upcoming");
   const dropRef = useRef(null);
@@ -241,22 +244,24 @@ const Appointments = ({
   useClickOutside(dropRef, () => setDrop(false));
 
   const fetchBookings = () => {
-    console.log({filter})
+    setDateRange(undefined)
     if (filter === "upcoming") {
-      getBookings("upcoming-appointments");
+      filterBookings({type:"upcoming-appointments"})
+      // getBookings("upcoming-appointments");
     } else {
-      getBookings("past-appointments");
+      filterBookings({type:"past-appointments"})
+      // getBookings("past-appointments");
     }
   };
 
   useEffect(() => {
-    if (dateHash) {
-      const element = document.getElementById(dateHash);
+    if (searchQuery?.date) {
+      const element = document.getElementById(searchQuery?.date);
       if (element) {
         element.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
-  }, [dateHash]);
+  }, [searchQuery?.date]);
 
   const refresh = () => {
     fetchBookings();
@@ -266,19 +271,21 @@ const Appointments = ({
     if (filter === view) return;
     setFilter(view);
     if (view === "upcoming") {
-      getBookings("upcoming-appointments");
+      filterBookings({type:"upcoming-appointments"})
     } else {
-      getBookings("past-appointments");
+      filterBookings({type:"past-appointments"})
     }
   };
 
-  // useEffect(() => {
-  //   if (!user?.referralCode) {
-  //     router.push(
-  //       `/onboarding?email=${user?.userEmail}&createdAt=${user?.created_at}`
-  //     );
-  //   }
-  // }, []);
+  if(!count){
+    return <EmptyList
+    icon={<NoAppointmentListsIcon/>}
+    heading='No Appointments Yet!'
+    text='Your upcoming appointments will appear here once clients start booking with you.'
+    CTA={<Link href={getWsUrl(urls.schedule)} className='py-3 px-6 font-semibold text-white rounded-md bg-basePrimary' >Share Your Booking Link</Link>}
+    className='lg:h-[40em] '
+  />
+  }
 
   return (
     <>
@@ -299,9 +306,9 @@ const Appointments = ({
           <div className="">
             <button
               onClick={refresh}
-              className="p-1.5 rounded-md bg-slate-200 text-slate-700 hover:shadow duration-200"
+              className="p-2 border border-slate-300 bg-white rounded-full text-zikoroBlue hover:shadow duration-200"
             >
-              <RefreshCw size={20} />
+              <RotateCw  size={20} />
             </button>
           </div>
 
@@ -359,6 +366,8 @@ const Appointments = ({
         </div>
       </header>
 
+      <SearchAppointment filterBookings={filterBookings} queryParams={queryParams} filter={filter} setQueryParams={setQueryParams} setCurrentPage={setCurrentPage}/>
+
       <Suspense
         fallback={
           <div className="h-screen w-full flex justify-center items-center">
@@ -366,8 +375,9 @@ const Appointments = ({
           </div>
         }
       >
-        {isLoading ? (
-          <div className="h-screen w-full flex justify-center items-center">
+        {
+          isLoading ? (
+          <div className="h-60 w-full flex justify-center items-center">
             <Loading size={40} />
           </div>
         ) : error ? (
@@ -378,10 +388,15 @@ const Appointments = ({
             text={`You don't have any booked appointment.`}
           />
         ) : groupedBookings && !Object.keys(groupedBookings!)?.length ? (
-          <EmptyList className="h-screen" text={`No appointments available`} />
+          <EmptyList className=" " 
+            text={getEmptyListMessage(queryParams)} 
+            />
         ) : (
           groupedBookings && (
-            <GroupedBookingSections groupedBookings={groupedBookings} />
+            <>
+            <GroupedBookingSections groupedBookings={groupedBookings} setGroupedBookings={setGroupedBookings} />
+            <PaginationMain currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+            </>
           )
         )}
       </Suspense>
@@ -390,3 +405,19 @@ const Appointments = ({
 };
 
 export default Appointments;
+
+
+const getEmptyListMessage = (searchParams: BookingsQuery) => {
+  const { search, status, type, date, from, to, appointmentName, teamMember } = searchParams;
+  
+  if (search) return "🔍 No results found for your search.";
+  if (status) return `🚦 No bookings found for "${status}".`;
+  if (type==='upcoming-appointments') return "📅 No upcoming appointments found.";
+  if (type==='past-appointments') return "📅 No past appointments found.";
+  if (date) return `📆 No bookings available for this date. \n ${format(new Date(date),'dd MMMM yyyy')}`;
+  if (from&&to) return `🗓️ No appointments scheduled between \n${format(new Date(from), 'dd MMMM yyyy')} and ${format(new Date(to), 'dd MMMM yyyy')}.`;
+  if (appointmentName) return `🔖 No appointments match the name, ${appointmentName}.`;
+  if (teamMember) return `👥 No bookings found for this team member, ${teamMember}.`;
+
+  return "📄 No appointments available.";
+};

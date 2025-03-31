@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AppointmentFormData, FormProps } from '@/types/appointments';
-import { SelectInput } from '../ui/CustomSelect';
-import CustomInput from '../ui/CustomInput';
-import { ReactSelect } from '@/components/shared/ReactSelect';
+ 
 import { CustomSelect } from '@/components/shared/CustomSelect';
 import { useAppointmentContext } from '@/context/AppointmentContext';
+import { fetchActiveTeamMembers, fetchTeamMembers } from '@/lib/server/workspace';
+import useUserStore from '@/store/globalUserStore';
+import { BookingTeamMember } from '@/types';
 
 const Generalsettings: React.FC<FormProps> = ({
   formData,
@@ -12,36 +13,50 @@ const Generalsettings: React.FC<FormProps> = ({
   setErrors,
   errors,
 }) => {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState(false);
-  const {teamMembers} = useAppointmentContext()
+  const {user, currentWorkSpace} = useUserStore()
+  const [teamMembers,setTeamMembers] = useState<{label:string,value:string}[]>([])
 
-  // const addTeamMember = (value) => {
-  //   const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   if (email.length > 0 && pattern.test(email)) {
-  //     const newTeamMembers = formData?.teamMembers
-  //       ? `${formData.teamMembers}, ${email}`
-  //       : email;
-  //       setFormData && setFormData((prev:AppointmentFormData)=>{
-  //         return {...prev,
-  //           teamMembers: newTeamMembers,}
-  //         });
-  //     setEmail('');
-  //     setError(false);
-  //   } else {
-  //     setError(true);
-  //   }
-  // };
-  const addTeamMember = (value:string) => {
-    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const newTeamMembers = formData?.teamMembers
-        ? `${formData.teamMembers}, ${value}`
-        : value;
-        setFormData && setFormData((prev:AppointmentFormData)=>{
-          return {...prev,
-            teamMembers: newTeamMembers,}
-          });
+  useEffect(() => {
+    const fetchTeamMembers = async () => {
+      if (!currentWorkSpace?.organizationAlias) return; // Avoid unnecessary calls
+  
+      const { data, error } = await fetchActiveTeamMembers(currentWorkSpace.organizationAlias);
+      
+      if (error) {
+        console.error("Error fetching team members:", error);
+        return;
+      }
+  
+      const teams = data
+        ?.filter((team: BookingTeamMember) => user?.id !== team.userId?.id) // Ensure user is not included
+        .map((team: BookingTeamMember) => ({
+          label: `${team.userId?.firstName} ${team.userId?.lastName}`,
+          value: team.userEmail || "",
+        }));
+  
+      setTeamMembers(teams || []); // Ensure fallback empty array to avoid crashes
+    };
+  
+    fetchTeamMembers();
+  }, [currentWorkSpace?.organizationAlias,])
+  
+  const addTeamMember = (value: string) => {
+  
+    // Ensure formData.teamMembers is an array
+    const existingMembers = formData?.teamMembers ? formData.teamMembers.split(", ") : [];
+  
+    // Prevent duplicate selections
+    if (existingMembers.includes(value)) return;
+  
+    const newTeamMembers = [...existingMembers, value].join(", ");
+  
+    setFormData &&
+      setFormData((prev: AppointmentFormData) => ({
+        ...prev,
+        teamMembers: newTeamMembers,
+      }));
   };
+  
 
   const removeEmail = (selected: string) => {
     const newTeamList = formData?.teamMembers
@@ -56,14 +71,40 @@ const Generalsettings: React.FC<FormProps> = ({
 
   };
 
-  const handleSelect = (value:any,name?:string)=> {
-    setFormData&&setFormData((prev)=>{
-      return {
+  const handleSelect = (value: any, name?: string) => {
+    setFormData &&
+      setFormData((prev) => ({
         ...prev,
-        [name!]:Number(value)
-      }
-    })
-  }
+        [name!]: isNaN(Number(value)) ? value : Number(value),
+      }));
+  };
+
+  const sendSmsApi = async () => {
+    if (!setFormData) return null; 
+  
+    setFormData((prev) => ({
+      ...prev,
+      smsNotification: prev?.smsNotification?.length > 0 ? "" : "PENDING",
+    }));
+  };
+
+       // const res = await fetch("/api/sms/sendSms", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     recipients: "2348032787601",
+      //     message: "Hello from Next.js!",
+      //   }),
+      // });
+    
+      // const data = await res.json();
+      // console.log(data);
+
+  
+  
+  // console.log({formData })
   return (
     <div className="space-y-4">
       <div className="">
@@ -77,6 +118,7 @@ const Generalsettings: React.FC<FormProps> = ({
           error={errors?.teamMembers}
           onChange={addTeamMember}
           placeholder="Select team member"
+          noOptionsLabel='No team members have been added to this workspace'
           className="w-full h-12"
           setError={setErrors}
         />
@@ -136,7 +178,12 @@ const Generalsettings: React.FC<FormProps> = ({
         />
       </div>
 
-      
+      <div className="space-y-2 flex flex-col items-center w-full" onClick={sendSmsApi}>
+        <button type="button" className='py-2 w-full text-center border border-basePrimary rounded-lg'>
+          Send SMS reminder to attendee {"  "} <span>{formData?.smsNotification ? "✅" : null}</span>
+        </button>
+        <small>This attracts extra charges</small>
+      </div>    
     </div>
   );
 };

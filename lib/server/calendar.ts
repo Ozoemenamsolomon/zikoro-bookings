@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server"
 import { getUserData } from ".";
 import { AppointmentUnavailability, Booking, FormattedUnavailability, UnavailabilityByDay } from "@/types/appointments";
 import { subMonths, addMonths, isValid, startOfWeek, endOfWeek, format } from 'date-fns';
+import { createADMINClient } from "@/utils/supabase/no-caching";
 
 interface FetchBookingsResult {
   data:Booking[] | null, 
@@ -13,14 +14,7 @@ export const fetchCalendar = async (
  {view, userId}: {view?:string, userId?:string} 
 ): Promise<FetchBookingsResult> => {
     const supabase = createClient()
-
-    // let id;
-    // if(userId){
-    //   id = userId
-    // } else {
-    //   const {user} = await getUserData()
-    //   id = user?.id
-    // }
+ 
     try {
       const { data, error, count } = await supabase
       .from('bookings')
@@ -108,7 +102,7 @@ export async function fetchCalendarData(workspaceId:string, date: Date | string,
   ? `${format(startOfWeek(formattedDate), 'MMM d')} - ${format(endOfWeek(formattedDate), 'd, yyyy')}` 
   : format(formattedDate, 'MMMM yyyy');
 
-  const supabase = createClient()
+  const supabase = createADMINClient()
 
   // fetching data (count) for a specifice period out of all data (table count), eg: 23 out of 78
     try {
@@ -118,12 +112,12 @@ export async function fetchCalendarData(workspaceId:string, date: Date | string,
       .eq('workspaceId', workspaceId)
       .gte('appointmentDate', startRangeDate.toISOString().split('T')[0])
       .lte('appointmentDate', endRangeDate.toISOString().split('T')[0]);
-    // console.log({ data, error })
+    
     const {count } = await supabase
       .from('bookings') 
       .select('*', { count: 'exact' } )
       .eq('workspaceId', workspaceId)
-  
+      // console.log({ data, error, count })
   // Error handling
   if (error) {
     console.error(`Error fetching appointments from ${startRangeDate} to ${endRangeDate}:`, error);

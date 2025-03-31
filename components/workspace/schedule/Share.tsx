@@ -2,7 +2,7 @@ import { EmailIcon, FacebookIcon, ShareIcon, TwitterIcon, WhatsappIcon } from '@
 import { AppointmentLink } from '@/types/appointments';
 import { Code, Copy, XCircle } from 'lucide-react';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import EmbedLink from './EmbedLink';
 import CopyLinkButton from '../ui/CopyLinkButton';
 import { CenterModal } from '@/components/shared/CenterModal';
@@ -15,26 +15,34 @@ interface ShareProps {
 
 const Share: React.FC<ShareProps> = ({data,     }) => {
   const [embed, setEmbed] = useState(false)
+
+  
+  const [link, setLink] = useState('')
+  useEffect(() => {
+    const url = window.location.origin
+    setLink(`${url}/book-appointment/${data?.appointmentAlias}`)
+  }, [])
+      
   const list = [
     {
       icon: <WhatsappIcon />,
       label: 'Whatsapp',
-      link: `https://api.whatsapp.com/send?text=https://zikoro.com/booking/${data?.appointmentAlias}`,
+      link: `https://api.whatsapp.com/send?text=${link}`,
     },
     {
       icon: <TwitterIcon />,
       label: 'X',
-      link: `https://x.com/intent/tweet?url=https://zikoro.com/booking/${data?.appointmentAlias}`,
+      link: `https://x.com/intent/tweet?url=${link}`,
     },
     {
       icon: <FacebookIcon />,
       label: 'Facebook',
-      link: `https://www.facebook.com/sharer/sharer.php?u=https://zikoro.com/booking/${data?.appointmentAlias}`,
+      link: `https://www.facebook.com/sharer/sharer.php?u=${link}`,
     },
     {
       icon: <EmailIcon />,
       label: 'Email',
-      link: `mailto:?subject=Check%20this%20out&body=https://zikoro.com/booking/${data?.appointmentAlias}`,
+      link: `mailto:?subject=Check%20this%20out&body=${link}`,
     },
     {
       icon: <Code />,
@@ -45,6 +53,7 @@ const Share: React.FC<ShareProps> = ({data,     }) => {
       label: 'Copy Link',
     },
   ];
+
 
   return (
     <CenterModal
@@ -74,7 +83,7 @@ const Share: React.FC<ShareProps> = ({data,     }) => {
               )}
               if(label==='Copy Link') {
                 return (
-                  <CopyLinkButton key={idx} link={`https://zikoro.com/booking/${data?.appointmentAlias}`}>
+                  <CopyLinkButton key={idx} link={`${link}`}>
                     <div key={idx}
                     className="bg-[#F2F2F2] w-full py-6 px-4 flex justify-center items-center flex-col gap-4 shadow-md hover:shadow-xl cursor-pointer rounded-md  "
                     >

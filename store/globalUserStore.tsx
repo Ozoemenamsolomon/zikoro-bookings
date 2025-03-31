@@ -1,17 +1,20 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { TUser } from "@/types/user";
-import { BookingWorkSpace } from "@/types";
+import { BookingsCurrencyConverter, Organization } from "@/types";
 import { User } from "@/types/appointments";
+import { fetchCurrencies } from "@/lib/server/workspace";
 interface UserState {
   user: User | null;
   setUser: (user: User | null) => void;
 
-  workspaces: BookingWorkSpace[];
-  setWorkSpaces: (workspaces: BookingWorkSpace[]) => void;
+  workspaces: Organization[];
+  setWorkSpaces: (workspaces: Organization[]) => void;
 
-  currentWorkSpace: BookingWorkSpace | null;
-  setCurrentWorkSpace: (workspace: BookingWorkSpace | null) => void;
+  currentWorkSpace: Organization | null;
+  setCurrentWorkSpace: (workspace: Organization | null) => void;
+
+  // currencies: BookingsCurrencyConverter[];
+  // setCurrencies: (workspace: BookingsCurrencyConverter[]) => void;
 }
 
 // Zustand store
@@ -22,10 +25,13 @@ const useUserStore = create<UserState>()(
       setUser: (user: User | null) => set({ user }),
 
       workspaces: [],
-      setWorkSpaces: (workspaces: BookingWorkSpace[]) => set({ workspaces }),
+      setWorkSpaces: (workspaces: Organization[]) => set({ workspaces }),
 
       currentWorkSpace: null,
-      setCurrentWorkSpace: (workspace: BookingWorkSpace | null) => set({ currentWorkSpace: workspace }),
+      setCurrentWorkSpace: (workspace: Organization | null) => set({ currentWorkSpace: workspace }),
+
+      // currencies: [],
+      // setCurrencies: (currencies: BookingsCurrencyConverter[]) => set({ currencies }),
     }),
     {
       name: "user-store",
@@ -33,14 +39,15 @@ const useUserStore = create<UserState>()(
     }
   )
 );
+
 export default useUserStore
 
 // Outside Zustand: Async Logic
 export async function initializeWorkspaces(
   user: User | null,
-  assignedWkspace?: BookingWorkSpace | null,
+  assignedWkspace?: Organization | null,
   isSignup?: boolean
-): Promise<BookingWorkSpace | null> {
+): Promise<Organization | null> {
   const { setUser, setWorkSpaces, setCurrentWorkSpace, currentWorkSpace } = useUserStore.getState();
   // initializing user only during onboarding. Here workspaces and currentpworkspace are setup doing onboarding process
   setUser(user);
@@ -66,7 +73,7 @@ export async function initializeWorkspaces(
       } else if (currentWorkSpace) {
         // confirm the workspace from the session still exist in 
         const exists = data.find(
-          (ws: BookingWorkSpace) => ws.workspaceOwner === currentWorkSpace.workspaceOwner
+          (ws: Organization) => ws.organizationOwnerId === currentWorkSpace.organizationOwnerId
         );
         setCurrentWorkSpace(exists || data[0] || null);
         return exists || data[0] || null;
@@ -85,3 +92,5 @@ export async function initializeWorkspaces(
 
   return null;
 }
+
+ 

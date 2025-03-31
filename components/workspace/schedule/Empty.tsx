@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import React from 'react'
 import LinksCard from './LinksCard'
-import { urls } from '@/constants'
+import { NoScheduleIcon, urls } from '@/constants'
 import { useAppointmentContext } from '@/context/AppointmentContext'
+import EmptyList from '../ui/EmptyList'
 //  You haven't created any schedule. Your schedule will appear here. Start creating
 const Empty = () => {
   const {getWsUrl} = useAppointmentContext()
@@ -39,8 +40,15 @@ const Empty = () => {
         </section>
 
         <div className="absolute inset-0 "></div>
+        <EmptyList
+          icon={<NoScheduleIcon/>}
+          heading='Ready to book your time like a pro?'
+          text='You haven’t set up any schedules yet. Create one to let your clients easily book time with you.'
+          CTA={<Link href={getWsUrl(urls.create)} className='py-3 px-6 font-semibold text-white rounded-md bg-basePrimary' >Create Your First Schedule</Link>}
+          className='lg:h-[40em] relative '
+        />
 
-    <div className="relative  max-w-xl mx-auto p-6 flex flex-col text-center  items-center justify-center">
+    {/* <div className="relative  max-w-xl mx-auto p-6 flex flex-col text-center  items-center justify-center">
       <h2 className="text-4xl font-bold pb-12" 
       style={{
         background: 'linear-gradient(269.83deg, #9C00FE 0.14%, #001FCB 99.85%)',
@@ -52,7 +60,7 @@ const Empty = () => {
       <p className='pb-4 font-semibold'>Your schedule will appear here</p>
 
       <Link href={getWsUrl(urls.create)} className='py-3 px-6 font-semibold text-white rounded-md bg-basePrimary' >Start creating</Link>
-    </div>
+    </div> */}
         
     </section>
   )
