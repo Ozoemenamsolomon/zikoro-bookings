@@ -29,17 +29,8 @@ const initialFormData: OrganizationInput = {
 const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh }: { workSpaceData?: Organization, button?: React.ReactNode, redirectTo?:string, onClose?:(k:boolean)=>void, isRefresh?:boolean}) => {
   const {user, setUser, setWorkSpaces, setCurrentWorkSpace, currentWorkSpace, workspaces } = useUserStore();
   const {push} = useRouter()
-  const [currencies, setCurrencies] = useState<BookingsCurrencyConverter[]>([])
-  console.log('dddddd')
 
-  // useEffect(() => {
-  //   const fetching = async() => {
-  //     const {data} = await fetchCurrencies()
-  //     console.log({data,errors})
-  //     setCurrencies(data)
-  //   }
-  //   fetching()
-  // }, [])
+
   
   const [formData, setFormData] = useState<OrganizationInput>({
     ...initialFormData,
@@ -207,6 +198,18 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
 };
 
+const chamferedEdge = {
+  width: "120px",
+  height: "40px",
+  // background: "blue",
+  color: "white",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontWeight: "bold",
+  clipPath: "polygon(15% 0%, 100% 0%, 100% 100%, 15% 100%, 0% 50%)"
+};
+
   const [drop, setDrop] = useState(false)
   return (
     <CenterModal
@@ -230,14 +233,19 @@ const handleSubmit = async (e: React.FormEvent) => {
           <div className=" sm:max-h-[90vh] sm:gap-8  px-6 py-10 justify-between flex flex-col h-full">
             <div className="space-y-1">
             <button onClick={()=>setDrop(curr=>!curr)} type='button' className='sm:hidden'><ChevronDown size={20} className={`${drop?'rotate-180':'rotate-0'} duration-300 transition-all transform`}/></button>
-              <div className="flex gap-2 items-center">
-                <p className="font-semibold">Monthly</p>
-                <Toggler options={['Monthly', 'Yearly']} />
-                <div className="flex items-center gap-1">
-                  <p className="font-semibold">Yearly</p>
-                  <small className="bg-zikoroBlue px-3 h-8 flex items-center text-white">save up to 15%</small>
+            <div className="flex gap-2 items-center">
+            <p className="font-semibold">Monthly</p>
+            <Toggler options={['Monthly', 'Yearly']} />
+            <div className="flex items-center gap-1">
+              <p className="font-semibold">Yearly</p>
+
+              {/* Pointed Shape */}
+                <div style={chamferedEdge} className='text-xs bg-zikoroBlue pl-3'>
+                  Save up to 15%
                 </div>
-              </div>
+            </div>
+          </div>
+
 
               {/* Plan Details */}
               <div className="space-y-3 ">

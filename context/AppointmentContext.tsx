@@ -83,6 +83,8 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   //           `/onboarding?email=${user?.userEmail}&createdAt=${user?.created_at}`
   //         )
   // }, [user])
+
+  console.log('dddddd')
   
   useEffect(()=>{
     const updateRole = async () => {

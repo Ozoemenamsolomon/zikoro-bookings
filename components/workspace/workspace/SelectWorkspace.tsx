@@ -2,11 +2,13 @@
 
 import { PopoverMenu } from '@/components/shared/PopoverMenu';
 import { ChevronDown, SquarePen } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CreateWorkSpace from './CreateWorkSpace';
 import useUserStore from '@/store/globalUserStore';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { fetchCurrencies } from '@/lib/server/workspace';
+import { BookingsCurrencyConverter } from '@/types';
 // import { getWorkspacePath } from '@/utils/urlHelpers';
 
 
@@ -17,10 +19,11 @@ export const getWorkspacePath = (workspaceAlias: string, path: string = '') => {
 
 
 const SelectWorkspace = () => {
-  const { user, currentWorkSpace, workspaces, setCurrentWorkSpace } = useUserStore();
+  const { user, currentWorkSpace,  workspaces, setCurrentWorkSpace } = useUserStore();
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [currencies, setCurrencies] = useState<BookingsCurrencyConverter[]>([])
 
   /** Handle Workspace Selection */
   const handleWorkspaceChange = (wsAlias: string) => {
@@ -28,6 +31,17 @@ const SelectWorkspace = () => {
     router.push(getWorkspacePath(wsAlias, pathname.split('/').slice(3).join('/')));
     setIsOpen(false)
   };
+
+    console.log('dddddd')
+  
+    useEffect(() => {
+      const fetching = async() => {
+        const {data} = await fetchCurrencies()
+        console.log({data})
+        setCurrencies(data)
+      }
+      fetching()
+    }, [])
 
   return (
     <PopoverMenu
@@ -82,4 +96,4 @@ const SelectWorkspace = () => {
   );
 };
 
-export default SelectWorkspace;
+export default React.memo(SelectWorkspace);

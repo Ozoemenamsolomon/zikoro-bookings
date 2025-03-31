@@ -117,7 +117,7 @@ export async function fetchCalendarData(workspaceId:string, date: Date | string,
       .from('bookings') 
       .select('*', { count: 'exact' } )
       .eq('workspaceId', workspaceId)
-      console.log({ data, error, count })
+      // console.log({ data, error, count })
   // Error handling
   if (error) {
     console.error(`Error fetching appointments from ${startRangeDate} to ${endRangeDate}:`, error);
