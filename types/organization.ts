@@ -93,7 +93,7 @@ export interface BookingTeamsTable {
   userEmail?: string | null; // Optional text field
 }
 
- export interface CredentialTokenBalance {
+ export interface BookenTokenBalance {
   id: number
   created_at: string // ISO timestamp (e.g., "2024-06-27T12:34:56Z")
   workspaceId?: number | null
@@ -102,4 +102,26 @@ export interface BookingTeamsTable {
   lastactivityQty?: number | null
   availableBalance?: number | null
   lastactivityUserId?: number | null
+}
+export interface BookingsCurrencyConverter {
+  id: number; // bigint
+  created_at: string; // timestamp with time zone (ISO string format)
+  currency: string | null; // text
+  amount: number | null; // numeric
+}
+
+export interface SubscriptionBooking {
+  id: number;
+  created_at: string; // ISO timestamp format
+  userId?: number | null;
+  subscriptionType?: string | null;
+  amountPaid?: number | null;
+  startDate?: string | null; // ISO timestamp format
+  expirationDate?: string | null; // ISO timestamp format
+  discountCode?: string | null;
+  discountValue?: number | null;
+  currency?: string | null;
+  monthYear?: string | null;
+  planPrice?: number | null;
+  workspaceAlias?: string | null;
 }

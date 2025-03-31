@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { TUser } from "@/types/user";
-import { Organization } from "@/types";
+import { BookingsCurrencyConverter, Organization } from "@/types";
 import { User } from "@/types/appointments";
+import { fetchCurrencies } from "@/lib/server/workspace";
 interface UserState {
   user: User | null;
   setUser: (user: User | null) => void;
@@ -12,6 +12,9 @@ interface UserState {
 
   currentWorkSpace: Organization | null;
   setCurrentWorkSpace: (workspace: Organization | null) => void;
+
+  // currencies: BookingsCurrencyConverter[];
+  // setCurrencies: (workspace: BookingsCurrencyConverter[]) => void;
 }
 
 // Zustand store
@@ -26,6 +29,9 @@ const useUserStore = create<UserState>()(
 
       currentWorkSpace: null,
       setCurrentWorkSpace: (workspace: Organization | null) => set({ currentWorkSpace: workspace }),
+
+      // currencies: [],
+      // setCurrencies: (currencies: BookingsCurrencyConverter[]) => set({ currencies }),
     }),
     {
       name: "user-store",
@@ -86,3 +92,5 @@ export async function initializeWorkspaces(
 
   return null;
 }
+
+ 

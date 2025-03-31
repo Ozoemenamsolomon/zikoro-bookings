@@ -3,7 +3,7 @@ import { ArrowLeft, Check, ChevronDown, Plus, PlusCircle } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Toggler } from '../ui/SwitchToggler';
 import CustomInput from '../ui/CustomInput';
-import { Organization, OrganizationInput } from '@/types';
+import { BookingsCurrencyConverter, Organization, OrganizationInput } from '@/types';
 import useUserStore from '@/store/globalUserStore';
 import { FileUploader, handleFileUpload } from '@/components/shared/Fileuploader';
 import { CustomSelect } from '@/components/shared/CustomSelect';
@@ -12,6 +12,7 @@ import { PostRequest } from '@/utils/api';
 import { toast } from 'react-toastify';
 import { generateSlugg } from '@/lib/generateSlug';
 import { useRouter } from 'next/navigation';
+import { fetchCurrencies } from '@/lib/server/workspace';
 
 const initialFormData: OrganizationInput = {
   organizationName: '',
@@ -28,7 +29,18 @@ const initialFormData: OrganizationInput = {
 const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh }: { workSpaceData?: Organization, button?: React.ReactNode, redirectTo?:string, onClose?:(k:boolean)=>void, isRefresh?:boolean}) => {
   const {user, setUser, setWorkSpaces, setCurrentWorkSpace, currentWorkSpace, workspaces } = useUserStore();
   const {push} = useRouter()
+  const [currencies, setCurrencies] = useState<BookingsCurrencyConverter[]>([])
+  console.log('dddddd')
 
+  // useEffect(() => {
+  //   const fetching = async() => {
+  //     const {data} = await fetchCurrencies()
+  //     console.log({data,errors})
+  //     setCurrencies(data)
+  //   }
+  //   fetching()
+  // }, [])
+  
   const [formData, setFormData] = useState<OrganizationInput>({
     ...initialFormData,
     organizationOwnerId: user?.id!,
@@ -218,14 +230,14 @@ const handleSubmit = async (e: React.FormEvent) => {
           <div className=" sm:max-h-[90vh] sm:gap-8  px-6 py-10 justify-between flex flex-col h-full">
             <div className="space-y-1">
             <button onClick={()=>setDrop(curr=>!curr)} type='button' className='sm:hidden'><ChevronDown size={20} className={`${drop?'rotate-180':'rotate-0'} duration-300 transition-all transform`}/></button>
-              {/* <div className="flex gap-2 items-center">
+              <div className="flex gap-2 items-center">
                 <p className="font-semibold">Monthly</p>
                 <Toggler options={['Monthly', 'Yearly']} />
                 <div className="flex items-center gap-1">
                   <p className="font-semibold">Yearly</p>
                   <small className="bg-zikoroBlue px-3 h-8 flex items-center text-white">save up to 15%</small>
                 </div>
-              </div> */}
+              </div>
 
               {/* Plan Details */}
               <div className="space-y-3 ">
