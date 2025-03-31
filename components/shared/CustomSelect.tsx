@@ -23,6 +23,7 @@ interface OptionGroup {
 interface CustomSelectProps {
   label?: string;
   className?: string;
+  contentStyle?: string;
   error?: string;
   value?: string;
   name?: string;
@@ -43,7 +44,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   isRequired = false, // Default to false for non-compulsory
   onChange,
   value,
-  name,className,setError,
+  name,className,setError,contentStyle,
 }) => {
   const isGrouped =
     Array.isArray(options) &&
@@ -118,7 +119,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
               : placeholder}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent className="max-h-60 overflow-y-auto">
+        <SelectContent className={cn("max-h-60 overflow-y-auto", contentStyle)}>
           {/* Render Actual Options */}
           {renderOptions()}
         </SelectContent>

@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import { generateSlugg } from '@/lib/generateSlug';
 import { useRouter } from 'next/navigation';
 import { fetchCurrencies } from '@/lib/server/workspace';
+import CurrencySelection from './CurrencySelection';
 
 const initialFormData: OrganizationInput = {
   organizationName: '',
@@ -24,13 +25,13 @@ const initialFormData: OrganizationInput = {
   organizationOwnerId:'',
   organizationType:'',
   country:'',
+  selectedCurrency: ''
+ 
 };
 
-const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh }: { workSpaceData?: Organization, button?: React.ReactNode, redirectTo?:string, onClose?:(k:boolean)=>void, isRefresh?:boolean}) => {
-  const {user, setUser, setWorkSpaces, setCurrentWorkSpace, currentWorkSpace, workspaces } = useUserStore();
+const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh, currencies }: { workSpaceData?: Organization, button?: React.ReactNode, redirectTo?:string, onClose?:(k:boolean)=>void, isRefresh?:boolean, currencies:{label:string,value:string}[]}) => {
+  const {user, setUser, setWorkSpaces, setCurrentWorkSpace, currentWorkSpace, workspaces ,  } = useUserStore();
   const {push} = useRouter()
-
-
   
   const [formData, setFormData] = useState<OrganizationInput>({
     ...initialFormData,
@@ -61,6 +62,7 @@ const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh }: { workSp
           subscriptionPlan:workSpaceData?.subscriptionPlan,
           subscriptionEndDate: workSpaceData?.subscriptionEndDate,
           subscritionStartDate:workSpaceData?.subscritionStartDate, 
+          selectedCurrency: 'NGN'
         }
        });
       if (workSpaceData?.organizationLogo) {
@@ -226,24 +228,35 @@ const chamferedEdge = {
           <p className="text-sm">Workspace</p>
         </button>
       }
+      
     >
-      <form onSubmit={handleSubmit} className="grid sm:grid-cols-5 overflow-auto hide-scrollbar sm:max-h-[90vh] sm:max-w-7xl w-full h-screen sm:h-full ">
+      <form onSubmit={handleSubmit} className="grid sm:grid-cols-5 overflow-auto hide-scrollbar sm:max-h-[90vh] sm:max-w-7xl w-full h-screen sm:h-full text-base ">
+       
         {/* Sidebar Section */}
-        <div className="h-full w-full sm:col-span-2 bg-gray-200">
-          <div className=" sm:max-h-[90vh] sm:gap-8  px-6 py-10 justify-between flex flex-col h-full">
-            <div className="space-y-1">
-            <button onClick={()=>setDrop(curr=>!curr)} type='button' className='sm:hidden'><ChevronDown size={20} className={`${drop?'rotate-180':'rotate-0'} duration-300 transition-all transform`}/></button>
-            <div className="flex gap-2 items-center">
-            <p className="font-semibold">Monthly</p>
-            <Toggler options={['Monthly', 'Yearly']} />
-            <div className="flex items-center gap-1">
-              <p className="font-semibold">Yearly</p>
+        <div className="h-full w-full sm:col-span-2 bg-slate-200">
+          <div className=" sm:max-h-[90vh] sm:gap-10  px-6  py-10 justify-between flex flex-col h-full">
+            <div className="space-y-6">
+              <button onClick={()=>setDrop(curr=>!curr)} type='button' className='sm:hidden'>
+                <ChevronDown size={20} className={`${drop?'rotate-180':'rotate-0'} duration-300 transition-all transform`}/>
+              </button>
 
-              {/* Pointed Shape */}
-                <div style={chamferedEdge} className='text-xs bg-zikoroBlue pl-3'>
-                  Save up to 15%
-                </div>
-            </div>
+              <div className='flex gap-4 items-center'>
+                <p className="">Select currency</p>
+                <CurrencySelection formData={formData} setFormData={setFormData} currencies={currencies}/>
+
+              </div>
+              
+              <div className="flex gap-2 items-center">
+                <p className="font-semibold">Monthly</p>
+                <Toggler options={['Monthly', 'Yearly']} />
+                <div className="flex items-center gap-1">
+                  <p className="font-semibold">Yearly</p>
+
+                  {/* Pointed Shape */}
+                    <div style={chamferedEdge} className='text-xs bg-zikoroBlue pl-3'>
+                      Save up to 15%
+                    </div>
+              </div>
           </div>
 
 

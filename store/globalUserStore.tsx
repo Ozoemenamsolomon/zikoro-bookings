@@ -13,8 +13,8 @@ interface UserState {
   currentWorkSpace: Organization | null;
   setCurrentWorkSpace: (workspace: Organization | null) => void;
 
-  // currencies: BookingsCurrencyConverter[];
-  // setCurrencies: (workspace: BookingsCurrencyConverter[]) => void;
+  currencies:{label:string,value:string}[];
+  setCurrencies: (currencies: {label:string,value:string}[]) => void;
 }
 
 // Zustand store
@@ -30,8 +30,8 @@ const useUserStore = create<UserState>()(
       currentWorkSpace: null,
       setCurrentWorkSpace: (workspace: Organization | null) => set({ currentWorkSpace: workspace }),
 
-      // currencies: [],
-      // setCurrencies: (currencies: BookingsCurrencyConverter[]) => set({ currencies }),
+      currencies: [],
+      setCurrencies: (currencies: {label:string,value:string}[]) => set({ currencies }),
     }),
     {
       name: "user-store",

@@ -57,6 +57,7 @@ export interface OrganizationInput {
   BillingAddress?: string | null;
   TaxID?: string | null;
   payoutAccountDetails?: Record<string, any> | null; // JSON object
+  selectedCurrency:string;
 }
 
 export interface BookingTeams {
@@ -106,8 +107,8 @@ export interface BookingTeamsTable {
 export interface BookingsCurrencyConverter {
   id: number; // bigint
   created_at: string; // timestamp with time zone (ISO string format)
-  currency: string | null; // text
-  amount: number | null; // numeric
+  currency: string; // text
+  amount: number; // numeric
 }
 
 export interface SubscriptionBooking {

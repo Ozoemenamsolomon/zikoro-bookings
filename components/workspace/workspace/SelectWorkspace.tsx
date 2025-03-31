@@ -19,11 +19,11 @@ export const getWorkspacePath = (workspaceAlias: string, path: string = '') => {
 
 
 const SelectWorkspace = () => {
-  const { user, currentWorkSpace,  workspaces, setCurrentWorkSpace } = useUserStore();
+  const { user, currentWorkSpace, workspaces, setCurrentWorkSpace } = useUserStore();
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [currencies, setCurrencies] = useState<BookingsCurrencyConverter[]>([])
+  const [ currencies , setCurrencies,] = useState<{label:string,value:string}[]>([]);
 
   /** Handle Workspace Selection */
   const handleWorkspaceChange = (wsAlias: string) => {
@@ -32,13 +32,16 @@ const SelectWorkspace = () => {
     setIsOpen(false)
   };
 
-    console.log('dddddd')
-  
     useEffect(() => {
       const fetching = async() => {
         const {data} = await fetchCurrencies()
-        console.log({data})
-        setCurrencies(data)
+        const options = data.map(item => ({
+          label: item.currency,
+          value: String(item.amount),
+        }));
+        console.log({data, options})
+        setCurrencies(options)
+        console.log('dddddd')
       }
       fetching()
     }, [])
@@ -55,7 +58,7 @@ const SelectWorkspace = () => {
           className="rounded-md w-full py-2 px-4 border flex justify-between gap-4 items-center"
         >
           <p className="w-full truncate min-w-0 text-start font-semibold">
-            {currentWorkSpace?.organizationName}
+            {currentWorkSpace?.organizationName }
           </p>
           <ChevronDown size={14} className="shrink-0" />
         </button>
@@ -77,6 +80,7 @@ const SelectWorkspace = () => {
             <CreateWorkSpace
               onClose={setIsOpen}
               workSpaceData={ws!}
+              currencies={currencies}
               button={
                 <button className="shrink-0">
                   <SquarePen
@@ -90,7 +94,7 @@ const SelectWorkspace = () => {
             }
           </div>
         ))}
-        <CreateWorkSpace onClose={setIsOpen} />
+        <CreateWorkSpace onClose={setIsOpen} currencies={currencies} />
       </div>
     </PopoverMenu>
   );
