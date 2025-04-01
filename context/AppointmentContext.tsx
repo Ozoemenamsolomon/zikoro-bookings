@@ -84,8 +84,6 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   //         )
   // }, [user])
 
-  console.log('dddddd')
-  
   useEffect(()=>{
     const updateRole = async () => {
       if(user) {

@@ -59,12 +59,12 @@ export const Toggler: React.FC<TogglerProps> = ({
   const toggleSwitch = () => {
     const newValue = selected === options[0] ? options[1] : options[0];
     setSelected(newValue);
-    onChange?.(newValue);
+    onChange && onChange(newValue);
   };
 
   return (
     <div
-      className={`relative flex items-center  w-12 h-6 p- cursor-pointer rounded-full bg-gray-300 transition-colors duration-300 p- `}
+      className={`relative flex items-center  w-12 h-6 p- cursor-pointer rounded-full bg-gray-300 transition-colors duration-300 aria-checked:bg-blue-600 `}
       role="switch"
       aria-checked={selected === options[1]}
       onClick={toggleSwitch}

@@ -387,7 +387,7 @@ export const fetchCurrencies = async ():Promise<{data:BookingsCurrencyConverter[
   const { data, error } = await supabase
     .from("bookingsCurrencyConverter")
     .select("*");
-console.log('CURRENCIES', { data, error})
+ 
   if (error) {
     console.error("Error currencies:", error);
     return { data: [], error: error.message || "Failed to fetch team members" };

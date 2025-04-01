@@ -23,7 +23,7 @@ const SelectWorkspace = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [currencies, setCurrencies] = useState<BookingsCurrencyConverter[]>([])
+  const [currencies, setCurrencies] = useState<{label:string,value:string}[]>([])
 
   /** Handle Workspace Selection */
   const handleWorkspaceChange = (wsAlias: string) => {
@@ -31,14 +31,15 @@ const SelectWorkspace = () => {
     router.push(getWorkspacePath(wsAlias, pathname.split('/').slice(3).join('/')));
     setIsOpen(false)
   };
-
-    console.log('dddddd')
   
     useEffect(() => {
       const fetching = async() => {
         const {data} = await fetchCurrencies()
-        console.log({data})
-        setCurrencies(data)
+        const options = data.map((item)=>({
+          label:item.currency, value:String(item.amount)
+        }))
+        setCurrencies(options)
+        console.log({data, options})
       }
       fetching()
     }, [])
@@ -75,6 +76,7 @@ const SelectWorkspace = () => {
 
             {ws?.organizationOwnerId===user?.id ? 
             <CreateWorkSpace
+              currencies={currencies}
               onClose={setIsOpen}
               workSpaceData={ws!}
               button={
@@ -90,7 +92,7 @@ const SelectWorkspace = () => {
             }
           </div>
         ))}
-        <CreateWorkSpace onClose={setIsOpen} />
+        <CreateWorkSpace onClose={setIsOpen} currencies={currencies}/>
       </div>
     </PopoverMenu>
   );
