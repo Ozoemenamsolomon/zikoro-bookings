@@ -1,9 +1,9 @@
 import axios from "axios";
 
-      // const KUDISMS_API_KEY='tjwRx5iS6JMGnU749FBDAh3Nbd1KceYWsZLTIkXCfzVrmPHlpOQoqEyv0au8g2'
-      // const KUDISMS_SENDER_ID='Zikoro'
-      // const SENDER_EMAIL="support@zikoro.com"
-      // const ZEPTOMAIL_API_TOKEN="Zoho-enczapikey wSsVR61380X1W60symCrIr87mg9QVA6nRkx42FSo6Sf9F/jCosc8lUzOAVWkHaQfQmdhFDARo7oqnBYE1DVY3dh7m1AEDSiF9mqRe1U4J3x17qnvhDzOV2lfmxqJK44NxwpinWdgGs4k+g=="
+      const KUDISMS_API_KEY='tjwRx5iS6JMGnU749FBDAh3Nbd1KceYWsZLTIkXCfzVrmPHlpOQoqEyv0au8g2'
+      const KUDISMS_SENDER_ID='Zikoro'
+      const SENDER_EMAIL="support@zikoro.com"
+      const ZEPTOMAIL_API_TOKEN="Zoho-enczapikey wSsVR61380X1W60symCrIr87mg9QVA6nRkx42FSo6Sf9F/jCosc8lUzOAVWkHaQfQmdhFDARo7oqnBYE1DVY3dh7m1AEDSiF9mqRe1U4J3x17qnvhDzOV2lfmxqJK44NxwpinWdgGs4k+g=="
  
       
 // export async function sendSms(recipients: string, message: string) {
@@ -100,7 +100,7 @@ export async function sendSms(recipients: string, message: string) {
       throw new Error(error.message);
     }
   }
-  
+
 
   export async function submitSenderId(senderID: string, message: string) {
     try {
@@ -125,42 +125,6 @@ export async function sendSms(recipients: string, message: string) {
       throw new Error(error.message);
     }
   }
-  
-//   import { NextResponse } from "next/server";
-// import { submitSenderId } from "@/lib/submitSenderId";
-
-// export async function POST(req: Request) {
-//   try {
-//     const body = await req.json();
-//     const { senderID, message } = body;
-
-//     if (!senderID || !message) {
-//       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
-//     }
-
-//     const response = await submitSenderId(senderID, message);
-//     return NextResponse.json(response);
-//   } catch (error: any) {
-//     return NextResponse.json({ error: error.message }, { status: 500 });
-//   }
-// }
-
-// async function submitSender() {
-//     const res = await fetch("/api/submit-sender", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({
-//         senderID: "Newsreel",
-//         message: "Testing API sender ID",
-//       }),
-//     });
-  
-//     const data = await res.json();
-//     console.log(data);
-//   }
-  
 
 export async function checkSenderId(senderID: string) {
     try {
@@ -187,38 +151,6 @@ export async function checkSenderId(senderID: string) {
       throw new Error(error.message);
     }
   }
-
-//   import { NextResponse } from "next/server";
-// import { checkSenderId } from "@/lib/checkSenderId";
-
-// export async function GET(req: Request) {
-//   try {
-//     const { searchParams } = new URL(req.url);
-//     const senderID = searchParams.get("senderID");
-
-//     if (!senderID) {
-//       return NextResponse.json({ error: "Missing senderID parameter" }, { status: 400 });
-//     }
-
-//     const response = await checkSenderId(senderID);
-//     return NextResponse.json(response);
-//   } catch (error: any) {
-//     return NextResponse.json({ error: error.message }, { status: 500 });
-//   }
-// }
-
-// async function checkSender() {
-//     const senderID = "neo"; // Example sender ID
-//     const res = await fetch(`/api/check-sender?senderID=${senderID}`, {
-//       method: "GET",
-//     });
-  
-//     const data = await res.json();
-//     console.log(data);
-//   }
-  
-
-
 
 // email services
 export async function sendEmail(
@@ -260,3 +192,114 @@ export async function sendEmail(
         return { success: false, error: error.message };
     }
 }
+
+import { getBookingSmsReminderMsg, getEmailReminderTemplate } from "./templates";
+import { createADMINClient } from "@/utils/supabase/no-caching";
+import { createClient } from "@/utils/supabase/server";
+import { Booking } from "@/types/appointments";
+
+ const supabase = createClient();
+
+export const populateBookingReminders = async (booking:Booking, hostEmail:string, hostPhoneNumber:string, ) => {
+  try {
+      const appointmentDateTime = new Date(`${booking.appointmentDate}T${booking.appointmentTime}`);
+      // const sendAt = new Date(appointmentDateTime.getTime() - 12 * 60 * 60 * 1000); // 12 hours before
+      const sendAt = appointmentDateTime
+
+      const body = {
+        bookingId: booking.id,
+        phone: booking.phone,
+        email: booking.email,
+        smsMessage: getBookingSmsReminderMsg(booking),
+        emailMessage: getEmailReminderTemplate(booking, hostEmail, hostPhoneNumber),
+        sendAt,
+        smsStatus: "PENDING",
+        emailStatus: "PENDING",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+    
+    const { data, error } = await supabase
+      .from("bookingReminders")
+      .upsert(body);
+
+      console.log("Booking reminders: ", { data, error } );
+    if (error) {
+      return {success:false, error:"An error prevented sms reminder setup"}
+    }
+    return {success:true}
+  } catch (err) {
+    console.error("Error populating booking reminders:", err);
+  }
+};
+ 
+
+const updateSmsStatus = async (smsResponses: { bookingId: string; response: any }[], groupedSmsData: Map<string, { message: string; recipients: string[] }>) => {
+  const updates: { bookingId: number; phone: string; smsStatus: string }[] = [];
+
+  // Iterate over each smsResponse entry
+  smsResponses.forEach(({ bookingId, response }) => {
+    const { status, data } = response;
+
+    // Skip if the status is not "success" or there is no data
+    if (status !== "success" || !data) {
+      // If the status is not success, we directly mark all recipients as FAILED
+      const group = groupedSmsData.get(bookingId);
+      if (group) {
+        group.recipients.forEach((phone) => {
+          updates.push({
+            bookingId:Number(bookingId),
+            phone,
+            smsStatus: "FAILED", // Mark as FAILED
+          });
+        });
+      }
+      return;
+    }
+
+    // Track delivered phones (phones that received the message successfully)
+    const deliveredPhones = new Set<string>();
+    
+    // Extract phone numbers from the response data
+    data.forEach((entry: string) => {
+      const [phone] = entry.split("|"); // We only care about the phone number
+      if (phone) deliveredPhones.add(phone); // Add to delivered phones set
+    });
+
+    // Iterate over the recipients for the current bookingId
+    const group = groupedSmsData.get(bookingId);
+    if (group) {
+      group.recipients.forEach((phone) => {
+        // If the phone was not delivered, mark it as FAILED
+        const smsStatus = deliveredPhones.has(phone) ? "SENT" : "FAILED";
+        updates.push({
+          bookingId:Number(bookingId),
+          phone,
+          smsStatus, // If deliveredPhone exists, it's SENT, otherwise FAILED
+        });
+      });
+    }
+  });
+
+  // Bulk update in Supabase
+  const updatePromises = updates.map((update) =>
+    supabase
+      .from("bookingReminder")
+      .update({ smsStatus: update.smsStatus })
+      .match({ bookingId: update.bookingId, phone: update.phone })
+  );
+
+  const results = await Promise.all(updatePromises);
+
+  console.log(results)
+
+  return results
+
+  // results.forEach(({ data, error }, index) => {
+  //   if (error) {
+  //     console.error(`Error updating record ${index}:`, error);
+  //   } else {
+  //     console.log(`Updated record ${index}:`, data);
+  //   }
+  // });
+};

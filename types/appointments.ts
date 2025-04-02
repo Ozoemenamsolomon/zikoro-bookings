@@ -234,3 +234,18 @@ export interface BookingNote {
   workspaceId?: string | null;
   bookingContactId?: string | null;
 }
+
+
+export interface BookingReminder {
+  id: string; // UUID (Primary Key)
+  bookingId: string; // UUID (Foreign Key) - Links to appointments
+  phone?: string; // Attendee's phone number (Optional)
+  email?: string; // Attendee's email (Optional)
+  smsMessage: string; // SMS message content
+  emailMessage: string; // Email message content
+  sendAt: string; // TIMESTAMP - Scheduled send time (ISO string)
+  smsStatus: 'PENDING' | 'SENT' | 'FAILED'; // ENUM - SMS reminder status
+  emailStatus: 'PENDING' | 'SENT' | 'FAILED'; // ENUM - Email reminder status
+  createdAt: string; // TIMESTAMP - Record creation timestamp (ISO string)
+  updatedAt: string; // TIMESTAMP - Last update timestamp (ISO string)
+}

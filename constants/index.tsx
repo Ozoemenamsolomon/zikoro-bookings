@@ -1,3 +1,5 @@
+import { Booking } from "@/types/appointments";
+
 export * from "./icons"
 export * from "./timezones"
 export * from "./urls"
@@ -74,4 +76,6 @@ export const subscriptionPlans = [
         ],
       },
     ];
+    
+
     
