@@ -1,10 +1,9 @@
+'use server'
+
 import axios from "axios";
 
       // const KUDISMS_API_KEY='tjwRx5iS6JMGnU749FBDAh3Nbd1KceYWsZLTIkXCfzVrmPHlpOQoqEyv0au8g2'
       // const KUDISMS_SENDER_ID='Zikoro'
-      // const SENDER_EMAIL="support@zikoro.com"
-      // const ZEPTOMAIL_API_TOKEN="Zoho-enczapikey wSsVR61380X1W60symCrIr87mg9QVA6nRkx42FSo6Sf9F/jCosc8lUzOAVWkHaQfQmdhFDARo7oqnBYE1DVY3dh7m1AEDSiF9mqRe1U4J3x17qnvhDzOV2lfmxqJK44NxwpinWdgGs4k+g=="
- 
       
 // export async function sendSms(recipients: string, message: string) {
 //   try {
@@ -152,49 +151,9 @@ export async function checkSenderId(senderID: string) {
     }
   }
 
-// email services
-export async function sendEmail(
-  recipients: string[], 
-  subject: string, 
-  htmlBody: string
-) {
-    try {
-        const response = await fetch("https://api.zeptomail.com/v1.1/email", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: ZEPTOMAIL_API_TOKEN!,
-            },
-            body: JSON.stringify({
-                from: { 
-                    address: SENDER_EMAIL, 
-                    name: "Zikoro" 
-                },
-                to: recipients.map(email => ({
-                    email_address: { address: email }
-                })),
-                subject,
-                htmlbody: htmlBody,
-            }),
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            console.error("Failed to send email:", result);
-            throw new Error(result.message || "Email sending failed");
-        }
-
-        return { success: true, response: result };
-    } catch (error) {
-        console.error("Error in sendEmail:", error);
-        // @ts-ignore
-        return { success: false, error: error.message };
-    }
-}
 
 import { getBookingSmsReminderMsg, getEmailReminderTemplate } from "./templates";
-import { createADMINClient } from "@/utils/supabase/no-caching";
+ 
 import { createClient } from "@/utils/supabase/server";
 import { Booking } from "@/types/appointments";
 
@@ -232,7 +191,6 @@ export const populateBookingReminders = async (booking:Booking, hostEmail:string
     console.error("Error populating booking reminders:", err);
   }
 };
- 
 
 const updateSmsStatus = async (smsResponses: { bookingId: string; response: any }[], groupedSmsData: Map<string, { message: string; recipients: string[] }>) => {
   const updates: { bookingId: number; phone: string; smsStatus: string }[] = [];
@@ -302,4 +260,72 @@ const updateSmsStatus = async (smsResponses: { bookingId: string; response: any 
   //     console.log(`Updated record ${index}:`, data);
   //   }
   // });
+};
+
+
+// sending email
+import { SendMailClient } from 'zeptomail';
+
+const client = new SendMailClient({
+  url: process.env.NEXT_PUBLIC_ZEPTO_URL,
+  token: process.env.NEXT_PUBLIC_ZEPTO_TOKEN,
+});
+
+const senderAddress = process.env.NEXT_PUBLIC_EMAIL;
+const senderName = "Zikoro";
+
+
+export const sendBulkEmails = async (recipients: string[], subject: string, htmlBody: string, icsContent: string) => {
+  console.log({
+    senderAddress,url: process.env.NEXT_PUBLIC_ZEPTO_URL,token: process.env.NEXT_PUBLIC_ZEPTO_TOKEN,
+  })
+  try {
+    const response = await client.sendMail({
+      from: {
+        address: senderAddress,
+        name: senderName,
+      },
+      to: recipients.map(email => ({
+        email_address: {
+          address: email.trim(),
+          name: "Attendee",
+        },
+      })),
+      subject,
+      htmlbody: htmlBody,
+      // attachments: [
+      //   {
+      //     name: 'appointment.ics',
+      //     content: Buffer.from(icsContent).toString('base64'),
+      //     mime_type: 'text/calendar',
+      //   },
+      // ],
+    });
+    console.log({response})
+    return response;
+  } catch (error) {
+    console.error("Error sending bulk email:", error);
+    throw error;
+  }
+};
+
+// example 2
+export const sendEmailsConcurrently = async (recipients: string[], subject: string, htmlBody: string, icsContent: string) => {
+  const emailPromises = recipients.map(email => 
+    client.sendMail({
+      from: { address: senderAddress, name: senderName },
+      to: [{ email_address: { address: email.trim(), name: "Attendee" } }],
+      subject,
+      htmlbody: htmlBody,
+      attachments: [
+        {
+          name: 'appointment.ics',
+          content: Buffer.from(icsContent).toString('base64'),
+          mime_type: 'text/calendar',
+        },
+      ],
+    })
+  );
+
+  return Promise.allSettled(emailPromises);
 };
