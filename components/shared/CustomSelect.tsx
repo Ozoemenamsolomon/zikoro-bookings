@@ -52,19 +52,19 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
     typeof options[0] === "object" &&
     "options" in options[0];
 
-  const handleValueChange = (newValue: any) => {
-    if (onChange) {
-      onChange(newValue,name);
-      setError &&
-      setError((prev:any) => {
-        return {
+    const handleValueChange = (newValue: any) => {
+      if (onChange) {
+        onChange(newValue, name);
+      }
+      if (setError) {
+        setError((prev: any) => ({
           ...prev,
           general: '',
           [name!]: '',
-        };
-      });
-    }
-  };
+        }));
+      }
+    };
+    
 // console.log({value,name})
   const renderOptions = () => {
     if (!options || options.length === 0) {

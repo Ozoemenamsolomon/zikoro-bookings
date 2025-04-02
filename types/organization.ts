@@ -107,8 +107,8 @@ export interface BookingTeamsTable {
 export interface BookingsCurrencyConverter {
   id: number; // bigint
   created_at: string; // timestamp with time zone (ISO string format)
-  currency: string; // text
-  amount: number; // numeric
+  currency: string  
+  amount: number 
 }
 
 export interface SubscriptionBooking {
