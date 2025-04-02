@@ -205,7 +205,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         // Set the new workspace as current  
         
         setCurrentWorkSpace(data);
-        setUser({...user!, workspaceRole:'ADMIN'})
+        setUser({...user!, workspaceRole:'OWNER'})
 
         setFormData(initialFormData);
         setPreviewUrls([]);
@@ -337,7 +337,7 @@ const chamferedEdge = {
         </div>
 
         {/* Form Section */}
-        <div className="bg-gray-100  h-full sm:col-span-3 px-6 py-10 space-y-3">
+        <div className="bg-gray-100  h-full sm:col-span-3 px-6 md:px-16 py-10 space-y-3">
           <h5 className="font-semibold text-xl pb-2">Workspace Information</h5>
           <CustomInput
             type="text"
