@@ -75,7 +75,7 @@ export interface DetailItem {
 }
 
 export interface Booking {
-  id?: bigint;
+  id?: number;
   created_at?: string;
   address?:string;
   appointmentLinkId?: any;
@@ -110,6 +110,24 @@ export interface Booking {
   contactId?: string;
   meetingLink?: string;
   // appointmentNotes?: string;
+}
+
+export interface BookingReminder {
+  id: number;
+  created_at: string;
+  bookingId: Booking;
+  phone?: string | null;
+  email?: string | null;
+  smsMessage?: string | null;
+  emailMessage?: string | null;
+  smsStatus?: string | null;
+  emailStatus?: string | null;
+  emailStatusMessage?: string | null;
+  recordCreationTimeStamp?: string | null;
+  updatedAt?: string | null;
+  lastUpdateTimestamp?: string | null;
+  scheduledSendTime?: string | null;
+  sendAt?: string | null;
 }
 
 export interface UserType {
@@ -233,19 +251,4 @@ export interface BookingNote {
   media?: { type: string; url: string; }[] | null; // JSONB type
   workspaceId?: string | null;
   bookingContactId?: string | null;
-}
-
-
-export interface BookingReminder {
-  id: string; // UUID (Primary Key)
-  bookingId: string; // UUID (Foreign Key) - Links to appointments
-  phone?: string; // Attendee's phone number (Optional)
-  email?: string; // Attendee's email (Optional)
-  smsMessage: string; // SMS message content
-  emailMessage: string; // Email message content
-  sendAt: string; // TIMESTAMP - Scheduled send time (ISO string)
-  smsStatus: 'PENDING' | 'SENT' | 'FAILED'; // ENUM - SMS reminder status
-  emailStatus: 'PENDING' | 'SENT' | 'FAILED'; // ENUM - Email reminder status
-  createdAt: string; // TIMESTAMP - Record creation timestamp (ISO string)
-  updatedAt: string; // TIMESTAMP - Last update timestamp (ISO string)
 }

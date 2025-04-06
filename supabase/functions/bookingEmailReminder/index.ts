@@ -10,11 +10,8 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.0";
 
 // initialize supabase
-// const supabaseUrl = "https://ddlepujpbqjoogkmiwfu.supabase.co"
-// const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkbGVwdWpwYnFqb29na21pd2Z1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwMTYwNjQ5NCwiZXhwIjoyMDE3MTgyNDk0fQ.Z4cc23CFZ8Ra7YLsphgvbEW6d_nrOKKCmYao6sA7_Jc"
-
-// const KUDISMS_API_KEY="tjwRx5iS6JMGnU749FBDAh3Nbd1KceYWsZLTIkXCfzVrmPHlpOQoqEyv0au8g2"
-// const KUDISMS_SENDER_ID="Zikoro"
+const supabaseUrl = "https://ddlepujpbqjoogkmiwfu.supabase.co"
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkbGVwdWpwYnFqb29na21pd2Z1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwMTYwNjQ5NCwiZXhwIjoyMDE3MTgyNDk0fQ.Z4cc23CFZ8Ra7YLsphgvbEW6d_nrOKKCmYao6sA7_Jc"
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -36,10 +33,11 @@ Deno.serve(async (req) => {
         // Fetch pending email reminders
         const { data, error } = await supabase
             .from("bookingReminders")
-            .select(`*, bookingId!inner(id, appointmentLinkId!inner(id, emailNotification, locationDetails))`)
+            .select(`*, bookingId(id, bookingStatus)`)
             .eq("emailStatus", "PENDING")
-            .gte("sendAt", formattedTomorrow)
-            .lt("sendAt", formattedDayAfterTomorrow);
+            .neq("bookingId.bookingStatus", "CANCELLED")
+            .gte("sendAt", formattedTomorrow.toISOString())
+            .lt("sendAt", formattedDayAfterTomorrow.toISOString());
 
         if (error) {
             console.error("Error fetching email reminders:", error);
@@ -48,165 +46,185 @@ Deno.serve(async (req) => {
 
         if (!data || data.length === 0) {
             return new Response("No email reminders to send", { status: 200 });
-        }
+        } else {
+            let emailResponses: EmailReminderResult[] = [];
+            const emailBookings = data.filter((b:BookingReminder) => !!b.email);
 
-        // Send Emails
-        let emailResponse = []; // Array to store [{bookingId, response}]
-        const groupedEmailData = groupEmailReminders(data);
-
-        for (const [bookingId, { message, recipients }] of groupedEmailData.entries()) {
-            if (recipients.length > 0) {
-                // Send email
-                const response = await sendEmail(recipients, 'Appointment Reminder', message,);
-                emailResponse.push({ bookingId, response });
+            try {
+            emailResponses = await sendEmailsConcurrently(emailBookings);
+            } catch (err) {
+            console.error("Global email send error:", err);
+            // Fallback error for all
+            emailResponses = data.map((reminder:BookingReminder) => ({
+                id: reminder.id,
+                email: reminder.email!,
+                status: "REJECTED",
+                message: "Unhandled error occurred while sending emails",
+              }));
             }
-        }
 
-        // Update email status in bookingReminders
-        await updateEmailStatus(emailResponse, groupedEmailData);
-
-        return new Response(JSON.stringify({
-            success: "Email Reminders processed",
-            emailResponse,
-            groupedEmailData,
-        }), {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-        });
-
+            const result = await updateEmailStatus(emailResponses);
+            
+            return new Response(JSON.stringify( {
+                success: "Email Reminders processed",
+                // emailResponses,
+                // data,
+                dbUdateResult:result
+            } ), {
+                status: 200,
+                headers: { "Content-Type": "application/json" },
+            }); 
+        }  
     } catch (err) {
         console.error("Function error:", err);
         return new Response(JSON.stringify({ error: "Internal Server Error", err}), { status: 500 });
     }
 });
 
-const groupEmailReminders = (emailReminders: BookingReminder[]) => {
-    const groupedData = new Map<string, { message: string; recipients: string[] }>();
 
-    for (const { bookingId, email, emailMessage } of emailReminders) {
-        const id = String(bookingId);
-        if (!bookingId || !email || !emailMessage) continue;
+const zeptoApiKey = "Zoho-enczapikey wSsVR61380X1W60symCrIr87mg9QVA6nRkx42FSo6Sf9F/jCosc8lUzOAVWkHaQfQmdhFDARo7oqnBYE1DVY3dh7m1AEDSiF9mqRe1U4J3x17qnvhDzOV2lfmxqJK44NxwpinWdgGs4k+g==";
+const senderEmail = "support@zikoro.com";
 
-        if (!groupedData.has(id)) {
-            groupedData.set(id, { message: emailMessage, recipients: [] });
-        }
-
-        const group = groupedData.get(id)!;
-
-        if (!group.recipients.includes(email)) {
-            group.recipients.push(email);
-        }
-    }
-
-    return groupedData;
-};
-
-import { SendMailClient } from 'zeptomail';
- 
-const client = new SendMailClient({
-  url: process.env.NEXT_PUBLIC_ZEPTO_URL,
-  token: process.env.NEXT_PUBLIC_ZEPTO_TOKEN,
-});
-
-const senderAddress = process.env.NEXT_PUBLIC_EMAIL;
 const senderName = "Zikoro";
 
-export const sendEmail = async (recipients: string[], subject: string, htmlBody: string, ) => {
-  try {
-    const response = await client.sendMail({
-      from: {
-        address: senderAddress,
-        name: senderName,
-      },
-      to: recipients.map(email => ({
-        email_address: {
-          address: email.trim(),
-          name: "Attendee",
-        },
-      })),
-      subject,
-      htmlbody: htmlBody,
-      // attachments: [
-      //   {
-      //     name: 'appointment.ics',
-      //     content: Buffer.from(icsContent).toString('base64'),
-      //     mime_type: 'text/calendar',
-      //   },
-      // ],
-    });
- 
-    return response;
-  } catch (error) {
-    console.error("Error sending bulk email:", error);
-    throw error;
-  }
+type EmailReminderResult = {
+  email: string;
+  id: number;
+  status: "FULFILLED" | "REJECTED";
+  message: string;
 };
 
-const updateEmailStatus = async (emailResponses: { bookingId: string; response: any }[], groupedEmailData: Map<string, { message: string; recipients: string[] }>) => {
-    const updates: { bookingId: number; email: string; emailStatus: string }[] = [];
+export const sendEmailsConcurrently = async (
+  bookings: BookingReminder[]
+): Promise<EmailReminderResult[]> => {
+  const emailPromises = bookings.map(({ email, emailMessage, id }) => {
+    return {
+      id,
+      email,
+      promise: fetch("https://api.zeptomail.com/v1.1/email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: zeptoApiKey,
+        },
+        body: JSON.stringify({
+          from: {
+            address: senderEmail,
+            name: senderName,
+          },
+          to: [
+            {
+              email_address: {
+                address: email!.trim(),
+                name: "Attendee",
+              },
+            },
+          ],
+          subject: "Appointment Reminder",
+          htmlbody: emailMessage,
+        }),
+      }),
+    };
+  });
 
-    emailResponses.forEach(({ bookingId, response }) => {
-        const { status, data } = response;
+  const results = await Promise.allSettled(
+    emailPromises.map((item) => item.promise)
+  );
 
-        if (status !== "success" || !data) {
-            const group = groupedEmailData.get(bookingId);
-            if (group) {
-                group.recipients.forEach((email) => {
-                    updates.push({
-                        bookingId: Number(bookingId),
-                        email,
-                        emailStatus: "FAILED",
-                    });
-                });
-            }
-            return;
+  const structured: EmailReminderResult[] = await Promise.all(
+    results.map(async (result, index) => {
+      const { id, email } = emailPromises[index];
+
+      if (result.status === "fulfilled") {
+        try {
+          const data = await result.value.json();
+          const message =
+            data?.message || data?.data?.[0]?.message || "Email sent";
+
+          return {
+            id,
+            email: email! || "",
+            status: "FULFILLED",
+            message,
+          };
+        } catch (error) {
+          return {
+            id,
+            email: email! || "",
+            status: "REJECTED",
+            message: "Email sent but failed to parse response",
+          };
         }
+      }
 
-        const deliveredEmails = new Set<string>();
+      return {
+        id,
+        email: email! || "",
+        status: "REJECTED",
+        message: result.reason?.message || "Failed to send email",
+      };
+    })
+  );
 
-        data.forEach((entry: string) => {
-            if (entry) deliveredEmails.add(entry);
-        });
+  return structured;
+};
 
-        const group = groupedEmailData.get(bookingId);
-        if (group) {
-            group.recipients.forEach((email) => {
-                const emailStatus = deliveredEmails.has(email) ? "SENT" : "FAILED";
-                updates.push({
-                    bookingId: Number(bookingId),
-                    email,
-                    emailStatus,
-                });
-            });
-        }
-    });
 
-    const updatePromises = updates.map((update) =>
-        supabase
-            .from("bookingReminder")
-            .update({ emailStatus: update.emailStatus })
-            .match({ bookingId: update.bookingId, email: update.email })
-    );
+const updateEmailStatus = async (
+  emailResponses: EmailReminderResult[],
+) => {
+ 
+  // Batch update in parallel
+  const updatePromises = emailResponses.map(({email,id,status,message}) =>
+    supabase
+      .from("bookingReminders")
+      .update({
+        emailStatus: status,
+        emailStatusMessage: message,
+        updatedAt: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select('id,updatedAt')
+      .single()
+  );
 
-    const results = await Promise.all(updatePromises);
-    console.log(results);
-    return results;
+  const results = await Promise.allSettled(updatePromises);
+  // console.log({results});
+  return results;
 };
 
 interface BookingReminder {
-  id: bigint; // UUID (Primary Key)
-  bookingId: bigint; // UUID (Foreign Key) - Links to appointments
-  phone?: string; // Attendee's phone number (Optional)
-  email?: string; // Attendee's email (Optional)
-  smsMessage: string; // SMS message content
-  emailMessage: string; // Email message content
-  sendAt: string; // TIMESTAMP - Scheduled send time (ISO string)
-  smsStatus: 'PENDING' | 'SENT' | 'FAILED'; // ENUM - SMS reminder status
-  emailStatus: 'PENDING' | 'SENT' | 'FAILED'; // ENUM - Email reminder status
-  createdAt: string; // TIMESTAMP - Record creation timestamp (ISO string)
-  updatedAt: string; // TIMESTAMP - Last update timestamp (ISO string)
+  id: number; // UUID (Primary Key)
+  bookingId: number; // UUID (Foreign Key) - Links to appointments
+  phone?: string | null;
+  email?: string | null;
+  smsMessage?: string | null;
+  emailMessage?: string | null;
+  smsStatus?: string | null;
+  emailStatus?: string | null;
+  emailReminderStatus?: string | null;
+  recordCreationTimeStamp?: string | null;
+  updatedAt?: string | null;
+  lastUpdateTimestamp?: string | null;
+  scheduledSendTime?: string | null;
+  sendAt?: string | null;
 }
 
+
+
+// _ZEPTO_URL="https://api.zeptomail.com"
+// _SENDER_EMAIL="support@zikoro.com"
+// _EMAIL_PASSWORD= "zPjy5gs@"
+// _ZEPTO_TOKEN="Zoho-enczapikey wSsVR61380X1W60symCrIr87mg9QVA6nRkx42FSo6Sf9F/jCosc8lUzOAVWkHaQfQmdhFDARo7oqnBYE1DVY3dh7m1AEDSiF9mqRe1U4J3x17qnvhDzOV2lfmxqJK44NxwpinWdgGs4k+g=="
+
+// _SITE_URL="https://bookings.zikoro.com/"
+// # NEXT_PUBLIC_ZEPTO_URL=api.zeptomail.com/
+
+// _KUDISMS_API_KEY="tjwRx5iS6JMGnU749FBDAh3Nbd1KceYWsZLTIkXCfzVrmPHlpOQoqEyv0au8g2"
+// _KUDISMS_SENDER_ID="Zikoro"
+
+// _SUPABASE_URL=https://ddlepujpbqjoogkmiwfu.supabase.co
+// _SUPABASE_SECRET_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkbGVwdWpwYnFqb29na21pd2Z1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwMTYwNjQ5NCwiZXhwIjoyMDE3MTgyNDk0fQ.Z4cc23CFZ8Ra7YLsphgvbEW6d_nrOKKCmYao6sA7_Jc
 
 
 

@@ -3,7 +3,8 @@ import { createClient } from '@/utils/supabase/client'
 import React, { useState } from 'react'
 import { Button } from './ui/button'
 import { Loader2 } from 'lucide-react'
-import { sendBulkEmails, sendSms } from '@/lib/sms'
+import { populateBookingReminders,   sendSms, testEmail, testSms } from '@/lib/sms'
+import { Booking } from '@/types/appointments'
 
  
 const Testing = () => {
@@ -53,7 +54,13 @@ console.log({ data, error, groupedSmsData, smsResponse });
     };
  
     const testEmailing = async () => {
-         await sendBulkEmails(['ecudeji@gmail.com', 'printolabi@gmail.com'], 'Testing bulk emails', 'Hi emma, i am just testing', 'icsContent')
+        // const res = await populateBookingReminders(bookingSample, bookingSample.appointmentLinkId.createdBy.userEmail, bookingSample.appointmentLinkId.createdBy.phoneNumber)
+
+        const res = await testSms()
+        // const res = await sendSms('2348032787601','Testing sms api')
+        // const res = await testEmail()
+        console.log({res })
+        //  await sendBulkEmails(['ecudeji@gmail.com', 'printolabi@gmail.com'], 'Testing bulk emails', 'Hi emma, i am just testing', 'icsContent')
     }
   return (
     <div>
@@ -131,4 +138,72 @@ function groupBookingsForSms(bookings: any[]) {
     });
 
     return groupedData;
+}
+
+const bookingSample:Booking = {
+    "id": 389,
+    "created_at": "2025-04-02T09:39:12.847448+00:00",
+    "appointmentLinkId": {
+        "id": 130,
+        "created_at": "2025-03-28T12:25:51.322233+00:00",
+        "appointmentName": "BISMARK EDGE Test 2",
+        "category": "\"\"",
+        "duration": 45,
+        "loctionType": "Onsite",
+        "locationDetails": "21 Odogwu Str Owerri",
+        "timeZone": "(UTC+01:00) West Central Africa",
+        "timeDetails": "[{\"day\":\"Monday\",\"from\":\"01:00 AM\",\"to\":\"11:00 PM\",\"enabled\":true},{\"day\":\"Tuesday\",\"from\":\"12:00 AM\",\"to\":\"11:30 PM\",\"enabled\":true},{\"day\":\"Wednesday\",\"from\":\"12:00 AM\",\"to\":\"11:30 PM\",\"enabled\":true},{\"day\":\"Thursday\",\"from\":\"12:00 AM\",\"to\":\"11:30 PM\",\"enabled\":true},{\"day\":\"Friday\",\"from\":\"08:00 AM\",\"to\":\"05:00 PM\",\"enabled\":true},{\"day\":\"Saturday\",\"from\":\"12:00 AM\",\"to\":\"11:30 PM\",\"enabled\":true},{\"day\":\"Sunday\",\"from\":\"12:00 AM\",\"to\":\"11:30 PM\",\"enabled\":true}]",
+        "curency": "",
+        "amount": null,
+        "paymentGateway": "",
+        "maxBooking": 1,
+        "sessionBreak": 10,
+        "statusOn": true,
+        "note": "Best classes for hacking students",
+        "appointmentAlias": "3ee95b43-6b7b-4ad7-9ae3-8b1098f6fc1e",
+        "createdBy": {
+            "id": 127,
+            "userEmail": "ecudeji@gmail.com",
+            "organization": null,
+            "firstName": "Emmanuel",
+            "lastName": "Udeji",
+            "phoneNumber": "08032787601"
+        },
+        "businessName": "Fourth workspace",
+        "logo": "",
+        "brandColour": "#696969",
+        "teamMembers": "printolabi@gmail.com",
+        "zikoroBranding": false,
+        "customerPay": null,
+        "addAddress": null,
+        "workspaceId": "fourth-workspace-uCuzD",
+        "smsNotification": "PENDING"
+    },
+    "participantEmail": "printolabi@gmail.com",
+    "appointmentDate": "2025-04-06",
+    "appointmentTime": "10:10:00",
+    "scheduleColour": "#696969",
+    "teamMembers": "printolabi@gmail.com",
+    "appointmentType": "",
+    "appointmentName": "BISMARK EDGE TEST 4",
+    "bookingStatus": "",
+    "firstName": "Udoka",
+    "lastName": "Bekee",
+    // "phone": "08032787601",
+    "phone": "09114993947",
+    "price": null,
+    "currency": null,
+    "feeType": "Free",
+    "createdBy": 127,
+    "appointmentTimeStr": "12:50 PM - 1:35 PM",
+    "appointmentDuration": 45,
+    "notes": "My main line testing sms",
+    "appointmentNotes": {},
+    "appointmentMedia": null,
+    "meetingLink": '',
+    "contactId": '',
+    "address": '',
+    "checkIn": null,
+    "checkOut": null,
+    "workspaceId": "fourth-workspace-uCuzD"
 }
