@@ -1,10 +1,10 @@
 import React, {  useEffect, useState } from 'react';
 import { AppointmentLink,  } from '@/types/appointments';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 import { submitBooking } from './submitBooking';
 import { useAppointmentContext } from '@/context/AppointmentContext';
 import CustomInput from '../ui/CustomInput';
-import { useBookingsContact } from '@/hooks/services/appointments';
+import { useBookingsContact, useBookingsReminder } from '@/hooks/services/appointments';
 import { usePathname } from 'next/navigation';
 import MessageModal from '@/components/shared/MessageModal';
 
@@ -13,7 +13,8 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
 
   const {bookingFormData, contact, isFormUp, setIsFormUp, setBookingFormData, slotCounts, setSlotCounts,setInactiveSlots,setShow} = useAppointmentContext()
   const {insertBookingsContact} = useBookingsContact()
-
+  const {insertBookingsReminder} = useBookingsReminder()
+  
   // update form state with contact, if it is contact page
   const isContactPage = pathname.includes('contacts')
 
@@ -100,6 +101,7 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
       appointmentLink,
       // do not insert contact in contact page
       insertBookingsContact:  isContactPage ? null : insertBookingsContact,
+      insertBookingsReminder,
       setShow,
       // setIsFormUp,
     });
@@ -141,7 +143,7 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
                       name="firstName"
                       value={bookingFormData?.firstName || ''}
                       placeholder="Enter your first name"
-                      disabled={isContactPage}
+                      disabled={isContactPage || loading}
                       className="py-2.5 w-full disabled:opacity-50"
                       onChange={handleChange}
                     />
@@ -154,7 +156,7 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
                       name="lastName"
                       value={bookingFormData?.lastName || ''}
                       placeholder="Enter your last name"
-                      disabled={isContactPage}
+                      disabled={isContactPage || loading}
                       className="py-2.5  w-full disabled:opacity-50"
                       onChange={handleChange}
                     />
@@ -167,7 +169,7 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
                       name="participantEmail"
                       value={bookingFormData?.participantEmail || ''}
                       placeholder="Enter your email"
-                      disabled={isContactPage}
+                      disabled={isContactPage || loading}
                       className="py-2.5  w-full disabled:opacity-50"                    
                       onChange={handleChange}
                     />
@@ -180,7 +182,7 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
                       name="phone"
                       value={bookingFormData?.phone || ''}
                       placeholder="Enter your phone number"
-                      disabled={isContactPage}
+                      disabled={isContactPage || loading}
                       className="py-2.5  w-full disabled:opacity-50"
                       onChange={handleChange}
                     />
@@ -194,6 +196,7 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
                     onChange={handleChange}
                     value={bookingFormData?.notes || ''}
                     required
+                    disabled={loading}
                     className={`${errors.notes ? 'ring-2 ring-red-600':''} sm:h-full  w-full focus:outline-none  p-3 h-32 border  rounded-xl `}
                     >
                   </textarea>
@@ -228,7 +231,7 @@ const DetailsForm = ({appointmentLink}:{appointmentLink:AppointmentLink | null})
                 disabled={isDisabled}
                 className={`w-full px-4 py-3 rounded-md text-center bg-basePrimary text-white ${loading || isDisabled  ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                {loading ? 'Submitting...' : 'Book Appointment'}
+                {loading ? <span className='justify-center w-full flex gap-2 items-center'> <Loader2 size={20} className='animate-spin ' /> Submitting</span>  : 'Book Appointment'}
               </button>
               }
           </div>

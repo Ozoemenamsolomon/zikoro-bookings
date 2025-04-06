@@ -8,7 +8,7 @@ export const populateBookingReminders = async (booking:Booking, hostEmail:string
   try {
       const appointmentDateTime = new Date(`${booking.appointmentDate}T${booking.appointmentTime}`).toISOString();
       const sendAt = appointmentDateTime
-console.log({sendAt})
+      console.log({sendAt})
       // const sendAt = new Date(appointmentDateTime.getTime() - 12 * 60 * 60 * 1000); // 12 hours before
 
       const body = {
@@ -26,9 +26,8 @@ console.log({sendAt})
     
     const { data, error } = await supabase
       .from("bookingReminders")
-      // .select()
       .insert(body)
-      .select()
+      .select('*')
       .single()
 
       console.log("Booking reminders: ", { data, error } );
@@ -40,7 +39,6 @@ console.log({sendAt})
     console.error("Error populating booking reminders:", err);
   }
 };
-
 
 const KUDISMS_API_KEY= process.env.KUDISMS_API_KEY!
 const KUDISMS_SENDER_ID= process.env.KUDISMS_SENDER_ID!
@@ -91,9 +89,9 @@ export const testSms = async () =>{
       .select(`*, bookingId!inner(id, bookingStatus)`)
       .eq("smsStatus", "PENDING")
       .neq("bookingId.bookingStatus", "CANCELLED")
-      // .gte("sendAt", formattedTomorrow.toISOString() ) // Start of tomorrow (00:00)
-      // .lt("sendAt", formattedDayAfterTomorrow.toISOString() ); // Before the day after (00:00)
-      // console.log({data,error})
+      .gte("sendAt", formattedTomorrow.toISOString() ) // Start of tomorrow (00:00)
+      .lt("sendAt", formattedDayAfterTomorrow.toISOString() ); // Before the day after (00:00)
+      console.log({data,error})
     if (error) {
         console.error("Error fetching reminders:", error);
         return error 
@@ -142,6 +140,8 @@ type SmsReminderResult = {
   phone: string;
   status: "FULFILLED" | "REJECTED";
   message: string;
+  smscost?:string|null,
+  smsLength?: number|null,
 };
 
 export const sendSmsConcurrently = async (
@@ -171,7 +171,9 @@ export const sendSmsConcurrently = async (
               id,
               phone: phone,
               status: "FULFILLED",
-              message: data.msg || "SMS sent successfully",
+              message: data?.msg || "SMS sent successfully",
+              smscost:data?.cost||null,
+              smsLength: data?.length||null,
             };
           } else {
             return {
@@ -255,16 +257,17 @@ const groupBookingReminders = (smsReminders: BookingReminder[]): GroupBookingRem
 const updateSmsStatus = async (smsResponses: SmsReminderResult[]) => {
   const supabase = createClient();
    // Batch update in parallel
-   const updatePromises = smsResponses.map(({phone,id,status,message}) =>
+   const updatePromises = smsResponses.map(({phone,id,status,message,smscost,smsLength}) =>
     supabase
       .from("bookingReminders")
       .update({
         smsStatus: 'PENDING',
-        // smsStatusMessage: message,
+        smsStatusMessage: message,
+        smscost, smsLength,
         updatedAt: new Date().toISOString()
       })
       .eq('id', id)
-      .select('id, updatedAt')
+      .select('id, updatedAt, smsStatusMessage, smscost, smsLength')
       .single()
   );
 

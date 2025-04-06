@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
-import { sendSms } from "@/lib/sms"; 
+import { sendSms } from "@/lib/bookingReminders"; 
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    const { searchParams } = new URL(req.url);
+    console.log('SMS REMIDER LOG: ', body)
+    
+    const bookingReminder = searchParams.get('bookingReminder')!;  
     const { recipients, message } = body;
 
     if (!recipients || !message) {

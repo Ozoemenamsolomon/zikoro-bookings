@@ -121,6 +121,7 @@ export interface BookingReminder {
   smsMessage?: string | null;
   emailMessage?: string | null;
   smsStatus?: string | null;
+  smsStatusMessage?: string | null;
   emailStatus?: string | null;
   emailStatusMessage?: string | null;
   recordCreationTimeStamp?: string | null;
@@ -128,6 +129,8 @@ export interface BookingReminder {
   lastUpdateTimestamp?: string | null;
   scheduledSendTime?: string | null;
   sendAt?: string | null;
+  smscost?:string|null,
+  smsLength?: number|null,
 }
 
 export interface UserType {

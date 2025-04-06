@@ -121,6 +121,8 @@ type SmsReminderResult = {
   phone: string;
   status: "FULFILLED" | "REJECTED";
   message: string;
+  smscost?:string|null,
+  smsLength?: number|null,
 };
 
 const sendSmsConcurrently = async (
@@ -151,6 +153,8 @@ const sendSmsConcurrently = async (
               phone: phone,
               status: "FULFILLED",
               message: data.msg || "SMS sent successfully",
+              smscost:data?.cost||null,
+              smsLength: data?.length||null,
             };
           } else {
             return {
@@ -233,16 +237,17 @@ const groupBookingReminders = (smsReminders: BookingReminder[]): GroupBookingRem
 
 const updateSmsStatus = async (smsResponses: SmsReminderResult[]) => {
    // Batch update in parallel
-   const updatePromises = smsResponses.map(({phone,id,status,message}) =>
+   const updatePromises = smsResponses.map(({phone,id,status,message,smscost, smsLength,}) =>
     supabase
       .from("bookingReminders")
       .update({
-        smsStatus: status,
-        // smsStatusMessage: message,
+        // smsStatus: status,
+        smsStatusMessage: message,
+        smscost, smsLength,
         updatedAt: new Date().toISOString()
       })
       .eq('id', id)
-      .select('id, smsStatus, updatedAt')
+      .select('id, smsStatus, updatedAt, smsStatusMessage, smscost, smsLength')
       .single()
   );
 
