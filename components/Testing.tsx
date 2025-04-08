@@ -3,7 +3,7 @@ import { createClient } from '@/utils/supabase/client'
 import React, { useState } from 'react'
 import { Button } from './ui/button'
 import { Loader2 } from 'lucide-react'
-import { populateBookingReminders,   sendSms, testEmail, testSms } from '@/lib/bookingReminders'
+import { populateBookingReminders,   sendSms, testEdgeFuntion, testEmail, testSms } from '@/lib/bookingReminders'
 import { Booking } from '@/types/appointments'
 
  
@@ -56,7 +56,8 @@ console.log({ data, error, groupedSmsData, smsResponse });
     const testEmailing = async () => {
         // const res = await populateBookingReminders(bookingSample, bookingSample.appointmentLinkId.createdBy.userEmail, bookingSample.appointmentLinkId.createdBy.phoneNumber)
 
-        const res = await testSms()
+        // const res = await testSms()
+        const res = await testEdgeFuntion()
         // const res = await sendSms('2349114993947','Testing sms api')
         // const res = await testEmail()
         console.log({res })

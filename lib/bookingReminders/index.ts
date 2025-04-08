@@ -501,3 +501,36 @@ const updateEmailStatus = async (
   return results;
 };
  
+
+
+
+// === test edge function ==========
+export const testEdgeFuntion = async () => {
+  try {
+    const supabase = createClient()
+
+    const { data, error } = await supabase.functions.invoke('bookingEmailReminder', {
+      body: { name: 'Functions' },
+    })
+
+    if (error) {
+      console.error('Edge function returned an error:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      })
+      return { data: null, error }
+    }
+
+    console.log('Edge function response data:', data)
+    return { data, error: null }
+  } catch (err: any) {
+    console.error('Unexpected error occurred while invoking edge function:', {
+      message: err.message,
+      stack: err.stack,
+      ...(err?.cause && { cause: err.cause }),
+    })
+    return { data: null, error: err }
+  }
+}

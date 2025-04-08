@@ -10,8 +10,15 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.0";
 
 // initialize supabase
-const supabaseUrl = "https://ddlepujpbqjoogkmiwfu.supabase.co"
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkbGVwdWpwYnFqb29na21pd2Z1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwMTYwNjQ5NCwiZXhwIjoyMDE3MTgyNDk0fQ.Z4cc23CFZ8Ra7YLsphgvbEW6d_nrOKKCmYao6sA7_Jc"
+ 
+//@ts-ignore
+const supabaseUrl = Deno.env.get("_SUPABASE_URL") as string;
+// @ts-ignore
+const supabaseKey = Deno.env.get("_SUPABASE_SECRET_KEY") as string;
+// @ts-ignore
+const zeptoApiKey = Deno.env.get("_ZEPTOMAIL_API_TOKEN") as string;
+// @ts-ignore
+const senderEmail = Deno.env.get("_SENDER_EMAIL") as string;
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -69,7 +76,7 @@ Deno.serve(async (req) => {
                 success: "Email Reminders processed",
                 // emailResponses,
                 // data,
-                dbUdateResult:result
+                databaseUdateResult:result
             } ), {
                 status: 200,
                 headers: { "Content-Type": "application/json" },
@@ -81,10 +88,7 @@ Deno.serve(async (req) => {
     }
 });
 
-
-const zeptoApiKey = "Zoho-enczapikey wSsVR61380X1W60symCrIr87mg9QVA6nRkx42FSo6Sf9F/jCosc8lUzOAVWkHaQfQmdhFDARo7oqnBYE1DVY3dh7m1AEDSiF9mqRe1U4J3x17qnvhDzOV2lfmxqJK44NxwpinWdgGs4k+g==";
-const senderEmail = "support@zikoro.com";
-
+ 
 const senderName = "Zikoro";
 
 type EmailReminderResult = {
@@ -184,7 +188,7 @@ const updateEmailStatus = async (
         updatedAt: new Date().toISOString()
       })
       .eq('id', id)
-      .select('id,updatedAt')
+      .select('id,updatedAt,smsStatus,smsStatusMessage,emailStatus,emailStatusMessage')
       .single()
   );
 
@@ -193,23 +197,26 @@ const updateEmailStatus = async (
   return results;
 };
 
-interface BookingReminder {
-  id: number; // UUID (Primary Key)
-  bookingId: number; // UUID (Foreign Key) - Links to appointments
+export interface BookingReminder {
+  id: number;
+  created_at: string;
+  bookingId: number;
   phone?: string | null;
   email?: string | null;
   smsMessage?: string | null;
   emailMessage?: string | null;
   smsStatus?: string | null;
+  smsStatusMessage?: string | null;
   emailStatus?: string | null;
-  emailReminderStatus?: string | null;
+  emailStatusMessage?: string | null;
   recordCreationTimeStamp?: string | null;
   updatedAt?: string | null;
   lastUpdateTimestamp?: string | null;
   scheduledSendTime?: string | null;
   sendAt?: string | null;
+  smscost?:string|null,
+  smsLength?: number|null,
 }
-
 
 
 // _ZEPTO_URL="https://api.zeptomail.com"
@@ -226,7 +233,7 @@ interface BookingReminder {
 // _SUPABASE_URL=https://ddlepujpbqjoogkmiwfu.supabase.co
 // _SUPABASE_SECRET_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkbGVwdWpwYnFqb29na21pd2Z1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwMTYwNjQ5NCwiZXhwIjoyMDE3MTgyNDk0fQ.Z4cc23CFZ8Ra7YLsphgvbEW6d_nrOKKCmYao6sA7_Jc
 
-
+// supabase functions deploy bookingEmailReminder --project-ref ddlepujpbqjoogkmiwfu
 
 
 // Deno.serve(async (req) => {
