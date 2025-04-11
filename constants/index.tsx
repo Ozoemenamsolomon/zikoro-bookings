@@ -31,48 +31,45 @@ export const reactquilToolbar =
     })
  
 
-export const subscriptionPlans = [
+    export const subscriptionPlans = [
       {
         label: "Free",
         value: 0,
         features: [
-          "Unlimited events",
-          "Attendee check-in",
-          "3 discount coupons",
-          "No engagement feature",
+          "Max number of bookings - 10/month",
+          "Email notification and reminder",
+          "No SMS notification and reminder",
+          "No team member",
         ],
       },
       {
         label: "Lite",
-        value: 110,
+        value: 5,
         features: [
-          "Everything in Free Plus",
-          "200 Attendees/ engagement feature",
-          "RSVP responses & tracking",
-          "Data import/export",
-          "3 Live quiz, 3 polls & Unlimited Q&A",
+          "Max number of bookings - 100/month",
+          "Email notification and reminder",
+          "SMS notification and reminder",
+          "No team member",
         ],
       },
       {
         label: "Professional",
-        value: 240,
+        value: 15,
         features: [
-          "Everything in Lite plus",
-          "1000 attendees/ engagement features",
-          "Unlimited Affiliates",
-          "5 partner virtual booth",
-          "Unlimited sessions/event",
+          "Max number of bookings - 500/month",
+          "Email notification and reminder",
+          "SMS notification and reminder",
+          "3 team members",
         ],
       },
       {
         label: "Enterprise",
-        value: 480,
+        value: 40,
         features: [
-          "Everything in Professional Plus",
-          "5000 Attendees/ engagement features",
-          "Unlimited engagement features",
-          "10 partner virtual booth",
-          "Unlimited discount coupons/ event",
+          "Max number of bookings - 2000/month",
+          "Email notification and reminder",
+          "SMS notification and reminder",
+          "10 team members",
         ],
       },
     ];

@@ -57,7 +57,12 @@ export interface OrganizationInput {
   BillingAddress?: string | null;
   TaxID?: string | null;
   payoutAccountDetails?: Record<string, any> | null; // JSON object
-  selectedCurrency:string;
+  
+  currency?:string;
+  discountValue?: number | null;
+  planPrice?: number | null;
+  amountPaid?: number | null;
+
 }
 
 export interface BookingTeams {
@@ -125,4 +130,13 @@ export interface SubscriptionBooking {
   monthYear?: string | null;
   planPrice?: number | null;
   workspaceAlias?: string | null;
+}
+
+  export interface SubscriptionPlanInfo {
+    plan: string;
+    validDaysRemaining: number;
+    subscriptionEndDate: string | null;
+    isExpired: boolean;
+    displayMessage: string;
+    daysSinceExpiration: number | null; // useful for timing nudges
 }

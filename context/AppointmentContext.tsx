@@ -84,20 +84,6 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   //         )
   // }, [user])
 
-  useEffect(()=>{
-    const updateRole = async () => {
-      if(user) {
-        if(currentWorkSpace?.organizationOwnerId!==user?.id){
-          const {data,error} = await fetchOneTeamMember(currentWorkSpace?.organizationAlias!, user?.userEmail!)
-          setUser({...user!, workspaceRole: data?.userRole! || 'COLLABORATOR'})
-        } else {
-          setUser({...user!, workspaceRole: 'OWNER'})
-        }
-      }
-    }
-    updateRole()
-  },[user?.id, currentWorkSpace])
-
   const contextValue: AppointmentContextProps = {
     isLoading,setLoading,isfetching, setIsFetching,
     isFormUp,setIsFormUp,

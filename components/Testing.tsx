@@ -52,12 +52,21 @@ console.log({ data, error, groupedSmsData, smsResponse });
             setLoading(false);
         }
     };
+
+    const getData = async() => {
+        const {data,error}=await supabase
+        .from('organization')
+        .select('*')
+        .eq('organizationAlias','fourth-workspace-uCuzD')
+
+        console.log({data,error})
+    }
  
     const testEmailing = async () => {
-        // const res = await populateBookingReminders(bookingSample, bookingSample.appointmentLinkId.createdBy.userEmail, bookingSample.appointmentLinkId.createdBy.phoneNumber)
+        const res = await populateBookingReminders(bookingSample, bookingSample.appointmentLinkId.createdBy.userEmail, bookingSample.appointmentLinkId.createdBy.phoneNumber)
 
         // const res = await testSms()
-        const res = await testEdgeFuntion()
+        // const res = await testEdgeFuntion()
         // const res = await sendSms('2349114993947','Testing sms api')
         // const res = await testEmail()
         console.log({res })
@@ -65,7 +74,7 @@ console.log({ data, error, groupedSmsData, smsResponse });
     }
   return (
     <div>
-        <Button onClick={testEmailing}>Submit {loading ? <span>{" "}<Loader2 size={20} className='animate-spin' /></span> : null}  </Button>
+        <Button onClick={getData}>Submit {loading ? <span>{" "}<Loader2 size={20} className='animate-spin' /></span> : null}  </Button>
     </div>
   )
 }
@@ -147,7 +156,7 @@ const bookingSample:Booking = {
     "appointmentLinkId": {
         "id": 130,
         "created_at": "2025-03-28T12:25:51.322233+00:00",
-        "appointmentName": "BISMARK EDGE Test 2",
+        "appointmentName": "Meeting Five",
         "category": "\"\"",
         "duration": 45,
         "loctionType": "Onsite",
@@ -180,18 +189,18 @@ const bookingSample:Booking = {
         "workspaceId": "fourth-workspace-uCuzD",
         "smsNotification": "PENDING"
     },
-    "participantEmail": "printolabi@gmail.com",
-    "appointmentDate": "2025-04-06",
-    "appointmentTime": "10:10:00",
+    "participantEmail": "gogreneinfo@gmail.com",
+    "appointmentDate": "2025-04-11",
+    "appointmentTime": "12:10:00",
     "scheduleColour": "#696969",
     "teamMembers": "printolabi@gmail.com",
     "appointmentType": "",
-    "appointmentName": "BISMARK EDGE TEST 4",
+    "appointmentName": "Meeting Five",
     "bookingStatus": "",
-    "firstName": "Udoka",
-    "lastName": "Bekee",
-    // "phone": "08032787601",
-    "phone": "09114993947",
+    "firstName": "Ebuka",
+    "lastName": "Echefula",
+    "phone": "08032787601",
+    // "phone": "09114993947",
     "price": null,
     "currency": null,
     "feeType": "Free",

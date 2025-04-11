@@ -1,8 +1,9 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { BookingsCurrencyConverter, Organization } from "@/types";
+import { BookingsCurrencyConverter, Organization, SubscriptionPlanInfo } from "@/types";
 import { User } from "@/types/appointments";
-import { fetchCurrencies } from "@/lib/server/workspace";
+import { getSubscriptionStatus } from "@/lib";
+ 
 interface UserState {
   user: User | null;
   setUser: (user: User | null) => void;
@@ -13,25 +14,30 @@ interface UserState {
   currentWorkSpace: Organization | null;
   setCurrentWorkSpace: (workspace: Organization | null) => void;
 
-  currencies:{label:string,value:string}[];
-  setCurrencies: (currencies: {label:string,value:string}[]) => void;
+  currencies: { label: string; value: string }[];
+  setCurrencies: (currencies: { label: string; value: string }[]) => void;
+
+  subscriptionPlan: SubscriptionPlanInfo | null;
+  setSubscritionPlan: (subscriptionStatus: SubscriptionPlanInfo | null) => void;
 }
 
-// Zustand store
 const useUserStore = create<UserState>()(
   persist(
     (set, get) => ({
       user: null,
-      setUser: (user: User | null) => set({ user }),
+      setUser: (user) => set({ user }),
 
       workspaces: [],
-      setWorkSpaces: (workspaces: Organization[]) => set({ workspaces }),
+      setWorkSpaces: (workspaces) => set({ workspaces }),
 
       currentWorkSpace: null,
-      setCurrentWorkSpace: (workspace: Organization | null) => set({ currentWorkSpace: workspace }),
+      setCurrentWorkSpace: (workspace) => set({ currentWorkSpace: workspace }),
 
       currencies: [],
-      setCurrencies: (currencies: {label:string,value:string}[]) => set({ currencies }),
+      setCurrencies: (currencies) => set({ currencies }),
+
+      subscriptionPlan: null,
+      setSubscritionPlan: (subscriptionStatus) => set({ subscriptionPlan: subscriptionStatus }),
     }),
     {
       name: "user-store",
@@ -40,7 +46,7 @@ const useUserStore = create<UserState>()(
   )
 );
 
-export default useUserStore
+export default useUserStore;
 
 // Outside Zustand: Async Logic
 export async function initializeWorkspaces(
@@ -48,7 +54,7 @@ export async function initializeWorkspaces(
   assignedWkspace?: Organization | null,
   isSignup?: boolean
 ): Promise<Organization | null> {
-  const { setUser, setWorkSpaces, setCurrentWorkSpace, currentWorkSpace } = useUserStore.getState();
+  const { setUser, setWorkSpaces, setCurrentWorkSpace, currentWorkSpace, setSubscritionPlan } = useUserStore.getState();
   // initializing user only during onboarding. Here workspaces and currentpworkspace are setup doing onboarding process
   setUser(user);
 
@@ -69,6 +75,9 @@ export async function initializeWorkspaces(
       // set current workspace to current workspace from the session or to workspace from the token, which is the new workspace user was added to.
       if (assignedWkspace) {
         setCurrentWorkSpace(assignedWkspace);
+        const plan = getSubscriptionStatus(assignedWkspace)
+        setSubscritionPlan(plan)
+
         return assignedWkspace;
       } else if (currentWorkSpace) {
         // confirm the workspace from the session still exist in 
@@ -76,9 +85,17 @@ export async function initializeWorkspaces(
           (ws: Organization) => ws.organizationOwnerId === currentWorkSpace.organizationOwnerId
         );
         setCurrentWorkSpace(exists || data[0] || null);
+        if (exists||data[0]) {
+          const plan = getSubscriptionStatus(exists || data[0] )
+          setSubscritionPlan(plan)
+        }
         return exists || data[0] || null;
       } else {
         setCurrentWorkSpace(data[0] || null);
+        if (data[0]) {
+          const plan = getSubscriptionStatus(data[0] )
+          setSubscritionPlan(plan)
+        }
         return data[0] || null;
       }
 

@@ -106,7 +106,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
     </button>
   );
   return (
-    <div className="space-y-2 rounded-lg bg-cms-white">
+    <div className="space-y-2 rounded-lg  ">
       <div className="flex flex-col space-y-2 disabled:opacity-30">
         {
           input ? input :
@@ -117,7 +117,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
               multiple={multiple}          
               accept={multiple ? undefined : 'image/*'} // Enforce only images if single mode
               disabled={isDisabled}
-              className="p-2 border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:bg-blue-100/10 file:text-blue-700 hover:file:bg-blue-100/20"
+              className="p-2 border  border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:bg-blue-100/10 file:text-blue-700 hover:file:bg-blue-100/20"
               aria-label="Upload files"
             />
             <small>{multiple ? `File type (pdf, image, mp4). Maximum file size of 5MB` : 'File type (image). Maximum file size of 5MB'}</small>

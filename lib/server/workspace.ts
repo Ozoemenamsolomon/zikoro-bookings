@@ -210,16 +210,17 @@ export const createWorkspace = async (body:{
     // add user as admin to the default workspace team members
     let newTeam, newTeamError
     if(data) {
-      const {data:newTeamMemebr,errors} = await upsertTeamMembers({...body.userData, workspaceAlias: data?.organizationAlias, userRole:'OWNER'})
+      const {data:newTeamMemebr,errors} = await upsertTeamMembers({...body.userData, workspaceAlias: data?.organizationAlias, userRole:'owner'})
+      console.log({newTeamMemebr, errors})
 
-      if(errors) {
+      if(Object.values(errors).some((item)=>item!==null)) {
         newTeamError='Error occured while adding user to workspace team.'
         console.log('Error adding team member to workspace: ', errors)
       }
       newTeam=newTeamMemebr
     }
 
-    console.log({data, error, newTeam, newTeamError})
+    // console.log({data, error, newTeam, newTeamError})
 
     return {data, error:error?.message||null, newTeam, newTeamError}
   } catch (error) {
@@ -236,7 +237,7 @@ export async function upsertTeamMembers(data: any) {
       supabase.from("organizationTeamMembers_Engagement").upsert([data]),
       supabase.from("organizationTeamMembers_Credentials").upsert([data]),
       supabase.from("organizationTeamMembers").upsert([data]),
-      supabase.from("organizationTeamMembers_Bookings").upsert([data]),
+      supabase.from("organizationTeamMembers_Bookings").upsert([data]).select().single(),
     ]);
 
     // if(engagementRes.error||credentialsRes.error||membersRes.error||bookingsRes.error){

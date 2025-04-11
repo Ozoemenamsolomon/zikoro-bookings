@@ -1,5 +1,5 @@
 import { CenterModal } from '@/components/shared/CenterModal';
-import { ArrowLeft, Check, ChevronDown, Loader2, Plus, PlusCircle } from 'lucide-react';
+import { ArrowLeft, Check, ChevronDown, Loader2, Plus, PlusCircle, X } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Toggler } from '../ui/SwitchToggler';
 import CustomInput from '../ui/CustomInput';
@@ -16,6 +16,7 @@ import { fetchCurrencies } from '@/lib/server/workspace';
 import CurrencySelector from './CurrencySelector';
 import PlanSelector from './PlanSelector';
 import { subscriptionPlans } from '@/constants';
+import { calculateSubscriptionCost, calculateSubscriptionEndDate } from '@/lib';
 
 const initialFormData: OrganizationInput = {
   organizationName: '',
@@ -27,19 +28,29 @@ const initialFormData: OrganizationInput = {
   organizationOwnerId:'',
   organizationType:'',
   country:'',
-  selectedCurrency: ''
- 
+  // currency : '',
 };
 
 const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh, currencies }: { workSpaceData?: Organization, button?: React.ReactNode, redirectTo?:string, onClose?:(k:boolean)=>void, isRefresh?:boolean, currencies:{label:string,value:string}[],}) => {
   const {user, setUser, setWorkSpaces, setCurrentWorkSpace, currentWorkSpace, workspaces } = useUserStore();
   const {push} = useRouter()
+  const discount =15
   
+  const [type, setType] = useState<string>('Monthly');
+  const [selectedCurrency, setSelectedCurrency] = useState<{label:string, value:number}>({label:'NGN', value:1000});
+  const [selectedPlan, setSelectedPlan] = useState<{label:string, value:number, features:string[]}>(subscriptionPlans[0]);
+
   const [formData, setFormData] = useState<OrganizationInput>({
     ...initialFormData,
     organizationOwnerId: user?.id!,
     organizationOwner: user?.firstName! + ' ' + user?.lastName,
+    planPrice: calculateSubscriptionCost(discount,type,selectedCurrency,selectedPlan).base,
+    amountPaid: calculateSubscriptionCost(discount,type,selectedCurrency,selectedPlan).total,
+    discountValue: calculateSubscriptionCost(discount,type,selectedCurrency,selectedPlan).discountValue,
+    // planPrice:0,amountPaid:0,discountValue:0
+    currency: selectedCurrency.label
   });
+
   const [files, setFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<{ type: string; url: string }[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -47,18 +58,9 @@ const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh, currencies
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<string>('');
 
-  const [type, setType] = useState<string>('Monthly');
-  const [selectedCurrency, setSelectedCurrency] = useState<{label:string, value:number}>({label:'NGN', value:1000});
-  const [selectedPlan, setSelectedPlan] = useState<{label:string, value:number, features:string[]}>(subscriptionPlans[0]);
-
   const typeOptions:[string, string] = ['Monthly', 'Yearly']
 
   const plans = subscriptionPlans.map((item)=>({label: item.label, value:item.label}))
-
-  const calculatedPlan = (amount: number) => {
-    // Applies the 15% Discount Properly: amount * 0.85 (which is amount - (amount * 0.15)).
-    return type === "Yearly" ? amount * 0.85 : amount;
-  };
   
   /** Initialize Form Data */
   useEffect(() => {
@@ -77,7 +79,7 @@ const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh, currencies
           subscriptionPlan:workSpaceData?.subscriptionPlan,
           subscriptionEndDate: workSpaceData?.subscriptionEndDate,
           subscritionStartDate:workSpaceData?.subscritionStartDate, 
-          selectedCurrency: 'NGN'
+          // currency: 'NGN'
         }
        });
       if (workSpaceData?.organizationLogo) {
@@ -112,8 +114,8 @@ const handleSubmit = async (e: React.FormEvent) => {
   try {
     let uploadedFiles;
     if (files.length) {
-      setLoading("Uploading logo...");
-      uploadedFiles = await handleFileUpload({
+      setLoading("Uploading files...");
+        uploadedFiles = await handleFileUpload({
         files,
         setFiles,
         setErrors,
@@ -124,14 +126,15 @@ const handleSubmit = async (e: React.FormEvent) => {
       return;
     }
 
-    setLoading("Submitting values");
-
+    const {currency, planPrice, discountValue, amountPaid, ...newFormdata} = formData
+    
     if (workSpaceData) {
       // edit workspace
+      setLoading("Updating workspace...");
       const { data, error } = await PostRequest({
         url: "/api/workspaces/edit",
         body: {
-          ...formData,
+          ...newFormdata,
           id:workSpaceData.id,
           organizationLogo: uploadedFiles ? uploadedFiles?.[0].url! : formData?.organizationLogo,
         },
@@ -162,60 +165,76 @@ const handleSubmit = async (e: React.FormEvent) => {
         // if(redirectTo) push(`/ws/${data?.workspaceAlias}/${redirectTo}`)
       }
     } else {
-      const { data, error } = await PostRequest({
+      setLoading("Creating workspace...");
+      const { data: workspaceData, error: workspaceError } = await PostRequest({
         url: "/api/workspaces/create",
         body: {
           workspaceData:{
-            ...formData,
+            ...newFormdata,
             organizationLogo: uploadedFiles ? uploadedFiles?.[0].url! : '',
             organizationAlias: generateSlugg(formData?.organizationName!),
             subscritionStartDate:new Date().toDateString(),
-            // subscriptionEndDate:'',
-            // subscriptionExpiryDate:'',
+            subscriptionEndDate: calculateSubscriptionEndDate(new Date().toDateString(), type),
+            subscriptionExpiryDate: calculateSubscriptionEndDate(new Date().toDateString(), type),
             organizationOwner:user?.userEmail,
             organizationOwnerId:user?.id,
           },
-          subscriptionPlan: {
+          userData: {
             userId:user?.id,
-            subscriptionType: selectedPlan.label,
-            amountPaid: type==='Yearly' ? calculatedPlan(selectedPlan?.value*12) : calculatedPlan(selectedPlan?.value),
-            startDate: new Date().toISOString(), // ISO timestamp format
-            expirationDate: new Date().toISOString()  , // ISO timestamp format
-            discountCode: '',
-            // discountValue: 0,
-            currency: selectedCurrency.label,
-            monthYear: type,
-            planPrice: selectedPlan.value,
-            workspaceAlias: currentWorkSpace?.organizationAlias
+            userEmail: user?.userEmail,
           }
-
         },
       });
 
-      if (error) {
+      if (workspaceError || !workspaceData?.organizationAlias) {
         setErrors({
-          gen: error || "Error occurred while submitting values",
+          gen: workspaceError || "Error occurred while submitting values",
         });
         return;
       } else {
+        setLoading("Activating subscription...");
+        const  { data: subData, error: subError }  = await PostRequest({
+          // url: "/api/subscriptions/create",
+          url: "/api/subsrciptions/create",
+          body: {
+              userId:user?.id,
+              subscriptionType: selectedPlan.label,
+              amountPaid: amountPaid,
+              startDate: new Date().toISOString(), // ISO timestamp format
+              expirationDate: calculateSubscriptionEndDate(new Date().toDateString(), type),
+              discountCode: '',
+              discountValue: discountValue,
+              currency: selectedCurrency.label,
+              monthYear: type,
+              planPrice: planPrice,
+              workspaceAlias: workspaceData?.organizationAlias!
+          },
+        });
+        if (subError) {
+          setErrors({
+            gen: subError || "Error occurred while submitting values",
+          });
+          return;
+        } else {
         toast.success("Workspace created successfully");
 
         // Add new workspace to the list directly
-        setWorkSpaces([...workspaces, data]);
+        setWorkSpaces([...workspaces, workspaceData]);
 
         // Set the new workspace as current  
-        
-        setCurrentWorkSpace(data);
-        setUser({...user!, workspaceRole:'OWNER'})
+        setCurrentWorkSpace(workspaceData);
+        setUser({...user!, workspaceRole:'owner'})
+
+        // set subscription plan (optional), beacuse it was set to update when current workspace changes
 
         setFormData(initialFormData);
         setPreviewUrls([]);
-        setIsOpen(false);
-        !isRefresh ? push(`/ws/${data?.organizationAlias}/schedule`) : null
-      }
+        // setIsOpen(false);
+        !isRefresh ? push(`/ws/${workspaceData?.organizationAlias}/schedule`) : null
+      }}
     }
   } catch (error) {
-    // console.error('Submission failed:', error);
+    console.error('Submission failed:', error);
     setErrors({
       gen: "Submission failed",
     });
@@ -224,12 +243,22 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
 };
 
+
+console.log({currencies, subscriptionPlans})
+
 const handleSelectCurrency = useCallback((value: string) => {
   const currencyType = currencies.find((item) => item.value === value);
   if (currencyType) {
     setSelectedCurrency({ label: currencyType.label, value: Number(value) });
+    console.log('CHECKING', {type, currency:{ label: currencyType.label, value: Number(value)}, selectedPlan})
+    const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(15, type, { label: currencyType.label, value: Number(value)}, selectedPlan)
+    setFormData((prev)=>{
+      return {
+        ...prev, currency, planPrice:base, discountValue, amountPaid:total 
+      }
+    })
   }
-}, [currencies]);
+}, [currencies,selectedCurrency,selectedPlan,type ]);
 
 
   const handleSelectPlan = useCallback((value: string) => {
@@ -237,8 +266,24 @@ const handleSelectCurrency = useCallback((value: string) => {
     const selectedPlan = subscriptionPlans.find((item=>item.label===value))
     if (selectedPlan) {
       setSelectedPlan(selectedPlan)
-    }
-  }, [plans]);
+      const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(15, type,selectedCurrency,selectedPlan)
+      setFormData((prev)=>{
+        return {
+          ...prev, currency, planPrice:base, discountValue, amountPaid:total 
+        }
+      })
+  }
+  }, [plans,selectedCurrency,selectedPlan,type]);
+
+  const handleTypeChange = useCallback((value:string)=>{
+    setType(value)
+    const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(15,value,selectedCurrency,selectedPlan)
+    setFormData((prev)=>{
+      return {
+        ...prev, currency, planPrice:base, discountValue, amountPaid:total 
+      }
+    })
+  }, [type, typeOptions, selectedCurrency,selectedPlan,type,discount])
 
 const chamferedEdge = {
   width: "120px",
@@ -255,7 +300,7 @@ const chamferedEdge = {
   const [drop, setDrop] = useState(false)
   return (
     <CenterModal
-      className="overflow-hidden"
+      className="sm:max-h-screen md:max-h-[90vh] max-w-5xl"
       isOpen={isOpen}
       onOpenChange={setIsOpen} // Add this line
       trigerBtn={
@@ -268,146 +313,147 @@ const chamferedEdge = {
           <p className="text-sm">Workspace</p>
         </button>
       }
-      
     >
-      <form onSubmit={handleSubmit} className="grid sm:grid-cols-5 overflow-auto hide-scrollbar sm:max-h-[90vh] sm:max-w-7xl w-full h-screen sm:h-full text-base ">
-       
+      <form onSubmit={handleSubmit} className="grid md:grid-cols-5 text-base w-full h-full">
+       <button onClick={()=>setIsOpen(false)} type="button" className='absolute right-2 top-2 bg-black text-white rounded-full h-10 w-10 flex  justify-center items-center z-10'><X/></button>
+
         {/* Sidebar Section */}
-        <div className="h-full w-full sm:col-span-2 bg-slate-200">
-          <div className=" sm:max-h-[90vh] sm:gap-8  px-6 py-10 justify-between flex flex-col h-full">
-            <div className="space-y-4">
-            <button onClick={()=>setDrop(curr=>!curr)} type='button' className='sm:hidden'><ChevronDown size={20} className={`${drop?'rotate-180':'rotate-0'} duration-300 transition-all transform`}/></button>
+        <div className=" md:col-span-2 bg-slate-200 gap-6 py-10 px-6 md:px-10 justify-between flex flex-col">
+          <div className="">
+              {/* <button onClick={()=>setDrop(curr=>!curr)} type='button' className='sm:hidden'><ChevronDown size={20} className={`${drop?'rotate-180':'rotate-0'} duration-300 transition-all transform`}/></button> */}
 
-            <div className="flex w-full gap-4 items-center">
-              <p className='shrink-0'>Select currency</p>
-              <CurrencySelector selected={selectedCurrency.value} handleSelectCurrency={handleSelectCurrency} currencies={currencies} />
-            </div>
-
-            <div className="flex gap-2 items-center">
-            <p className="font-semibold">Monthly</p>
-
-            <Toggler options={typeOptions} onChange={setType}/>
-
-            <div className="flex items-center gap-1">
-              <p className="font-semibold">Yearly</p>
-
-                  {/* Pointed Shape */}
-                    <div style={chamferedEdge} className='text-xs bg-zikoroBlue pl-3'>
-                      Save up to 15%
-                    </div>
+              <div className="flex w-full gap-4 items-center pb-4">
+                <p className='shrink-0'>Select currency</p>
+                <CurrencySelector selected={selectedCurrency.value} handleSelectCurrency={handleSelectCurrency} currencies={currencies} />
               </div>
-          </div>
+
+              <div className="flex gap-2 pb-4 items-center">
+                <Toggler options={typeOptions} onChange={handleTypeChange}/>
+                {/* Pointed Shape */}
+                <div style={chamferedEdge} className='text-xs text-nowrap text-clip bg-zikoroBlue pl-3'>
+                  Save up to {discount}%
+                </div>
+              </div>
 
 
               {/* Plan Details */}
-              <div className="space-y-3 ">
-                <h4 className="font-semibold text-xl">{selectedPlan.label}</h4>
-                <div className={`${drop?'max-h-screen':'max-h-0 sm:max-h-screen'} overflow-hidden transform transition-all duration-500 ease-in-out space-y-3 `}>
-                    <p>{
-                      `${selectedCurrency.label}${calculatedPlan(selectedPlan.value) * selectedCurrency.value} per month`
-                      }
-                    </p>
-                    <h6 className="text-lg font-medium">Plan Features</h6>
-                    {selectedPlan.features.map((item, i) => (
-                      <div key={i} className="flex gap-2 items-center">
-                        <Check size={16} className="text-purple-500" />
-                        <small>{item}</small>
+              <div className="space-y-2">
+                  <h4 className="font-semibold text-xl ">{selectedPlan.label}</h4>
+                  <p>{
+                    `${selectedCurrency.label}${formData.planPrice} per month`
+                    }
+                  </p>
+                  <div className={` overflow-hidden transform transition-all duration-500 ease-in-out space-y-1 `}>
+                      
+                      <h6 className="text-lg font-medium">Plan Features</h6>
+                      {selectedPlan.features.map((item, i) => (
+                        <div key={i} className="flex gap-2 items-center">
+                          <Check size={16} className="text-purple-500" />
+                          <small>{item}</small>
+                        </div>
+                      ))}
+                      <div className="flex gap-2 items-center">
+                        <Plus size={16} className="text-purple-500" />
+                        <small>Show more features</small>
                       </div>
-                    ))}
-                    <div className="flex gap-2 items-center">
-                      <Plus size={16} className="text-purple-500" />
-                      <small>Show more features</small>
-                    </div>
-                </div>
+                  </div>
               </div>
+          </div>
+          
+          <div className="">
+            <p className="">Summary</p>
+            <div className="flex justify-between gap-12 items-center text-xl font-medium">
+              <h4 className="">{selectedPlan.label}</h4>
+              <h4 className="">{formData.amountPaid}</h4>
             </div>
-            
-            <div className="">
-              <p className="">Summary</p>
-              <div className="flex justify-between gap-12 items-center text-xl font-medium">
-                <h4 className="">{selectedPlan.label}</h4>
-                <h4 className="">{selectedCurrency.label}{selectedPlan.value * 12}</h4>
-              </div>
-              <small>{`${selectedCurrency.label}${calculatedPlan(selectedPlan.value)} per month x 12`}</small>
-              
-            </div>
+            {/* <small>{`${formData.planPrice} per month x 12`}</small> */}
+            <small className='leading-tight'>{
+              selectedPlan.label==='Free' ? null :
+              type==='Yearly' ?
+              `${formData.currency}${formData.planPrice}/month, billed annually at ${formData.currency}${Number(formData.amountPaid)+Number(formData.discountValue)} (Save ${formData.currency}${formData.discountValue})` 
+              : `${formData.currency}${formData.planPrice}/month, save ${discount}% when you pay yearly`}</small>
+            {/* ₦110,000 per month, billed annually at ₦1,149,600 (13% savings) */}
+            {/* ₦110,000/month, save 13% when you pay yearly */}
+          </div>
 
-            <div className="  bg-baseLight px-2 py-2 rounded-md flex justify-between gap-12 items-center text-xl font-medium">
-              <h5>Total Cost</h5>
-              <h5>NGN 0</h5>
-            </div>
+          <div className="  bg-baseLight px-2 py-2 rounded-md flex justify-between gap-12 items-center text-xl font-medium">
+            <h5>Total Cost</h5>
+            <h5>{formData.currency}{formData.amountPaid}</h5>
           </div>
         </div>
 
         {/* Form Section */}
-        <div className="bg-gray-100  h-full sm:col-span-3 px-6 md:px-16 py-10 space-y-3">
-          <h5 className="font-semibold text-xl pb-2">Workspace Information</h5>
-          <CustomInput
-            type="text"
-            name="organizationName"
-            label="Workspace Name"
-            isRequired
-            value={formData.organizationName!}
-            placeholder="Workspace name"
-            onChange={handleChange}
-          />
-          {errors.organizationName && <small className="text-red-500">{errors.organizationName}</small>}
-
-          {!isRefresh && 
-            <CustomSelect
-                name="subscriptionPlan"
-                label='Select subscription plan'
-                isRequired
-                error={errors.subscriptionPlan}
-                setError={setErrors}
-                options={plans}
-                value={formData?.subscriptionPlan || ''}  
-                onChange={handleSelectPlan}  
-                placeholder="Select a plan"
+        <div className="bg-gray-100  h-full flex flex-col justify-between md:col-span-3 px-6 md:px-16 py-10 gap-6 ">
+          
+          <div className="space-y-3">
+            <h5 className="font-semibold text-xl pb-2">Workspace Information</h5>
+            <CustomInput
+              type="text"
+              name="organizationName"
+              label="Workspace Name"
+              isRequired
+              value={formData.organizationName!}
+              placeholder="Workspace name"
+              onChange={handleChange}
             />
-          }
+            {errors.organizationName && <small className="text-red-500">{errors.organizationName}</small>}
 
-          {!isRefresh && 
-          <CustomSelect
-            name="organizationType"
-            label="Workspace type"
-            isRequired
-            value={formData.organizationType || ''}
-            onChange={(newValue) => setFormData((prev)=>({
-              ...prev,
-              organizationType:newValue
-            }))} 
-            options={[
-              { label: 'Private', value: 'Private' },
-              { label: 'Business', value: 'Business' },
-            ]} 
-            error={errors.organizationType}
-            setError={setErrors}
-          />}
+            {!isRefresh && 
+              <CustomSelect
+                  name="subscriptionPlan"
+                  label='Select subscription plan'
+                  isRequired
+                  error={errors.subscriptionPlan}
+                  setError={setErrors}
+                  options={plans}
+                  value={formData?.subscriptionPlan || ''}  
+                  onChange={handleSelectPlan}  
+                  placeholder="Select a plan"
+              />
+            }
 
-        <div className="pb-4">
-          <label htmlFor="attachments" className="text-gray-600 font-semibold text-sm">
-            Upload Workspace Logo
-          </label>
-          <FileUploader
-            files={files}
-            setFiles={setFiles}
-            previewUrls={previewUrls}
-            setPreviewUrls={setPreviewUrls}
-            isDisabled={false}
-            multiple={false}
-          />
-          {errors?.attachments && <small className="text-red-500">{errors.attachments}</small>}
-        </div>
+            {!isRefresh && 
+            <CustomSelect
+              name="organizationType"
+              label="Workspace type"
+              isRequired
+              value={formData.organizationType || ''}
+              onChange={(newValue) => setFormData((prev)=>({
+                ...prev,
+                organizationType:newValue
+              }))} 
+              options={[
+                { label: 'Private', value: 'Private' },
+                { label: 'Business', value: 'Business' },
+              ]} 
+              error={errors.organizationType}
+              setError={setErrors}
+            />}
 
-        <div className="flex flex-col gap-1 items-center justify-center">
-          {errors?.gen && <small className="text-red-500">{errors.gen}</small>}
-          {/* <small>{loading}</small> */}
-          <Button type='submit' className="bg-basePrimary w-full" disabled={loading.length>0}>
-            {loading.length>0 ? 
-            <span><Loader2 size={20} className='animate-spin'/> {loading}</span> : 'Create'}
-          </Button>
-        </div>
+          <div className="pb-4 w-80 sm:w-full">
+            <label htmlFor="attachments" className="text-gray-600 font-semibold text-sm">
+              Upload Workspace Logo
+            </label>
+            <FileUploader
+              files={files}
+              setFiles={setFiles}
+              previewUrls={previewUrls}
+              setPreviewUrls={setPreviewUrls}
+              isDisabled={false}
+              multiple={false}
+            />
+            {errors?.attachments && <small className="text-red-500">{errors.attachments}</small>}
+          </div>
+          </div>
+
+          <div className="flex flex-col gap-1 items-center justify-center">
+            {errors?.gen && <small className="text-red-500">{errors.gen}</small>}
+            {/* <small>{loading}</small> */}
+            <Button type='submit' className="bg-basePrimary h-12 w-full" disabled={loading.length>0}>
+              {loading.length>0 ? 
+              <span className='flex items-center gap-2'><Loader2 size={20} className='animate-spin'/> {loading}</span> : 'Create'}
+            </Button>
+          </div>
          
         </div>
       </form>
