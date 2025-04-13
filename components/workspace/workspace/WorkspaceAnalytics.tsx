@@ -86,6 +86,7 @@ export function SubscriptionCallouts({ permissions }: { permissions: any }) {
 
 
 import { Card, CardContent } from "@/components/ui/card";
+import Link from 'next/link';
 
 export function UsageStats({ permissions }: { permissions: any }) {
   const stats = [
@@ -169,12 +170,14 @@ export function PlanFeaturesTable({ currentPlan }: { currentPlan: string }) {
 
 export function UpgradePrompt({ permissions }: { permissions: any }) {
   return (
-    <div className="text-center space-y-2">
+    <div className="text-center gap-2 flex flex-col items-center">
       <h3 className="text-lg font-semibold">Need more power?</h3>
       <p className="text-sm text-gray-500">Upgrade your plan to unlock more features and higher limits.</p>
-      <Button asChild>
-        <a href={permissions.reactivateLink}>Upgrade Plan</a>
-      </Button>
+      <div className="flex justify-items-center">
+        <Link href={'#'} className='py-3 text-center w-full bg-basePrimary rounded-md flex justify-center text-white px-6 '>
+            Upgrade Plan
+        </Link >
+      </div>
     </div>
   );
 }
