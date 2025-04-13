@@ -76,3 +76,46 @@ export const reactquilToolbar =
     
 
     
+    export const subscriptionPlansValue = [
+      {
+        label: "Free",
+        value: 0,
+        features: {
+          maxBookingsPerMonth: 10,
+          emailNotification: true,
+          smsNotification: false,
+          teamMembers: 0,
+        },
+      },
+      {
+        label: "Lite",
+        value: 5,
+        features: {
+          maxBookingsPerMonth: 100,
+          emailNotification: true,
+          smsNotification: true,
+          teamMembers: 0,
+        },
+      },
+      {
+        label: "Professional",
+        value: 15,
+        features: {
+          maxBookingsPerMonth: 500,
+          emailNotification: true,
+          smsNotification: true,
+          teamMembers: 3,
+        },
+      },
+      {
+        label: "Enterprise",
+        value: 40,
+        features: {
+          maxBookingsPerMonth: 2000,
+          emailNotification: true,
+          smsNotification: true,
+          teamMembers: 10,
+        },
+      },
+    ];
+    

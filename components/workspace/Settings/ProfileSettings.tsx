@@ -132,7 +132,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   };
   
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-3 mx-auto max-w-lg p-6 py-10 ">
+    <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-3 mx-auto max-w-lg sm:p-6 py-10 ">
       {/* Form Section */}
         <h5 className="font-semibold text-xl pb-4">Profile Information</h5>
 
@@ -215,10 +215,10 @@ const handleSubmit = async (e: React.FormEvent) => {
           onChange={handleChange}
         />
 
-        <div className="flex flex-col gap-1 items-center justify-center">
+        <div className="flex flex-col gap-1 items-center justify-center w-full text-center">
           {errors?.gen && <small className="text-red-500">{errors.gen}</small>}
           <small>{loading}</small>
-          <Button type="submit" className="bg-basePrimary w-full" disabled={loading.length > 0}>
+          <Button type="submit" className="bg-basePrimary w-full h-12" disabled={loading.length > 0}>
             {loading || 'Update Profile'}
           </Button>
         </div>

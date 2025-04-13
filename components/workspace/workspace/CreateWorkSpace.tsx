@@ -12,11 +12,11 @@ import { PostRequest } from '@/utils/api';
 import { toast } from 'react-toastify';
 import { generateSlugg } from '@/lib/generateSlug';
 import { useRouter } from 'next/navigation';
-import { fetchCurrencies } from '@/lib/server/workspace';
 import CurrencySelector from './CurrencySelector';
 import PlanSelector from './PlanSelector';
 import { subscriptionPlans } from '@/constants';
-import { calculateSubscriptionCost, calculateSubscriptionEndDate } from '@/lib';
+import { calculateSubscriptionCost, calculateSubscriptionEndDate, cn } from '@/lib';
+import { fetchSubscriptionPlan } from '@/lib/server/subscriptions';
 
 const initialFormData: OrganizationInput = {
   organizationName: '',
@@ -32,21 +32,23 @@ const initialFormData: OrganizationInput = {
 };
 
 const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh, currencies }: { workSpaceData?: Organization, button?: React.ReactNode, redirectTo?:string, onClose?:(k:boolean)=>void, isRefresh?:boolean, currencies:{label:string,value:string}[],}) => {
-  const {user, setUser, setWorkSpaces, setCurrentWorkSpace, currentWorkSpace, workspaces } = useUserStore();
+  const {user, setUser, setWorkSpaces, setCurrentWorkSpace, currentWorkSpace, workspaces, subscriptionPlan } = useUserStore();
   const {push} = useRouter()
-  const discount =15
+  const discountRate =15
   
   const [type, setType] = useState<string>('Monthly');
   const [selectedCurrency, setSelectedCurrency] = useState<{label:string, value:number}>({label:'NGN', value:1000});
   const [selectedPlan, setSelectedPlan] = useState<{label:string, value:number, features:string[]}>(subscriptionPlans[0]);
 
+  const { total, base, currency, discountValue } = calculateSubscriptionCost(discountRate,type,selectedCurrency,selectedPlan);
+ 
   const [formData, setFormData] = useState<OrganizationInput>({
     ...initialFormData,
     organizationOwnerId: user?.id!,
     organizationOwner: user?.firstName! + ' ' + user?.lastName,
-    planPrice: calculateSubscriptionCost(discount,type,selectedCurrency,selectedPlan).base,
-    amountPaid: calculateSubscriptionCost(discount,type,selectedCurrency,selectedPlan).total,
-    discountValue: calculateSubscriptionCost(discount,type,selectedCurrency,selectedPlan).discountValue,
+    planPrice:  base,
+    amountPaid:  total,
+    discountValue: discountValue,
     // planPrice:0,amountPaid:0,discountValue:0
     currency: selectedCurrency.label
   });
@@ -54,40 +56,61 @@ const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh, currencies
   const [files, setFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<{ type: string; url: string }[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [isDisabled, setIsDisabled] = useState<boolean>(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<string>('');
+  // const [isFetching, setFetching] = useState<boolean>(false);
 
   const typeOptions:[string, string] = ['Monthly', 'Yearly']
 
   const plans = subscriptionPlans.map((item)=>({label: item.label, value:item.label}))
   
   /** Initialize Form Data */
-  useEffect(() => {
-    if (workSpaceData) {
+  // useEffect(() => {
+  //   const fetchSub = async () => {
+  //     setFetching(true)
+  //     const {data,error} = await fetchSubscriptionPlan(workSpaceData?.organizationAlias!)
+  //     if(data){
+  //       setType(data.monthYear!)
+  //       const currencyTypeB = currencies.find((item) => item.label === data.currency);
+  //       const selectedPlanB = subscriptionPlans.find((item=>item.label===data.subscriptionType))
+        
+  //       if (currencyTypeB && selectedPlanB) {
+  //         setSelectedCurrency({ label: currencyTypeB.label, value: Number(currencyTypeB.value) });
 
-      setFormData((prev) => { 
-        return { 
-          ...prev,
-          organizationName: workSpaceData?.organizationName!,
-          organizationOwner: workSpaceData?.organizationOwner!,
-          organizationLogo: workSpaceData.organizationLogo,
-          organizationAlias: workSpaceData?.organizationAlias!,
-          organizationOwnerId: workSpaceData?.organizationOwnerId!,
-          organizationType: workSpaceData?.organizationType,
-          country: workSpaceData?.country,
-          subscriptionPlan:workSpaceData?.subscriptionPlan,
-          subscriptionEndDate: workSpaceData?.subscriptionEndDate,
-          subscritionStartDate:workSpaceData?.subscritionStartDate, 
-          // currency: 'NGN'
-        }
-       });
-      if (workSpaceData?.organizationLogo) {
-        setPreviewUrls([{ url: workSpaceData?.organizationLogo, type: 'image' }]);
-      }
-      setIsDisabled(true);
-    }
-  }, [workSpaceData]);
+  //         const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(discountRate, data.monthYear!, { label: currencyTypeB.label, value: Number(currencyTypeB.value)}, selectedPlanB)
+  //         setFormData((prev)=>{
+  //           return {
+  //             ...prev, currency, planPrice:base, discountValue, amountPaid:total 
+  //           }
+  //         })
+  //       }
+  //     }
+  //     setFetching(false)
+  //   }
+
+  //   if (workSpaceData) {
+  //     setFormData((prev) => { 
+  //       return { 
+  //         ...prev,
+  //         organizationName: workSpaceData?.organizationName!,
+  //         organizationOwner: workSpaceData?.organizationOwner!,
+  //         organizationLogo: workSpaceData.organizationLogo,
+  //         organizationAlias: workSpaceData?.organizationAlias!,
+  //         organizationOwnerId: workSpaceData?.organizationOwnerId!,
+  //         organizationType: workSpaceData?.organizationType,
+  //         country: workSpaceData?.country,
+  //         subscriptionPlan:workSpaceData?.subscriptionPlan,
+  //         subscriptionEndDate: workSpaceData?.subscriptionEndDate,
+  //         subscritionStartDate:workSpaceData?.subscritionStartDate, 
+  //         // currency: 'NGN'
+  //       }
+  //      });
+  //     if (workSpaceData?.organizationLogo) {
+  //       setPreviewUrls([{ url: workSpaceData?.organizationLogo, type: 'image' }]);
+  //     }
+  //     fetchSub()
+  //   }
+  // }, [workSpaceData]);
 
   /** Handle Input Change */
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -99,7 +122,8 @@ const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh, currencies
   /** Validation Logic */
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!formData.organizationName) newErrors.workspaceName = 'Workspace Name is required';
+    if (!formData.organizationName) newErrors.organizationName = 'Workspace Name is required';
+
     if (!formData.subscriptionPlan) newErrors.subscriptionPlan = 'Subscription Plan is required';
     // if (!formData.organizationType) newErrors.workspaceDescription = 'Description is required';
     setErrors(newErrors);
@@ -243,7 +267,6 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
 };
 
-
 console.log({currencies, subscriptionPlans})
 
 const handleSelectCurrency = useCallback((value: string) => {
@@ -251,7 +274,7 @@ const handleSelectCurrency = useCallback((value: string) => {
   if (currencyType) {
     setSelectedCurrency({ label: currencyType.label, value: Number(value) });
     console.log('CHECKING', {type, currency:{ label: currencyType.label, value: Number(value)}, selectedPlan})
-    const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(15, type, { label: currencyType.label, value: Number(value)}, selectedPlan)
+    const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(discountRate, type, { label: currencyType.label, value: Number(value)}, selectedPlan)
     setFormData((prev)=>{
       return {
         ...prev, currency, planPrice:base, discountValue, amountPaid:total 
@@ -266,7 +289,7 @@ const handleSelectCurrency = useCallback((value: string) => {
     const selectedPlan = subscriptionPlans.find((item=>item.label===value))
     if (selectedPlan) {
       setSelectedPlan(selectedPlan)
-      const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(15, type,selectedCurrency,selectedPlan)
+      const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(discountRate, type,selectedCurrency,selectedPlan)
       setFormData((prev)=>{
         return {
           ...prev, currency, planPrice:base, discountValue, amountPaid:total 
@@ -277,13 +300,13 @@ const handleSelectCurrency = useCallback((value: string) => {
 
   const handleTypeChange = useCallback((value:string)=>{
     setType(value)
-    const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(15,value,selectedCurrency,selectedPlan)
+    const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(discountRate,value,selectedCurrency,selectedPlan)
     setFormData((prev)=>{
       return {
         ...prev, currency, planPrice:base, discountValue, amountPaid:total 
       }
     })
-  }, [type, typeOptions, selectedCurrency,selectedPlan,type,discount])
+  }, [type, typeOptions, selectedCurrency,selectedPlan,type,discountRate])
 
 const chamferedEdge = {
   width: "120px",
@@ -296,6 +319,8 @@ const chamferedEdge = {
   fontWeight: "bold",
   clipPath: "polygon(15% 0%, 100% 0%, 100% 100%, 15% 100%, 0% 50%)"
 };
+
+const Skeleton = ({className}:{className?:string}) => <span className={cn("w-20 h-9 rounded bg-gray-500 animate-pulse",className)}></span>
 
   const [drop, setDrop] = useState(false)
   return (
@@ -320,38 +345,46 @@ const chamferedEdge = {
         {/* Sidebar Section */}
         <div className=" md:col-span-2 bg-slate-200 gap-6 py-10 px-6 md:px-10 justify-between flex flex-col">
           <div className="">
-              {/* <button onClick={()=>setDrop(curr=>!curr)} type='button' className='sm:hidden'><ChevronDown size={20} className={`${drop?'rotate-180':'rotate-0'} duration-300 transition-all transform`}/></button> */}
-
               <div className="flex w-full gap-4 items-center pb-4">
                 <p className='shrink-0'>Select currency</p>
-                <CurrencySelector selected={selectedCurrency.value} handleSelectCurrency={handleSelectCurrency} currencies={currencies} />
+                {
+                // isFetching ? <Skeleton /> : 
+                <CurrencySelector selected={selectedCurrency.value} handleSelectCurrency={handleSelectCurrency} currencies={currencies} />}
               </div>
 
               <div className="flex gap-2 pb-4 items-center">
                 <Toggler options={typeOptions} onChange={handleTypeChange}/>
                 {/* Pointed Shape */}
                 <div style={chamferedEdge} className='text-xs text-nowrap text-clip bg-zikoroBlue pl-3'>
-                  Save up to {discount}%
+                  Save up to {discountRate}%
                 </div>
               </div>
 
 
               {/* Plan Details */}
               <div className="space-y-2">
-                  <h4 className="font-semibold text-xl ">{selectedPlan.label}</h4>
+                  <h4 className="font-semibold text-xl ">{
+                  // isFetching ? <Skeleton className='w-40 h-6'/> : 
+                  selectedPlan.label}</h4>
                   <p>{
+                    // isFetching ? <Skeleton className='w-44 h-6'/> : 
                     `${selectedCurrency.label}${formData.planPrice} per month`
                     }
                   </p>
                   <div className={` overflow-hidden transform transition-all duration-500 ease-in-out space-y-1 `}>
                       
                       <h6 className="text-lg font-medium">Plan Features</h6>
-                      {selectedPlan.features.map((item, i) => (
-                        <div key={i} className="flex gap-2 items-center">
-                          <Check size={16} className="text-purple-500" />
-                          <small>{item}</small>
-                        </div>
-                      ))}
+                      {
+                        // isFetching ? 
+                        // Array(5).map((i,k) => <Skeleton key={k} className='w-60 h-6'/>) 
+                        // : 
+                        selectedPlan.features.map((item, i) => (
+                          <div key={i} className="flex gap-2 items-center">
+                            <Check size={16} className="text-purple-500" />
+                            <small>{item}</small>
+                          </div>
+                        ))
+                      }
                       <div className="flex gap-2 items-center">
                         <Plus size={16} className="text-purple-500" />
                         <small>Show more features</small>
@@ -363,22 +396,28 @@ const chamferedEdge = {
           <div className="">
             <p className="">Summary</p>
             <div className="flex justify-between gap-12 items-center text-xl font-medium">
-              <h4 className="">{selectedPlan.label}</h4>
-              <h4 className="">{formData.amountPaid}</h4>
+              <h4 className="">{
+              // isFetching ? <Skeleton className='w-36 h-6'/> : 
+              selectedPlan.label}</h4>
+              <h4 className="">{
+              // isFetching ? <Skeleton className='w-24 h-6'/> : 
+              formData.amountPaid}</h4>
             </div>
             {/* <small>{`${formData.planPrice} per month x 12`}</small> */}
             <small className='leading-tight'>{
               selectedPlan.label==='Free' ? null :
               type==='Yearly' ?
               `${formData.currency}${formData.planPrice}/month, billed annually at ${formData.currency}${Number(formData.amountPaid)+Number(formData.discountValue)} (Save ${formData.currency}${formData.discountValue})` 
-              : `${formData.currency}${formData.planPrice}/month, save ${discount}% when you pay yearly`}</small>
+              : `${formData.currency}${formData.planPrice}/month, save ${discountRate}% when you pay yearly`}</small>
             {/* ₦110,000 per month, billed annually at ₦1,149,600 (13% savings) */}
             {/* ₦110,000/month, save 13% when you pay yearly */}
           </div>
 
           <div className="  bg-baseLight px-2 py-2 rounded-md flex justify-between gap-12 items-center text-xl font-medium">
             <h5>Total Cost</h5>
-            <h5>{formData.currency}{formData.amountPaid}</h5>
+            {
+            // isFetching ? <Skeleton className='w-14 h-6 bg-white/50'/> : 
+            <h5>{formData.currency}{formData.amountPaid}</h5>}
           </div>
         </div>
 
@@ -462,3 +501,65 @@ const chamferedEdge = {
 };
 
 export default CreateWorkSpace;
+
+
+// Setup
+// Import components, hooks, utils, and constants.
+
+// Define initial state values: formData, typeOptions, plans.
+
+// 2️⃣ State Management
+// Manage form inputs, file uploads, currency/plan selections, loading states, and errors.
+
+// 3️⃣ If Editing Workspace
+// Prefill form with existing workspace data.
+
+// Fetch its subscription plan.
+
+// Calculate costs based on current plan, type, and currency.
+
+// 4️⃣ User Input Handling
+// handleChange → update text/textarea inputs.
+
+// handleSelectCurrency → update currency and recalculate cost.
+
+// handleFileUpload → upload organization logo and preview it.
+
+// 5️⃣ Form Submission
+// Validate required fields.
+
+// Upload files (if any).
+
+// If editing:
+
+// Call /api/workspaces/edit.
+
+// If creating:
+
+// Call /api/workspaces/create.
+
+// Then call /api/subsrciptions/create.
+
+// Update app state and redirect on success.
+
+// 6️⃣ Subscription Cost Calculation
+// Use calculateSubscriptionCost() on:
+
+// Currency change.
+
+// Plan type change.
+
+// Plan selection.
+
+// 7️⃣ Error Handling
+// Handle API and file upload errors.
+
+// Prevent submission if validation fails.
+
+// ✅ Flow Overview
+// pgsql
+// Copy
+// Edit
+// [Open Modal] → [Prefill if Editing] → [User Input] → [Validate] 
+// → [Upload Files] → [Create/Edit Workspace] → [Create Subscription (if new)]
+// → [Update State] → [Close Modal/Redirec

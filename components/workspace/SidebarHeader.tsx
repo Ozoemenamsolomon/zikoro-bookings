@@ -1,6 +1,7 @@
 import { urls } from '@/constants'
 import { useAppointmentContext } from '@/context/AppointmentContext'
-import { getSubscriptionStatus } from '@/lib'
+
+import { getPermissionsFromSubscription } from '@/lib/server/subscriptions'
 import { fetchOneTeamMember } from '@/lib/server/workspace'
 import useUserStore from '@/store/globalUserStore'
 import { Plus } from 'lucide-react'
@@ -13,10 +14,13 @@ const SidebarHeader = () => {
     const {getWsUrl, } = useAppointmentContext()
   
     useEffect(()=>{
+      const fetchPlan = async () => {
         if(currentWorkSpace){
-            const plan = getSubscriptionStatus(currentWorkSpace)
-            setSubscritionPlan(plan)
-        }
+          const plan = await getPermissionsFromSubscription(currentWorkSpace)
+          setSubscritionPlan(plan)
+      }
+      }
+      fetchPlan()
 
       const updateRole = async () => {
         if(user) {
@@ -55,6 +59,7 @@ const SidebarHeader = () => {
 
         <div className="border border-purple-500 rounded-xl p-2 text-center w-full space-y-1">
             <p className="text-ash  text-[12px]"> {subscriptionPlan?.displayMessage}</p>
+            <Link href={subscriptionPlan?.reactivateLink!} className='py-2 text-center w-full border border-purple-500 rounded-md flex justify-center'>View Details</Link>
         </div>
 
         <div className="border rounded-xl p-2 text-center w-full space-y-1">

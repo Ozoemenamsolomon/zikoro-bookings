@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { BookingsCurrencyConverter, Organization, SubscriptionPlanInfo } from "@/types";
 import { User } from "@/types/appointments";
-import { getSubscriptionStatus } from "@/lib";
+import { getPermissionsFromSubscription } from "@/lib/server/subscriptions";
  
 interface UserState {
   user: User | null;
@@ -75,7 +75,7 @@ export async function initializeWorkspaces(
       // set current workspace to current workspace from the session or to workspace from the token, which is the new workspace user was added to.
       if (assignedWkspace) {
         setCurrentWorkSpace(assignedWkspace);
-        const plan = getSubscriptionStatus(assignedWkspace)
+        const plan = await getPermissionsFromSubscription(assignedWkspace)
         setSubscritionPlan(plan)
 
         return assignedWkspace;
@@ -86,14 +86,14 @@ export async function initializeWorkspaces(
         );
         setCurrentWorkSpace(exists || data[0] || null);
         if (exists||data[0]) {
-          const plan = getSubscriptionStatus(exists || data[0] )
+          const plan = await getPermissionsFromSubscription(exists || data[0] )
           setSubscritionPlan(plan)
         }
         return exists || data[0] || null;
       } else {
         setCurrentWorkSpace(data[0] || null);
         if (data[0]) {
-          const plan = getSubscriptionStatus(data[0] )
+          const plan = await getPermissionsFromSubscription(data[0] )
           setSubscritionPlan(plan)
         }
         return data[0] || null;

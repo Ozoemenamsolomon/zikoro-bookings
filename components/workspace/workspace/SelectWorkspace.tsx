@@ -39,7 +39,7 @@ const SelectWorkspace = () => {
           label:item.currency, value:String(item.amount)
         }))
         setCurrencies(options)
-        console.log({data, options})
+        // console.log({data, options})
       }
       fetching()
     }, [])
@@ -74,12 +74,11 @@ const SelectWorkspace = () => {
               {ws?.organizationName}
             </button>
 
-            {ws?.organizationOwnerId===user?.id ? 
+            {/* {ws?.organizationOwnerId===user?.id ? 
             <CreateWorkSpace
               currencies={currencies}
               onClose={setIsOpen}
               workSpaceData={ws!}
-              currencies={currencies}
               button={
                 <button className="shrink-0">
                   <SquarePen
@@ -90,7 +89,7 @@ const SelectWorkspace = () => {
               }
             /> :
             <div className='w-8 shrink-0'></div>
-            }
+            } */}
           </div>
         ))}
         <CreateWorkSpace onClose={setIsOpen} currencies={currencies}/>

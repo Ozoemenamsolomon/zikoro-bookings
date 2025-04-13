@@ -17,7 +17,7 @@ export interface Organization {
   created_at: string; // ISO timestamp
   organizationAlias?: string | null;
   organizationName: string;
-  subscriptionPlan?: string | null;
+  subscriptionPlan?: "Free" | "Lite" | "Professional" | "Enterprise" | null;
   subscritionStartDate?: string | null; // Date as string (ISO format)
   subscriptionEndDate?: string | null; // Date as string (ISO format)
   organizationOwner?: string | null;
@@ -132,11 +132,23 @@ export interface SubscriptionBooking {
   workspaceAlias?: string | null;
 }
 
+// used in the layout sidebar header ui
   export interface SubscriptionPlanInfo {
-    plan: string;
-    validDaysRemaining: number;
-    subscriptionEndDate: string | null;
+    bookingLimit: number;
+    smsEnabled: boolean;
+    teamLimit: number;
+    bookingsCount: number;
+    activeBooking: boolean;
     isExpired: boolean;
+    effectivePlan: "Free" | "Lite" | "Professional" | "Enterprise";
+    validDaysRemaining: number;
+    daysSinceExpiration: number | null;
     displayMessage: string;
-    daysSinceExpiration: number | null; // useful for timing nudges
+    planStatus: "active" | "expired" | "free";
+    shouldShowRenewPrompt: boolean;
+    isOnFreePlan: boolean;
+    daysLeftPercentage:number,
+    showTrialEndingSoonPrompt:boolean,
+    reactivateLink:string,
+    subscriptionEndDate:string|null,
 }

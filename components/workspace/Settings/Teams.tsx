@@ -29,9 +29,9 @@ const Teams = ({ teamMembers }: TeamsProps) => {
   }
 
   return (
-    <section className="sm:py-8 sm:px-8 space-y-5">
+    <section className="sm:py-8 sm:px-8 space-y-5 max-sm:w-screen overflow-x-auto hide-scrollbar">
       {/* Invite Team Members Section */}
-      <div className="flex justify-end w-full ">
+      <div className="flex sm:justify-end w-full ">
         {user?.workspaceRole==='OWNER'? <InviteTeams teams={teams} setTeams={setTeams}/> : null }
       </div>
 
