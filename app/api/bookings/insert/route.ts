@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     const {data,error}= await supabase
       .from('bookings')
       .insert(body)
-      .select('*')
+      .select('*, appointmentLinkId(id,locationDetails, createdBy(userEmail,phoneNumber))')
       .single()
 
     console.log('Inserting booking result:', {data,error})

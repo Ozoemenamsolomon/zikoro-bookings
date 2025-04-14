@@ -9,10 +9,11 @@ export async function POST(req: NextRequest) {
   }
   try {
     const body = await req.json();
-    // console.log(body) = body.workspaceData, body.userData
+    console.log({plan:body}) // = body.workspaceData, body.userData
 
     const {data,error,newTeam,newTeamError}= await createWorkspace(body)
 
+    // return NextResponse.json({ data:{organizationAlias: 'testing-lite-P4Dac'}, error:false}, { status: 200 });
     return NextResponse.json({ data, error, newTeam, newTeamError }, { status: 200 });
   } catch (error) {
     console.error("Unhandled booking workspace error:", error);

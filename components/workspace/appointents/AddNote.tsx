@@ -148,20 +148,20 @@ const AddNote = ({setIsAddNote, isAddNote, booking, setBookingNotes }:{
             <Button onClick={()=>{
               setFormData(defaultValues)
               setIsAddNote('')
-              }} variant={'outline'} className='rounded-full h-10 w-10 flex justify-center items-center text-gray-600'>
+              }} variant={'outline'} className='rounded-full h-10 w-10 flex justify-center items-center text-gray-600 hover:border-zikoroBlue duration-300'>
                 <ArrowLeft size={36}/>
             </Button>
-            <h4 className="font-semibold">{!disabled ? 'Add note' : 'Preview Note'}</h4>
+            <h4 className="font-semibold">{editNote ? 'Edit note' : !disabled ? 'Add note' : 'Preview Note'}</h4>
             <div></div>
         </div>
 
         <form onSubmit={handleSubmit} className='pt-6 flex flex-col gap-4'>
           {errors?.gen ? <small className='pb- text-red-600 text-center'>{errors.gen}</small> : null}
-            <div className="">
+            <div className="w-full">
                 <input 
                     placeholder='Note title'
                     disabled={disabled}
-                    className='px-4 border-b pb-2 focus:outline-none focus-within:outline-none bg-transparent'
+                    className='px-4 border-b pb-2 focus:outline-none focus-within:outline-none bg-transparent w-full'
                     value={formData?.title||''}
                     name='title'
                     aria-label='title of the note'

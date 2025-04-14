@@ -29,9 +29,9 @@ const Teams = ({ teamMembers }: TeamsProps) => {
   }
 
   return (
-    <section className="sm:py-8 sm:px-8 space-y-5">
+    <section className="sm:py-8 sm:px-8 space-y-5 max-sm:w-screen overflow-x-auto hide-scrollbar">
       {/* Invite Team Members Section */}
-      <div className="flex justify-end w-full ">
+      <div className="flex sm:justify-end w-full ">
         {user?.workspaceRole==='OWNER'? <InviteTeams teams={teams} setTeams={setTeams}/> : null }
       </div>
 
@@ -74,7 +74,7 @@ const Teams = ({ teamMembers }: TeamsProps) => {
                   </div>
                 </td>
                 <td className="p-4 w-2/8 ">
-                  <span className="flex gap-2 items-center">
+                  <span className="flex gap-2 items-center capitalize">
                       {member?.userRole} 
                       { member?.userId?.id !== member?.workspaceAlias?.organizationOwnerId  ? <UpdateMemberRole 
                         member={member}

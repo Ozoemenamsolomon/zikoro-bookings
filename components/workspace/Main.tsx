@@ -6,6 +6,7 @@ import { useClickOutside } from '@/lib/useClickOutside'
 import Image from 'next/image'
 import Link from 'next/link'
 import { urls } from '@/constants'
+import SidebarHeader from './SidebarHeader'
 // import { NotifyIcon } from '@/constants'
 // import Notification from './Notification'
 
@@ -25,11 +26,11 @@ const Main = ({children}:{children:React.ReactNode}) => {
                 <div className="absolute top-6 right-6 flex justify-end w-full">
                     <button type="button" onClick={()=>setShow(false)}><ChevronFirst size={18} className='text-gray-600'/></button>
                 </div>
-                <Sidebar/>
+                <Sidebar header={<SidebarHeader />}/>
             </aside>
 
             <aside className={`max-lg:hidden z-30 flex-shrink-0 w-60 border-r bg-white  h-screen overflow-auto no-scrollbar sticky top-0 `}>
-                <Sidebar/>
+                <Sidebar header={<SidebarHeader />}/>
             </aside>
 
             <article className="flex-1 max-w-7xl mx-auto min-h-screen">

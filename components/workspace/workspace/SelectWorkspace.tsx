@@ -2,11 +2,12 @@
 
 import { PopoverMenu } from '@/components/shared/PopoverMenu';
 import { ChevronDown, SquarePen } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CreateWorkSpace from './CreateWorkSpace';
 import useUserStore from '@/store/globalUserStore';
-import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { fetchCurrencies } from '@/lib/server/workspace';
+import { BookingsCurrencyConverter } from '@/types';
 // import { getWorkspacePath } from '@/utils/urlHelpers';
 
 
@@ -21,6 +22,7 @@ const SelectWorkspace = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [currencies, setCurrencies] = useState<{label:string,value:string}[]>([])
 
   /** Handle Workspace Selection */
   const handleWorkspaceChange = (wsAlias: string) => {
@@ -28,6 +30,18 @@ const SelectWorkspace = () => {
     router.push(getWorkspacePath(wsAlias, pathname.split('/').slice(3).join('/')));
     setIsOpen(false)
   };
+  
+    useEffect(() => {
+      const fetching = async() => {
+        const {data} = await fetchCurrencies()
+        const options = data.map((item)=>({
+          label:item.currency, value:String(item.amount)
+        }))
+        setCurrencies(options)
+        // console.log({data, options})
+      }
+      fetching()
+    }, [])
 
   return (
     <PopoverMenu
@@ -41,7 +55,7 @@ const SelectWorkspace = () => {
           className="rounded-md w-full py-2 px-4 border flex justify-between gap-4 items-center"
         >
           <p className="w-full truncate min-w-0 text-start font-semibold">
-            {currentWorkSpace?.organizationName}
+            {currentWorkSpace?.organizationName }
           </p>
           <ChevronDown size={14} className="shrink-0" />
         </button>
@@ -59,8 +73,9 @@ const SelectWorkspace = () => {
               {ws?.organizationName}
             </button>
 
-            {ws?.organizationOwnerId===user?.id ? 
+            {/* {ws?.organizationOwnerId===user?.id ? 
             <CreateWorkSpace
+              currencies={currencies}
               onClose={setIsOpen}
               workSpaceData={ws!}
               button={
@@ -73,13 +88,13 @@ const SelectWorkspace = () => {
               }
             /> :
             <div className='w-8 shrink-0'></div>
-            }
+            } */}
           </div>
         ))}
-        <CreateWorkSpace onClose={setIsOpen} />
+        <CreateWorkSpace onClose={setIsOpen} currencies={currencies}/>
       </div>
     </PopoverMenu>
   );
 };
 
-export default SelectWorkspace;
+export default React.memo(SelectWorkspace);

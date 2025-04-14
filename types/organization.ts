@@ -1,23 +1,11 @@
 import { User } from "./appointments";
 
-// export interface BookingWorkSpace {
-//   id?: string; // UUID represented as a string
-//   created_at?: string; // ISO timestamp string
-//   workspaceName?: string | null; // Optional text field
-//   workspaceOwner?: bigint | null; // Optional bigint, represented as number in TypeScript
-//   subscriptionPlan?: string | null; // Optional text field
-//   subscriptionEndDate?: string | null; // Optional date represented as ISO string
-//   workspaceLogo?: string ; // Optional text field
-//   workspaceAlias: string ; // Optional text field
-//   workspaceDescription?: string | null; // Optional text field
-// }
-
 export interface Organization {
   id: number;
   created_at: string; // ISO timestamp
   organizationAlias?: string | null;
   organizationName: string;
-  subscriptionPlan?: string | null;
+  subscriptionPlan?: "Free" | "Lite" | "Professional" | "Enterprise" | null;
   subscritionStartDate?: string | null; // Date as string (ISO format)
   subscriptionEndDate?: string | null; // Date as string (ISO format)
   organizationOwner?: string | null;
@@ -57,6 +45,12 @@ export interface OrganizationInput {
   BillingAddress?: string | null;
   TaxID?: string | null;
   payoutAccountDetails?: Record<string, any> | null; // JSON object
+  
+  currency?:string;
+  discountValue?: number | null;
+  planPrice?: number | null;
+  amountPaid?: number | null;
+
 }
 
 export interface BookingTeams {
@@ -93,7 +87,7 @@ export interface BookingTeamsTable {
   userEmail?: string | null; // Optional text field
 }
 
- export interface CredentialTokenBalance {
+ export interface BookenTokenBalance {
   id: number
   created_at: string // ISO timestamp (e.g., "2024-06-27T12:34:56Z")
   workspaceId?: number | null
@@ -102,4 +96,47 @@ export interface BookingTeamsTable {
   lastactivityQty?: number | null
   availableBalance?: number | null
   lastactivityUserId?: number | null
+}
+export interface BookingsCurrencyConverter {
+  id: number; // bigint
+  created_at: string; // timestamp with time zone (ISO string format)
+  currency: string  
+  amount: number 
+}
+
+export interface SubscriptionBooking {
+  id: number;
+  created_at: string; // ISO timestamp format
+  userId?: number | null;
+  subscriptionType?: string | null;
+  amountPaid?: number | null;
+  startDate?: string | null; // ISO timestamp format
+  expirationDate?: string | null; // ISO timestamp format
+  discountCode?: string | null;
+  discountValue?: number | null;
+  currency?: string | null;
+  monthYear?: string | null;
+  planPrice?: number | null;
+  workspaceAlias?: string | null;
+}
+
+// used in the layout sidebar header ui
+  export interface SubscriptionPlanInfo {
+    bookingLimit: number;
+    smsEnabled: boolean;
+    teamLimit: number;
+    bookingsCount: number;
+    activeBooking: boolean;
+    isExpired: boolean;
+    effectivePlan: "Free" | "Lite" | "Professional" | "Enterprise";
+    validDaysRemaining: number;
+    daysSinceExpiration: number | null;
+    displayMessage: string;
+    planStatus: "active" | "expired" | "free";
+    shouldShowRenewPrompt: boolean;
+    isOnFreePlan: boolean;
+    daysLeftPercentage:number,
+    showTrialEndingSoonPrompt:boolean,
+    reactivateLink:string,
+    subscriptionEndDate:string|null,
 }

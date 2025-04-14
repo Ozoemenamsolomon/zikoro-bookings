@@ -11,3 +11,4 @@ export const getInitials = (firstName?: string|null, lastName?: string|null): st
     return `${firstInitial}${lastInitial}`;
   };
   
+  

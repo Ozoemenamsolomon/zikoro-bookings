@@ -111,8 +111,9 @@ const UpdateMemberRole = ({member, setTeams}:{
                     value={formData.userRole}
                     onChange={handleSelectChange}
                     options={[
-                    { label: 'Owner', value: 'OWNER' },
-                    { label: 'Member', value: 'MEMBER' },
+                      { label: 'Owner', value: 'owner' },
+                      { label: 'Editor', value: 'editor' },
+                      { label: 'Collaborator', value: 'collaborator' },
                     ]}
                 />
             </div>

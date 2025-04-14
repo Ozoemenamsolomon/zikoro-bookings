@@ -64,7 +64,7 @@ export const fetchAnalytics = async (
       throw prevErr
     }
 
-    console.log({ curList, prevList, prevErr, curErr});
+    // console.log({ curList, prevList, prevErr, curErr});
     return { curList, prevList, error: null, count:0 };
 
   } catch (error) {

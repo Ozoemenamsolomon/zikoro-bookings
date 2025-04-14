@@ -1,6 +1,6 @@
 "use client";
 
-import { AppointmentLink, AppointmentUnavailability, Booking, BookingsContact, BookingsQuery, } from "@/types/appointments";
+import { AppointmentLink, AppointmentUnavailability, Booking, BookingReminder, BookingsContact, BookingsQuery, } from "@/types/appointments";
 import { useState,   useCallback,  } from "react";
 import useUserStore from "@/store/globalUserStore";
 
@@ -361,4 +361,26 @@ export function useBookingsContact() {
     }
 
   return { insertBookingsContact,fetchAllContacts };
+}
+
+
+export function useBookingsReminder() {
+  const {currentWorkSpace, user } = useUserStore()
+
+  const insertBookingsReminder = useCallback(async (booking: Booking) => {
+    const { data, error } = await PostRequest({
+      url: `/api/bookingReminders/create`,
+      body: booking
+    })  
+    if (data) return 'Reminder added successfully'
+    return '';
+    }, []);
+
+    const fetchAllBookingReminders= async () => {
+      const response = await fetch(`/api/bookingReminders?workspaceId=${currentWorkSpace?.organizationAlias}&owner=${user?.id}`)
+       const {data,error,count} = await response.json()
+       return {data,error,count} 
+    }
+
+  return { insertBookingsReminder, fetchAllBookingReminders };
 }

@@ -24,6 +24,7 @@ export interface AppointmentLink {
     teamMembers: string | null;
     zikoroBranding: string | null;
     isPaidAppointment?: boolean;
+    smsNotification?:string;
 }
 export interface AppointmentFormData {
   id?: bigint;
@@ -53,6 +54,7 @@ export interface AppointmentFormData {
   zikoroBranding: string | null | boolean;
   files?:File[] | null;
   isPaidAppointment?: boolean;
+  smsNotification?:string;
 }
 
 export interface FormProps {
@@ -73,7 +75,7 @@ export interface DetailItem {
 }
 
 export interface Booking {
-  id?: bigint;
+  id?: number;
   created_at?: string;
   address?:string;
   appointmentLinkId?: any;
@@ -108,6 +110,27 @@ export interface Booking {
   contactId?: string;
   meetingLink?: string;
   // appointmentNotes?: string;
+}
+
+export interface BookingReminder {
+  id: number;
+  created_at: string;
+  bookingId: Booking;
+  phone?: string | null;
+  email?: string | null;
+  smsMessage?: string | null;
+  emailMessage?: string | null;
+  smsStatus?: string | null;
+  smsStatusMessage?: string | null;
+  emailStatus?: string | null;
+  emailStatusMessage?: string | null;
+  recordCreationTimeStamp?: string | null;
+  updatedAt?: string | null;
+  lastUpdateTimestamp?: string | null;
+  scheduledSendTime?: string | null;
+  sendAt?: string | null;
+  smscost?:string|null,
+  smsLength?: number|null,
 }
 
 export interface UserType {

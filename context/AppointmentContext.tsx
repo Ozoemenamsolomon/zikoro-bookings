@@ -6,6 +6,7 @@ import useUserStore from "@/store/globalUserStore";
 import { wsUrl, wsUrll } from '@/lib/wsUrl';
 import { useRouter } from 'next/navigation';
 import { DateRange } from 'react-day-picker';
+import { fetchOneTeamMember, fetchTeamMembers } from '@/lib/server/workspace';
 
 export interface AppState {
   isLoading: boolean;
@@ -82,12 +83,6 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   //           `/onboarding?email=${user?.userEmail}&createdAt=${user?.created_at}`
   //         )
   // }, [user])
-  
-  useEffect(()=>{
-    if(user) {
-      setUser({...user!, workspaceRole: currentWorkSpace?.organizationOwnerId===user?.id ? 'OWNER':'MEMBER'})
-    }
-  },[user?.id, currentWorkSpace])
 
   const contextValue: AppointmentContextProps = {
     isLoading,setLoading,isfetching, setIsFetching,

@@ -59,21 +59,25 @@ export const Toggler: React.FC<TogglerProps> = ({
   const toggleSwitch = () => {
     const newValue = selected === options[0] ? options[1] : options[0];
     setSelected(newValue);
-    onChange?.(newValue);
+    onChange && onChange(newValue);
   };
 
   return (
-    <div
-      className={`relative flex items-center  w-12 h-6 p- cursor-pointer rounded-full bg-gray-300 transition-colors duration-300 p- `}
-      role="switch"
-      aria-checked={selected === options[1]}
-      onClick={toggleSwitch}
-    >
-      <div
-        className={`absolute w-[22px] h-[22px] bg-white rounded-full shadow-md transition-transform duration-300 ${
-          selected === options[0] ? 'translate-x-0.5' : 'translate-x-[24px]'
-        }`}
-      />
-    </div>
+    <div className="flex gap-2 items-center">
+        <span className="">{options[0]}</span>
+        <div
+          className={`relative flex items-center  w-12 h-6 p- cursor-pointer rounded-full bg-gray-300 transition-colors duration-300 aria-checked:bg-blue-600 `}
+          role="switch"
+          aria-checked={selected === options[1]}
+          onClick={toggleSwitch}
+        >
+          <div
+            className={`absolute w-[22px] h-[22px] bg-white rounded-full shadow-md transition-transform duration-300 ${
+              selected === options[0] ? 'translate-x-0.5' : 'translate-x-[24px]'
+            }`}
+          />
+        </div>
+        <span className="">{options[1]}</span>
+      </div>
   );
 };
