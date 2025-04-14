@@ -15,6 +15,14 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.0";
 
 // const KUDISMS_API_KEY="tjwRx5iS6JMGnU749FBDAh3Nbd1KceYWsZLTIkXCfzVrmPHlpOQoqEyv0au8g2"
 // const KUDISMS_SENDER_ID="Zikoro"
+//@ts-ignore
+const supabaseUrl = Deno.env.get("_SUPABASE_URL") as string;
+// @ts-ignore
+const supabaseKey = Deno.env.get("_SUPABASE_SECRET_KEY") as string;
+// @ts-ignore
+const zeptoApiKey = Deno.env.get("_ZEPTOMAIL_API_TOKEN") as string;
+// @ts-ignore
+const senderEmail = Deno.env.get("_SENDER_EMAIL") as string;
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 

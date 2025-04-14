@@ -68,18 +68,7 @@ export async function getPermissionsFromSubscription(
       : "free"
     : "active";
 
-    let displayMessage = "";
 
-    if (planStatus === "expired") {
-        displayMessage =
-        daysSinceExpiration && daysSinceExpiration < 30
-            ? `Your previous ${subscriptionPlan} plan expired ${daysSinceExpiration} day(s) ago. Reactivate now to keep your data and regain access to premium features.`
-            : `You're on the FREE plan. Upgrade anytime to access more features.`;
-    } else if (planStatus === "active") {
-        displayMessage = `Your ${subscriptionPlan} plan is active and will expire in ${validDaysRemaining} day(s).`;
-    } else {
-        displayMessage = `You're on the FREE plan. Upgrade anytime to access more features.`;
-    }
 
     const shouldShowRenewPrompt = planStatus === "expired" && (daysSinceExpiration || 0) < 30;
   
@@ -118,6 +107,18 @@ export async function getPermissionsFromSubscription(
     const showTrialEndingSoonPrompt = planStatus === "active" && validDaysRemaining <= 5;
     const isOnFreePlan = effectivePlan === "Free";
     const reactivateLink = `/ws/${workspaceAlias}/settings/workspace`;
+    let displayMessage = "";
+
+    if (planStatus === "expired") {
+        displayMessage =
+        !isOnFreePlan && daysSinceExpiration && daysSinceExpiration < 30
+            ? `Your previous ${subscriptionPlan} plan expired ${daysSinceExpiration} day(s) ago. Reactivate now to keep your data and regain access to premium features.`
+            : `You're on the FREE plan. Upgrade anytime to access more features.`;
+    } else if (planStatus === "active" && !isOnFreePlan) {
+        displayMessage = `Your ${subscriptionPlan} plan is active and will expire in ${validDaysRemaining} day(s).`;
+    } else {
+        displayMessage = `You're on the FREE plan. Upgrade anytime to access more features.`;
+    }
 
     // if it isExpired, update the organization with Free plan for 1 month - this usually happen during doing login, else doing page reload in the app.
     let updatedWorkspace = null

@@ -534,3 +534,56 @@ export const testEdgeFuntion = async () => {
     return { data: null, error: err }
   }
 }
+
+
+export type SmsPayload = {
+  to: string;
+  from: string;
+  sms: string;
+  type: string;
+  // type: 'plain' | 'unicode';
+  api_key: string;
+  channel: string;
+  media?: {
+    url: string;
+    caption: string;
+  };
+};
+
+export async function sendTSms(payload: SmsPayload) {
+  try {
+    const response = await fetch('https://v3.api.termii.com/api/sms/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to send SMS: ${response.status} ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log('SMS sent successfully: ', data);
+    return data;
+  } catch (error) {
+    console.error('Error sending SMS: ', error);
+    throw error;
+  }
+}
+
+
+export async function sendTestSms() {
+  const payload = {
+    to: '2348032787601',
+    from: 'ZIKORO',
+    sms: 'Hi there, testing Termii from Kachi',
+    type: 'plain',
+    api_key: process.env.TERMII_API_KEY as string,
+    channel: 'generic',
+  };
+
+  return await sendTSms(payload);
+}
