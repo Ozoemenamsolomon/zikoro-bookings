@@ -65,52 +65,52 @@ const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh, currencies
   const plans = subscriptionPlans.map((item)=>({label: item.label, value:item.label}))
   
   /** Initialize Form Data */
-  // useEffect(() => {
-  //   const fetchSub = async () => {
-  //     setFetching(true)
-  //     const {data,error} = await fetchSubscriptionPlan(workSpaceData?.organizationAlias!)
-  //     if(data){
-  //       setType(data.monthYear!)
-  //       const currencyTypeB = currencies.find((item) => item.label === data.currency);
-  //       const selectedPlanB = subscriptionPlans.find((item=>item.label===data.subscriptionType))
+  useEffect(() => {
+    // const fetchSub = async () => {
+    //   setFetching(true)
+    //   const {data,error} = await fetchSubscriptionPlan(workSpaceData?.organizationAlias!)
+    //   if(data){
+    //     setType(data.monthYear!)
+    //     const currencyTypeB = currencies.find((item) => item.label === data.currency);
+    //     const selectedPlanB = subscriptionPlans.find((item=>item.label===data.subscriptionType))
         
-  //       if (currencyTypeB && selectedPlanB) {
-  //         setSelectedCurrency({ label: currencyTypeB.label, value: Number(currencyTypeB.value) });
+    //     if (currencyTypeB && selectedPlanB) {
+    //       setSelectedCurrency({ label: currencyTypeB.label, value: Number(currencyTypeB.value) });
 
-  //         const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(discountRate, data.monthYear!, { label: currencyTypeB.label, value: Number(currencyTypeB.value)}, selectedPlanB)
-  //         setFormData((prev)=>{
-  //           return {
-  //             ...prev, currency, planPrice:base, discountValue, amountPaid:total 
-  //           }
-  //         })
-  //       }
-  //     }
-  //     setFetching(false)
-  //   }
+    //       const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(discountRate, data.monthYear!, { label: currencyTypeB.label, value: Number(currencyTypeB.value)}, selectedPlanB)
+    //       setFormData((prev)=>{
+    //         return {
+    //           ...prev, currency, planPrice:base, discountValue, amountPaid:total 
+    //         }
+    //       })
+    //     }
+    //   }
+    //   setFetching(false)
+    // }
 
-  //   if (workSpaceData) {
-  //     setFormData((prev) => { 
-  //       return { 
-  //         ...prev,
-  //         organizationName: workSpaceData?.organizationName!,
-  //         organizationOwner: workSpaceData?.organizationOwner!,
-  //         organizationLogo: workSpaceData.organizationLogo,
-  //         organizationAlias: workSpaceData?.organizationAlias!,
-  //         organizationOwnerId: workSpaceData?.organizationOwnerId!,
-  //         organizationType: workSpaceData?.organizationType,
-  //         country: workSpaceData?.country,
-  //         subscriptionPlan:workSpaceData?.subscriptionPlan,
-  //         subscriptionEndDate: workSpaceData?.subscriptionEndDate,
-  //         subscritionStartDate:workSpaceData?.subscritionStartDate, 
-  //         // currency: 'NGN'
-  //       }
-  //      });
-  //     if (workSpaceData?.organizationLogo) {
-  //       setPreviewUrls([{ url: workSpaceData?.organizationLogo, type: 'image' }]);
-  //     }
-  //     fetchSub()
-  //   }
-  // }, [workSpaceData]);
+    if (workSpaceData) {
+      setFormData((prev) => { 
+        return { 
+          ...prev,
+          organizationName: workSpaceData?.organizationName!,
+          organizationOwner: workSpaceData?.organizationOwner!,
+          organizationLogo: workSpaceData.organizationLogo,
+          organizationAlias: workSpaceData?.organizationAlias!,
+          organizationOwnerId: workSpaceData?.organizationOwnerId!,
+          organizationType: workSpaceData?.organizationType,
+          country: workSpaceData?.country,
+          subscriptionPlan:workSpaceData?.subscriptionPlan,
+          subscriptionEndDate: workSpaceData?.subscriptionEndDate,
+          subscritionStartDate:workSpaceData?.subscritionStartDate, 
+          // currency: 'NGN'
+        }
+       });
+      if (workSpaceData?.organizationLogo) {
+        setPreviewUrls([{ url: workSpaceData?.organizationLogo, type: 'image' }]);
+      }
+      // fetchSub()
+    }
+  }, [workSpaceData]);
 
   /** Handle Input Change */
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -267,7 +267,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
 };
 
-console.log({currencies, subscriptionPlans})
+// console.log({currencies, subscriptionPlans})
 
 const handleSelectCurrency = useCallback((value: string) => {
   const currencyType = currencies.find((item) => item.value === value);
@@ -325,7 +325,7 @@ const Skeleton = ({className}:{className?:string}) => <span className={cn("w-20 
   const [drop, setDrop] = useState(false)
   return (
     <CenterModal
-      className="sm:max-h-screen md:max-h-[90vh] max-w-5xl"
+      className={`sm:max-h-screen md:max-h-[90vh] ${workSpaceData ? 'max-w-2xl ':'max-w-5xl '} `}
       isOpen={isOpen}
       onOpenChange={setIsOpen} // Add this line
       trigerBtn={
@@ -343,7 +343,7 @@ const Skeleton = ({className}:{className?:string}) => <span className={cn("w-20 
        <button onClick={()=>setIsOpen(false)} type="button" className='absolute right-2 top-2 bg-black text-white rounded-full h-10 w-10 flex  justify-center items-center z-10'><X/></button>
 
         {/* Sidebar Section */}
-        <div className=" md:col-span-2 bg-slate-200 gap-6 py-10 px-6 md:px-10 justify-between flex flex-col">
+        {!workSpaceData ? <div className=" md:col-span-2 bg-slate-200 gap-6 py-10 px-6 md:px-10 justify-between flex flex-col">
           <div className="">
               <div className="flex w-full gap-4 items-center pb-4">
                 <p className='shrink-0'>Select currency</p>
@@ -419,10 +419,10 @@ const Skeleton = ({className}:{className?:string}) => <span className={cn("w-20 
             // isFetching ? <Skeleton className='w-14 h-6 bg-white/50'/> : 
             <h5>{formData.currency}{formData.amountPaid}</h5>}
           </div>
-        </div>
+        </div> : null}
 
         {/* Form Section */}
-        <div className="bg-gray-100  h-full flex flex-col justify-between md:col-span-3 px-6 md:px-16 py-10 gap-6 ">
+        <div className={` bg-gray-100  h-full flex flex-col justify-between ${workSpaceData ? 'col-span-5':'md:col-span-3'} px-6 md:px-16 py-10 gap-6 `}>
           
           <div className="space-y-3">
             <h5 className="font-semibold text-xl pb-2">Workspace Information</h5>
@@ -488,7 +488,7 @@ const Skeleton = ({className}:{className?:string}) => <span className={cn("w-20 
           <div className="flex flex-col gap-1 items-center justify-center">
             {errors?.gen && <small className="text-red-500">{errors.gen}</small>}
             {/* <small>{loading}</small> */}
-            <Button type='submit' className="bg-basePrimary h-12 w-full" disabled={loading.length>0}>
+            <Button asChild type='submit' className="bg-basePrimary h-12 w-full" disabled={loading.length>0}>
               {loading.length>0 ? 
               <span className='flex items-center gap-2'><Loader2 size={20} className='animate-spin'/> {loading}</span> : 'Create'}
             </Button>

@@ -5,7 +5,6 @@ import { ChevronDown, SquarePen } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import CreateWorkSpace from './CreateWorkSpace';
 import useUserStore from '@/store/globalUserStore';
-import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { fetchCurrencies } from '@/lib/server/workspace';
 import { BookingsCurrencyConverter } from '@/types';

@@ -74,8 +74,6 @@ export const reactquilToolbar =
       },
     ];
     
-
-    
     export const subscriptionPlansValue = [
       {
         label: "Free",

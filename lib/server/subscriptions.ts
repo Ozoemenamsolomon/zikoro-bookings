@@ -1,12 +1,10 @@
 'use server'
 
 import { createClient } from "@/utils/supabase/server";
-import { getUserData } from ".";
-import { BookingsCurrencyConverter, BookingTeamInput, BookingTeamMember, BookingTeams, Organization, OrganizationInput, SubscriptionBooking, SubscriptionPlanInfo } from "@/types";
-import { User } from "@/types/appointments";
-import { generateSlugg } from "../generateSlug";
-import { createADMINClient } from "@/utils/supabase/no-caching";
+import {  Organization, SubscriptionBooking, SubscriptionPlanInfo } from "@/types";
 import { subscriptionPlansValue } from "@/constants";
+import { addMonths, differenceInCalendarMonths,parseISO, isBefore,differenceInCalendarDays   } from "date-fns";
+import { updateWorkspace } from "./workspace";
 
 export const createSubsription = async (plan:SubscriptionBooking) => {
     const supabase = createClient()
@@ -27,7 +25,6 @@ export const createSubsription = async (plan:SubscriptionBooking) => {
         return { data:null, error:'An error occurred while processing the request' };
     }
 }
-
 
 export const fetchSubscriptionPlan = async (workspaceId:string):Promise<{data:SubscriptionBooking|null,error:string|null}> => {
     const supabase = createClient()
@@ -50,11 +47,9 @@ export const fetchSubscriptionPlan = async (workspaceId:string):Promise<{data:Su
     }
 }
 
-import { addMonths, differenceInCalendarMonths,parseISO, isBefore,differenceInCalendarDays   } from "date-fns";
-
 export async function getPermissionsFromSubscription(
   organization: Organization, isbooking?:boolean,
-): Promise<SubscriptionPlanInfo> {
+): Promise<{plan:SubscriptionPlanInfo, updatedWorkspace:Organization|null}> {
     const now = new Date();
     const subscriptionPlan = organization.subscriptionPlan || "Free";
   
@@ -124,8 +119,23 @@ export async function getPermissionsFromSubscription(
     const isOnFreePlan = effectivePlan === "Free";
     const reactivateLink = `/ws/${workspaceAlias}/settings/workspace`;
 
+    // if it isExpired, update the organization with Free plan for 1 month - this usually happen during doing login, else doing page reload in the app.
+    let updatedWorkspace = null
+    if(isExpired) {
+        const {data, error} = await updateWorkspace({
+            organizationAlias:workspaceAlias,
+            subscriptionPlan:'Free',
+            subscritionStartDate: new Date(),
+            subscriptionEndDate: (addMonths(new Date(), 1)),
+            // subscriptionEndDate: new Date('2025-04-17')
+            subscriptionExpiryDate: (addMonths(new Date(), 1))
+        })
+        updatedWorkspace=data
+        // console.log('ISEXPIRED:===', {data, error})
+    }
+
     return {
-        bookingLimit: isExpired ? 0 : maxBookingsPerMonth,
+        plan: {bookingLimit: isExpired ? 0 : maxBookingsPerMonth,
         bookingsCount,
         activeBooking: bookingsCount < maxBookingsPerMonth,
         smsEnabled: smsNotification,
@@ -141,7 +151,9 @@ export async function getPermissionsFromSubscription(
         daysLeftPercentage,
         showTrialEndingSoonPrompt,
         reactivateLink,
-        subscriptionEndDate: endDate?.toISOString()!
+        subscriptionEndDate: endDate?.toISOString()!},
+
+        updatedWorkspace
     };
     
 }
@@ -152,7 +164,7 @@ const fetchBookingsLimitCount = async (startDate: string, endDate: string, works
   const { count, error } = await supabase
     .from("bookings")
     .select("id", { count: "exact" })
-    .eq('workspaceAlias', workspaceAlias)
+    .eq('workspaceId', workspaceAlias)
     .gte("created_at", startDate)
     .lt("created_at", endDate);
 console.log({ count, error })
@@ -163,22 +175,4 @@ console.log({ count, error })
 
   return count || 0;
 };
-
-// TODO:
-// {permissions.shouldShowRenewPrompt && (
-//     <Callout
-//       title="Plan Expired"
-//       message={permissions.displayMessage}
-//       actionLabel="Renew Plan"
-//       actionHref={permissions.reactivateLink}
-//     />
-//   )}
-  
-//   {permissions.showTrialEndingSoonPrompt && (
-//     <Banner>
-//       {`Your ${permissions.effectivePlan} plan expires in ${permissions.validDaysRemaining} day(s). Upgrade now to keep premium features.`}
-//     </Banner>
-//   )}
-  
-//   <ProgressBar percentage={permissions.daysLeftPercentage} />
   

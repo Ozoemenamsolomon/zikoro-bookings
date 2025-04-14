@@ -6,6 +6,7 @@ import { BookingsCurrencyConverter, BookingTeamInput, BookingTeamMember, Booking
 import { User } from "@/types/appointments";
 import { generateSlugg } from "../generateSlug";
 import { createADMINClient } from "@/utils/supabase/no-caching";
+import { addMonths } from "date-fns";
  
 type ResultProp = {
   data: Organization[] | null;
@@ -151,8 +152,10 @@ export const assignMyWorkspace = async (
         organizationName: organization||'My Workspace',
         organizationOwner: name||'',
         organizationOwnerId: userId,
-        subscriptionPlan: 'FREE',
-        subscriptionEndDate:null,
+        subscriptionPlan: 'Free',
+        subscritionStartDate: new Date(),
+        subscriptionEndDate: addMonths(new Date(), 1),
+        subscriptionExpiryDate: addMonths(new Date(), 1),
         organizationLogo: '',
         organizationAlias: generateSlugg(organization||'My Workspace'),
         organizationType: organizationType||'',
@@ -400,4 +403,15 @@ export const fetchCurrencies = async ():Promise<{data:BookingsCurrencyConverter[
   return { data: [], error: "Server error" };
 }
 
+}
+
+
+export const updateWorkspace = async (wkspace:any) => {
+  const supabase = createClient()
+  return await supabase
+    .from('organization')
+    .update(wkspace)
+    .eq('organizationAlias', wkspace.organizationAlias)
+    .select()
+    .single()
 }

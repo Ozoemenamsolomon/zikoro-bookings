@@ -61,6 +61,7 @@ const Branding: React.FC<FormProps> = ({
         }
 
         <CreateWorkSpace 
+          currencies={[]}
           workSpaceData = {currentWorkSpace!}
           button={<button> Edit workspace logo  </button>}
           isRefresh={true}

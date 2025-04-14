@@ -4,20 +4,29 @@ import { useAppointmentContext } from '@/context/AppointmentContext'
 import { getPermissionsFromSubscription } from '@/lib/server/subscriptions'
 import { fetchOneTeamMember } from '@/lib/server/workspace'
 import useUserStore from '@/store/globalUserStore'
+import { Organization } from '@/types'
 import { Plus } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useEffect } from 'react'
 
 const SidebarHeader = () => {
-    const  {user, setUser, currentWorkSpace, setSubscritionPlan, subscriptionPlan} = useUserStore()
+    const  {user, setUser, currentWorkSpace, setCurrentWorkSpace, setWorkSpaces,workspaces, setSubscritionPlan, subscriptionPlan} = useUserStore()
     const {getWsUrl, } = useAppointmentContext()
-  
+  // global function to update the subscription,added to Sidebar as an object, this will prevent effects of propdrilling which affects children components as parent onMounts...
     useEffect(()=>{
       const fetchPlan = async () => {
         if(currentWorkSpace){
-          const plan = await getPermissionsFromSubscription(currentWorkSpace)
+          const {plan,updatedWorkspace} = await getPermissionsFromSubscription(currentWorkSpace)
+          // console.log({plan})
           setSubscritionPlan(plan)
+          if(updatedWorkspace){
+            setCurrentWorkSpace(updatedWorkspace)
+            const updatedWorkspaces = workspaces.map((item) =>
+              item.id === updatedWorkspace.id ? updatedWorkspace : item
+            );
+            setWorkSpaces(updatedWorkspaces);
+          }
       }
       }
       fetchPlan()
@@ -34,7 +43,7 @@ const SidebarHeader = () => {
       }
       updateRole()
     },[user?.id, currentWorkSpace])
-
+// console.log({subscriptionPlan, currentWorkSpace})
   return (
     <>
         <div className="flex gap-4 items-center w-full pb-2">

@@ -43,8 +43,8 @@ Deno.serve(async (req) => {
           .select(`*, bookingId!inner(id, bookingStatus)`)
           .eq("smsStatus", "PENDING")
           .neq("bookingId.bookingStatus", "CANCELLED")
-          // .gte("sendAt", formattedTomorrow.toISOString() ) // Start of tomorrow (00:00)
-          // .lt("sendAt", formattedDayAfterTomorrow.toISOString() ); // Before the day after (00:00)
+          .gte("sendAt", formattedTomorrow.toISOString() ) // Start of tomorrow (00:00)
+          .lt("sendAt", formattedDayAfterTomorrow.toISOString() ); // Before the day after (00:00)
 
         if (error) {
             console.error("Error fetching reminders:", error);
@@ -241,7 +241,7 @@ const updateSmsStatus = async (smsResponses: SmsReminderResult[]) => {
     supabase
       .from("bookingReminders")
       .update({
-        // smsStatus: status,
+        smsStatus: status,
         smsStatusMessage: message,
         smscost, smsLength,
         updatedAt: new Date().toISOString()

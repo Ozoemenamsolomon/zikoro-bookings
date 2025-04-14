@@ -21,7 +21,7 @@ import React from 'react'
    const  res = await getPermissionsFromSubscription(data!, true)
  
    return (
-     <WorkspaceAnalytics permissions={res} />
+     <WorkspaceAnalytics permissions={res.plan} />
    )
  }
  
