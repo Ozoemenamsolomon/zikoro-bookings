@@ -3,7 +3,7 @@ import { ArrowLeft, Check, ChevronDown, Loader2, Plus, PlusCircle, X } from 'luc
 import React, { useCallback, useEffect, useState } from 'react';
 import { Toggler } from '../ui/SwitchToggler';
 import CustomInput from '../ui/CustomInput';
-import { BookingsCurrencyConverter, Organization, OrganizationInput } from '@/types';
+import { Organization, OrganizationInput } from '@/types';
 import useUserStore from '@/store/globalUserStore';
 import { FileUploader, handleFileUpload } from '@/components/shared/Fileuploader';
 import { CustomSelect } from '@/components/shared/CustomSelect';
@@ -13,10 +13,8 @@ import { toast } from 'react-toastify';
 import { generateSlugg } from '@/lib/generateSlug';
 import { useRouter } from 'next/navigation';
 import CurrencySelector from './CurrencySelector';
-import PlanSelector from './PlanSelector';
 import { subscriptionPlans } from '@/constants';
 import { calculateSubscriptionCost, calculateSubscriptionEndDate, cn } from '@/lib';
-import { fetchSubscriptionPlan } from '@/lib/server/subscriptions';
 
 const initialFormData: OrganizationInput = {
   organizationName: '',
