@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { AppointmentFormData, FormProps } from '@/types/appointments';
  
 import { CustomSelect } from '@/components/shared/CustomSelect';
-import { useAppointmentContext } from '@/context/AppointmentContext';
-import { fetchActiveTeamMembers, fetchTeamMembers } from '@/lib/server/workspace';
+import { fetchActiveTeamMembers,   } from '@/lib/server/workspace';
 import useUserStore from '@/store/globalUserStore';
 import { BookingTeamMember } from '@/types';
+import { getPermissionsFromSubscription } from '@/lib/server/subscriptions';
+import Link from 'next/link';
+import { Toggler } from '../ui/SwitchToggler';
 
 const Generalsettings: React.FC<FormProps> = ({
   formData,
@@ -15,13 +17,18 @@ const Generalsettings: React.FC<FormProps> = ({
 }) => {
   const {user, currentWorkSpace} = useUserStore()
   const [teamMembers,setTeamMembers] = useState<{label:string,value:string}[]>([])
+  const [permissions, setPermissions] = useState({smsEnabled:false, isOnFreePlan:true, reactivateLink:''})
 
   useEffect(() => {
     const fetchTeamMembers = async () => {
       if (!currentWorkSpace?.organizationAlias) return; // Avoid unnecessary calls
+      const {plan:{teamLimit,smsEnabled,isOnFreePlan, reactivateLink}} = await getPermissionsFromSubscription(currentWorkSpace)
+      setPermissions({smsEnabled,isOnFreePlan,reactivateLink})
+      console.log({teamLimit,smsEnabled,isOnFreePlan, reactivateLink})
+
+      if (isOnFreePlan) return;
   
       const { data, error } = await fetchActiveTeamMembers(currentWorkSpace.organizationAlias);
-      
       if (error) {
         console.error("Error fetching team members:", error);
         return;
@@ -68,7 +75,6 @@ const Generalsettings: React.FC<FormProps> = ({
         return {...prev,
           teamMembers: newTeamList || '',}
         });
-
   };
 
   const handleSelect = (value: any, name?: string) => {
@@ -88,22 +94,6 @@ const Generalsettings: React.FC<FormProps> = ({
     }));
   };
 
-       // const res = await fetch("/api/sms/sendSms", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     recipients: "2348032787601",
-      //     message: "Hello from Next.js!",
-      //   }),
-      // });
-    
-      // const data = await res.json();
-      // console.log(data);
-
-  
-  
   // console.log({formData })
   return (
     <div className="space-y-4">
@@ -111,17 +101,26 @@ const Generalsettings: React.FC<FormProps> = ({
         <p className="pb-2">Add Team members</p>
         <div className={`${errors?.teamMembers ? 'ring-1 ring-red-600' : ''} flex rounded-md gap-2 items-center `}>
         
-        <CustomSelect
-          name='teamMembers'
-          options={ teamMembers}
-          // value={''}
-          error={errors?.teamMembers}
-          onChange={addTeamMember}
-          placeholder="Select team member"
-          noOptionsLabel='No team members have been added to this workspace'
-          className="w-full h-12"
-          setError={setErrors}
-        />
+        {
+          permissions.isOnFreePlan ?
+          <div className='border border-purple-300 rounded-md p-3 w-full'>
+            <small className="text-center pb-2">You are flying solo on Freemium. Upgrade to bring your team onboard!
+            </small>
+            <Link href={permissions.reactivateLink} className='bg-baseLight px-6 py-2 rounded text-center flex justify-center text-'>Upgrade Plan</Link>
+          </div>
+          :
+          <CustomSelect
+            name='teamMembers'
+            options={ teamMembers}
+            // value={''}
+            error={errors?.teamMembers}
+            onChange={addTeamMember}
+            placeholder="Select team member"
+            noOptionsLabel='No team members have been added to this workspace'
+            className="w-full h-12"
+            setError={setErrors}
+          />
+        }
  
         </div>
         {formData?.teamMembers ? (
@@ -178,12 +177,26 @@ const Generalsettings: React.FC<FormProps> = ({
         />
       </div>
 
-      <div className="space-y-2 flex flex-col items-center w-full" onClick={sendSmsApi}>
-        <button type="button" className='py-2 w-full text-center border border-basePrimary rounded-lg'>
-          Send SMS reminder to attendee {"  "} <span>{formData?.smsNotification ? "✅" : null}</span>
-        </button>
-        <small>This attracts extra charges</small>
-      </div>    
+      <div className="">
+          <div className="flex justify-between gap-6 items-center">
+            <p className="pb-2">Send Notification </p>
+            <Toggler options={['OFF', 'ON']} />
+          </div>
+        <div className='border  border-purple-300 rounded-md p-3 w-full'>
+          {permissions.isOnFreePlan ? <>
+            <small className="text-center pb-2">Reminders matter. Upgrade to send SMS alerts and cut down on no-shows.
+            </small>
+            <Link href={permissions.reactivateLink} className='bg-baseLight px-6 py-2 rounded text-center flex justify-center text-'>Upgrade Plan</Link>
+          </> : null}
+        </div>
+        </div>
+        {/* // <div className="space-y-2 flex flex-col items-center w-full" onClick={sendSmsApi}>
+        // <button type="button" className='py-2 w-full text-center border border-basePrimary rounded-lg'>
+        //   Send SMS reminder to attendee {"  "} <span>{formData?.smsNotification ? "✅" : null}</span>
+        // </button>
+        // <small>This attracts extra charges</small>
+      // </div>  */}
+
     </div>
   );
 };

@@ -10,11 +10,12 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.0";
 
 // initialize supabase
-const supabaseUrl = "https://ddlepujpbqjoogkmiwfu.supabase.co"
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkbGVwdWpwYnFqb29na21pd2Z1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcwMTYwNjQ5NCwiZXhwIjoyMDE3MTgyNDk0fQ.Z4cc23CFZ8Ra7YLsphgvbEW6d_nrOKKCmYao6sA7_Jc"
-
-const KUDISMS_API_KEY="tjwRx5iS6JMGnU749FBDAh3Nbd1KceYWsZLTIkXCfzVrmPHlpOQoqEyv0au8g2"
-const KUDISMS_SENDER_ID="Zikoro"
+//@ts-ignore
+const supabaseUrl = Deno.env.get("_SUPABASE_URL") as string;
+// @ts-ignore
+const supabaseKey = Deno.env.get("_SUPABASE_SECRET_KEY") as string;
+// @ts-ignore
+const TERMII_API_KEY = Deno.env.get("_TERMII_API_KEY") as string;
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -73,7 +74,7 @@ Deno.serve(async (req) => {
               const result = await updateSmsStatus(smsResponse);
               return new Response(JSON.stringify({ 
                 success: "SMS Reminders processed", 
-                // smsResponse,  
+                smsResponse,  
                 // groupedSmsData,
                 result 
               }), {
@@ -88,31 +89,40 @@ Deno.serve(async (req) => {
     }
 });
 
-async function sendSms(recipients: string, message: string) {
+export type SmsPayload = {
+  to: string;
+  from: string;
+  sms: string;
+  type: string;
+  // type: 'plain' | 'unicode';
+  api_key: string;
+  channel: string;
+  media?: {
+    url: string;
+    caption: string;
+  };
+};
+export async function sendTSms(payload: SmsPayload) {
   try {
-    const url = `https://my.kudisms.net/api/sms?token=${KUDISMS_API_KEY}&senderID=${KUDISMS_SENDER_ID}&recipients=${recipients}&message=${encodeURIComponent(message)}&gateway=2`;
-    const data = new FormData();
-    data.append("token", KUDISMS_API_KEY as string);
-    data.append("senderID", KUDISMS_SENDER_ID as string);
-    data.append("recipients", recipients);
-    data.append("message", message);
-    data.append("gateway", "2");
-
-    const response = await fetch(url, {
-      method: "POST",
-      body: data, 
+    const response = await fetch('https://v3.api.termii.com/api/sms/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to send SMS: ${response.statusText}`);
+      const errorText = await response.text();
+      throw new Error(`Failed to send SMS: ${response.status} ${errorText}`);
     }
 
-    const responseData = await response.json();
-    console.log({ responseData, data });
-
-    return responseData;
-  } catch (error: any) {
-    throw new Error(error.message);
+    const data = await response.json();
+    console.log('SMS sent successfully: ', data);
+    return data;
+  } catch (error) {
+    console.error('Error sending SMS: ', error);
+    throw error;
   }
 }
 
@@ -132,7 +142,15 @@ const sendSmsConcurrently = async (
     return {
       id,
       phone,
-      promise: sendSms(phone, message),
+      // promise: sendSms(phone, message),
+      promise: sendTSms({
+        to: phone,
+        from: 'ZIKORO',
+        sms: message,
+        type: 'plain',
+        api_key: TERMII_API_KEY as string,
+        channel: 'generic',
+      }),
     };
   });
 
@@ -145,23 +163,32 @@ const sendSmsConcurrently = async (
       if (result.status === "fulfilled") {
         try {
           const data = result.value;
-          
+
+        //   const {
+        //     "code": "ok",
+        //     "balance": 7,
+        //     "message_id": "3017446512409948542771580",
+        //     "message": "Successfully Sent",
+        //     "user": "Onyekachi Ozoemenam",
+        //     "message_id_str": "3017446512409948542771580"
+        // }
+
           // Handle the response format
-          if (data.status === "success") {
+          if (data.code === "ok") {
             return {
               id,
               phone: phone,
               status: "FULFILLED",
-              message: data.msg || "SMS sent successfully",
-              smscost:data?.cost||null,
-              smsLength: data?.length||null,
+              message: data.message || "SMS sent successfully",
+              smscost: '3',
+              smsLength: Number(data?.message?.length) || null,
             };
           } else {
             return {
               id,
               phone: phone,
               status: "REJECTED",
-              message: data.msg || "SMS failed with an unknown error",
+              message: data.message || "SMS failed with an unknown error",
             };
           }
         } catch (error) {
@@ -169,7 +196,7 @@ const sendSmsConcurrently = async (
             id,
             phone: phone,
             status: "REJECTED",
-            message: "SMS sent but failed to parse response",
+            message: "SMS sent but Unhandled error",
           };
         }
       }

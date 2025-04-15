@@ -3,7 +3,7 @@ import { createClient } from '@/utils/supabase/client'
 import React, { useState } from 'react'
 import { Button } from './ui/button'
 import { Loader2 } from 'lucide-react'
-import { populateBookingReminders,   sendSms, testEdgeFuntion, testEmail, testSms } from '@/lib/bookingReminders'
+import { populateBookingReminders,   sendSms, sendTestSms, testEdgeFuntion, testEmail, testSms } from '@/lib/bookingReminders'
 import { Booking } from '@/types/appointments'
 
  
@@ -63,8 +63,8 @@ console.log({ data, error, groupedSmsData, smsResponse });
     }
  
     const testEmailing = async () => {
-        const res = await populateBookingReminders(bookingSample, bookingSample.appointmentLinkId.createdBy.userEmail, bookingSample.appointmentLinkId.createdBy.phoneNumber)
-
+        // const res = await populateBookingReminders(bookingSample, bookingSample.appointmentLinkId.createdBy.userEmail, bookingSample.appointmentLinkId.createdBy.phoneNumber)
+        const res = await sendTestSms()
         // const res = await testSms()
         // const res = await testEdgeFuntion()
         // const res = await sendSms('2349114993947','Testing sms api')
@@ -74,7 +74,7 @@ console.log({ data, error, groupedSmsData, smsResponse });
     }
   return (
     <div>
-        <Button onClick={getData}>Submit {loading ? <span>{" "}<Loader2 size={20} className='animate-spin' /></span> : null}  </Button>
+        <Button onClick={testEmailing}>Submit {loading ? <span>{" "}<Loader2 size={20} className='animate-spin' /></span> : null}  </Button>
     </div>
   )
 }

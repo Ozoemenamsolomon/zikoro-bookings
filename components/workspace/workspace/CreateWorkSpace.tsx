@@ -485,7 +485,7 @@ const Skeleton = ({className}:{className?:string}) => <span className={cn("w-20 
 
           <div className="flex flex-col gap-1 items-center justify-center">
             {errors?.gen && <small className="text-red-500">{errors.gen}</small>}
-            {/* <small>{loading}</small> */}
+            
             <Button asChild type='submit' className="bg-basePrimary h-12 w-full" disabled={loading.length>0}>
               {loading.length>0 ? 
               <span className='flex items-center gap-2'><Loader2 size={20} className='animate-spin'/> {loading}</span> : 'Create'}
@@ -500,64 +500,3 @@ const Skeleton = ({className}:{className?:string}) => <span className={cn("w-20 
 
 export default CreateWorkSpace;
 
-
-// Setup
-// Import components, hooks, utils, and constants.
-
-// Define initial state values: formData, typeOptions, plans.
-
-// 2️⃣ State Management
-// Manage form inputs, file uploads, currency/plan selections, loading states, and errors.
-
-// 3️⃣ If Editing Workspace
-// Prefill form with existing workspace data.
-
-// Fetch its subscription plan.
-
-// Calculate costs based on current plan, type, and currency.
-
-// 4️⃣ User Input Handling
-// handleChange → update text/textarea inputs.
-
-// handleSelectCurrency → update currency and recalculate cost.
-
-// handleFileUpload → upload organization logo and preview it.
-
-// 5️⃣ Form Submission
-// Validate required fields.
-
-// Upload files (if any).
-
-// If editing:
-
-// Call /api/workspaces/edit.
-
-// If creating:
-
-// Call /api/workspaces/create.
-
-// Then call /api/subsrciptions/create.
-
-// Update app state and redirect on success.
-
-// 6️⃣ Subscription Cost Calculation
-// Use calculateSubscriptionCost() on:
-
-// Currency change.
-
-// Plan type change.
-
-// Plan selection.
-
-// 7️⃣ Error Handling
-// Handle API and file upload errors.
-
-// Prevent submission if validation fails.
-
-// ✅ Flow Overview
-// pgsql
-// Copy
-// Edit
-// [Open Modal] → [Prefill if Editing] → [User Input] → [Validate] 
-// → [Upload Files] → [Create/Edit Workspace] → [Create Subscription (if new)]
-// → [Update State] → [Close Modal/Redirec
