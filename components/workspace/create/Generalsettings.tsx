@@ -109,7 +109,7 @@ const Generalsettings: React.FC<FormProps> = ({
             <Link href={permissions.reactivateLink} className='bg-baseLight px-6 py-2 rounded text-center flex justify-center text-'>Upgrade Plan</Link>
           </div>
           :
-          <CustomSelect
+          <CustomSelect 
             name='teamMembers'
             options={ teamMembers}
             // value={''}

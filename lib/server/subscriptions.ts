@@ -80,7 +80,7 @@ export async function getPermissionsFromSubscription(
     let bookingsCount = 0;
     let teamCount = 0;
 
-  // Only fetch count if we have both start and end dates (if checking for booking)
+  //== BOOKING LIMIT == Only fetch count if we have both start and end dates (if checking for booking)
   if (startDate && endDate && isbooking) {
     // How many months have passed since startDate up to now?
     const monthsSinceStart = differenceInCalendarMonths(now, startDate);
@@ -101,7 +101,7 @@ export async function getPermissionsFromSubscription(
     }
     }
 
-  // Only fetch Team count if we have both start and end dates (if checking for teams)
+  //== TEAMS LIMIT == Only fetch Team count if we have both start and end dates (if checking for teams)
   if (startDate && endDate && isTeam) {
     // How many months have passed since startDate up to now?
     const monthsSinceStart = differenceInCalendarMonths(now, startDate);
@@ -112,13 +112,13 @@ export async function getPermissionsFromSubscription(
 
     // Ensure we're within subscription period
     if (isBefore(currentPeriodStart, endDate)) {
-        bookingsCount = await fetchTeamsLimitCount(
-        currentPeriodStart.toISOString(),
-        nextPeriodStart.toISOString(),
-        workspaceAlias
+        teamCount = await fetchTeamsLimitCount(
+            currentPeriodStart.toISOString(),
+            nextPeriodStart.toISOString(),
+            workspaceAlias
         );
     } else {
-        bookingsCount = 0;
+        teamCount = 0;
     }
     }
 
@@ -162,7 +162,7 @@ export async function getPermissionsFromSubscription(
         isbooking ? maxBookingsPerMonth - bookingsCount : undefined
     const remaininTeams = 
         isExpired ? 0 :
-        isbooking ? teamMembers - teamCount : undefined
+        isTeam ? teamMembers - teamCount : undefined
 
     return {
         plan: {

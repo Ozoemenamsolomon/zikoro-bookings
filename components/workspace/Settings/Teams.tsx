@@ -8,13 +8,16 @@ import ResendInvite from './ResendInvite'
 import UpdateMemberRole from './UpdateMemberRole'
 import EmptyList from '../ui/EmptyList'
 import { NoTeamsIcon } from '@/constants'
+import Link from 'next/link'
 
 interface TeamsProps {
   teamMembers: BookingTeamsTable[]
   subscriptionMsg?:string,
+  remaininTeams?:number,
+  reactivateLink?:string,
 }
 
-const Teams = ({ teamMembers, subscriptionMsg }: TeamsProps) => {
+const Teams = ({ teamMembers, subscriptionMsg , remaininTeams, reactivateLink}: TeamsProps) => {
   const {user, currentWorkSpace} = useUserStore()
   const [teams, setTeams] = useState<BookingTeamsTable[]>(teamMembers||[])
   // console.log({teams})
@@ -24,7 +27,11 @@ const Teams = ({ teamMembers, subscriptionMsg }: TeamsProps) => {
       icon={<NoTeamsIcon/>}
       text= {subscriptionMsg??'Invite your team members here to collaborate and manage your bookings together.'}
       heading={subscriptionMsg ? 'Oops! Access Limit is Exhausted' : 'No Team Members Added Yet'}
-      CTA={<InviteTeams teams={teams} setTeams={setTeams} text={subscriptionMsg ? 'Upgrade plan' : 'Invite team members'} />}
+      CTA={
+        subscriptionMsg && reactivateLink ?
+          <Link href={reactivateLink} className='px-4 py-2 rounded-md text-white bg-basePrimary'>Upgrade plan</Link> 
+          :
+          <InviteTeams teams={teams} setTeams={setTeams} text={'Invite team members'} />}
       className='lg:h-[40em] '
     />
   }
@@ -33,7 +40,7 @@ const Teams = ({ teamMembers, subscriptionMsg }: TeamsProps) => {
     <section className="sm:py-8 sm:px-8 space-y-5 max-sm:w-screen overflow-x-auto hide-scrollbar">
       {/* Invite Team Members Section */}
       <div className="flex sm:justify-end w-full ">
-        {user?.workspaceRole==='OWNER'? <InviteTeams teams={teams} setTeams={setTeams}/> : null }
+        {user?.workspaceRole==='OWNER'? <InviteTeams teams={teams} setTeams={setTeams} remaininTeams={remaininTeams} reactivateLink={reactivateLink}/> : null }
       </div>
 
       {/* Team Members Table */}

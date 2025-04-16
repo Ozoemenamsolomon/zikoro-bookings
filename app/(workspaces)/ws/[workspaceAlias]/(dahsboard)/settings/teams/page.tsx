@@ -30,23 +30,26 @@ const TeamsSettingsPage = async ({
     );
   }
 
-  const { plan: { remaininTeams, isOnFreePlan } } = await getPermissionsFromSubscription(organization);
-console.log({isOnFreePlan,remaininTeams})
-  if (remaininTeams && remaininTeams < 1) {
+  const { plan: { remaininTeams, isOnFreePlan, effectivePlan, reactivateLink } } = await getPermissionsFromSubscription(organization,false,true);
+console.log({isOnFreePlan,remaininTeams,  })
+  if (isOnFreePlan || effectivePlan==='Lite') {
+    // if (isOnFreePlan  ) {
     return (
       <main className="min-h-screen w-full flex justify-center items-center">
-         <Teams teamMembers={[]} subscriptionMsg={
-          isOnFreePlan ? 
-          'You are enjoying the freemium plan, upgrade to add team members' :
-          'Tou have exhausted the limit for team membership this month, upgrade to add more members.'
-         }/>
+         <Teams remaininTeams={remaininTeams} teamMembers={[]} reactivateLink={reactivateLink}
+            subscriptionMsg={
+              effectivePlan==='Lite' ? 
+              'You are on the Lite plan, upgrade to access team membership' :
+              'You are enjoying the freemium plan, upgrade to access team membership'  
+            }
+         />
       </main>
     );
   }
   
   const {data,error} = await fetchTeamMembers(workspaceAlias!)
   return (
-    <Teams teamMembers={data||[]}/>  )
+    <Teams teamMembers={data||[]} remaininTeams={remaininTeams} reactivateLink={reactivateLink}/>  )
 }
 
 export default TeamsSettingsPage
