@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import CurrencySelector from './CurrencySelector';
 import { subscriptionPlans } from '@/constants';
 import { calculateSubscriptionCost, calculateSubscriptionEndDate, cn } from '@/lib';
+import DiscountButton from './DiscountButton';
 
 const initialFormData: OrganizationInput = {
   organizationName: '',
@@ -337,7 +338,7 @@ const Skeleton = ({className}:{className?:string}) => <span className={cn("w-20 
         </button>
       }
     >
-      <form onSubmit={handleSubmit} className="grid md:grid-cols-5 text-base w-full h-full">
+      <form onSubmit={(e)=>e.preventDefault()} className="grid md:grid-cols-5 text-base w-full h-full">
        <button onClick={()=>setIsOpen(false)} type="button" className='absolute right-2 top-2 bg-black text-white rounded-full h-10 w-10 flex  justify-center items-center z-10'><X/></button>
 
         {/* Sidebar Section */}
@@ -483,13 +484,17 @@ const Skeleton = ({className}:{className?:string}) => <span className={cn("w-20 
           </div>
           </div>
 
-          <div className="flex flex-col gap-1 items-center justify-center">
-            {errors?.gen && <small className="text-red-500">{errors.gen}</small>}
-            
-            <Button asChild type='submit' className="bg-basePrimary h-12 w-full" disabled={loading.length>0}>
-              {loading.length>0 ? 
-              <span className='flex items-center gap-2'><Loader2 size={20} className='animate-spin'/> {loading}</span> : 'Create'}
-            </Button>
+
+          <div className="space-y-2">
+            <DiscountButton />
+
+            <div className="flex flex-col gap-1 items-center justify-center">
+              {errors?.gen && <small className="text-red-500">{errors.gen}</small>}
+              <Button onClick={handleSubmit} type='button' className="bg-basePrimary h-10 w-full" disabled={loading.length>0}>
+                {loading.length>0 ? 
+                <span className='flex items-center gap-2'><Loader2 size={20} className='animate-spin'/> {loading}</span> : 'Create'}
+              </Button>
+            </div>
           </div>
          
         </div>

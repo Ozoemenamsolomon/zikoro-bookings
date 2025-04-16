@@ -85,12 +85,12 @@ const Generalsettings: React.FC<FormProps> = ({
       }));
   };
 
-  const sendSmsApi = async () => {
+  const toggleSmsNotification = async (value:string) => {
     if (!setFormData) return null; 
   
     setFormData((prev) => ({
       ...prev,
-      smsNotification: prev?.smsNotification?.length > 0 ? "" : "PENDING",
+      smsNotification: value,
     }));
   };
 
@@ -179,16 +179,15 @@ const Generalsettings: React.FC<FormProps> = ({
 
       <div className="">
           <div className="flex justify-between gap-6 items-center">
-            <p className="pb-2">Send Notification </p>
-            <Toggler options={['OFF', 'ON']} />
+            <p className="pb-2">Send sms reminder to attendees </p>
+            <Toggler options={['OFF', 'ON']} disabled={permissions.isOnFreePlan} value={formData?.smsNotification} onChange={toggleSmsNotification}/>
           </div>
-        <div className='border  border-purple-300 rounded-md p-3 w-full'>
-          {permissions.isOnFreePlan ? <>
+          {permissions.isOnFreePlan ? 
+          <div className='border  border-purple-300 rounded-md p-3 w-full'>
             <small className="text-center pb-2">Reminders matter. Upgrade to send SMS alerts and cut down on no-shows.
             </small>
             <Link href={permissions.reactivateLink} className='bg-baseLight px-6 py-2 rounded text-center flex justify-center text-'>Upgrade Plan</Link>
-          </> : null}
-        </div>
+          </div> : null}
         </div>
         {/* // <div className="space-y-2 flex flex-col items-center w-full" onClick={sendSmsApi}>
         // <button type="button" className='py-2 w-full text-center border border-basePrimary rounded-lg'>

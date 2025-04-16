@@ -6,7 +6,6 @@ import Image from 'next/image'
 import { useAppointmentContext } from '@/context/AppointmentContext'
 import { AppointmentLink } from '@/types/appointments'
 import { useRouter } from 'next/navigation'
-import BookingLazyoader from './LazyLoader'
 import Link from 'next/link'
 import Calender from './Calender'
 import ProcessPayment from './ProcessPayment'
@@ -18,12 +17,12 @@ const Booking =  ({appointmentLink, error}:{appointmentLink:AppointmentLink, err
   const {refresh,  } = useRouter()
 //   console.log(appointmentLink)
   return (
-    <Suspense fallback={<BookingLazyoader/>} >
+ 
         <main className="bg-baseBg px-3 sm:px-6 xl:px-12">
             <article className='relative max-w-[100rem] mx-auto flex flex-col gap-8 sm:gap-2 min-h-screen justify-between py-8 md:py-4'>
                 {
                     error ? 
-                    <section className='z-50 fixed flex-col gap-4 inset-0 bg-slate-950/10 flex items-center text-center justify-center w-full'>
+                    <section className='z-50 fixed flex-col gap-4 inset-0 bg-slate-950/30 flex items-center text-center justify-center w-full'>
                             <p className='text-red-600'>{error}</p>
                             <button onClick={refresh} className='bg-basePrimary px-4 py-2 text-white rounded-md'>Refresh the page</button>
                     </section>
@@ -117,7 +116,7 @@ const Booking =  ({appointmentLink, error}:{appointmentLink:AppointmentLink, err
 
             </article>
         </main>
-    </Suspense>
+ 
     
   )
 }
