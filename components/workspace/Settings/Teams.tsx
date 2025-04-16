@@ -11,9 +11,10 @@ import { NoTeamsIcon } from '@/constants'
 
 interface TeamsProps {
   teamMembers: BookingTeamsTable[]
+  subscriptionMsg?:string,
 }
 
-const Teams = ({ teamMembers }: TeamsProps) => {
+const Teams = ({ teamMembers, subscriptionMsg }: TeamsProps) => {
   const {user, currentWorkSpace} = useUserStore()
   const [teams, setTeams] = useState<BookingTeamsTable[]>(teamMembers||[])
   // console.log({teams})
@@ -21,9 +22,9 @@ const Teams = ({ teamMembers }: TeamsProps) => {
   if(teams.length<2){
     return <EmptyList
       icon={<NoTeamsIcon/>}
-      text='Invite your team members here to collaborate and manage your bookings together.'
-      heading='No Team Members Added Yet'
-      CTA={<InviteTeams teams={teams} setTeams={setTeams} text='Invite team members'/>}
+      text= {subscriptionMsg??'Invite your team members here to collaborate and manage your bookings together.'}
+      heading={subscriptionMsg ? 'Oops! Access Limit is Exhausted' : 'No Team Members Added Yet'}
+      CTA={<InviteTeams teams={teams} setTeams={setTeams} text={subscriptionMsg ? 'Upgrade plan' : 'Invite team members'} />}
       className='lg:h-[40em] '
     />
   }

@@ -17,3 +17,13 @@ export interface ISubscription {
   planPrice: number;
   organizationAlias: string;
 }
+
+export interface ZikoroDiscount {
+  id: number;
+  created_at: string; // ISO timestamp string
+  discountCode: string | null;
+  validUntil: string | null; // ISO timestamp string (could be null)
+  discountAmount: number | null;
+  discountPercentage: number | null;
+}
+

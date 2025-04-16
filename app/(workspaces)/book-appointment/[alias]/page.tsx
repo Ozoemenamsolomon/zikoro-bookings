@@ -61,9 +61,9 @@ const BookAppointment = async ({ params }: { params: { alias: string } }) => {
     );
   }
 
-  const { plan: { bookingLimit } } = await getPermissionsFromSubscription(organization);
+  const { plan: { remaininBookings } } = await getPermissionsFromSubscription(organization);
 
-  if (bookingLimit < 1) {
+  if (remaininBookings && remaininBookings < 1) {
     return (
       <main className="min-h-screen w-full flex justify-center items-center">
         <BookingOff errortext="The booking link is currently not available" />
