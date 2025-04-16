@@ -15,11 +15,11 @@ const SelectType: React.FC<ModalProps> = ({ isOpen, onClose,  }) => {
     const pathname = usePathname()
   return (
     <div
-      className={`fixed inset-0 z-50 bg-white p-6 px-10 overflow-auto flex items-center justify-center transition-transform duration-300 ${
+      className={`fixed inset-0 z-50 bg-white p-6   overflow-auto sm:flex sm:items-center sm:justify-center transition-transform duration-300 ${
         isOpen && !pathname.includes('edit') ? 'scale-100' : 'scale-0'
       }`}
     >
-      <X size={20} onClick={onClose}  className="absolute top-6 right-6 text-gray-500 hover:text-gray-600"/>
+      <X size={14} onClick={onClose}  className="absolute top-6 right-6 bg-black rounded-full h-10 w-10 p-1 flex justify-center items-center text-white"/>
       <div className="bg-white grid text-center gap-4 sm:flex max-w-2xl">
         <div className="h- w-full p-4 rounded-lg shadow-md space-y-4 ">
             <div className="rounded-lg bg-slate-200 w-full h-40 overflow-hidden flex justify-center items-center ">
@@ -67,7 +67,7 @@ const SelectType: React.FC<ModalProps> = ({ isOpen, onClose,  }) => {
             </button>
             </div>
         </div>
-        </div>
+      </div>
 
     </div>
   );

@@ -47,16 +47,22 @@ interface TogglerProps {
   value?: string; // Currently selected value
   options: [string, string]; // Two toggle options
   onChange?: (value: string) => void; // Callback when toggled
+  disabled?:boolean,
 }
 
 export const Toggler: React.FC<TogglerProps> = ({
   value,
   options = ['', ''],
   onChange,
+  disabled
 }) => {
   const [selected, setSelected] = useState(value || options[0]);
 
   const toggleSwitch = () => {
+    if(disabled) {
+      setSelected(options[0])
+       return 
+    }
     const newValue = selected === options[0] ? options[1] : options[0];
     setSelected(newValue);
     onChange && onChange(newValue);
@@ -66,7 +72,8 @@ export const Toggler: React.FC<TogglerProps> = ({
     <div className="flex gap-2 items-center">
         <span className="">{options[0]}</span>
         <div
-          className={`relative flex items-center  w-12 h-6 p- cursor-pointer rounded-full bg-gray-300 transition-colors duration-300 aria-checked:bg-blue-600 `}
+          aria-disabled={disabled}
+          className={`${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} relative flex items-center  w-12 h-6 rounded-full bg-gray-300 transition-colors duration-300 aria-checked:bg-blue-600 `}
           role="switch"
           aria-checked={selected === options[1]}
           onClick={toggleSwitch}

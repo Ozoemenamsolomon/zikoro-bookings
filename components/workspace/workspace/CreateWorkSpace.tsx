@@ -3,7 +3,7 @@ import { ArrowLeft, Check, ChevronDown, Loader2, Plus, PlusCircle, X } from 'luc
 import React, { useCallback, useEffect, useState } from 'react';
 import { Toggler } from '../ui/SwitchToggler';
 import CustomInput from '../ui/CustomInput';
-import { BookingsCurrencyConverter, Organization, OrganizationInput } from '@/types';
+import { Organization, OrganizationInput } from '@/types';
 import useUserStore from '@/store/globalUserStore';
 import { FileUploader, handleFileUpload } from '@/components/shared/Fileuploader';
 import { CustomSelect } from '@/components/shared/CustomSelect';
@@ -13,10 +13,9 @@ import { toast } from 'react-toastify';
 import { generateSlugg } from '@/lib/generateSlug';
 import { useRouter } from 'next/navigation';
 import CurrencySelector from './CurrencySelector';
-import PlanSelector from './PlanSelector';
 import { subscriptionPlans } from '@/constants';
 import { calculateSubscriptionCost, calculateSubscriptionEndDate, cn } from '@/lib';
-import { fetchSubscriptionPlan } from '@/lib/server/subscriptions';
+import DiscountButton from './DiscountButton';
 
 const initialFormData: OrganizationInput = {
   organizationName: '',
@@ -339,7 +338,7 @@ const Skeleton = ({className}:{className?:string}) => <span className={cn("w-20 
         </button>
       }
     >
-      <form onSubmit={handleSubmit} className="grid md:grid-cols-5 text-base w-full h-full">
+      <form onSubmit={(e)=>e.preventDefault()} className="grid md:grid-cols-5 text-base w-full h-full">
        <button onClick={()=>setIsOpen(false)} type="button" className='absolute right-2 top-2 bg-black text-white rounded-full h-10 w-10 flex  justify-center items-center z-10'><X/></button>
 
         {/* Sidebar Section */}
@@ -485,13 +484,17 @@ const Skeleton = ({className}:{className?:string}) => <span className={cn("w-20 
           </div>
           </div>
 
-          <div className="flex flex-col gap-1 items-center justify-center">
-            {errors?.gen && <small className="text-red-500">{errors.gen}</small>}
-            {/* <small>{loading}</small> */}
-            <Button asChild type='submit' className="bg-basePrimary h-12 w-full" disabled={loading.length>0}>
-              {loading.length>0 ? 
-              <span className='flex items-center gap-2'><Loader2 size={20} className='animate-spin'/> {loading}</span> : 'Create'}
-            </Button>
+
+          <div className="space-y-2">
+            <DiscountButton />
+
+            <div className="flex flex-col gap-1 items-center justify-center">
+              {errors?.gen && <small className="text-red-500">{errors.gen}</small>}
+              <Button onClick={handleSubmit} type='button' className="bg-basePrimary h-10 w-full" disabled={loading.length>0}>
+                {loading.length>0 ? 
+                <span className='flex items-center gap-2'><Loader2 size={20} className='animate-spin'/> {loading}</span> : 'Create'}
+              </Button>
+            </div>
           </div>
          
         </div>
@@ -502,64 +505,3 @@ const Skeleton = ({className}:{className?:string}) => <span className={cn("w-20 
 
 export default CreateWorkSpace;
 
-
-// Setup
-// Import components, hooks, utils, and constants.
-
-// Define initial state values: formData, typeOptions, plans.
-
-// 2️⃣ State Management
-// Manage form inputs, file uploads, currency/plan selections, loading states, and errors.
-
-// 3️⃣ If Editing Workspace
-// Prefill form with existing workspace data.
-
-// Fetch its subscription plan.
-
-// Calculate costs based on current plan, type, and currency.
-
-// 4️⃣ User Input Handling
-// handleChange → update text/textarea inputs.
-
-// handleSelectCurrency → update currency and recalculate cost.
-
-// handleFileUpload → upload organization logo and preview it.
-
-// 5️⃣ Form Submission
-// Validate required fields.
-
-// Upload files (if any).
-
-// If editing:
-
-// Call /api/workspaces/edit.
-
-// If creating:
-
-// Call /api/workspaces/create.
-
-// Then call /api/subsrciptions/create.
-
-// Update app state and redirect on success.
-
-// 6️⃣ Subscription Cost Calculation
-// Use calculateSubscriptionCost() on:
-
-// Currency change.
-
-// Plan type change.
-
-// Plan selection.
-
-// 7️⃣ Error Handling
-// Handle API and file upload errors.
-
-// Prevent submission if validation fails.
-
-// ✅ Flow Overview
-// pgsql
-// Copy
-// Edit
-// [Open Modal] → [Prefill if Editing] → [User Input] → [Validate] 
-// → [Upload Files] → [Create/Edit Workspace] → [Create Subscription (if new)]
-// → [Update State] → [Close Modal/Redirec

@@ -139,4 +139,6 @@ export interface SubscriptionBooking {
     showTrialEndingSoonPrompt:boolean,
     reactivateLink:string,
     subscriptionEndDate:string|null,
+    remaininBookings?:number,
+    remaininTeams?:number,
 }

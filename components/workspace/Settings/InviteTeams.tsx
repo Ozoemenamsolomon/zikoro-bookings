@@ -9,8 +9,11 @@ import { PostRequest } from '@/utils/api';
 import { Loader2, X } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
+import EmptyList from '../ui/EmptyList';
+import { NoTeamsIcon } from '@/constants';
+import Link from 'next/link';
 
-const InviteTeams = ({teams, setTeams, text}:{teams:BookingTeamsTable[], setTeams: React.Dispatch<React.SetStateAction<BookingTeamsTable[]>>, text?:string}) => {
+const InviteTeams = ({teams, setTeams, text, remaininTeams, reactivateLink}:{teams:BookingTeamsTable[], setTeams: React.Dispatch<React.SetStateAction<BookingTeamsTable[]>>, text?:string, remaininTeams?:number, reactivateLink?:string,}) => {
   const {user,currentWorkSpace} = useUserStore()
   const [formData, setFormData] = useState({
     emails: [] as string[],
@@ -79,6 +82,9 @@ const InviteTeams = ({teams, setTeams, text}:{teams:BookingTeamsTable[], setTeam
     }
   };
 
+  if(!remaininTeams ||  remaininTeams! < 2) {
+    return <ExpiredTeamUpgrade text={text} reactivateLink={reactivateLink}/>
+  }
 
   return (
     <CenterModal
@@ -150,3 +156,27 @@ const InviteTeams = ({teams, setTeams, text}:{teams:BookingTeamsTable[], setTeam
 };
 
 export default InviteTeams;
+
+
+const ExpiredTeamUpgrade = ({text, reactivateLink}:{text?:string, reactivateLink?:string}) => {
+  const [open, setOpen] = useState(false)
+  return (
+    <CenterModal
+      isOpen={open}
+      onOpenChange={setOpen}
+      trigerBtn={
+        <Button className="bg-baseLight text-zikoroBlue">{text||'Upgrade'}</Button>
+      }
+      className="max-w-2xl"
+    >
+      <EmptyList
+        icon={<NoTeamsIcon/>}
+        text= {'You have exhausted your team membership limit for this month, purchase more access'}
+        heading={'Oops! Team Limit is Exhausted'}
+        CTA={<Link href={reactivateLink!} className="bg-basePrimary px-4 py-2 rounded-md text-white">{text||'Upgrade plan'}</Link>}
+        className=' '
+      />
+    </CenterModal>
+  )
+}
+

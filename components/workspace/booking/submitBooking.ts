@@ -54,7 +54,7 @@ export const submitBooking = async ({
       appointmentTime: timeStamp,
       appointmentNotes: { categoryNote: bookingFormData?.categoryNote }
     };
-  
+  // console.log({appointmentLink, newBookingData})
     delete newBookingData['categoryNote'];
     try {
       // Step 1: Insert booking
@@ -88,7 +88,7 @@ export const submitBooking = async ({
   
       // Step 2: Run side effects concurrently
       const promises: Promise<any>[] = [
-        insertBookingsReminder({...result.data}), // Reminder is required
+        appointmentLink?.smsNotification==='ON' && insertBookingsReminder({...result.data}), // Reminder is required
         fetch('/api/email/send-bookings-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

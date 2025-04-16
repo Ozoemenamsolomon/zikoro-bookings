@@ -48,7 +48,7 @@ export const fetchSubscriptionPlan = async (workspaceId:string):Promise<{data:Su
 }
 
 export async function getPermissionsFromSubscription(
-  organization: Organization, isbooking?:boolean,
+  organization: Organization, isbooking?:boolean, isTeam?:boolean,
 ): Promise<{plan:SubscriptionPlanInfo, updatedWorkspace:Organization|null}> {
     const now = new Date();
     const subscriptionPlan = organization.subscriptionPlan || "Free";
@@ -68,18 +68,7 @@ export async function getPermissionsFromSubscription(
       : "free"
     : "active";
 
-    let displayMessage = "";
 
-    if (planStatus === "expired") {
-        displayMessage =
-        daysSinceExpiration && daysSinceExpiration < 30
-            ? `Your previous ${subscriptionPlan} plan expired ${daysSinceExpiration} day(s) ago. Reactivate now to keep your data and regain access to premium features.`
-            : `You're on the FREE plan. Upgrade anytime to access more features.`;
-    } else if (planStatus === "active") {
-        displayMessage = `Your ${subscriptionPlan} plan is active and will expire in ${validDaysRemaining} day(s).`;
-    } else {
-        displayMessage = `You're on the FREE plan. Upgrade anytime to access more features.`;
-    }
 
     const shouldShowRenewPrompt = planStatus === "expired" && (daysSinceExpiration || 0) < 30;
   
@@ -89,9 +78,10 @@ export async function getPermissionsFromSubscription(
     if (!plan) throw new Error("Invalid plan type");
 
     let bookingsCount = 0;
+    let teamCount = 0;
 
-  // Only fetch count if we have both start and end dates (if checking for booking)
-    if (startDate && endDate && isbooking) {
+  //== BOOKING LIMIT == Only fetch count if we have both start and end dates (if checking for booking)
+  if (startDate && endDate && isbooking) {
     // How many months have passed since startDate up to now?
     const monthsSinceStart = differenceInCalendarMonths(now, startDate);
 
@@ -111,6 +101,27 @@ export async function getPermissionsFromSubscription(
     }
     }
 
+  //== TEAMS LIMIT == Only fetch Team count if we have both start and end dates (if checking for teams)
+  if (startDate && endDate && isTeam) {
+    // How many months have passed since startDate up to now?
+    const monthsSinceStart = differenceInCalendarMonths(now, startDate);
+
+    // Get the start and end of the current month period based on subscription start
+    const currentPeriodStart = addMonths(startDate, monthsSinceStart);
+    const nextPeriodStart = addMonths(startDate, monthsSinceStart + 1);
+
+    // Ensure we're within subscription period
+    if (isBefore(currentPeriodStart, endDate)) {
+        teamCount = await fetchTeamsLimitCount(
+            currentPeriodStart.toISOString(),
+            nextPeriodStart.toISOString(),
+            workspaceAlias
+        );
+    } else {
+        teamCount = 0;
+    }
+    }
+
   const { maxBookingsPerMonth, smsNotification, teamMembers } = plan.features;
     // if you don't want to do total lockout then when returning to freemium, you have to update the organization table to free with the start date and en date ... this will help to track the usage ...
     const totalPlanDays = startDate && endDate ? differenceInCalendarDays(endDate, startDate) : 0;
@@ -118,6 +129,18 @@ export async function getPermissionsFromSubscription(
     const showTrialEndingSoonPrompt = planStatus === "active" && validDaysRemaining <= 5;
     const isOnFreePlan = effectivePlan === "Free";
     const reactivateLink = `/ws/${workspaceAlias}/settings/workspace`;
+    let displayMessage = "";
+
+    if (planStatus === "expired") {
+        displayMessage =
+        !isOnFreePlan && daysSinceExpiration && daysSinceExpiration < 30
+            ? `Your previous ${subscriptionPlan} plan expired ${daysSinceExpiration} day(s) ago. Reactivate now to keep your data and regain access to premium features.`
+            : `You're on the FREE plan. Upgrade anytime to access more features.`;
+    } else if (planStatus === "active" && !isOnFreePlan) {
+        displayMessage = `Your ${subscriptionPlan} plan is active and will expire in ${validDaysRemaining} day(s).`;
+    } else {
+        displayMessage = `You're on the FREE plan. Upgrade anytime to access more features.`;
+    }
 
     // if it isExpired, update the organization with Free plan for 1 month - this usually happen during doing login, else doing page reload in the app.
     let updatedWorkspace = null
@@ -134,12 +157,22 @@ export async function getPermissionsFromSubscription(
         // console.log('ISEXPIRED:===', {data, error})
     }
 
+    const remaininBookings = 
+        isExpired ? 0 :
+        isbooking ? maxBookingsPerMonth - bookingsCount : undefined
+    const remaininTeams = 
+        isExpired ? 0 :
+        isTeam ? teamMembers - teamCount : undefined
+
     return {
-        plan: {bookingLimit: isExpired ? 0 : maxBookingsPerMonth,
+        plan: {
+        bookingLimit: isExpired ? 0 : maxBookingsPerMonth,
+        remaininBookings,
         bookingsCount,
         activeBooking: bookingsCount < maxBookingsPerMonth,
         smsEnabled: smsNotification,
         teamLimit: teamMembers,
+        remaininTeams,
         isExpired,
         effectivePlan: effectivePlan as SubscriptionPlanInfo["effectivePlan"],
         validDaysRemaining,
@@ -175,4 +208,23 @@ console.log({ count, error })
 
   return count || 0;
 };
+  
+// Fetch bookings count in date range
+const fetchTeamsLimitCount = async (startDate: string, endDate: string, workspaceAlias:string) => {
+    const supabase = createClient();
+    const { count, error } = await supabase
+      .from("organizationTeamMembers_Bookings")
+      .select("id", { count: "exact" })
+      .eq('workspaceAlias', workspaceAlias)
+      .gte("created_at", startDate)
+      .lt("created_at", endDate);
+  console.log({ count, error })
+    if (error) {
+      console.error("Failed to fetch bookings count:", error);
+      return 0;
+    }
+  
+    return count || 0;
+  };
+
   
