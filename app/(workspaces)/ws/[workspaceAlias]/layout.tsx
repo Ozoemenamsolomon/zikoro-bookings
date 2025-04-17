@@ -1,5 +1,6 @@
  
 import WorkspaceAlert from '@/components/workspace/WorkspaceAlert';
+import { userRoles } from '@/constants';
 import { getPermissionsFromSubscription } from '@/lib/server/subscriptions';
 import { Organization } from '@/types';
 import { createClient } from '@/utils/supabase/server';
@@ -17,7 +18,7 @@ export default async function  WorkspaceLayout({
     const workspaceAlias = (await params).workspaceAlias
     
     const supabase = createClient()
-    // const {user} =  await getUserData()
+
     const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -52,10 +53,9 @@ export default async function  WorkspaceLayout({
             redirect(`/ws/${data[data.length-1].organizationAlias}/schedule?msg=You could not gain access to the workspace`)
         }
     }
-
     
     // if user is not owner and it's free/lite workspace deny access and return to user's own workspcae
-    if(teamMember?.userRole !== 'owner' && workspace) {
+    if(teamMember?.userRole !== userRoles.owner && workspace) {
         const {plan:{effectivePlan, isOnFreePlan},} = await getPermissionsFromSubscription(workspace!)
 
         if(isOnFreePlan||effectivePlan==='Lite') {
@@ -65,14 +65,14 @@ export default async function  WorkspaceLayout({
                 .eq('organizationOwner', user?.email)
             
             if(data){
-                redirect(`/ws/${data[data.length-1].organizationAlias}/schedule?msg=You could not gain access to the organization due to the `)
+                redirect(`/ws/${data[data.length-1].organizationAlias}/schedule?msg=You could not gain access to the workspace`)
             }
     }}
 
     return (
         <>
-        <WorkspaceAlert/>
-        {children}
+            <WorkspaceAlert/>
+            {children}
         </>
         );
   }
