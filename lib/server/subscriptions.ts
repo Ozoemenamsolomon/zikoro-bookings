@@ -53,8 +53,8 @@ export async function getPermissionsFromSubscription(
     const now = new Date();
     const subscriptionPlan = organization.subscriptionPlan || "Free";
   
-    const endDate = organization.subscriptionEndDate ? parseISO(organization.subscriptionEndDate) : null;
-    const startDate = organization.subscritionStartDate ? parseISO(organization.subscritionStartDate) : null;
+    const endDate = organization?.subscriptionEndDate ? parseISO(organization.subscriptionEndDate) : null;
+    const startDate = organization?.subscritionStartDate ? parseISO(organization.subscritionStartDate) : null;
   
     const isExpired = !endDate || isBefore(endDate, now);
     const validDaysRemaining = isExpired ? 0 : differenceInCalendarDays(endDate, now);
@@ -67,8 +67,6 @@ export async function getPermissionsFromSubscription(
       ? "expired"
       : "free"
     : "active";
-
-
 
     const shouldShowRenewPrompt = planStatus === "expired" && (daysSinceExpiration || 0) < 30;
   
@@ -117,9 +115,7 @@ export async function getPermissionsFromSubscription(
             nextPeriodStart.toISOString(),
             workspaceAlias
         );
-    } else {
-        teamCount = 0;
-    }
+    }  
     }
 
   const { maxBookingsPerMonth, smsNotification, teamMembers } = plan.features;

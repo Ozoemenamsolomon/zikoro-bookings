@@ -57,10 +57,10 @@ const Teams = ({teamMembers}: TeamsProps) => {
   return (
     <section className="sm:py-8 sm:px-8 space-y-5 max-sm:w-screen overflow-x-auto hide-scrollbar">
       {/* Invite Team Members Section */}
-      <div className="flex sm:justify-end w-full ">
-        {user?.workspaceRole===userRoles.owner? 
-        <InviteTeams teams={teams} setTeams={setTeams} /> : null }
-      </div>
+      {user?.workspaceRole===userRoles.owner? <div className="flex sm:justify-end gap-4 items-center w-full ">
+        <p className="text-sm">Available limit - {subscriptionPlan?.remaininTeams}</p>
+        <InviteTeams teams={teams} setTeams={setTeams} /> 
+      </div>: null }
 
       {/* Team Members Table */}
       <section className="max-w-4xl mx-auto  hide-scrollbar overflow-auto">

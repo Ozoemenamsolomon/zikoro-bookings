@@ -14,10 +14,11 @@ const SidebarHeader = () => {
     const  {user, setUser, currentWorkSpace, setCurrentWorkSpace, setWorkSpaces,workspaces, setSubscritionPlan, subscriptionPlan} = useUserStore()
     const {getWsUrl, } = useAppointmentContext()
   // global function to update the subscription,added to Sidebar as an object, this will prevent effects of propdrilling which affects children components as parent onMounts...
-    useEffect(()=>{
+    
+  useEffect(()=>{
       const fetchPlan = async () => {
         if(currentWorkSpace){
-          const {plan,updatedWorkspace} = await getPermissionsFromSubscription(currentWorkSpace,true,true)
+          const {plan,updatedWorkspace} = await getPermissionsFromSubscription(currentWorkSpace, true, true)
           // console.log({plan})
           setSubscritionPlan(plan)
           if(updatedWorkspace){

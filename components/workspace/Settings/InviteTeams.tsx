@@ -10,19 +10,32 @@ import { Loader2, X } from 'lucide-react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import EmptyList from '../ui/EmptyList';
-import { NoTeamsIcon } from '@/constants';
+import { NoTeamsIcon, userRoles, userRolesOptions } from '@/constants';
 import Link from 'next/link';
+import { getPermissionsFromSubscription } from '@/lib/server/subscriptions';
 
 const InviteTeams = ({teams, setTeams, text, }:{teams:BookingTeamsTable[], setTeams: React.Dispatch<React.SetStateAction<BookingTeamsTable[]>>, text?:string, remaininTeams?:number, reactivateLink?:string,}) => {
-  const { currentWorkSpace, subscriptionPlan, setSubscritionPlan} = useUserStore()
+  const { currentWorkSpace,setCurrentWorkSpace,setWorkSpaces,workspaces, subscriptionPlan, setSubscritionPlan} = useUserStore()
   const { remaininTeams, reactivateLink} = subscriptionPlan!
 
-  const isAddMoreTeam = useMemo(()=>subscriptionPlan?.teamLimit! > 2,[subscriptionPlan])
   const [teamLimitUpdate, setteamLimitupdate] = useState(subscriptionPlan?.teamLimit ?? 0)
+  
+  const updateTeamlimits = async () => {
+      const {plan,updatedWorkspace} = await getPermissionsFromSubscription(currentWorkSpace!, true, true)
+      // console.log({plan})
+      setSubscritionPlan(plan)
+      if(updatedWorkspace){
+        setCurrentWorkSpace(updatedWorkspace)
+        const updatedWorkspaces = workspaces.map((item) =>
+          item.id === updatedWorkspace.id ? updatedWorkspace : item
+        );
+        setWorkSpaces(updatedWorkspaces);
+      }
+  }
 
   const [formData, setFormData] = useState({
     emails: [] as string[],
-    role: 'MEMBER',
+    role: '',
     // status: 'PENDING',
   });
   const [open, setOpen] = useState(false)
@@ -80,9 +93,9 @@ const InviteTeams = ({teams, setTeams, text, }:{teams:BookingTeamsTable[], setTe
       setFormData({emails:[],role:''})
       // update team limits
       setSubscritionPlan({...subscriptionPlan!, teamLimit: subscriptionPlan?.teamLimit! - 1 })
-      setteamLimitupdate(subscriptionPlan?.teamLimit! - 1)
+      // TODO: Refetch team count  set - teamLimitupdate(subscriptionPlan?.teamLimit! - 1)
+      await updateTeamlimits()
       setOpen(false)
-
     } catch (error) {
       setErrors({ general: 'Failed to send invites' });
     } finally {
@@ -90,7 +103,7 @@ const InviteTeams = ({teams, setTeams, text, }:{teams:BookingTeamsTable[], setTe
     }
   };
 
-  if(!remaininTeams ||  remaininTeams! < 2) {
+  if(!remaininTeams ||  remaininTeams! < 1) {
     return <ExpiredTeamUpgrade text={text} reactivateLink={reactivateLink}/>
   }
 
@@ -128,7 +141,7 @@ const InviteTeams = ({teams, setTeams, text, }:{teams:BookingTeamsTable[], setTe
                 teamLimitUpdate={teamLimitUpdate} setteamLimitupdate={setteamLimitupdate}
                 emails={formData.emails}
                 setEmails={(emails) => setFormData((prev) => ({ ...prev, emails }))}
-                setErrors={(emailError:string)=>setErrors((prev)=>({...prev, email:emailError}))}
+                setErrors={(err:string)=>setErrors((prev)=>({...prev, emails: err}))}
               />
               {errors?.emails && (
                 <p className="text-red-500 text-sm mt-1">{errors.emails}</p>
@@ -145,11 +158,7 @@ const InviteTeams = ({teams, setTeams, text, }:{teams:BookingTeamsTable[], setTe
                   placeholder="Select"
                   value={formData.role}
                   onChange={handleSelectChange}
-                  options={[
-                    { label: 'Owner', value: 'owner' },
-                    { label: 'Editor', value: 'editor' },
-                    { label: 'Collaborator', value: 'collaborator' },
-                  ]}
+                  options={userRolesOptions}
               />
             </div>
 
