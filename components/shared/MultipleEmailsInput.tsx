@@ -1,11 +1,15 @@
 'use client';
-import React, { useState, KeyboardEvent, ChangeEvent, useRef } from 'react';
+import React, { useState, KeyboardEvent, ChangeEvent, useRef, Dispatch, SetStateAction } from 'react';
 import { X } from 'lucide-react';
+import useUserStore from '@/store/globalUserStore';
 
 interface MultipleEmailInputProps {
   emails: string[];
   setEmails: (emails: string[]) => void;
   placeholder?: string;
+  teamLimitUpdate:number;
+  setteamLimitupdate:any,
+  setErrors:(emailErr:string)=>void
 }
 
 const isValidEmail = (email: string) => {
@@ -15,20 +19,33 @@ const isValidEmail = (email: string) => {
 const MultipleEmailInput: React.FC<MultipleEmailInputProps> = ({
   emails,
   setEmails,
+  teamLimitUpdate,
+  setteamLimitupdate,
   placeholder = 'Add emails and press Enter',
+  setErrors,
 }) => {
+  const {subscriptionPlan} = useUserStore()
   const [inputValue, setInputValue] = useState('');
   const [invalidEmails, setInvalidEmails] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const checkTeamLimit = () => {
+    if (subscriptionPlan && teamLimitUpdate >= subscriptionPlan.teamLimit) {
+      setErrors('You’ve reached your team member limit for this plan.');
+    }
+  };
 
   /** Handle Add Email */
   const addEmail = (email: string) => {
     const trimmedEmail = email.trim();
     if (!trimmedEmail) return;
+    // mornitor the teamlimi for this plan
+    checkTeamLimit()
 
     if (isValidEmail(trimmedEmail) && !emails.includes(trimmedEmail)) {
       setEmails([...emails, trimmedEmail]);
       setInvalidEmails((prev) => prev.filter((e) => e !== trimmedEmail));
+      setteamLimitupdate((prev:number)=>prev+1)
     } else {
       setInvalidEmails((prev) => (prev.includes(trimmedEmail) ? prev : [...prev, trimmedEmail]));
     }
@@ -39,6 +56,7 @@ const MultipleEmailInput: React.FC<MultipleEmailInputProps> = ({
   const removeEmail = (email: string) => {
     setEmails(emails.filter((e) => e !== email));
     setInvalidEmails(invalidEmails.filter((e) => e !== email));
+    setteamLimitupdate((prev:number)=>prev-1)
   };
 
   /** Handle Key Down */
@@ -63,6 +81,8 @@ const MultipleEmailInput: React.FC<MultipleEmailInputProps> = ({
   };
 
   return (
+    <>
+    <p className="">email - {teamLimitUpdate}</p>
     <div
       className="border rounded-md p-2 sm:p-4 flex flex-wrap gap-1 min-h-[8rem] items-start justify-start"
       onClick={handleFocus}
@@ -94,6 +114,8 @@ const MultipleEmailInput: React.FC<MultipleEmailInputProps> = ({
         className="flex-1 outline-none text-sm py-1"
       />
     </div>
+    </>
+
   );
 };
 

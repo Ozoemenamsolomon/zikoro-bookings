@@ -117,3 +117,6 @@ export const reactquilToolbar =
       },
     ];
     
+export const userRoles = {
+  owner:'ownwer', editor:'editor',collaborator:'collaborator'
+}

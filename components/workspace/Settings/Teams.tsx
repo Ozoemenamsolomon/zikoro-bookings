@@ -7,7 +7,7 @@ import useUserStore from '@/store/globalUserStore'
 import ResendInvite from './ResendInvite'
 import UpdateMemberRole from './UpdateMemberRole'
 import EmptyList from '../ui/EmptyList'
-import { NoTeamsIcon } from '@/constants'
+import { NoTeamsIcon, userRoles } from '@/constants'
 import Link from 'next/link'
 
 interface TeamsProps {
@@ -17,30 +17,49 @@ interface TeamsProps {
   reactivateLink?:string,
 }
 
-const Teams = ({ teamMembers, subscriptionMsg , remaininTeams, reactivateLink}: TeamsProps) => {
-  const {user, currentWorkSpace} = useUserStore()
+const Teams = ({teamMembers}: TeamsProps) => {
+  const {user, currentWorkSpace, subscriptionPlan} = useUserStore()
+  const {isOnFreePlan, effectivePlan,  reactivateLink} = subscriptionPlan!
+
   const [teams, setTeams] = useState<BookingTeamsTable[]>(teamMembers||[])
   // console.log({teams})
 
-  if(teams.length<2){
-    return <EmptyList
-      icon={<NoTeamsIcon/>}
-      text= {subscriptionMsg??'Invite your team members here to collaborate and manage your bookings together.'}
-      heading={subscriptionMsg ? 'Oops! Access Limit is Exhausted' : 'No Team Members Added Yet'}
-      CTA={
-        subscriptionMsg && reactivateLink ?
-          <Link href={reactivateLink} className='px-4 py-2 rounded-md text-white bg-basePrimary'>Upgrade plan</Link> 
-          :
-          <InviteTeams teams={teams} setTeams={setTeams} text={'Invite team members'} />}
-      className='lg:h-[40em] '
-    />
-  }
+  if (isOnFreePlan || effectivePlan==='Lite') {
+        return (
+          <main className="min-h-screen w-full flex justify-center items-center">
+             <EmptyList
+                icon={<NoTeamsIcon/>}
+                text= {effectivePlan==='Lite' ? 
+                  'You are on the Lite plan, upgrade to access team membership' :
+                  'You are enjoying the freemium plan, upgrade to access team membership' }
+                heading={ 'Oops! Access Limit is Exhausted'  }
+                CTA={<Link href={reactivateLink} className='px-4 py-2 rounded-md text-white bg-basePrimary'>Upgrade plan</Link>}
+                className='lg:h-[40em] '
+              />
+          </main>
+        );
+      }
+
+  // if(teams.length<2){
+  //   return <EmptyList
+  //     icon={<NoTeamsIcon/>}
+  //     text= {subscriptionMsg??'Invite your team members here to collaborate and manage your bookings together.'}
+  //     heading={subscriptionMsg ? 'Oops! Access Limit is Exhausted' : 'No Team Members Added Yet'}
+  //     CTA={
+  //       subscriptionMsg && reactivateLink ?
+  //         <Link href={reactivateLink} className='px-4 py-2 rounded-md text-white bg-basePrimary'>Upgrade plan</Link> 
+  //         :
+  //         <InviteTeams teams={teams} setTeams={setTeams} text={'Invite team members'} />}
+  //     className='lg:h-[40em] '
+  //   />
+  // }
 
   return (
     <section className="sm:py-8 sm:px-8 space-y-5 max-sm:w-screen overflow-x-auto hide-scrollbar">
       {/* Invite Team Members Section */}
       <div className="flex sm:justify-end w-full ">
-        {user?.workspaceRole==='OWNER'? <InviteTeams teams={teams} setTeams={setTeams} remaininTeams={remaininTeams} reactivateLink={reactivateLink}/> : null }
+        {user?.workspaceRole===userRoles.owner? 
+        <InviteTeams teams={teams} setTeams={setTeams} /> : null }
       </div>
 
       {/* Team Members Table */}

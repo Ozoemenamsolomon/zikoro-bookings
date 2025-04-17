@@ -7,14 +7,19 @@ import useUserStore from '@/store/globalUserStore';
 import { BookingTeamMember, BookingTeamsTable } from '@/types';
 import { PostRequest } from '@/utils/api';
 import { Loader2, X } from 'lucide-react';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import EmptyList from '../ui/EmptyList';
 import { NoTeamsIcon } from '@/constants';
 import Link from 'next/link';
 
-const InviteTeams = ({teams, setTeams, text, remaininTeams, reactivateLink}:{teams:BookingTeamsTable[], setTeams: React.Dispatch<React.SetStateAction<BookingTeamsTable[]>>, text?:string, remaininTeams?:number, reactivateLink?:string,}) => {
-  const {user,currentWorkSpace} = useUserStore()
+const InviteTeams = ({teams, setTeams, text, }:{teams:BookingTeamsTable[], setTeams: React.Dispatch<React.SetStateAction<BookingTeamsTable[]>>, text?:string, remaininTeams?:number, reactivateLink?:string,}) => {
+  const { currentWorkSpace, subscriptionPlan, setSubscritionPlan} = useUserStore()
+  const { remaininTeams, reactivateLink} = subscriptionPlan!
+
+  const isAddMoreTeam = useMemo(()=>subscriptionPlan?.teamLimit! > 2,[subscriptionPlan])
+  const [teamLimitUpdate, setteamLimitupdate] = useState(subscriptionPlan?.teamLimit ?? 0)
+
   const [formData, setFormData] = useState({
     emails: [] as string[],
     role: 'MEMBER',
@@ -73,6 +78,9 @@ const InviteTeams = ({teams, setTeams, text, remaininTeams, reactivateLink}:{tea
   
       toast.success('Team invite was successful')
       setFormData({emails:[],role:''})
+      // update team limits
+      setSubscritionPlan({...subscriptionPlan!, teamLimit: subscriptionPlan?.teamLimit! - 1 })
+      setteamLimitupdate(subscriptionPlan?.teamLimit! - 1)
       setOpen(false)
 
     } catch (error) {
@@ -117,8 +125,10 @@ const InviteTeams = ({teams, setTeams, text, remaininTeams, reactivateLink}:{tea
 
               <div>
               <MultipleEmailInput
+                teamLimitUpdate={teamLimitUpdate} setteamLimitupdate={setteamLimitupdate}
                 emails={formData.emails}
                 setEmails={(emails) => setFormData((prev) => ({ ...prev, emails }))}
+                setErrors={(emailError:string)=>setErrors((prev)=>({...prev, email:emailError}))}
               />
               {errors?.emails && (
                 <p className="text-red-500 text-sm mt-1">{errors.emails}</p>
