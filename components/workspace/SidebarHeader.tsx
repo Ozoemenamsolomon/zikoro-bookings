@@ -1,4 +1,4 @@
-import { urls } from '@/constants'
+import { urls, userRoles } from '@/constants'
 import { useAppointmentContext } from '@/context/AppointmentContext'
 
 import { getPermissionsFromSubscription } from '@/lib/server/subscriptions'
@@ -14,10 +14,11 @@ const SidebarHeader = () => {
     const  {user, setUser, currentWorkSpace, setCurrentWorkSpace, setWorkSpaces,workspaces, setSubscritionPlan, subscriptionPlan} = useUserStore()
     const {getWsUrl, } = useAppointmentContext()
   // global function to update the subscription,added to Sidebar as an object, this will prevent effects of propdrilling which affects children components as parent onMounts...
-    useEffect(()=>{
+    
+  useEffect(()=>{
       const fetchPlan = async () => {
         if(currentWorkSpace){
-          const {plan,updatedWorkspace} = await getPermissionsFromSubscription(currentWorkSpace)
+          const {plan,updatedWorkspace} = await getPermissionsFromSubscription(currentWorkSpace, true, true)
           // console.log({plan})
           setSubscritionPlan(plan)
           if(updatedWorkspace){
@@ -35,9 +36,9 @@ const SidebarHeader = () => {
         if(user) {
           if(currentWorkSpace?.organizationOwnerId!==user?.id){
             const {data, error} = await fetchOneTeamMember(currentWorkSpace?.organizationAlias!, user?.userEmail!)
-            setUser({...user!, workspaceRole: data?.userRole! || 'COLLABORATOR'})
+            setUser({...user!, workspaceRole: data?.userRole! || userRoles.collaborator})
           } else {
-            setUser({...user!, workspaceRole: 'OWNER'})
+            setUser({...user!, workspaceRole: userRoles.owner})
           }
         }
       }

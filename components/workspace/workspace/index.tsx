@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button'
  
 import { PlusCircle, RotateCw } from 'lucide-react'
 import { fetchCurrencies } from '@/lib/server/workspace'
-import { BookingsCurrencyConverter } from '@/types'
+ 
 
 const WsComponent = () => {
     const { push } = useRouter()
