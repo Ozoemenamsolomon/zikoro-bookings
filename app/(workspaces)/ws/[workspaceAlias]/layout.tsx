@@ -40,6 +40,7 @@ export default async function  WorkspaceLayout({
           }>()
 
     const workspace:Organization|null = teamMember?.workspaceAlias || null
+    console.log({teamMember,error, role:userRoles.owner})
 
     // if user is not found as a team member, it means the user has been removed, so we rturn to default
     if(!workspace || error){
@@ -50,10 +51,9 @@ export default async function  WorkspaceLayout({
         
         console.log('User was not found as member of this space, so return to user default space')
         if(data){
-            redirect(`/ws/${data[data.length-1].organizationAlias}/schedule?msg=You could not gain access to the workspace`)
+            redirect(`/ws/${data[data.length-1].organizationAlias}/schedule?msg=You are no longer a member of the workspace`)
         }
     }
-    
     // if user is not owner and it's free/lite workspace deny access and return to user's own workspcae
     if(teamMember?.userRole !== userRoles.owner && workspace) {
         const {plan:{effectivePlan, isOnFreePlan},} = await getPermissionsFromSubscription(workspace!)
