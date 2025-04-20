@@ -40,7 +40,7 @@ export default async function  WorkspaceLayout({
           }>()
 
     const workspace:Organization|null = teamMember?.workspaceAlias || null
-    console.log({teamMember,error, role:userRoles.owner})
+    // console.log({teamMember,error, role:userRoles.owner})
 
     // if user is not found as a team member, it means the user has been removed, so we rturn to default
     if(!workspace || error){
@@ -49,7 +49,7 @@ export default async function  WorkspaceLayout({
             .select('id,organizationAlias')
             .eq('organizationOwner', user?.email)
         
-        console.log('User was not found as member of this space, so return to user default space')
+        // console.log('User was not found as member of this space, so return to user default space')
         if(data){
             redirect(`/ws/${data[data.length-1].organizationAlias}/schedule?msg=You are no longer a member of the workspace`)
         }
