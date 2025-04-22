@@ -105,8 +105,8 @@ export interface BookingsCurrencyConverter {
 }
 
 export interface SubscriptionBooking {
-  id: number;
-  created_at: string; // ISO timestamp format
+  id?: number;
+  created_at?: string; 
   userId?: number | null;
   subscriptionType?: string | null;
   amountPaid?: number | null;

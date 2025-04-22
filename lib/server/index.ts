@@ -17,8 +17,8 @@ export const fetchAllData = async (table: string, orderBy?: string, start:number
     const supabase = createClient();
 
     const fetchTableSize = supabase
-    .from(table)
-    .select('*', { count: 'exact', head: true });
+        .from(table)
+        .select('*', { count: 'exact', head: true });
   
     const fetchData = supabase
         .from(table)

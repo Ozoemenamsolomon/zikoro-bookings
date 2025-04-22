@@ -14,9 +14,9 @@ import { fetchCurrencies } from '@/lib/server/workspace'
  
 
 const WsComponent = () => {
-    const { push } = useRouter()
+    const { push, refresh } = useRouter()
     const { currentWorkSpace, workspaces } = useUserStore()
-    const [isRefreshing, setIsRefreshing] = useState(false)
+    const [isRefreshing, setIsRefreshing] = useState(true)
     const [currencies, setCurrencies] = useState<{label:string,value:string}[]>([])
 
     // Handle redirection
@@ -25,23 +25,27 @@ const WsComponent = () => {
             const {data} = await fetchCurrencies()
             const options = data.map((item)=>({
                 label:item.currency, value:String(item.amount)
-              }))
-              setCurrencies(options)
+                }))
+                setCurrencies(options)
         }
-        if (currentWorkSpace) {
-            push(`/ws/${currentWorkSpace.organizationAlias}/schedule`)
-        } else if (workspaces[0]) {
-            push(`/ws/${workspaces[0].organizationAlias}/schedule`)
-        }
+        // if (currentWorkSpace) {
+        //     push(`/ws/${currentWorkSpace.organizationAlias}/schedule`)
+        // } else if (workspaces[0]) {
+        //     push(`/ws/${workspaces[0].organizationAlias}/schedule`)
+        // }
         fetchData()
+        setIsRefreshing(false)
     }, [currentWorkSpace, workspaces,])
 
     // Handle Refresh with Loader Simulation
     const handleRefresh = () => {
         setIsRefreshing(true)
-        setTimeout(() => {
-            window.location.reload()
-        }, 1000) // Simulate 1-second loading delay
+
+        refresh()
+        // setIsRefreshing(true)
+        // setTimeout(() => {
+        //     window.location.reload()
+        // }, 1000)  
     }
 
     return (
