@@ -68,7 +68,7 @@ export async function initializeWorkspaces(
     try {
       const response = await fetch(`/api/workspaces?userId=${user.id}`);
       const { data, error } = await response.json();
-      console.log({data,error})
+      // console.log({data,error})
 
       // edge case for fallback to user without workspace.
       if(!data){

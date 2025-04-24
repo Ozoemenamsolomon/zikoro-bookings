@@ -69,7 +69,7 @@ export const fetchWorkspaces = async (
     //   (workspace, index, self) =>
     //     self.findIndex((w) => w.id === workspace.id) === index
     // );
-console.log({teamWorkspaceOrganizations})
+    console.log({teamWorkspaceOrganizations})
     return { 
       data: teamWorkspaceOrganizations, 
       error: null, 
