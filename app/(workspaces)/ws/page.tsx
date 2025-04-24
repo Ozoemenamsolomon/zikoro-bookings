@@ -5,21 +5,26 @@ import { redirect } from "next/navigation";
 
 const WsPage = async () => {
     const supabase = createClient()
-    const {user} =  await getUserData()
-    
+    // const {user} =  await getUserData()
+        const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
     const {data, error} = await supabase
         .from('organization')
-        .select('id,organizationAlias')
-        .eq('organizationOwnerId', user?.id)
+        .select('id,organizationAlias, organizationOwner')
+        .eq('organizationOwner', user?.email)
+
+    console.log({data, error})
 
     if(data){
-        redirect(`/ws/${data[0].organizationAlias}/schedule`)
+        redirect(`/ws/${data[data.length-1]?.organizationAlias}/schedule`)
     } else {
-      redirect('/')
+      return (
+      <WsComponent />
+    )
     }
-    // return (
-    //   <WsComponent />
-    // )
+    
 }
 
 export default WsPage
