@@ -1,4 +1,3 @@
-import Main from "@/components/workspace/Main";
 import ProtectWorkspaceWrapper from "@/components/workspace/ProtectWorkspaceWrapper";
 import { Loader2Icon } from "lucide-react";
 import type { Metadata } from "next";
@@ -16,7 +15,6 @@ export default async function WorkspaceLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Main>
       <Suspense
         fallback={
           <section className="w-full pt-40 flex justify-center items-center">
@@ -28,6 +26,5 @@ export default async function WorkspaceLayout({
           {children}
         </ProtectWorkspaceWrapper>
       </Suspense>
-    </Main>
   );
 }

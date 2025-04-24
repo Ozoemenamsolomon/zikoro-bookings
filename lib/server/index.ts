@@ -8,7 +8,7 @@ export const getUserData = async () =>{
   const supabase = createClient();
 
   const  {data:{user}, error} = await supabase.auth.getUser()
-  const {data:userData, error:err} = await supabase.from('users').select('userEmail,id').eq('userEmail', user?.email).single()
+  const {data:userData, error:err} = await supabase.from('users').select('userEmail,id,firstName,lastName,phoneNumber').eq('userEmail', user?.email).single()
 
   return {user:userData, error:error||err}
 }

@@ -18,28 +18,29 @@ const WsComponent = () => {
     const { currentWorkSpace, workspaces } = useUserStore()
     const [isRefreshing, setIsRefreshing] = useState(true)
     const [currencies, setCurrencies] = useState<{label:string,value:string}[]>([])
+    const [date, setDate] = useState('')
 
     // Handle redirection
-    useEffect(() => {
-        const fetchData = async () => {
-            const {data} = await fetchCurrencies()
-            const options = data.map((item)=>({
-                label:item.currency, value:String(item.amount)
-                }))
-                setCurrencies(options)
-        }
+    // useEffect(() => {
+        // const fetchData = async () => {
+        //     const {data} = await fetchCurrencies()
+        //     const options = data.map((item)=>({
+        //         label:item.currency, value:String(item.amount)
+        //         }))
+        //         setCurrencies(options)
+        // }
         // if (currentWorkSpace) {
         //     push(`/ws/${currentWorkSpace.organizationAlias}/schedule`)
         // } else if (workspaces[0]) {
         //     push(`/ws/${workspaces[0].organizationAlias}/schedule`)
         // }
-        fetchData()
-        setIsRefreshing(false)
-    }, [currentWorkSpace, workspaces,])
+        // fetchData()
+        // setIsRefreshing(false)
+    // }, [currentWorkSpace, workspaces,])
 
     // Handle Refresh with Loader Simulation
     const handleRefresh = () => {
-        setIsRefreshing(true)
+        // setIsRefreshing(true)
 
         refresh()
         // setIsRefreshing(true)
@@ -64,7 +65,7 @@ const WsComponent = () => {
                 <h1 className="font-bold text-4xl sm:text-6xl">No workspace found!</h1>
                 <div className="flex max-w-80 mx-auto justify-center gap-3 items-center">
                     <CreateWorkSpace
-                        currencies={currencies}
+                        // currencies={currencies}
                         redirectTo='/schedule'
                         button={
                             <Button className="bg-basePrimary text-white flex items-center">

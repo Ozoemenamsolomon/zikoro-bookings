@@ -9,6 +9,9 @@ export interface Organization {
   subscritionStartDate?: string | null; // Date as string (ISO format)
   subscriptionEndDate?: string | null; // Date as string (ISO format)
   organizationOwner?: string | null;
+  userRole?: string | null;
+
+
   BillingAddress?: string | null;
   TaxID?: string | null;
   payoutAccountDetails?: Record<string, any> | null; // JSON object

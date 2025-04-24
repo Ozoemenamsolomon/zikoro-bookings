@@ -196,7 +196,7 @@ const fetchBookingsLimitCount = async (startDate: string, endDate: string, works
     .eq('workspaceId', workspaceAlias)
     .gte("created_at", startDate)
     .lt("created_at", endDate);
-console.log({ count, error })
+    console.log('BOOKINGS LIST: ', { count, error })
   if (error) {
     console.error("Failed to fetch bookings count:", error);
     return 0;
@@ -214,7 +214,8 @@ const fetchTeamsLimitCount = async (startDate: string, endDate: string, workspac
       .eq('workspaceAlias', workspaceAlias)
       .gte("created_at", startDate)
       .lt("created_at", endDate);
-  console.log({ count, error })
+
+    console.log('TEAM LIST: ', { count, error })
     if (error) {
       console.error("Failed to fetch bookings count:", error);
       return 0;

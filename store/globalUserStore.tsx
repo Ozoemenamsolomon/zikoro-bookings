@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { Organization, SubscriptionPlanInfo } from "@/types";
 import { User } from "@/types/appointments";
 import { getPermissionsFromSubscription } from "@/lib/server/subscriptions";
+import { createWorkspaceFromScratch } from "@/lib/server/workspace";
  
 interface UserState {
   user: User | null;
@@ -67,13 +68,22 @@ export async function initializeWorkspaces(
     try {
       const response = await fetch(`/api/workspaces?userId=${user.id}`);
       const { data, error } = await response.json();
+      console.log({data,error})
 
-      if (error) {
-        console.error("Error fetching workspaces:", error);
-        setWorkSpaces([]);
-        setCurrentWorkSpace(null);
-        return null;
+      // edge case for fallback to user without workspace.
+      if(!data){
+        const {data} = await createWorkspaceFromScratch(user)
+        setWorkSpaces([data]);
+        setCurrentWorkSpace(data);
+        return data;
       }
+
+      // if (error) {
+      //   console.error("Error fetching workspaces:", error);
+      //   setWorkSpaces([]);
+      //   setCurrentWorkSpace(null);
+      //   return null;
+      // }
 
       setWorkSpaces(data);
 
@@ -88,22 +98,24 @@ export async function initializeWorkspaces(
       let selectedWorkspace = pickWorkspace(assignedWkspace!, data);
 
       if (!selectedWorkspace) {
-        setCurrentWorkSpace(null);
-        return null;
+        const {data} = await createWorkspaceFromScratch(user)
+        setWorkSpaces([data]);
+        setCurrentWorkSpace(data);
+        return data;
       }
 
-      const { plan, updatedWorkspace } = await getPermissionsFromSubscription(
-        selectedWorkspace
-      );
-      setSubscritionPlan(plan);
+      // const { plan, updatedWorkspace } = await getPermissionsFromSubscription(
+      //   selectedWorkspace
+      // );
+      // setSubscritionPlan(plan);
 
-      if (updatedWorkspace) {
-        selectedWorkspace = updatedWorkspace;
-        const updatedWorkspaces = data.map((item: Organization) =>
-          item.id === updatedWorkspace.id ? updatedWorkspace : item
-        );
-        setWorkSpaces(updatedWorkspaces);
-      }
+      // if (updatedWorkspace) {
+      //   selectedWorkspace = updatedWorkspace;
+      //   const updatedWorkspaces = data.map((item: Organization) =>
+      //     item.id === updatedWorkspace.id ? updatedWorkspace : item
+      //   );
+      //   setWorkSpaces(updatedWorkspaces);
+      // }
 
       setCurrentWorkSpace(selectedWorkspace);
 
@@ -119,93 +131,3 @@ export async function initializeWorkspaces(
   return null;
 }
 
-
-
-
-// export async function initializeWorkspaces(
-//   user: User | null,
-//   assignedWkspace?: Organization | null,
-//   isSignup?: boolean
-// ): Promise<Organization | null> {
-//   const { setUser, setWorkSpaces, setCurrentWorkSpace, currentWorkSpace, setSubscritionPlan } = useUserStore.getState();
-//   // initializing user only during onboarding. Here workspaces and currentpworkspace are setup doing onboarding process
-//   setUser(user);
-
-//   // initializing login old user and not onboarding user.
-//   if (user && !isSignup) {
-//     try {
-//       const response = await fetch(`/api/workspaces?userId=${user.id}`);
-//       const { data, error } = await response.json();
-
-//       if (error) {
-//         console.error('Error fetching workspaces:', error);
-//         setWorkSpaces([]);
-//         setCurrentWorkSpace(null);
-//         return null;
-//       }
-
-//       setWorkSpaces(data);
-//       // set current workspace to current workspace from the session or to workspace from the token, which is the new workspace user was added to.
-//       if (assignedWkspace) {
-//         setCurrentWorkSpace(assignedWkspace);
-//         const {plan, updatedWorkspace} = await getPermissionsFromSubscription(assignedWkspace)
-//         setSubscritionPlan(plan)
-//         if(updatedWorkspace){
-//           setCurrentWorkSpace(updatedWorkspace)
-//           const updatedWorkspaces = data.map((item:Organization) =>
-//             item.id === updatedWorkspace.id ? updatedWorkspace : item
-//           );
-//           setWorkSpaces(updatedWorkspaces);
-//         }
-
-//         return updatedWorkspace||assignedWkspace;
-//       } else if (currentWorkSpace) {
-//         // confirm the workspace from the session still exist in 
-//         const exists = data.find(
-//           (ws: Organization) => ws.organizationOwnerId === currentWorkSpace.organizationOwnerId
-//         );
-//         setCurrentWorkSpace(exists || data[0] || null);
-//         if (exists||data[0]) {
-//           const {plan, updatedWorkspace} = await getPermissionsFromSubscription(exists||data[0])
-//           setSubscritionPlan(plan)
-//           if(updatedWorkspace){
-//             setCurrentWorkSpace(updatedWorkspace)
-//             const updatedWorkspaces = data.map((item:Organization) =>
-//               item.id === updatedWorkspace.id ? updatedWorkspace : item
-//             );
-//             setWorkSpaces(updatedWorkspaces);
-//           }
-
-//           return updatedWorkspace||exists||data[0]||null;
-//         }
-//         return exists || data[0] || null;
-//       } else {
-//         setCurrentWorkSpace(data[0] || null);
-//         if (data[0]) {
-//           const {plan, updatedWorkspace} = await getPermissionsFromSubscription(data[0])
-//           setSubscritionPlan(plan)
-//           if(updatedWorkspace){
-//             setCurrentWorkSpace(updatedWorkspace)
-//             const updatedWorkspaces = data.map((item:Organization) =>
-//               item.id === updatedWorkspace.id ? updatedWorkspace : item
-//             );
-//             setWorkSpaces(updatedWorkspaces);
-//           }
-
-//           return updatedWorkspace||data[0]||null;
-//         }
-//         return data[0] || null;
-//       }
-
-//     } catch (error) {
-//       console.error('Failed to fetch workspaces:', error);
-//       setWorkSpaces([]);
-//       setCurrentWorkSpace(null);
-//       return null;
-//     }
-//   }
-
-//   return null;
-// }
-
- 

@@ -6,7 +6,7 @@ import { BookingsCurrencyConverter, BookingTeamInput, BookingTeamMember, Booking
 import { User } from "@/types/appointments";
 import { generateSlugg } from "../generateSlug";
 import { createADMINClient } from "@/utils/supabase/no-caching";
-import { addMonths } from "date-fns";
+import { addMonths, formatISO } from "date-fns";
  
 type ResultProp = {
   data: Organization[] | null;
@@ -30,22 +30,22 @@ export const fetchWorkspaces = async (
 
   try {
     // Fetch organization/workspaces directly owned by the user
-    const { data: workspaces, count: workspaceCount, error: workspaceError } = await supabase
-      .from('organization')
-      .select('*', { count: 'exact' })
-      .eq('organizationOwnerId', id)
-      .order('created_at', { ascending: false });
+    // const { data: workspaces, count: workspaceCount, error: workspaceError } = await supabase
+    //   .from('organization')
+    //   .select('*', { count: 'exact' })
+    //   .eq('organizationOwnerId', id)
+    //   .order('created_at', { ascending: false });
 
-    if (workspaceError) {
-      console.error('Error fetching organization:', workspaceError);
-      return { data: null, error: workspaceError.message, count: 0 };
-    }
+    // if (workspaceError) {
+    //   console.error('Error fetching organization:', workspaceError);
+    //   return { data: null, error: workspaceError.message, count: 0 };
+    // }
 
     // Fetch workspaces that the user belongs to using organizationTeamMembers_Bookings
     const { data: teamWorkspaces, error: teamError } = await supabase
       .from('organizationTeamMembers_Bookings')
       .select(
-        'id, workspaceAlias(*)',
+        '*, workspaceAlias(*)',
         { count: 'exact' }
       )
       .eq('userId', id)
@@ -58,22 +58,22 @@ export const fetchWorkspaces = async (
 
     // Extract workspaceAlias properly (ensure it's an array of Organization objects)
     const teamWorkspaceOrganizations: Organization[] = (teamWorkspaces || [])
-      .flatMap((teamWorkspace) => teamWorkspace.workspaceAlias)
+      .flatMap((teamWorkspace) => ({...teamWorkspace.workspaceAlias, userRole: teamWorkspace.userRole}))
       .filter((workspace)  => workspace !== null);
 
     // Combine both workspaces and remove duplicates by `id`
-    const combinedWorkspaces: Organization[] = [
-      ...(workspaces || []),
-      ...teamWorkspaceOrganizations
-    ].filter(
-      (workspace, index, self) =>
-        self.findIndex((w) => w.id === workspace.id) === index
-    );
-console.log({combinedWorkspaces})
+    // const combinedWorkspaces: Organization[] = [
+    //   ...(workspaces || []),
+    //   ...teamWorkspaceOrganizations
+    // ].filter(
+    //   (workspace, index, self) =>
+    //     self.findIndex((w) => w.id === workspace.id) === index
+    // );
+console.log({teamWorkspaceOrganizations})
     return { 
-      data: combinedWorkspaces, 
+      data: teamWorkspaceOrganizations, 
       error: null, 
-      count: combinedWorkspaces.length 
+      count: teamWorkspaceOrganizations.length 
     };
   } catch (error) {
     console.error('Server error fetching workspaces:', error);
@@ -202,7 +202,7 @@ export const createWorkspace = async (body:{
   // body.workspaceData, body.userData
   const supabase = createClient()
   try {
-    const {data,error}= await supabase
+    const {data,error} = await supabase
     .from('organization')
     .insert(body.workspaceData)
     .select('*')
@@ -414,4 +414,48 @@ export const updateWorkspace = async (wkspace:any) => {
     .eq('organizationAlias', wkspace.organizationAlias)
     .select()
     .single()
+}
+
+
+export async function createWorkspaceFromScratch( user: User) {
+  const now = new Date();
+
+  const workspaceData = {
+    organizationName: 'Beta Workspace',
+    organizationOwner: user.userEmail!,
+    subscriptionPlan: 'Free',
+    organizationLogo: '',
+    organizationAlias: generateSlugg('Beta Workspace'),
+    organizationOwnerId: String(user.id),
+    subscritionStartDate: formatISO(now),
+    subscriptionEndDate: formatISO(addMonths(now, 1)),
+    subscriptionExpiryDate: formatISO(addMonths(now, 1)),
+    organizationType: 'Private',
+  };
+
+  const userData = {
+    userId: Number(user.id),
+    userRole: 'owner',
+    userEmail: user.userEmail,
+  };
+  
+  const { data, error } = await createWorkspace({ workspaceData, userData });
+
+  // const subscriptionPlan = {
+  //   userId: user.id,
+  //   subscriptionType: 'Free',
+  //   amountPaid: 0,
+  //   startDate: formatISO(now),
+  //   expirationDate: formatISO(addMonths(now, 1)),
+  //   discountCode: '',
+  //   monthYear: 'Monthly',
+  // };
+
+  // if (data) {
+  //   await createSubsription({ ...subscriptionPlan, workspaceAlias: data.organizationAlias });
+  //   return data.organizationAlias;
+  // }
+
+
+return { data, error };
 }

@@ -16,6 +16,7 @@ import CurrencySelector from './CurrencySelector';
 import { subscriptionPlans } from '@/constants';
 import { calculateSubscriptionCost, calculateSubscriptionEndDate, cn } from '@/lib';
 import DiscountButton from './DiscountButton';
+import { fetchCurrencies } from '@/lib/server/workspace';
 
 const initialFormData: OrganizationInput = {
   organizationName: '',
@@ -30,10 +31,11 @@ const initialFormData: OrganizationInput = {
   // currency : '',
 };
 
-const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh, currencies }: { workSpaceData?: Organization, button?: React.ReactNode, redirectTo?:string, onClose?:(k:boolean)=>void, isRefresh?:boolean, currencies:{label:string,value:string}[],}) => {
+const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh,   }: { workSpaceData?: Organization, button?: React.ReactNode, redirectTo?:string, onClose?:(k:boolean)=>void, isRefresh?:boolean, }) => {
   const {user, setUser, setWorkSpaces, setCurrentWorkSpace, currentWorkSpace, workspaces, subscriptionPlan } = useUserStore();
   const {push} = useRouter()
   const discountRate =15
+  const [currencies, setCurrencies] = useState<{label:string,value:string}[]>([])
   
   const [type, setType] = useState<string>('Monthly');
   const [selectedCurrency, setSelectedCurrency] = useState<{label:string, value:number}>({label:'NGN', value:1000});
@@ -86,6 +88,15 @@ const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh, currencies
     //   }
     //   setFetching(false)
     // }
+    // const fetching = async() => {
+    //         const {data} = await fetchCurrencies()
+    //         const options = data.map((item)=>({
+    //           label:item.currency, value:String(item.amount)
+    //         }))
+    //         setCurrencies(options)
+    //         // console.log({data, options})
+    //       }
+    //       fetching()
 
     if (workSpaceData) {
       setFormData((prev) => { 

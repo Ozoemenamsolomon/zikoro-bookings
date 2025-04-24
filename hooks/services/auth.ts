@@ -152,6 +152,7 @@ export const useSetLoggedInUser = () => {
         }
         // initializing user-currentworkspace with currentworkspace from the store
         const wkspace = await initializeWorkspaces(user);
+        // return `#`;
         return `/ws/${wkspace?.organizationAlias}/${urls.schedule}`;
       }
   };
