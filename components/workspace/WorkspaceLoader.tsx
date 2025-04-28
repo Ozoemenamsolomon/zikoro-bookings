@@ -1,9 +1,10 @@
 'use client'
 
+import { useSupabaseRealtime } from '@/hooks/services/useSupabaseRealtime'
 import { getPermissionsFromSubscription } from '@/lib/server/subscriptions'
 import useUserStore from '@/store/globalUserStore'
 import { Organization } from '@/types'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 const WorkspaceLoader = ({ workspace, workspaces }:{
     workspace:Organization,  workspaces:Organization[]  }) => {
@@ -22,7 +23,36 @@ const WorkspaceLoader = ({ workspace, workspaces }:{
   
       update()
     }, [])
- 
+
+    type Message = {
+        eventType: 'INSERT' | 'UPDATE' | 'DELETE';
+        schema: 'public';
+        table: 'messages';
+        record: any   // new data
+        old_record: any // old data (for updates/deletes)
+    };
+    const [messages, setMessages] = useState<Message[]>([]);
+    useSupabaseRealtime<Message>('organizationTeamMembers_Bookings', (payload) => {
+      console.log({payload})
+      // const { eventType, new: newRecord, old: oldRecord } = payload;
+  
+      // if (eventType === 'INSERT') {
+      //   setMessages((prev) => [...prev, newRecord]);
+      // }
+  
+      // if (eventType === 'UPDATE') {
+      //   setMessages((prev) =>
+      //     prev.map((msg) => (msg.id === newRecord.id ? newRecord : msg))
+      //   );
+      // }
+  
+      // if (eventType === 'DELETE') {
+      //   setMessages((prev) => prev.filter((msg) => msg.id !== oldRecord.id));
+      // }
+    });
+  
+
+    
   // console.log({subscriptionPlan, currentWorkSpace})
   return null
 }
