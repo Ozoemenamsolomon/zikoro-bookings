@@ -5,6 +5,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AppointmentProvider } from "@/context/AppointmentContext";
 import { montserrat } from "@/utils/fonts/montserrat";
+import 'react-quill/dist/quill.snow.css'; // import styles
 
 export const metadata: Metadata = {
   metadataBase: new URL(`https://www.bookings.zikoro.com`),

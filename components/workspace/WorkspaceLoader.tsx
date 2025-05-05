@@ -24,15 +24,11 @@ const WorkspaceLoader = ({ workspace, workspaces }:{
       update()
     }, [])
 
-    type Message = {
-        eventType: 'INSERT' | 'UPDATE' | 'DELETE';
-        schema: 'public';
-        table: 'messages';
-        record: any   // new data
-        old_record: any // old data (for updates/deletes)
-    };
-    const [messages, setMessages] = useState<Message[]>([]);
-    useSupabaseRealtime<Message>('organizationTeamMembers_Bookings', (payload) => {
+ 
+    useSupabaseRealtime({
+      table:'organizationTeamMembers_Bookings', 
+      filter: {filter: `workspaceAlias=eq.`}, 
+      onChange:(payload) => {
       console.log({payload})
       // const { eventType, new: newRecord, old: oldRecord } = payload;npm run dev
       
@@ -50,7 +46,8 @@ const WorkspaceLoader = ({ workspace, workspaces }:{
       // if (eventType === 'DELETE') {
       //   setMessages((prev) => prev.filter((msg) => msg.id !== oldRecord.id));
       // }
-    });
+    }
+  });
   
 
     
