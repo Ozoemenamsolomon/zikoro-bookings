@@ -15,7 +15,7 @@ const DiscountButton = () => {
         <Button onClick={()=>setShow(false)} type='button' className='shrink-0 px-3   rounded-l-none py-2'>Redeem</Button>
     </div>
     :
-    <p onClick={()=>setShow(true)} className='text-zikoroBlue text-sm cursor-pointer'>Have a discount code? Click here to enter the code</p>}
+    <p onClick={()=>setShow(true)} className='text-zikoroBlue text-xs cursor-pointer'>Have a discount code? Click here to enter the code</p>}
     </> )
 }
 

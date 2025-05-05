@@ -13,7 +13,7 @@ import { toast } from 'react-toastify';
 import { generateSlugg } from '@/lib/generateSlug';
 import { useRouter } from 'next/navigation';
 import CurrencySelector from './CurrencySelector';
-import { subscriptionPlans } from '@/constants';
+import { subscriptionPlans, typeOptions, discountRate } from '@/constants';
 import { calculateSubscriptionCost, calculateSubscriptionEndDate, cn } from '@/lib';
 import DiscountButton from './DiscountButton';
 import { fetchCurrencies } from '@/lib/server/workspace';
@@ -34,10 +34,9 @@ const initialFormData: OrganizationInput = {
 const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh,   }: { workSpaceData?: Organization, button?: React.ReactNode, redirectTo?:string, onClose?:(k:boolean)=>void, isRefresh?:boolean, }) => {
   const {user, setUser, setWorkSpaces, setCurrentWorkSpace, currentWorkSpace, workspaces, subscriptionPlan } = useUserStore();
   const {push} = useRouter()
-  const discountRate =15
   const [currencies, setCurrencies] = useState<{label:string,value:string}[]>([])
   
-  const [type, setType] = useState<string>('Monthly');
+  const [type, setType] = useState<string>(typeOptions[0]);
   const [selectedCurrency, setSelectedCurrency] = useState<{label:string, value:number}>({label:'NGN', value:1000});
   const [selectedPlan, setSelectedPlan] = useState<{label:string, value:number, features:string[]}>(subscriptionPlans[0]);
 
@@ -46,7 +45,7 @@ const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh,   }: { wor
   const [formData, setFormData] = useState<OrganizationInput>({
     ...initialFormData,
     organizationOwnerId: user?.id!,
-    organizationOwner: user?.firstName! + ' ' + user?.lastName,
+    organizationOwner: user?.userEmail!,
     planPrice:  base,
     amountPaid:  total,
     discountValue: discountValue,
@@ -61,7 +60,7 @@ const CreateWorkSpace = ({ workSpaceData, button, onClose, isRefresh,   }: { wor
   const [loading, setLoading] = useState<string>('');
   // const [isFetching, setFetching] = useState<boolean>(false);
 
-  const typeOptions:[string, string] = ['Monthly', 'Yearly']
+  
 
   const plans = subscriptionPlans.map((item)=>({label: item.label, value:item.label}))
   

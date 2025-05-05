@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   }
   try {
     const body:OrganizationInput = await req.json();
-    // console.log(body)
+    console.log(body)
     const {data,error}= await supabase
       .from('organization')
       .update(body)

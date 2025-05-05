@@ -85,6 +85,7 @@ export function SubscriptionCallouts({ permissions }: { permissions: any }) {
 
 import { Card, CardContent } from "@/components/ui/card";
 import Link from 'next/link';
+import Upgradeworkspace from './Upgradeworkspace';
 
 export function UsageStats({ permissions }: { permissions: any }) {
   const stats = [
@@ -172,9 +173,10 @@ export function UpgradePrompt({ permissions }: { permissions: any }) {
       <h3 className="text-lg font-semibold">Need more power?</h3>
       <p className="text-sm text-gray-500">Upgrade your plan to unlock more features and higher limits.</p>
       <div className="flex justify-items-center">
-        <Link href={'#'} className='py-3 text-center w-full bg-basePrimary rounded-md flex justify-center text-white px-6 '>
+        <Upgradeworkspace />
+        {/* <Link href={'#'} className='py-3 text-center w-full bg-basePrimary rounded-md flex justify-center text-white px-6 '>
             Upgrade Plan
-        </Link >
+        </Link > */}
       </div>
     </div>
   );
