@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react'
 const WorkspaceLoader = ({ workspace, workspaces }:{
     workspace:Organization,  workspaces:Organization[]  }) => {
   
-      const  {user, setUser,  setCurrentWorkSpace, setWorkSpaces,setSubscritionPlan} = useUserStore()
+      const  {user, setUser,  setCurrentWorkSpace, setWorkSpaces, setSubscritionPlan} = useUserStore()
     // global function to update the subscription,added to Sidebar as an object, this will prevent effects of propdrilling which affects children components as parent onMounts...
   
     useEffect(() => {
@@ -34,7 +34,8 @@ const WorkspaceLoader = ({ workspace, workspaces }:{
     const [messages, setMessages] = useState<Message[]>([]);
     useSupabaseRealtime<Message>('organizationTeamMembers_Bookings', (payload) => {
       console.log({payload})
-      // const { eventType, new: newRecord, old: oldRecord } = payload;
+      // const { eventType, new: newRecord, old: oldRecord } = payload;npm run dev
+      
   
       // if (eventType === 'INSERT') {
       //   setMessages((prev) => [...prev, newRecord]);
