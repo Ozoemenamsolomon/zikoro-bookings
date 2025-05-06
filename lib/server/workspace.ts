@@ -180,25 +180,6 @@ export const assignMyWorkspace = async (
           newTeam=newTeamMemebr
         }
         
-        // let newTeam, newTeamError
-        // if(data) {
-        //   const {data:newTeamMember, error}= await supabase
-        //   .from('organizationTeamMembers_Bookings')
-        //   .insert({
-        //     workspaceAlias: data?.organizationAlias,
-        //     userId,
-        //     userRole:'ADMIN',
-        //     userEmail:email,
-        //   })
-        //   .select('*, workspaceAlias(*)')
-    
-        //   if(error) {
-        //     newTeamError='Error occured while adding user to workspace team.'
-        //     console.log('Error adding team member to workspace: ', error)
-        //   }
-        //   newTeam=newTeamMember
-        // }
-
         console.log({data, error:error?.message||null, newTeam, newTeamError})
 
     return {data, error:error?.message||null, newTeam, newTeamError}
