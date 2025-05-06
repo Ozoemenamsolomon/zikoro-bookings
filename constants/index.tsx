@@ -33,6 +33,7 @@ export const reactquilToolbar =
     export const typeOptions:[string, string] = ['Monthly', 'Yearly']
  
     export const discountRate = 15
+    export const YEARLY_DISCOUNT_RATE = 0.15; // 15%
 
     export const subscriptionPlans = [
       {

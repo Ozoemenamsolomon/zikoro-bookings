@@ -26,4 +26,3 @@ export interface ZikoroDiscount {
   discountAmount: number | null;
   discountPercentage: number | null;
 }
-

@@ -5,6 +5,7 @@ import {  Organization, SubscriptionBooking, SubscriptionPlanInfo } from "@/type
 import { subscriptionPlansValue } from "@/constants";
 import { addMonths, differenceInCalendarMonths,parseISO, isBefore,differenceInCalendarDays   } from "date-fns";
 import { updateWorkspace } from "./workspace";
+import { ZikoroDiscount } from "@/types/subscription";
 
 export const createSubsription = async (plan:SubscriptionBooking) => {
     const supabase = createClient()
@@ -225,3 +226,22 @@ const fetchTeamsLimitCount = async (startDate: string, endDate: string, workspac
   };
 
   
+  /**
+ * Fetch a discount record by its discountCode
+ */
+export async function getDiscountByCode(discountCode: string): Promise<ZikoroDiscount | null> {
+    const supabase = createClient()
+    const { data, error } = await supabase
+      .from('zikoroDiscount')
+      .select('*')
+      .eq('discountCode', discountCode)
+      .limit(1)
+      .single();
+  console.log({data,error})
+    if (error) {
+      console.error('Error fetching discount:', error.message);
+      return null;
+    }
+  
+    return data;
+  }

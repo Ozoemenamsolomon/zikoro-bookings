@@ -317,6 +317,15 @@ const handleSelectCurrency = useCallback((value: string) => {
     })
   }, [type, typeOptions, selectedCurrency,selectedPlan,type,discountRate])
 
+  const handleDiscount = useCallback((value:number)=>{
+    const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(value, type, selectedCurrency,selectedPlan)
+    setFormData((prev)=>{
+      return {
+        ...prev, currency, planPrice:base, discountValue, amountPaid:total 
+      }
+    })
+  }, [type, typeOptions, selectedCurrency,selectedPlan,type,discountRate])
+
 const chamferedEdge = {
   width: "120px",
   height: "30px",
@@ -496,7 +505,7 @@ const Skeleton = ({className}:{className?:string}) => <span className={cn("w-20 
 
 
           <div className="space-y-2">
-            <DiscountButton />
+            <DiscountButton handleDiscount={handleDiscount}/>
 
             <div className="flex flex-col gap-1 items-center justify-center">
               {errors?.gen && <small className="text-red-500">{errors.gen}</small>}

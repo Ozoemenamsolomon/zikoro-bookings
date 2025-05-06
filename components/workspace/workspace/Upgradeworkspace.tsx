@@ -1,22 +1,19 @@
 'use client'
 
 import { CenterModal } from '@/components/shared/CenterModal';
-import { ArrowLeft, Check, ChevronDown, Loader2, Plus, PlusCircle, X } from 'lucide-react';
+import {   Check,  Loader2, Plus, X } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Toggler } from '../ui/SwitchToggler';
-import CustomInput from '../ui/CustomInput';
-import { Organization, OrganizationInput } from '@/types';
+import {  OrganizationInput } from '@/types';
 import useUserStore from '@/store/globalUserStore';
-import { FileUploader, handleFileUpload } from '@/components/shared/Fileuploader';
 import { CustomSelect } from '@/components/shared/CustomSelect';
 import { Button } from '@/components/ui/button';
 import { PostRequest } from '@/utils/api';
 import { toast } from 'react-toastify';
-import { generateSlugg } from '@/lib/generateSlug';
 import { useRouter } from 'next/navigation';
 import CurrencySelector from './CurrencySelector';
-import { subscriptionPlans, typeOptions, discountRate, PayLockIcon, GoodCheck, BackArrow } from '@/constants';
-import { calculateSubscriptionCost, calculateSubscriptionEndDate, cn } from '@/lib';
+import { subscriptionPlans, typeOptions,  PayLockIcon, GoodCheck, BackArrow, YEARLY_DISCOUNT_RATE } from '@/constants';
+import { calculateSubscriptionCost, calculateSubscriptionEndDate,   } from '@/lib';
 import DiscountButton from './DiscountButton';
 import { fetchCurrencies } from '@/lib/server/workspace';
 
@@ -39,6 +36,7 @@ const Upgradeworkspace = () => {
   const {push} = useRouter()
 
   const [currencies, setCurrencies] = useState<{label:string,value:string}[]>([])
+  const [discounts, setDiscounts] = useState<{ rate: number; amount: number; code: string, msg:string }>({rate:0,amount:0,code:'',msg:''})
   
   const [type, setType] = useState<string>(typeOptions[0]);
   const [selectedCurrency, setSelectedCurrency] = useState<{label:string, value:number}>({label:'NGN', value:1000});
@@ -65,7 +63,7 @@ const Upgradeworkspace = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<string>('');
-
+ 
   const plans = subscriptionPlans.map((item)=>({label: item.label, value:item.label}))
   const orgList = workspaces.map((item)=>({label: item.organizationName, value:item.organizationAlias}))
  
@@ -96,72 +94,72 @@ const Upgradeworkspace = () => {
 const handleSubmit = async ()  => {
   if (!validate()) return;
   console.log({formData})
-  try {
-      const {currency, planPrice, discountValue, amountPaid, ...newFormdata} = formData
+  // try {
+  //     const {currency, planPrice, discountValue, amountPaid, ...newFormdata} = formData
    
-      setLoading("Editing workspace...");
-      const { data: workspaceData, error: workspaceError } = await PostRequest({
-        url: "/api/workspaces/edit",
-        body: {
-          ...newFormdata,
-          subscritionStartDate:new Date().toDateString(),
-          subscriptionEndDate: calculateSubscriptionEndDate(new Date().toDateString(), type),
-          subscriptionExpiryDate: calculateSubscriptionEndDate(new Date().toDateString(), type),
-        },
-      });
+  //     setLoading("Editing workspace...");
+  //     const { data: workspaceData, error: workspaceError } = await PostRequest({
+  //       url: "/api/workspaces/edit",
+  //       body: {
+  //         ...newFormdata,
+  //         subscritionStartDate:new Date().toDateString(),
+  //         subscriptionEndDate: calculateSubscriptionEndDate(new Date().toDateString(), type),
+  //         subscriptionExpiryDate: calculateSubscriptionEndDate(new Date().toDateString(), type),
+  //       },
+  //     });
 
-      if (workspaceError || !workspaceData?.organizationAlias) {
-        setErrors({
-          gen: workspaceError || "Error occurred while submitting values",
-        });
-        return;
-      } else {
-        setLoading("Activating subscription...");
-        const  { data: subData, error: subError }  = await PostRequest({
-          url: "/api/subsrciptions/create",
-          body: {
-            // we are using the user data to insert subscription as against the organization owner.
-              userId: user?.id,
-              subscriptionType: selectedPlan.label,
-              amountPaid: amountPaid,
-              startDate: new Date().toISOString(), // ISO timestamp format
-              expirationDate: calculateSubscriptionEndDate(new Date().toDateString(), type),
-              discountCode: '',
-              discountValue: discountValue,
-              currency: selectedCurrency.label,
-              monthYear: type,
-              planPrice: planPrice,
-              workspaceAlias: workspaceData?.organizationAlias!
-          },
-        });
-        if (subError) {
-          setErrors({
-            gen: subError || "Error occurred while submitting values",
-          });
-          return;
-        } else {
-        toast.success("Workspace created successfully");
+  //     if (workspaceError || !workspaceData?.organizationAlias) {
+  //       setErrors({
+  //         gen: workspaceError || "Error occurred while submitting values",
+  //       });
+  //       return;
+  //     } else {
+  //       setLoading("Activating subscription...");
+  //       const  { data: subData, error: subError }  = await PostRequest({
+  //         url: "/api/subsrciptions/create",
+  //         body: {
+  //           // we are using the user data to insert subscription as against the organization owner.
+  //             userId: user?.id,
+  //             subscriptionType: selectedPlan.label,
+  //             amountPaid: amountPaid,
+  //             startDate: new Date().toISOString(), // ISO timestamp format
+  //             expirationDate: calculateSubscriptionEndDate(new Date().toDateString(), type),
+  //             discountCode: '',
+  //             discountValue: discountValue,
+  //             currency: selectedCurrency.label,
+  //             monthYear: type,
+  //             planPrice: planPrice,
+  //             workspaceAlias: workspaceData?.organizationAlias!
+  //         },
+  //       });
+  //       if (subError) {
+  //         setErrors({
+  //           gen: subError || "Error occurred while submitting values",
+  //         });
+  //         return;
+  //       } else {
+  //       toast.success("Workspace created successfully");
 
-        // update new workspace to the list directly
-        setWorkSpaces( 
-            workspaces.map((ws) =>
-              ws.organizationAlias === workspaceData.organizationAlias ? workspaceData : ws
-            )
-          );
+  //       // update new workspace to the list directly
+  //       setWorkSpaces( 
+  //           workspaces.map((ws) =>
+  //             ws.organizationAlias === workspaceData.organizationAlias ? workspaceData : ws
+  //           )
+  //         );
           
-        // Set the new workspace as current  
-        setCurrentWorkSpace(workspaceData);
+  //       // Set the new workspace as current  
+  //       setCurrentWorkSpace(workspaceData);
 
-        setFormData(initialFormData);
-      }}
-  } catch (error) {
-    console.error('Submission failed:', error);
-    setErrors({
-      gen: "Submission failed",
-    });
-  } finally {
-    setLoading('');
-  }
+  //       clear();
+  //     }}
+  // } catch (error) {
+  //   console.error('Submission failed:', error);
+  //   setErrors({
+  //     gen: "Submission failed",
+  //   });
+  // } finally {
+  //   setLoading('');
+  // }
 };
  
 const handleSelectOrganization =  (value: string) => {
@@ -186,14 +184,14 @@ const handleSelectCurrency = useCallback((value: string) => {
   if (currencyType) {
     setSelectedCurrency({ label: currencyType.label, value: Number(value) });
     console.log('CHECKING', {type, currency:{ label: currencyType.label, value: Number(value)}, selectedPlan})
-    const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(discountRate, type, { label: currencyType.label, value: Number(value)}, selectedPlan)
+    const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(discounts.rate, type, { label: currencyType.label, value: Number(value)}, selectedPlan, discounts.amount,)
     setFormData((prev)=>{
       return {
         ...prev, currency, planPrice:base, discountValue, amountPaid:total 
       }
     })
   }
-}, [currencies,selectedCurrency,selectedPlan,type ]);
+}, [currencies,selectedCurrency,selectedPlan,type,discounts ]);
 
 
   const handleSelectPlan = useCallback((value: string) => {
@@ -201,7 +199,7 @@ const handleSelectCurrency = useCallback((value: string) => {
     const selectedPlan = subscriptionPlans.find((item=>item.label===value))
     if (selectedPlan) {
       setSelectedPlan(selectedPlan)
-      const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(discountRate, type,selectedCurrency,selectedPlan)
+      const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(discounts.rate, type,selectedCurrency,selectedPlan, discounts.amount)
       setFormData((prev)=>{
         return {
           ...prev, currency, planPrice:base, discountValue, amountPaid:total,
@@ -210,17 +208,27 @@ const handleSelectCurrency = useCallback((value: string) => {
   }
   setErrors((prev)=>({...prev, subscriptionPlan:''}))
 
-  }, [plans,selectedCurrency,selectedPlan,type]);
+  }, [plans,selectedCurrency,selectedPlan,type,discounts]);
 
   const handleTypeChange = useCallback((value:string)=>{
     setType(value)
-    const {total,base,currency,discount,discountValue} = calculateSubscriptionCost(discountRate,value,selectedCurrency,selectedPlan)
+    const {total,base,currency,discountValue} = calculateSubscriptionCost(discounts.rate,value,selectedCurrency,selectedPlan,discounts.amount)
     setFormData((prev)=>{
       return {
         ...prev, currency, planPrice:base, discountValue, amountPaid:total 
       }
     })
-  }, [type, typeOptions, selectedCurrency,selectedPlan,type,discountRate])
+  }, [type, typeOptions, selectedCurrency,selectedPlan,type,discounts])
+
+  const handleDiscount = useCallback((discount:{rate:number,amount:number})=>{
+    const {total,base,currency, discountValue} = calculateSubscriptionCost(discount.rate, type, selectedCurrency,selectedPlan, discount.amount)
+    setFormData((prev)=>{
+      return {
+        ...prev, currency, planPrice:base, discountValue, amountPaid:total 
+      }
+    })
+  }, [type, typeOptions, selectedCurrency,selectedPlan,type,discounts])
+
 
 const chamferedEdge = {
   width: "120px",
@@ -238,6 +246,14 @@ const goToDashboard = () => {
   // const ws = workspaces.find(({organizationAlias})=>organizationAlias===formData.organizationAlias)
   // setCurrentWorkSpace(ws!)
   // setFormData(initialFormData)
+}
+
+const clear = () => {
+  setDiscounts({rate:0,amount:0,code:'',msg:''})
+  setFormData(initialFormData)
+  setType('Monthly')
+  setSelectedPlan(subscriptionPlans[0])
+  setSelectedCurrency({label:'NGN', value:1000})
 }
 
   return (
@@ -259,7 +275,9 @@ const goToDashboard = () => {
             step===1 ?
       
             <form onSubmit={(e)=>e.preventDefault()} className="grid md:grid-cols-4 text-base w-full h-full">
-            <button onClick={()=>setIsOpen(false)} type="button" className='absolute right-2 top-2 bg-black text-white rounded-full h-10 w-10 flex  justify-center items-center z-10'><X/></button>
+            <button onClick={()=>{
+              clear()
+              setIsOpen(false)}} type="button" className='absolute right-2 top-2 bg-black text-white rounded-full h-10 w-10 flex  justify-center items-center z-10'><X/></button>
 
                 {/* Sidebar Section */}
             
@@ -273,10 +291,10 @@ const goToDashboard = () => {
                     </div>
 
                     <div className="flex gap-2 pb-4 items-center">
-                        <Toggler options={typeOptions} onChange={handleTypeChange}/>
+                        <Toggler value={type} options={typeOptions} onChange={handleTypeChange}/>
                         {/* Pointed Shape */}
                         <div style={chamferedEdge} className='text-xs text-nowrap text-clip bg-zikoroBlue pl-3'>
-                        Save up to {discountRate}%
+                        Save up to {YEARLY_DISCOUNT_RATE*100}%
                         </div>
                     </div>
 
@@ -328,7 +346,7 @@ const goToDashboard = () => {
                     selectedPlan.label==='Free' ? null :
                     type==='Yearly' ?
                     `${formData.currency}${formData.planPrice}/month, billed annually at ${formData.currency}${Number(formData.amountPaid)+Number(formData.discountValue)} (Save ${formData.currency}${formData.discountValue})` 
-                    : `${formData.currency}${formData.planPrice}/month, save ${discountRate}% when you pay yearly`}</small>
+                    : `${formData.currency}${formData.planPrice}/month, save ${YEARLY_DISCOUNT_RATE*100}% when you pay yearly`}</small>
                     {/* ₦110,000 per month, billed annually at ₦1,149,600 (13% savings) */}
                     {/* ₦110,000/month, save 13% when you pay yearly */}
                 </div>
@@ -370,7 +388,7 @@ const goToDashboard = () => {
                     />
 
                     <div className="space-y-2 pt-4">
-                        <DiscountButton />
+                        <DiscountButton handleDiscount={handleDiscount} setDiscounts={setDiscounts} discounts={discounts}/>
 
                         <div className="flex flex-col gap-1 items-center justify-center">
                         {errors?.gen && <small className="text-red-500">{errors.gen}</small>}
@@ -406,7 +424,7 @@ const goToDashboard = () => {
                             </div>
                             <div className="flex w-full justify-between items center gap-12">
                                 <p className="">Total</p>
-                                <p className="">{`${formData.currency}${Number(formData.planPrice)+Number(formData.discountValue)}`}</p>
+                                <p className="">{`${formData.currency}${Number(formData.amountPaid)}`}</p>
                             </div>
                         </div>
                         <Button type='button' onClick={async()=>{
@@ -428,7 +446,6 @@ const goToDashboard = () => {
                       <small className='text-gray-600'>Your new plan is now active, and you're all set to streamline your bookings like never before.</small>
                     </div>
                     <Button onClick={async ()=>{
-                      
                       setStep(1)
                       setIsOpen(false)}} type='button' className='text-white flex items-center justify-center gap-4 bg-basePrimary h-10'> 
                       Go to your dashboard
