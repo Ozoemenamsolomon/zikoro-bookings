@@ -150,7 +150,7 @@ export const assignMyWorkspace = async (
       .from('organization')
       .insert({
         organizationName: organization||'My Workspace',
-        organizationOwner: name||'',
+        organizationOwner: email||'',
         organizationOwnerId: userId,
         subscriptionPlan: 'Free',
         subscritionStartDate: new Date(),
