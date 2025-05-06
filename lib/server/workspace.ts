@@ -167,27 +167,39 @@ export const assignMyWorkspace = async (
 
       if(error) console.log('Error creating workspace: ', error)
     
-        // add user as admin to the default workspace team members
+        // add user as admin to the default workspace team members and other products team organizations
         let newTeam, newTeamError
         if(data) {
-          const {data:newTeamMember, error}= await supabase
-          .from('organizationTeamMembers_Bookings')
-          .insert({
-            workspaceAlias: data?.organizationAlias,
-            userId,
-            userRole:'ADMIN',
-            userEmail:email,
-          })
-          .select('*, workspaceAlias(*)')
-    
-          if(error) {
-            newTeamError='Error occured while adding user to workspace team.'
-            console.log('Error adding team member to workspace: ', error)
-          }
-          newTeam=newTeamMember
-        }
+          const {data:newTeamMemebr,errors} = await upsertTeamMembers({userId, userEmail:email, workspaceAlias: data?.organizationAlias, userRole:'owner'})
+          console.log({newTeamMemebr, errors})
 
-    console.log({data, error:error?.message||null, newTeam, newTeamError})
+          if(Object.values(errors).some((item)=>item!==null)) {
+            newTeamError='Error occured while adding user to workspace team.'
+            console.log('Error adding team member to workspace: ', errors)
+          }
+          newTeam=newTeamMemebr
+        }
+        
+        // let newTeam, newTeamError
+        // if(data) {
+        //   const {data:newTeamMember, error}= await supabase
+        //   .from('organizationTeamMembers_Bookings')
+        //   .insert({
+        //     workspaceAlias: data?.organizationAlias,
+        //     userId,
+        //     userRole:'ADMIN',
+        //     userEmail:email,
+        //   })
+        //   .select('*, workspaceAlias(*)')
+    
+        //   if(error) {
+        //     newTeamError='Error occured while adding user to workspace team.'
+        //     console.log('Error adding team member to workspace: ', error)
+        //   }
+        //   newTeam=newTeamMember
+        // }
+
+        console.log({data, error:error?.message||null, newTeam, newTeamError})
 
     return {data, error:error?.message||null, newTeam, newTeamError}
   } catch (error) {

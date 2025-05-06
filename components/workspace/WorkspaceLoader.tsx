@@ -27,7 +27,7 @@ const WorkspaceLoader = ({ workspace, workspaces }:{
  
     useSupabaseRealtime({
       table:'organizationTeamMembers_Bookings', 
-      filter: {filter: `workspaceAlias=eq.`}, 
+      // filter: {filter: `workspaceAlias=eq.`}, 
       onChange:(payload) => {
       console.log({payload})
       // const { eventType, new: newRecord, old: oldRecord } = payload;npm run dev

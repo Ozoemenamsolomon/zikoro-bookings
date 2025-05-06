@@ -6,7 +6,7 @@ const includedPaths:string[] = [
 
 ]
 
-export const updateSession = async (request: NextRequest) => {
+export const updateSession = async (request: NextRequest) => { 
 
   try {
     // Create an unmodified response
@@ -63,7 +63,7 @@ export const updateSession = async (request: NextRequest) => {
       // If user is not authenticated and path is included, redirect to the login page
       if (path.startsWith("/api")) {
         return NextResponse.json(
-          { error: "Authorization failed" },
+          { error: "Authorization failed" }, 
           { status: 403 }
         );
       } else {
