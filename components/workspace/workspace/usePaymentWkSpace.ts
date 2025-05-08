@@ -5,11 +5,11 @@ import { OrganizationInput } from '@/types';
 import React, { Dispatch, SetStateAction } from 'react'
 import { usePaystackPayment } from 'react-paystack';
 
-export const usePaymentWkSpace = ({submitWkSpace, formData, setStatus, setLoading}:{
+export const usePaymentWkSpace = ({submitWkSpace, formData, setStatus,  }:{
     submitWkSpace:()=>void,
     formData:OrganizationInput,
     setStatus:Dispatch<SetStateAction<string>>
-    setLoading:Dispatch<SetStateAction<string>>
+    // setLoading:Dispatch<SetStateAction<string>>
 }) => {
     const {user} = useUserStore()
 
@@ -72,7 +72,6 @@ export const usePaymentWkSpace = ({submitWkSpace, formData, setStatus, setLoadin
             console.error('Unhandled Error from server:', error);
             setStatus('Unhandled occured. Try again');
         } finally {
-            setLoading('');
         }
     };
     

@@ -5,6 +5,7 @@ import { getPermissionsFromSubscription } from '@/lib/server/subscriptions'
 import useUserStore from '@/store/globalUserStore'
 import { Organization } from '@/types'
 import { useEffect, useState } from 'react'
+import CreateWorkSpace from './workspace/CreateWorkSpace'
 
 const WorkspaceLoader = ({ workspace, workspaces }:{
     workspace:Organization,  workspaces:Organization[]  }) => {
@@ -52,7 +53,12 @@ const WorkspaceLoader = ({ workspace, workspaces }:{
 
     
   // console.log({subscriptionPlan, currentWorkSpace})
-  return null
+  return (
+    <>
+            <CreateWorkSpace />
+
+    </>
+  )
 }
 
 export default WorkspaceLoader

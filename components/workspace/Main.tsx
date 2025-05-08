@@ -7,6 +7,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { urls } from '@/constants'
 import SidebarHeader from './SidebarHeader'
+import CreateWorkSpace from './workspace/CreateWorkSpace'
 // import { NotifyIcon } from '@/constants'
 // import Notification from './Notification'
 
@@ -22,6 +23,7 @@ const Main = ({children}:{children:React.ReactNode}) => {
 
   return (
         <main className="bg-baseBg min-h-screen flex">
+
             <aside ref={sidebar} className={`${show ? 'z-30 w-60':' w-0 -z-10'} transform transition-all duration-300 ease-in-out  border-r bg-white h-screen overflow-y-auto fixed top-0 left-0 lg:hidden no-scrollbar `}>
                 <div className="absolute top-6 right-6 flex justify-end w-full">
                     <button type="button" onClick={()=>setShow(false)}><ChevronFirst size={18} className='text-gray-600'/></button>

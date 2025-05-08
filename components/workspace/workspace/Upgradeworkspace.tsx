@@ -261,7 +261,7 @@ const clear = () => {
   setStatus('')
 }
 
-const {handlePayment} = usePaymentWkSpace({formData, submitWkSpace:handleSubmit, setStatus, setLoading})
+const {handlePayment} = usePaymentWkSpace({formData, submitWkSpace:handleSubmit, setStatus,  })
 
   return (
     <CustomModal

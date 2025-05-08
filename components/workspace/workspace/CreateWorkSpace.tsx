@@ -1,4 +1,4 @@
-import { CenterModal, CustomModal } from '@/components/shared/CenterModal';
+import { CenterModal, CustomModal, TopModal } from '@/components/shared/CenterModal';
 import { ArrowLeft, Check, ChevronDown, Loader2, Plus, PlusCircle, X } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Toggler } from '../ui/SwitchToggler';
@@ -19,6 +19,7 @@ import DiscountButton from './DiscountButton';
 import { fetchCurrencies } from '@/lib/server/workspace';
 import { getPermissionsFromSubscription } from '@/lib/server/subscriptions';
 import { usePaymentWkSpace } from './usePaymentWkSpace';
+import { useAppointmentContext } from '@/context/AppointmentContext';
 
 
 const initialFormData: OrganizationInput = {
@@ -35,11 +36,13 @@ const initialFormData: OrganizationInput = {
   // currency : '',
 };
 
-const CreateWorkSpace = ({  button, onClose}: { workSpaceData?: Organization, button?: React.ReactNode, redirectTo?:string, onClose?:(k:boolean)=>void, isRefresh?:boolean, }) => {
+const CreateWorkSpace = () => {
   const {user, setUser, setWorkSpaces, setCurrentWorkSpace,  setSubscritionPlan, workspaces} = useUserStore();
+  const {setIsOpen} = useAppointmentContext()
   const {push} = useRouter()
+
   const [currencies, setCurrencies] = useState<{label:string,value:string}[]>([])
-    const [discounts, setDiscounts] = useState<{ rate: number; amount: number; code: string, msg:string }>({rate:0,amount:0,code:'',msg:''})
+  const [discounts, setDiscounts] = useState<{ rate: number; amount: number; code: string, msg:string }>({rate:0,amount:0,code:'',msg:''})
   
   const [type, setType] = useState<string>(typeOptions[0]);
   const [selectedCurrency, setSelectedCurrency] = useState<{label:string, value:number}>({label:'NGN', value:1000});
@@ -52,12 +55,12 @@ const CreateWorkSpace = ({  button, onClose}: { workSpaceData?: Organization, bu
     planPrice:0,amountPaid:0,discountValue:0,
     currency: selectedCurrency.label
   });
+  
 
   const [files, setFiles] = useState<File[]>([]);  
   const [step, setStep] = useState(1)
   
   const [previewUrls, setPreviewUrls] = useState<{ type: string; url: string }[]>([]);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<string>('');
 
@@ -179,7 +182,8 @@ const handleSubmit = async ( ) => {
         setFormData(initialFormData);
         setPreviewUrls([]);
         clear();
-        // setIsOpen(false);
+        
+        setIsOpen(false);
         push(`/ws/${workspaceData?.organizationAlias}/schedule`)  
       }}
   } catch (error) {
@@ -256,7 +260,6 @@ const chamferedEdge = {
 };
 
 const [status, setStatus] = useState('')
-
 const clear = () => {
   setDiscounts({rate:0,amount:0,code:'',msg:''})
   setFormData(initialFormData)
@@ -264,10 +267,9 @@ const clear = () => {
   setSelectedPlan(subscriptionPlans[0])
   setSelectedCurrency({label:'NGN', value:1000})
   setStatus('')
-  // onClose&&onClose(false)
 }
 
-const {handlePayment} = usePaymentWkSpace({formData, submitWkSpace:handleSubmit, setStatus, setLoading})
+const {handlePayment} = usePaymentWkSpace({formData, submitWkSpace:handleSubmit, setStatus,  })
  
 const handleSubmission = () => {
   if(selectedPlan.label==='Free') {
@@ -280,30 +282,19 @@ const handleSubmission = () => {
 }
 
 return (
-    <CenterModal
-      className={``}
-      isOpen={isOpen}
-      onOpenChange={(key)=>{
+    <TopModal
+      className={`sm:max-h-full`}
+      callback={()=>{
         clear()
         setStep(1)
-        setIsOpen(key)}}  
-      trigerBtn={
-        button ? button :
-        <button
-          type="button"
-          className="px-4 py-1.5 border border-zikoroBlue w-full flex gap-2 items-center rounded-md hover:bg-gray-100"
-        >
-          <PlusCircle size={16} />
-          <p className="text-sm">Workspace</p>
-        </button>
-      }
+      }}  
     >
       {
           step===1 ?
-          <form onSubmit={(e)=>e.preventDefault()} className="grid md:grid-cols-5 text-base w-full h-full">
+          <form onSubmit={(e)=>e.preventDefault()} className=" md:flex gap-0 text-base w-full h-full">
 
             {/* Sidebar Section */}
-            <div className=" md:col-span-2 bg-slate-200 gap-6 py-10 px-6 md:px-10 justify-between flex flex-col">
+            <div className=" md:w-[45%] bg-slate-200 gap-6 py-14 px-6 md:px-10 justify-between flex flex-col">
               <div className="">
                   <div className="flex w-full gap-4 items-center pb-4">
                     <p className='shrink-0'>Select currency</p>
@@ -382,7 +373,7 @@ return (
             </div>  
 
             {/* Form Section */}
-            <div className={` bg-gray-100  h-full flex flex-col justify-between md:col-span-3  px-6 md:px-16 py-10 gap-6 `}>
+            <div className={` bg-gray-100  h-full flex flex-col justify-between md:w-[55%] px-6 md:px-16 py-14 gap-6 `}>
               
               <div className="space-y-3">
                 <h5 className="font-semibold text-xl pb-2">Workspace Information</h5>
@@ -462,9 +453,9 @@ return (
           </form>
 
            : step === 2 ? (
-            <section className='h-screen md:h-[80vh] bg-gray-50  flex flex-col gap-2 justify-center items-center p-6 overflow-auto no-scrollbar'>
-                <>
+            <section className='h-screen md:h-full md:py-14 bg-gray-50  flex flex-col justify-center items-center p-6 overflow-auto no-scrollbar'>
                 <div className="flex"><button className='' onClick={()=>setStep(1)}><BackArrow/></button ></div>
+                
                 <div className="space-y-6 py-16 px-6 bg-white rounded-2xl shadow min-h-60 w-full md:w-96 ">
                     <div className="mx-auto">
                       <h4 className="text-xl font-medium text-center">Order Summary</h4>
@@ -496,20 +487,18 @@ return (
                           Continue
                       </Button>
                       : 
-                      <Button type='button' onClick={async()=>{
-                      await handlePayment()
-                      }} 
-                      className='text-white flex items-center justify-center gap-4 bg-basePrimary h-10 w-full'
+                      <Button disabled={loading.length>0} type='button' onClick={ handlePayment } 
+                      className='text-white flex items-center justify-center gap-4 bg-basePrimary h-10 w-full '
                     > 
-                        { loading ? loading : 
-                          <>
-                        <PayLockIcon/> 
-                        <p>{`${formData.currency}${Number(formData.amountPaid)}`}</p>
-                        </>}
+                        { loading.length>0 ? loading : 
+                            <>
+                              <PayLockIcon/> 
+                              <p>{`${formData.currency}${Number(formData.amountPaid)}`}</p>
+                            </>
+                          }
                     </Button>}
 
                 </div>
-                </>
             </section>
             ) 
 
@@ -533,7 +522,7 @@ return (
             </section>
             )
       }
-    </CenterModal>
+    </TopModal>
   );
 };
 
