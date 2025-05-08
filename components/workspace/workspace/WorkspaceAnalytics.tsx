@@ -143,7 +143,7 @@ export function PlanFeaturesTable({ currentPlan }: { currentPlan: string }) {
               <tr
                 key={idx}
                 className={
-                  plan.label === currentPlan ? "bg-yellow-50 font-bold" : ""
+                  plan.label === currentPlan ? "bg-purple-200 font-bold" : ""
                 }
               >
                 <td className="p-2">{plan.label}</td>

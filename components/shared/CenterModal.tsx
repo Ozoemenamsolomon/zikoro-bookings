@@ -4,7 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { cn } from "@/lib/utils";
 import React from "react";
+import { X } from "lucide-react";
 
+interface Modal {
+  trigerBtn: React.ReactNode
+  children: React.ReactNode
+  className?: string
+  isOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  disabled?: boolean
+}
 export const CenterModal = ({
   trigerBtn = <Button variant="outline">Open</Button>,
   children,
@@ -12,14 +21,7 @@ export const CenterModal = ({
   isOpen,
   onOpenChange,
   disabled,
-}: {
-  trigerBtn: React.ReactNode
-  children: React.ReactNode
-  className?: string
-  isOpen?: boolean
-  onOpenChange?: (open: boolean) => void
-  disabled?: boolean
-}) => {
+}: Modal) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger disabled={disabled} asChild>
@@ -31,5 +33,57 @@ export const CenterModal = ({
         </div>
       </DialogContent>
     </Dialog>
+  )
+}
+
+
+type CustomModalProps = {
+  isOpen: boolean
+  onOpenChange: (open: boolean) => void
+  className?: string
+  children: React.ReactNode
+  disabled?: boolean
+  trigerBtn?: React.ReactNode
+}
+
+export const CustomModal = ({
+  isOpen,
+  onOpenChange,
+  className,
+  children,
+  disabled = false,
+  trigerBtn = <button className="btn">Open</button>,
+}: CustomModalProps) => {
+  return (
+    <>
+      {/* Trigger Button */}
+      <div
+        onClick={() => {
+          if (!disabled) onOpenChange(true)
+        }}
+        className={disabled ? 'opacity-50 pointer-events-none' : ''}
+      >
+        {trigerBtn}
+      </div>
+
+      {/* Modal */}
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
+          <div
+            className={cn(
+              'bg-white rounded-xl shadow-lg w-full max-w-4xl relative animate-fadeIn  overflow-hidden  max-h-screen sm:max-h-[80vh] ',
+              className
+            )}
+          >
+            {/* Close Button */}
+            <button onClick={()=>onOpenChange(false)} 
+              type="button" className='absolute right-2 top-2 bg-black text-white rounded-full h-7 w-7 flex  justify-center items-center z-10'><X size={16}/></button>
+
+            {/* Modal Content */}
+            {children}
+          </div>
+        </div>
+      )}
+    </>
   )
 }

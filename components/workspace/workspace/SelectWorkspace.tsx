@@ -2,12 +2,10 @@
 
 import { PopoverMenu } from '@/components/shared/PopoverMenu';
 import { ChevronDown, SquarePen } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, {  useState } from 'react';
 import CreateWorkSpace from './CreateWorkSpace';
 import useUserStore from '@/store/globalUserStore';
-import { usePathname, useRouter } from 'next/navigation';
-import { fetchCurrencies } from '@/lib/server/workspace';
-import { BookingsCurrencyConverter } from '@/types';
+import { usePathname,   } from 'next/navigation';
 import Link from 'next/link';
 // import { getWorkspacePath } from '@/utils/urlHelpers';
 
@@ -19,18 +17,10 @@ export const getWorkspacePath = (workspaceAlias: string, path: string = '') => {
 
 
 const SelectWorkspace = () => {
-  const { user, currentWorkSpace, workspaces, setCurrentWorkSpace } = useUserStore();
+  const {  currentWorkSpace, workspaces,   } = useUserStore();
   const pathname = usePathname();
-  // const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  /** Handle Workspace Selection */
-  const handleWorkspaceChange = (wsAlias: string) => {
-    // setCurrentWorkSpace(workspaces.find((ws) => ws.organizationAlias === wsAlias)!);
-    // router.push(getWorkspacePath(wsAlias, pathname.split('/').slice(3).join('/')));
-    // setIsOpen(false)
-  };
-  
   return (
     <PopoverMenu
       className="w-52"
@@ -61,26 +51,9 @@ const SelectWorkspace = () => {
             >
               {ws?.organizationName}
             </Link>
-
-            {/* {ws?.organizationOwnerId===user?.id ? 
-            <CreateWorkSpace
-              currencies={currencies}
-              onClose={setIsOpen}
-              workSpaceData={ws!}
-              button={
-                <button className="shrink-0">
-                  <SquarePen
-                    size={18}
-                    className="text-gray-500 hover:text-zikoroBlue duration-500"
-                  />
-                </button>
-              }
-            /> :
-            <div className='w-8 shrink-0'></div>
-            } */}
-          </div>
+          </div> 
         ))}
-        <CreateWorkSpace onClose={setIsOpen}  />
+        <CreateWorkSpace   />
       </div>
     </PopoverMenu>
   );
