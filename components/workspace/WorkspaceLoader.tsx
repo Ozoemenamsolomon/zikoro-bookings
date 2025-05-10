@@ -10,8 +10,7 @@ import CreateWorkSpace from './workspace/CreateWorkSpace'
 const WorkspaceLoader = ({ workspace, workspaces }:{
     workspace:Organization,  workspaces:Organization[]  }) => {
   
-      const  {user, setUser,  setCurrentWorkSpace, setWorkSpaces, setSubscritionPlan} = useUserStore()
-    // global function to update the subscription,added to Sidebar as an object, this will prevent effects of propdrilling which affects children components as parent onMounts...
+    const  {user, setUser,  setCurrentWorkSpace, setWorkSpaces, setSubscritionPlan} = useUserStore()
   
     useEffect(() => {
       const update = async () => {
@@ -21,7 +20,6 @@ const WorkspaceLoader = ({ workspace, workspaces }:{
         setUser({...user!, workspaceRole: workspace?.userRole! || ''})
         setWorkSpaces(workspaces||[])
       }
-  
       update()
     }, [])
 

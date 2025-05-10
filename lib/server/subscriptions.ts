@@ -48,7 +48,7 @@ export const fetchSubscriptionPlan = async (workspaceId:string):Promise<{data:Su
     }
 }
 
-export async function getPermissionsFromSubscription(
+export async function  getPermissionsFromSubscription(
   organization: Organization, isbooking?:boolean, isTeam?:boolean,
 ): Promise<{plan:SubscriptionPlanInfo, updatedWorkspace:Organization|null}> {
     const now = new Date();

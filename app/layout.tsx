@@ -55,10 +55,10 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Zikoro",
-    url: "https://www.zikoro.com/",
+    url: "https://www.bookings.zikoro.com/",
     potentialAction: {
       "@type": "SearchAction",
-      target: "https://www.zikoro.com/search?q={search_term_string}",
+      target: "https://www.boookings.zikoro.com/search?q={search_term_string}",
       "query-input": "required name=search_term_string",
     },
   };

@@ -19,13 +19,13 @@ const BookingLazyLoader = () => {
             
             {/* Left Panel */}
             <div className="bg-white w-full lg:w-80 xl:w-96 overflow-auto hide-scrollbar flex-shrink-0 p-6 rounded-lg">
-              <div className="h-6 w-48 rounded bg-slate-100 animate-pulse mb-4"></div>
+              <div className="h-6 w-48 rounded bg-slate-200 animate-pulse mb-4"></div>
 
               <div className="pt-24 pb-8 space-y-4">
                 {['Duration', 'Location Type', 'Location', 'Price', 'Max booking', 'Desc'].map((label, index) => (
                   <div key={index} className="flex gap-1 pb-2 w-full items-start">
                     <p className="font-medium w-1/3 sm:w-1/5 md:w-1/8 lg:w-2/5">{label}</p>
-                    <div className="w-32 h-5 bg-slate-100 rounded animate-pulse"></div>
+                    <div className="w-32 h-5 bg-slate-200 rounded animate-pulse"></div>
                   </div>
                 ))}
               </div>
@@ -38,8 +38,8 @@ const BookingLazyLoader = () => {
 
         {/* Footer */}
         <footer className="shrink-0 flex w-full gap-4 justify-center items-center">
-          <div className="h-8 w-28 bg-slate-100 animate-pulse rounded"></div>
-          <div className="h-8 w-28 bg-slate-100 animate-pulse rounded"></div>
+          <div className="h-8 w-28 bg-slate-200 animate-pulse rounded"></div>
+          <div className="h-8 w-28 bg-slate-200 animate-pulse rounded"></div>
         </footer>
       </article>
     </main>

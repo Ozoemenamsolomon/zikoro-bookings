@@ -116,8 +116,6 @@ const Booking =  ({appointmentLink, error}:{appointmentLink:AppointmentLink, err
 
             </article>
         </main>
- 
-    
   )
 }
 
