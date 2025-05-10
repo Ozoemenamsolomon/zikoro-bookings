@@ -9,9 +9,7 @@ export const usePaymentWkSpace = ({submitWkSpace, formData, setStatus,  }:{
     submitWkSpace:()=>void,
     formData:OrganizationInput,
     setStatus:Dispatch<SetStateAction<string>>
-    // setLoading:Dispatch<SetStateAction<string>>
 }) => {
-    // if (typeof window === "undefined") return null;
     const {user} = useUserStore()
 
     const config:any = {
@@ -27,13 +25,6 @@ export const usePaymentWkSpace = ({submitWkSpace, formData, setStatus,  }:{
 	};
 
     const initializePayment = usePaystackPayment(config);
-    const handlePayment = async () => {
-		try {
-			initializePayment({onSuccess, onClose});
-		} catch (error) {
-			console.error('catch error==', error);
-		}
-	};
 
     const onClose = () => {
         console.log('You cancelled your payment')
@@ -76,7 +67,14 @@ export const usePaymentWkSpace = ({submitWkSpace, formData, setStatus,  }:{
         }
     };
     
-    
+        const handlePayment = async () => {
+		try {
+			initializePayment({onSuccess, onClose});
+		} catch (error) {
+			console.error('catch error==', error);
+		}
+	};
+
     return {handlePayment}
 }
 
