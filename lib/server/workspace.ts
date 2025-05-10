@@ -69,7 +69,7 @@ export const fetchWorkspaces = async (
     //   (workspace, index, self) =>
     //     self.findIndex((w) => w.id === workspace.id) === index
     // );
-    console.log({teamWorkspaceOrganizations})
+    // console.log({teamWorkspaceOrganizations})
     return { 
       data: teamWorkspaceOrganizations, 
       error: null, 
@@ -370,7 +370,7 @@ export const fetchActiveTeamMembers = async (workspaceAlias: string) => {
       console.error("Error fetching team members:", error);
       return { data: null, error: error.message || "Failed to fetch team members" };
     }
- 
+
     return { data, error: null };
   } catch (error: any) {
     console.error("Server error in fetchTeamMembers:", error);

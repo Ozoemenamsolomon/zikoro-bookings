@@ -5,9 +5,11 @@ import { ChevronDown, PlusCircle, SquarePen } from 'lucide-react';
 import React, {  useState } from 'react';
 import CreateWorkSpace from './CreateWorkSpace';
 import useUserStore from '@/store/globalUserStore';
-import { usePathname,   } from 'next/navigation';
+import { usePathname, useRouter,   } from 'next/navigation';
 import Link from 'next/link';
 import { useAppointmentContext } from '@/context/AppointmentContext';
+import { getPermissionsFromSubscription } from '@/lib/server/subscriptions';
+import { Button } from '@/components/ui/button';
 // import { getWorkspacePath } from '@/utils/urlHelpers';
 
 
@@ -18,7 +20,8 @@ export const getWorkspacePath = (workspaceAlias: string, path: string = '') => {
 
 
 const SelectWorkspace = () => {
-  const {  currentWorkSpace, workspaces,   } = useUserStore();
+  const {push} = useRouter()
+  const {  currentWorkSpace, workspaces,  user } = useUserStore();
   const pathname = usePathname();
   const {isOpen, setIsOpen,} = useAppointmentContext()
   
@@ -42,19 +45,29 @@ const SelectWorkspace = () => {
       }
     >
       <div onClick={e=>e.stopPropagation()} className="bg-white shadow rounded-md p-4 space-y-1 text-sm w-full text-gray-800">
-        {workspaces?.map((ws) => (
-          <div  key={ws?.id} className="flex gap-2 items-center">
-            <Link
-              href={(getWorkspacePath(ws.organizationAlias!, pathname.split('/').slice(3).join('/')))}
-              onClick={() => setDrop(false)}
-              className={`block w-full truncate min-w-0 hover:bg-baseLight hover:text-zikoroBlue duration-300 px-3 py-1.5 rounded-md text-start ${
-                currentWorkSpace?.id === ws?.id ? 'bg-baseLight text-zikoroBlue' : ''
+        {workspaces?.map(  (ws) =>{ 
+
+            const isOwner = ws?.organizationOwnerId === user?.id
+            const isLimitedPlan = ['Free', 'Lite'].includes(ws?.subscriptionPlan!)
+            const isDisabled = !isOwner && isLimitedPlan
+
+            // console.log(ws.organizationName, isDisabled, )
+
+          return (
+          <div aria-disabled={isDisabled}  key={ws?.id} className="flex gap-2 items-center disabled:opacity-50 disabled:cursor-not-allowed">
+            <button
+              disabled={isDisabled}
+              onClick={()=>push(getWorkspacePath(ws.organizationAlias!, pathname.split('/').slice(3).join('/')))}
+              // href={(getWorkspacePath(ws.organizationAlias!, pathname.split('/').slice(3).join('/')))}
+              // onClick={() => setDrop(false)}
+              className={`disabled:opacity-50 disabled:cursor-not-allowed block w-full truncate min-w-0 hover:bg-baseLight hover:text-zikoroBlue duration-300 px-3 py-1.5 rounded-md text-start ${
+                currentWorkSpace?.id === ws?.id ? 'bg-baseLight text-zikoroBlue ' : ''
               }`}
             >
               {ws?.organizationName}
-            </Link>
+            </button>
           </div> 
-        ))}
+        )})}
 
         <button
           onClick={()=>{

@@ -17,7 +17,7 @@ const Main = ({children}:{children:React.ReactNode}) => {
     const sidebar = useRef(null)
     const ref = useRef(null)
 
-    useClickOutside(sidebar,()=>setShow(false))
+    // useClickOutside(sidebar,()=>setShow(false))
 
     useClickOutside(ref, ()=>setDrop(false))
 

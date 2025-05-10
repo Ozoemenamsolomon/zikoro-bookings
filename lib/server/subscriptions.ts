@@ -225,7 +225,6 @@ const fetchTeamsLimitCount = async (startDate: string, endDate: string, workspac
     return count || 0;
   };
 
-  
   /**
  * Fetch a discount record by its discountCode
  */
@@ -237,7 +236,7 @@ export async function getDiscountByCode(discountCode: string): Promise<ZikoroDis
       .eq('discountCode', discountCode)
       .limit(1)
       .single();
-  console.log({data,error})
+  // console.log({data,error})
     if (error) {
       console.error('Error fetching discount:', error.message);
       return null;

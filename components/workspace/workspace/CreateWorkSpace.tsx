@@ -74,7 +74,7 @@ const CreateWorkSpace = () => {
           label:item.currency, value:String(item.amount)
         }))
         setCurrencies(options)
-        console.log({data, options})
+        // console.log({data, options})
       }
       fetching()
   }, []);

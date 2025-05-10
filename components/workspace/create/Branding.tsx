@@ -7,6 +7,7 @@ import useUserStore from '@/store/globalUserStore';
 import Image from 'next/image';
 import { ImageUp, PenLine } from 'lucide-react';
 import CreateWorkSpace from '../workspace/CreateWorkSpace';
+import EditWorkspace from '../workspace/EditWorkspace';
 
 const Branding: React.FC<FormProps> = ({
   formData,
@@ -57,15 +58,13 @@ const Branding: React.FC<FormProps> = ({
           currentWorkSpace?.organizationLogo  ?
           <Image src={currentWorkSpace?.organizationLogo || ''} alt='logo' width={300} height={300} className='object-cover w-14 rounded-md'/>
           :
-          <ImageUp size={36} className='text-gray-500'/>
+          <EditWorkspace 
+            workspace={currentWorkSpace!}
+            trigger={
+               <ImageUp size={36} className='text-gray-500'/> 
+            }
+          />
         }
-
-        <CreateWorkSpace 
-          currencies={[]}
-          workSpaceData = {currentWorkSpace!}
-          button={<button> Edit workspace logo  </button>}
-          isRefresh={true}
-        />
         
         {/* <UploadImage formData={formData!} setFormData={setFormData!} multiple={false}/> */}
       </div>

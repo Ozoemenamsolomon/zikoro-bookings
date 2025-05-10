@@ -18,6 +18,7 @@ import DiscountButton from './DiscountButton';
 import { fetchCurrencies } from '@/lib/server/workspace';
 import { getPermissionsFromSubscription } from '@/lib/server/subscriptions';
 import { usePaymentWkSpace } from './usePaymentWkSpace';
+import { getWorkspacePath } from './SelectWorkspace';
 
 const initialFormData: OrganizationInput = {
     organizationName: '',
@@ -155,7 +156,7 @@ const handleSubmit = async ()  => {
           
         // Set the new workspace as current  
         const {plan,updatedWorkspace} = await getPermissionsFromSubscription(workspaceData,true,true)
-        setCurrentWorkSpace(updatedWorkspace);
+        setCurrentWorkSpace(updatedWorkspace??workspaceData);
         setSubscritionPlan(plan)
         setStep(3)
 
@@ -263,9 +264,16 @@ const clear = () => {
 
 const {handlePayment} = usePaymentWkSpace({formData, submitWkSpace:handleSubmit, setStatus,  })
 
+const gotoDashboard = async ()=>{
+    setStep(1)
+    setIsOpen(false)
+    // window.location.reload()    
+    push(getWorkspacePath(currentWorkSpace?.organizationAlias!, pathname.split('/').slice(3).join('/')))                   
+  }
+
   return (
     <CustomModal
-      className={``}
+      className={`md:max-h-screen`}
       isOpen={isOpen}
       onOpenChange={(key)=>{
         clear()
@@ -413,7 +421,7 @@ const {handlePayment} = usePaymentWkSpace({formData, submitWkSpace:handleSubmit,
             </form>
 
             : step === 2 ? (
-                <section className='h-screen md:h-[80vh] bg-gray-50  flex flex-col gap-2 justify-center items-center p-6 overflow-auto no-scrollbar'>
+                <section className='h-screen md:h-full md:py-14 bg-gray-50  flex flex-col justify-center items-center p-6 overflow-auto no-scrollbar'>
                     <>
                     <div className="flex"><button className='' onClick={()=>setStep(1)}><BackArrow/></button ></div>
                     <div className="space-y-6 py-16 px-6 bg-white rounded-2xl shadow min-h-60 w-full md:w-96 ">
@@ -447,10 +455,10 @@ const {handlePayment} = usePaymentWkSpace({formData, submitWkSpace:handleSubmit,
                               Continue
                           </Button>
                           : 
-                          <Button type='button' onClick={async()=>{
+                          <Button disabled={loading.length>0} type='button' onClick={async()=>{
                           await handlePayment()
                           }} 
-                          className='text-white flex items-center justify-center gap-4 bg-basePrimary h-10 w-full'
+                          className='text-white flex items-center justify-center gap-4 bg-basePrimary disabled:opacity-30 h-10 w-full'
                         > 
                            { loading ? loading : 
                               <>
@@ -472,12 +480,7 @@ const {handlePayment} = usePaymentWkSpace({formData, submitWkSpace:handleSubmit,
                       <h6 className="text-  font-medium ">Success! Your Plan is Active</h6>
                       <small className='text-gray-600'>Your new plan is now active, and you're all set to streamline your bookings like never before.</small>
                     </div>
-                    <Button onClick={async ()=>{
-                      setStep(1)
-                      setIsOpen(false)
-                      window.location.reload()    
-                      // push(pathname)                   
-                      }} type='button' className='text-white flex items-center justify-center gap-4 bg-basePrimary h-10'> 
+                    <Button onClick={gotoDashboard} type='button' className='text-white flex items-center justify-center gap-4 bg-basePrimary h-10'> 
                       Go to your dashboard
                     </Button>
                 </div>
