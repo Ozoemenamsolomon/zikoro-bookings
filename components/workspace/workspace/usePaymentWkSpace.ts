@@ -11,6 +11,7 @@ export const usePaymentWkSpace = ({submitWkSpace, formData, setStatus,  }:{
     setStatus:Dispatch<SetStateAction<string>>
     // setLoading:Dispatch<SetStateAction<string>>
 }) => {
+    // if (typeof window === "undefined") return null;
     const {user} = useUserStore()
 
     const config:any = {

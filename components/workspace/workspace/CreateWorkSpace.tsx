@@ -1,3 +1,4 @@
+'use client'
 import { CenterModal, CustomModal, TopModal } from '@/components/shared/CenterModal';
 import { ArrowLeft, Check, ChevronDown, Loader2, Plus, PlusCircle, X } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';

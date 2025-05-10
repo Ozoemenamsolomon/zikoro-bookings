@@ -8,7 +8,7 @@ import { AppointmentLink } from '@/types/appointments'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Calender from './Calender'
-import ProcessPayment from './ProcessPayment'
+// import ProcessPayment from './ProcessPayment'
 import { urls } from '@/constants'
 import BookingOff from './BookingOff'
 
@@ -45,9 +45,9 @@ const Booking =  ({appointmentLink, error}:{appointmentLink:AppointmentLink, err
                     !appointmentLink.statusOn ?
                     <BookingOff/>
                     :
-                    isFormUp==='pay' ? 
-                    <ProcessPayment appointmentLink={appointmentLink}/>
-                    :
+                    // isFormUp==='pay' ? 
+                    // <ProcessPayment appointmentLink={appointmentLink}/>
+                    // :
                     <section className="h-full w-full flex items-center justify-center">
                         
                         <section className="w-full max-w-7xl mx-auto grid lg:flex gap-6 lg:justify-center md:max-h-[30rem] 2xl:max-h-[33rem]">
