@@ -1,48 +1,26 @@
 'use client'
 
-import { FilterIcon, urls } from '@/constants'
-import useUserStore from '@/store/globalUserStore'
+import { urls } from '@/constants'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
-import CreateWorkSpace from './CreateWorkSpace'
+import React, {useState } from 'react'
 import { Button } from '@/components/ui/button'
  
 import { PlusCircle, RotateCw } from 'lucide-react'
-import { fetchCurrencies } from '@/lib/server/workspace'
+import { useAppointmentContext } from '@/context/AppointmentContext'
  
 
 const WsComponent = () => {
+    const { setIsOpen,} = useAppointmentContext()
     const { push, refresh } = useRouter()
-    const { currentWorkSpace, workspaces } = useUserStore()
     const [isRefreshing, setIsRefreshing] = useState(true)
-    const [currencies, setCurrencies] = useState<{label:string,value:string}[]>([])
-    const [date, setDate] = useState('')
-
-    // Handle redirection
-    // useEffect(() => {
-        // const fetchData = async () => {
-        //     const {data} = await fetchCurrencies()
-        //     const options = data.map((item)=>({
-        //         label:item.currency, value:String(item.amount)
-        //         }))
-        //         setCurrencies(options)
-        // }
-        // if (currentWorkSpace) {
-        //     push(`/ws/${currentWorkSpace.organizationAlias}/schedule`)
-        // } else if (workspaces[0]) {
-        //     push(`/ws/${workspaces[0].organizationAlias}/schedule`)
-        // }
-        // fetchData()
-        // setIsRefreshing(false)
-    // }, [currentWorkSpace, workspaces,])
 
     // Handle Refresh with Loader Simulation
     const handleRefresh = () => {
         // setIsRefreshing(true)
-
-        refresh()
+            window.location.reload()
+        // refresh()
         // setIsRefreshing(true)
         // setTimeout(() => {
         //     window.location.reload()
@@ -64,19 +42,19 @@ const WsComponent = () => {
                 <h1 className="font-bold text-4xl sm:text-6xl">OoopS!</h1>
                 <h1 className="font-bold text-4xl sm:text-6xl">No workspace found!</h1>
                 <div className="flex max-w-80 mx-auto justify-center gap-3 items-center">
-                    <CreateWorkSpace
-                        // currencies={currencies}
-                        redirectTo='/schedule'
-                        button={
-                            <Button className="bg-basePrimary text-white flex items-center">
-                                <PlusCircle className="shrink-0" />
-                                Add a workspace
-                            </Button>
-                        }
-                    />
+                    <Button
+                        onClick={()=>{
+                        setIsOpen(true)
+                        }}
+                        type="button"
+                        className="bg-basePrimary text-white w-full flex gap-2 items-center "
+                    >
+                        <PlusCircle size={16} />
+                        <p className="text-sm">Create Workspace</p>
+                    </Button>
                     <Button
                         onClick={handleRefresh}
-                        className="bg-basePrimary text-white flex items-center"
+                        className="bg-baseLight text-  flex items-center"
                         disabled={isRefreshing}
                     >
                         <RotateCw className={isRefreshing ? 'animate-spin':''}/>

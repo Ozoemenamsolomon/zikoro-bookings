@@ -33,10 +33,11 @@ const Generalsettings: React.FC<FormProps> = ({
         console.error("Error fetching team members:", error);
         return;
       }
-  
-      const teams = data
-        ?.filter((team: BookingTeamMember) => user?.id !== team.userId?.id) // Ensure user is not included
-        .map((team: BookingTeamMember) => ({
+  console.log({data,error,user})
+      // userRole : "owner"
+      const teams = data?.length===1&&data[0]?.userId?.id===user?.id ? [] : data 
+        // ?.filter((team: BookingTeamMember) => user?.id !== team.userId?.id) // Ensure user is not included
+        ?.map((team: BookingTeamMember) => ({
           label: `${team.userId?.firstName} ${team.userId?.lastName}`,
           value: team.userEmail || "",
         }));

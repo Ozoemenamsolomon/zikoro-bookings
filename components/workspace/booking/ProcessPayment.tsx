@@ -1,3 +1,4 @@
+'use client'
 import React, {  useState } from 'react'
 import {   CheckCircle, Loader, XCircle } from 'lucide-react'
 import { BentArrowLeft } from '@/constants'

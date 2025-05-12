@@ -1,10 +1,8 @@
 import Booking from "@/components/workspace/booking";
-import { fetchSchedule } from "@/lib/server/schedules";
 import React, { Suspense } from "react";
 import type { Metadata, ResolvingMetadata } from "next";
 import { AppointmentLink } from "@/types/appointments";
 import BookingOff from "@/components/workspace/booking/BookingOff";
-import { fetchWorkspace } from "@/lib/server/workspace";
 import { getPermissionsFromSubscription } from "@/lib/server/subscriptions";
 import { fetchScheduleX, fetchWorkspaceX } from "@/lib/server/secreteServer";
 import BookingLazyLoader from "@/components/workspace/booking/LazyLoader";
@@ -36,6 +34,16 @@ export async function generateMetadata(
   };
 }
 
+const BookAppointmentPage = ({ params }: { params: { alias: string } }) => {
+  return (
+    // <Suspense fallback={<BookingLazyLoader/>} > 
+      <BookAppointment params={params}/>
+    // </Suspense>
+  )
+}
+
+export default BookAppointmentPage;
+
 // Booking Page Component
 const BookAppointment = async ({ params }: { params: { alias: string } }) => {
   const alias = (await params).alias;
@@ -43,7 +51,7 @@ const BookAppointment = async ({ params }: { params: { alias: string } }) => {
   const { data, error } = await fetchScheduleX(alias);
 
   if (error) {
-    // Handle error state if required (e.g., return a custom error page or message)
+    // Handle error stdate if required (e.g., return a custom error page or message)
     return (
         <main className="min-h-screen w-full flex justify-center items-center">
             <BookingOff errortext={`The booking link does not seem to exist`} />        
@@ -73,15 +81,3 @@ const BookAppointment = async ({ params }: { params: { alias: string } }) => {
 
   return <Booking appointmentLink={data} error={error} />
 };
-
-const BookAppointmentPage = ({ params }: { params: { alias: string } }) => {
-  return (
-    // <Suspense fallback={<div className="h-screen w-screen flex items-center justify-center txt-4xl font-bold">...</div>} >
-    <Suspense fallback={<BookingLazyLoader/>} > 
-      <BookAppointment params={params}/>
-    </Suspense>
-
-  )
-}
-
-export default BookAppointmentPage;

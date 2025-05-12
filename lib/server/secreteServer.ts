@@ -1,5 +1,5 @@
 import 'server-only'
-
+// using the admin secret key
 import { createSecreteClient } from "@/utils/supabase/secrete-client";
 
 export const fetchScheduleX = async (

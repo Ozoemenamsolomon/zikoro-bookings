@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
     try {
       const {reference} = await req.json();
-      console.log('POST BODY:',{ reference });
+      console.log('REFERENCE :',{ reference });
       if (!reference) {
         return NextResponse.json(
           { error: 'Payment reference is required' },
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       // const PAYMENT_PUBLIC_KEY = process.env.PAYMENT_PUBLIC_KEY;
       const PAYMENT_PUBLIC_KEY = `pk_test_f06d31218f3ffe5f770e2f967fb94ee56563d81c`;
       
-      const verifyResponse = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`, {
+      const verifyResponse = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${PAYMENT_PUBLIC_KEY}`,

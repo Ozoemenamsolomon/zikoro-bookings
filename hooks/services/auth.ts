@@ -64,8 +64,8 @@ export function useRegistration() {
 export function useLogin() {
   const [loading, setLoading] = useState('');
   const router = useRouter();
+  const {setUser} = useUserStore()
   const { setLoggedInUser } = useSetLoggedInUser();
-  // Assuming this is a hook
 
   async function logIn(
     values: z.infer<typeof loginSchema>,tokenEmail:string, userData:User|null
@@ -79,21 +79,46 @@ export function useLogin() {
       // console.log({authUser: data, error})
       if (error) {
         toast.error(error?.message);
-        // console.log(error?.message);
-        setLoading('');
         return;
       }
-      setLoading('Setting up your workspace')
-      if (data && data?.user?.email) {
-        const url = await setLoggedInUser(values?.email, tokenEmail, values.workspaceAlias, values.role, userData );
-         
+
+      const user = await checkUserExists(values.email)
+      if (!user) {
+        console.log('User was not found');
+        toast.error('Account was not found. Set up account')
+        // TODO: redirect to signup setup
+        return;
+      }
+      setUser(user)
+
+      if (values.workspaceAlias) {
+        // this means that user was assigned to this workspace. complete user team membership details
+        setLoading('Setting up your workspace')
+         const {data:bookingTeam,error} = await PostRequest({
+          url:'/api/workspaces/team/update',
+          body: {
+            email: values?.email,
+            workspaceAlias: values.workspaceAlias,
+            userId: userData?.id,
+            tokenEmail,
+          }
+        })
+        // console.log({bookingTeam})
+        if(error){
+          toast.error('Process error. Try again')
+          return
+        }
+        // const url = await setLoggedInUser(values?.email, tokenEmail, values.workspaceAlias, values.role, userData );
         toast.success("Sign In Successful");
-        router.push(url!);
-        setLoading('');
+        router.push(`/ws/${values.workspaceAlias}/${urls.schedule}`);
+      } else {
+        toast.success("Sign In Successful");
+        router.push('/ws')
       }
     } catch (error) {
       toast.error('An errror occured')
       console.log(error);
+    } finally {
       setLoading('');
     }
   }
@@ -131,7 +156,7 @@ export const useSetLoggedInUser = () => {
           body: {
             email,
             workspaceAlias,
-            userId:userData?.id,
+            userId: userData?.id,
             tokenEmail,
           }
         })

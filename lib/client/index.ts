@@ -35,6 +35,7 @@ export const fetchAllData = async (table: string, orderBy?: string, start:number
 };
 
 import { addMonths, addYears, formatISO } from 'date-fns';
+import { YEARLY_DISCOUNT_RATE } from '@/constants'
  
 
 export function calculateSubscriptionEndDate(
@@ -71,15 +72,17 @@ interface CostResult {
 }
 
 export function calculateSubscriptionCost(
-  discount: number = 15,
+  discount: number, // percent (0–100)
   selectedType: SubscriptionType = 'Monthly',
   selectedCurrency: CurrencyOption = { label: 'USD', value: 1 },
-  selectedPlan: PlanOption = { label: 'Free', value: 0 }
+  selectedPlan: PlanOption = { label: 'Free', value: 0 },
+  discountAmount?: number // optional fixed amount
 ): CostResult {
-  const baseAmount = selectedPlan.value;
-
-  // No cost for Free plan
-  if (baseAmount === 0) {
+  const baseMonthly = selectedPlan.value;
+  const isYearly = selectedType === 'Yearly';
+  const conversionRate = selectedCurrency.value;
+  // Free plan — no cost
+  if (baseMonthly === 0) {
     return {
       base: 0,
       discount: 0,
@@ -90,18 +93,32 @@ export function calculateSubscriptionCost(
     };
   }
 
-  const isYearly = selectedType === 'Yearly';
-  const discountRate = isYearly ? discount/100 : 0;
+  // Step 1: Calculate actual (pre-discount) price
+  let actualPrice = isYearly ? baseMonthly * 12 : baseMonthly;
 
-  const actualPrice = isYearly ? baseAmount * 12 : baseAmount;
-  const discountValue = actualPrice * discountRate;
-  const discountedPrice = actualPrice - discountValue;
+  // Step 2: Apply yearly discount rate if applicable
+  if (isYearly) {
+    const yearlyDiscountValue = actualPrice * YEARLY_DISCOUNT_RATE;
+    actualPrice -= yearlyDiscountValue;
+  }
 
-  const conversionRate = selectedCurrency.value;
+  // Step 3: Apply user discount
+  let discountRate = 0;
+  let discountValue = 0;
+
+  if (discount > 0) {
+    discountRate = discount / 100;
+    discountValue = actualPrice * discountRate;
+  } else if (discountAmount && discountAmount > 0) {
+    discountValue = discountAmount;
+    discountRate = discountAmount / actualPrice;
+  }
+
+  const discountedPrice = Math.max(actualPrice - discountValue, 0);
   const total = discountedPrice * conversionRate;
 
   return {
-    base: baseAmount * conversionRate,
+    base: baseMonthly * conversionRate,
     discount: discountRate,
     discountValue: discountValue * conversionRate,
     actualPrice: actualPrice * conversionRate,

@@ -69,7 +69,7 @@ export const fetchWorkspaces = async (
     //   (workspace, index, self) =>
     //     self.findIndex((w) => w.id === workspace.id) === index
     // );
-    console.log({teamWorkspaceOrganizations})
+    // console.log({teamWorkspaceOrganizations})
     return { 
       data: teamWorkspaceOrganizations, 
       error: null, 
@@ -150,7 +150,7 @@ export const assignMyWorkspace = async (
       .from('organization')
       .insert({
         organizationName: organization||'My Workspace',
-        organizationOwner: name||'',
+        organizationOwner: email||'',
         organizationOwnerId: userId,
         subscriptionPlan: 'Free',
         subscritionStartDate: new Date(),
@@ -167,27 +167,20 @@ export const assignMyWorkspace = async (
 
       if(error) console.log('Error creating workspace: ', error)
     
-        // add user as admin to the default workspace team members
+        // add user as admin to the default workspace team members and other products team organizations
         let newTeam, newTeamError
         if(data) {
-          const {data:newTeamMember, error}= await supabase
-          .from('organizationTeamMembers_Bookings')
-          .insert({
-            workspaceAlias: data?.organizationAlias,
-            userId,
-            userRole:'ADMIN',
-            userEmail:email,
-          })
-          .select('*, workspaceAlias(*)')
-    
-          if(error) {
-            newTeamError='Error occured while adding user to workspace team.'
-            console.log('Error adding team member to workspace: ', error)
-          }
-          newTeam=newTeamMember
-        }
+          const {data:newTeamMemebr,errors} = await upsertTeamMembers({userId, userEmail:email, workspaceAlias: data?.organizationAlias, userRole:'owner'})
+          console.log({newTeamMemebr, errors})
 
-    console.log({data, error:error?.message||null, newTeam, newTeamError})
+          if(Object.values(errors).some((item)=>item!==null)) {
+            newTeamError='Error occured while adding user to workspace team.'
+            console.log('Error adding team member to workspace: ', errors)
+          }
+          newTeam=newTeamMemebr
+        }
+        
+        console.log({data, error:error?.message||null, newTeam, newTeamError})
 
     return {data, error:error?.message||null, newTeam, newTeamError}
   } catch (error) {
@@ -377,7 +370,7 @@ export const fetchActiveTeamMembers = async (workspaceAlias: string) => {
       console.error("Error fetching team members:", error);
       return { data: null, error: error.message || "Failed to fetch team members" };
     }
- 
+
     return { data, error: null };
   } catch (error: any) {
     console.error("Server error in fetchTeamMembers:", error);
