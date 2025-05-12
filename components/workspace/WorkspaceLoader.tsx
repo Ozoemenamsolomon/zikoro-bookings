@@ -24,29 +24,29 @@ const WorkspaceLoader = ({ workspace, workspaces }:{
     }, [])
 
  
-    useSupabaseRealtime({
-      table:'organizationTeamMembers_Bookings', 
-      // filter: {filter: `workspaceAlias=eq.`}, 
-      onChange:(payload) => {
-      console.log({payload})
-      // const { eventType, new: newRecord, old: oldRecord } = payload;npm run dev
+  //   useSupabaseRealtime({
+  //     table:'organizationTeamMembers_Bookings', 
+  //     // filter: {filter: `workspaceAlias=eq.`}, 
+  //     onChange:(payload) => {
+  //     console.log({payload})
+  //     // const { eventType, new: newRecord, old: oldRecord } = payload;npm run dev
       
   
-      // if (eventType === 'INSERT') {
-      //   setMessages((prev) => [...prev, newRecord]);
-      // }
+  //     // if (eventType === 'INSERT') {
+  //     //   setMessages((prev) => [...prev, newRecord]);
+  //     // }
   
-      // if (eventType === 'UPDATE') {
-      //   setMessages((prev) =>
-      //     prev.map((msg) => (msg.id === newRecord.id ? newRecord : msg))
-      //   );
-      // }
+  //     // if (eventType === 'UPDATE') {
+  //     //   setMessages((prev) =>
+  //     //     prev.map((msg) => (msg.id === newRecord.id ? newRecord : msg))
+  //     //   );
+  //     // }
   
-      // if (eventType === 'DELETE') {
-      //   setMessages((prev) => prev.filter((msg) => msg.id !== oldRecord.id));
-      // }
-    }
-  });
+  //     // if (eventType === 'DELETE') {
+  //     //   setMessages((prev) => prev.filter((msg) => msg.id !== oldRecord.id));
+  //     // }
+  //   }
+  // });
   
 
     
