@@ -14,11 +14,12 @@ const WsPage = async () => {
         .from('organization')
         .select('id,organizationAlias, organizationOwner')
         .eq('organizationOwner', user?.email)
+        .order('created_at', {ascending:true})
 
-    console.log({data, error})
+    // console.log({data, error})
 
     if(data){
-        redirect(`/ws/${data[data.length-1]?.organizationAlias}/schedule`)
+        redirect(`/ws/${data[0]?.organizationAlias}/schedule`)
     } else {
       return (
       <WsComponent />

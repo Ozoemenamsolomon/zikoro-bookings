@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import { Button } from "@/components/ui/button";
 import { Progress } from '@/components/ui/progress';
@@ -15,7 +16,7 @@ const WorkspaceAnalytics = ({permissions}:{permissions:SubscriptionPlanInfo}) =>
       <UsageStats permissions={permissions} />
       <SubscriptionProgress permissions={permissions} />
       <PlanFeaturesTable currentPlan={permissions.effectivePlan} />
-      <UpgradePrompt permissions={permissions} />
+      <UpgradePrompt permissions={permissions} /> 
     </div>
   );
 }
@@ -85,6 +86,8 @@ export function SubscriptionCallouts({ permissions }: { permissions: any }) {
 
 import { Card, CardContent } from "@/components/ui/card";
 import Link from 'next/link';
+import Upgradeworkspace from './Upgradeworkspace';
+import useUserStore from '@/store/globalUserStore';
 
 export function UsageStats({ permissions }: { permissions: any }) {
   const stats = [
@@ -142,7 +145,7 @@ export function PlanFeaturesTable({ currentPlan }: { currentPlan: string }) {
               <tr
                 key={idx}
                 className={
-                  plan.label === currentPlan ? "bg-yellow-50 font-bold" : ""
+                  plan.label === currentPlan ? "bg-purple-200 font-bold" : ""
                 }
               >
                 <td className="p-2">{plan.label}</td>
@@ -167,14 +170,19 @@ export function PlanFeaturesTable({ currentPlan }: { currentPlan: string }) {
 
 
 export function UpgradePrompt({ permissions }: { permissions: any }) {
+  const {user, currentWorkSpace} = useUserStore()
+
+  if(currentWorkSpace?.subscriptionPlan ==='Enterprise') return null
+
   return (
     <div className="text-center gap-2 flex flex-col items-center">
       <h3 className="text-lg font-semibold">Need more power?</h3>
       <p className="text-sm text-gray-500">Upgrade your plan to unlock more features and higher limits.</p>
       <div className="flex justify-items-center">
-        <Link href={'#'} className='py-3 text-center w-full bg-basePrimary rounded-md flex justify-center text-white px-6 '>
+        <Upgradeworkspace />
+        {/* <Link href={'#'} className='py-3 text-center w-full bg-basePrimary rounded-md flex justify-center text-white px-6 '>
             Upgrade Plan
-        </Link >
+        </Link > */}
       </div>
     </div>
   );

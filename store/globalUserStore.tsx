@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { Organization, SubscriptionPlanInfo } from "@/types";
 import { User } from "@/types/appointments";
-import { getPermissionsFromSubscription } from "@/lib/server/subscriptions";
 import { createWorkspaceFromScratch } from "@/lib/server/workspace";
  
 interface UserState {

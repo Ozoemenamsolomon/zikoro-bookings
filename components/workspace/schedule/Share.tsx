@@ -47,10 +47,12 @@ const Share: React.FC<ShareProps> = ({data,     }) => {
     {
       icon: <Code />,
       label: 'Embed',
+      link:link
     },
     {
       icon: <Copy />,
       label: 'Copy Link',
+      link:link
     },
   ];
 
@@ -105,7 +107,7 @@ const Share: React.FC<ShareProps> = ({data,     }) => {
        
           </div>
 
-          <EmbedLink embed={embed}/>
+          <EmbedLink embed={embed} link={link}/>
       </div>
     </CenterModal>
   );

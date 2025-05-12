@@ -53,7 +53,7 @@ export interface OrganizationInput {
   discountValue?: number | null;
   planPrice?: number | null;
   amountPaid?: number | null;
-
+  actualPrice?: number
 }
 
 export interface BookingTeams {
