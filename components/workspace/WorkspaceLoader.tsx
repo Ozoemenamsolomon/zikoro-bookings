@@ -51,12 +51,7 @@ const WorkspaceLoader = ({ workspace, workspaces }:{
 
     
   // console.log({subscriptionPlan, currentWorkSpace})
-  return (
-    <>
-            <CreateWorkSpace />
-
-    </>
-  )
+  return  null
 }
 
 export default WorkspaceLoader

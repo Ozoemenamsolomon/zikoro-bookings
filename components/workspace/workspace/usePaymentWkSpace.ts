@@ -23,7 +23,7 @@ export const usePaymentWkSpace = ({submitWkSpace, formData, setStatus,  }:{
             formData
         }
 	};
-
+// console.log({user, config})
     const initializePayment = usePaystackPayment(config);
 
     const onClose = () => {

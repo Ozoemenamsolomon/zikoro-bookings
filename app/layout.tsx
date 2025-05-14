@@ -6,6 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { AppointmentProvider } from "@/context/AppointmentContext";
 import { montserrat } from "@/utils/fonts/montserrat";
 import 'react-quill/dist/quill.snow.css'; // import styles
+import { AlertMsgModal } from "@/components/shared/AlertMsgModal";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   metadataBase: new URL(`https://www.bookings.zikoro.com`),
@@ -78,6 +80,9 @@ export default function RootLayout({
       >
         <AppointmentProvider>
           <ToastContainer />
+          <Suspense>
+            <AlertMsgModal />
+          </Suspense>
           {children}
         </AppointmentProvider>
       </body>

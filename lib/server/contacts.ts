@@ -13,12 +13,12 @@ export const fetchContacts = async (
   q?: string
 ): Promise<FetchContactsResult> => {
     const supabase = createClient()
-    // const {user} = await getUserData()
+    const {user} = await getUserData()
   try {
     let query = supabase
       .from('bookingsContact')
       .select('*', { count: 'exact' }) 
-      .eq('workspaceId', workspaceId)
+      .eq('createdBy', user?.id)
       // .or('status.is.null,status.neq.ARCHIVED')
       .order('firstName', {ascending: false} ); 
 
@@ -28,7 +28,7 @@ export const fetchContacts = async (
     }
 
     const { data, count, error } = await query;
-    // console.error({user, data, count, error });
+    console.error({ data, count, error });
 
     if (error) {
       console.error('Error fetching contacts:', error);
