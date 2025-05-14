@@ -42,6 +42,7 @@ export interface AppState {
   dateRange: DateRange|undefined, 
   setDateRange:React.Dispatch<React.SetStateAction<DateRange|undefined>>;
   isOpen:boolean, setIsOpen:React.Dispatch<React.SetStateAction<boolean>>;
+  openContact:boolean, setOpenContact:React.Dispatch<React.SetStateAction<boolean>>;
   getWsUrl: (path:string) => string
 }
 
@@ -70,6 +71,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [contacts, setContacts] = useState<BookingsContact[] | null>(null);
   const [show, setShow] = useState<string>('links')
   const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [openContact, setOpenContact] = useState<boolean>(false)
   const [dateRange, setDateRange] = useState<DateRange|undefined>()
 
   const { currentWorkSpace, user, setUser } = useUserStore();
@@ -95,7 +97,7 @@ export const AppointmentProvider: React.FC<{ children: ReactNode }> = ({ childre
     selectedItem, setSelectedItem,
     contact, setContact, contacts, setContacts, show, setShow,
     searchTerm, setSearchTerm,activePath, setActivePath,
-    isOpen, setIsOpen,
+    isOpen, setIsOpen,openContact, setOpenContact,
     getWsUrl,
     teamMembers, setTeamMembers,
     dateRange, setDateRange,
