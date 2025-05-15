@@ -39,7 +39,7 @@ const AddNote = ({setIsAddNote, isAddNote, booking, setBookingNotes }:{
         media: [],
         // createdBy: user?.id as bigint,
         bookingContactId: booking?.contactId,
-        bookingId: booking?.id!,
+        bookingId: Number(booking?.id!),
         workspaceId: booking?.workspaceId!
       };
 
