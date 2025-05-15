@@ -244,7 +244,7 @@ export interface AppointmentNotes {
 }
 
 export interface BookingNote {
-  id?: bigint;
+  id?: number;
   created_at?: string; // ISO timestamp
   bookingId?: bigint | null;
   title?: string | null;
