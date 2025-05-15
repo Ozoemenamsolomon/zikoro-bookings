@@ -32,7 +32,7 @@ export async function protectWorkspaceRoute(workspaceAlias: string): Promise<{ w
           const {data} = await createWorkspaceFromScratch(user)
           redirect(`/ws/${data?.organizationAlias}/schedule?msg=You could not gain access to the workspace`)
       }
-    redirect(`/ws/${defaultWorkspace?.organizationAlias}/schedule?msg=You no longer have access to the workspace`)
+    redirect(`/ws/${defaultWorkspace?.organizationAlias}/schedule?msg=Access denied. It looks like you've been removed from the workspace or the link you followed is broken`)
   }
 
   const isOwner = currentWorkspace.organizationOwnerId === user.id
@@ -46,7 +46,7 @@ export async function protectWorkspaceRoute(workspaceAlias: string): Promise<{ w
       const {data} = await createWorkspaceFromScratch(user)
       redirect(`/ws/${data?.organizationAlias}/schedule?msg=You could not gain access to the workspace`)
   }
-    redirect(`/ws/${defaultWorkspace?.organizationAlias}/schedule?msg=You could not gain access to the workspace`)
+    redirect(`/ws/${defaultWorkspace?.organizationAlias}/schedule?msg=This team's subscription is not active. To continue using the workspace, please renew or upgrade your plan.`)
   }
 
   return { workspace: currentWorkspace, workspaces }

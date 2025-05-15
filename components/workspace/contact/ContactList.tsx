@@ -25,7 +25,7 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery, con
   // const g = pathname?.split('/')
   const pathnameContactId = pathname?.split('/')?.[4] || ''
   const fifthPath = pathname?.split('/')?.[5] || ''
-  const { contact, setContact, contacts, setContacts, isfetching, searchTerm, setSearchTerm, setIsFetching,getWsUrl, setActivePath, setIsOpen } = useAppointmentContext();
+  const { contact, setContact, contacts, setContacts, isfetching, searchTerm, setSearchTerm, setIsFetching,getWsUrl, setActivePath, setOpenContact, } = useAppointmentContext();
   const [loading, setLoading] = useState<string | null>(null);
 
   const filterContacts = useCallback(
@@ -162,7 +162,7 @@ const ContactList: React.FC<ContactProps> = ({ fetchedcontacts, searchquery, con
                  await setContact(item)
                 push(getWsUrl(`${urls.contacts}/${id}/${fifthPath}`))
                 setActivePath(fifthPath)
-                setIsOpen(true)
+                setOpenContact(true)
                 }} className="py-2 w-full cursor-pointer">
               <div
                 className={`${

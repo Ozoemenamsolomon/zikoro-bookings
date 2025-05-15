@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
         .select('*')
         .single()
 
-      // console.log('INSERTING CONTACT', {data,error})
+      console.log('INSERTING CONTACT', {data,error})
  
       return NextResponse.json({ data,  error: error?.message||null }, { status: 200 });
     } catch (error) {

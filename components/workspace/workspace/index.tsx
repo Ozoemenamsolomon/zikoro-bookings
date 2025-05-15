@@ -4,27 +4,38 @@ import { urls } from '@/constants'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import React, {useState } from 'react'
+import React, {useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
  
 import { PlusCircle, RotateCw } from 'lucide-react'
 import { useAppointmentContext } from '@/context/AppointmentContext'
+import CreateWorkSpace from './CreateWorkSpace'
+import { User } from '@/types/appointments'
+import useUserStore from '@/store/globalUserStore'
  
 
-const WsComponent = () => {
-    const { setIsOpen,} = useAppointmentContext()
+const WsComponent = ({user}:{user:User}) => {
+    const { setIsOpen,isOpen} = useAppointmentContext()
+    const {setUser} = useUserStore()
     const { push, refresh } = useRouter()
-    const [isRefreshing, setIsRefreshing] = useState(true)
+    const [isRefreshing, setIsRefreshing] = useState(false)
 
     // Handle Refresh with Loader Simulation
     const handleRefresh = () => {
         // setIsRefreshing(true)
             window.location.reload()
-        // refresh()
-        // setIsRefreshing(true)
-        // setTimeout(() => {
-        //     window.location.reload()
-        // }, 1000)  
+    }
+
+    useEffect(() => {
+    setUser(user)
+    }, [ ])
+
+    if(isOpen) {
+        return ( 
+            <main className="min-h-screen w-full flex justify-center max-w-4xl items-center mx-auto  ">
+                <CreateWorkSpace/> 
+            </main>
+    )
     }
 
     return (
@@ -43,9 +54,7 @@ const WsComponent = () => {
                 <h1 className="font-bold text-4xl sm:text-6xl">No workspace found!</h1>
                 <div className="flex max-w-80 mx-auto justify-center gap-3 items-center">
                     <Button
-                        onClick={()=>{
-                        setIsOpen(true)
-                        }}
+                        onClick={()=>setIsOpen(true)}
                         type="button"
                         className="bg-basePrimary text-white w-full flex gap-2 items-center "
                     >

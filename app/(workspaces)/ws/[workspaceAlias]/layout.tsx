@@ -11,7 +11,7 @@ export default async function WorkspaceLayout({
 
   return (
     <>
-      <WorkspaceAlert />
+      {/* <WorkspaceAlert /> */}
       {children}
     </>
   );

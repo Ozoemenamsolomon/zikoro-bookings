@@ -3,14 +3,14 @@ import { useAppointmentContext } from '@/context/AppointmentContext'
 import { ArrowLeft } from 'lucide-react'
 
 const ContactName = () => {
-    const {contact, setIsOpen, isOpen} = useAppointmentContext()
+    const {contact, setOpenContact, openContact, } = useAppointmentContext()
   return (
     <div className="flex  md:text-lg w-full gap-2 items-center pb-4">
-      <div onClick={()=>setIsOpen(false)} className={` ${isOpen ? 'max-md:text-zikoroBlue': ''} flex gap-2 items-center `}>
-        <ArrowLeft size={16} className={!isOpen ?` hidden`: 'md:hidden '} />
+      <div onClick={()=>setOpenContact(false)} className={` ${openContact ? 'max-md:text-zikoroBlue': ''} flex gap-2 items-center `}>
+        <ArrowLeft size={16} className={!openContact ?` hidden`: 'md:hidden '} />
         <h4 className={` font-semibold `}>Contacts</h4>
       </div>
-      <p className={isOpen?'min-w-0 truncate font-semibold md:hidden':'hidden '}> / {contact?.firstName + ' ' + contact?.lastName}</p>
+      <p className={openContact?'min-w-0 truncate font-semibold md:hidden':'hidden '}> / {contact?.firstName + ' ' + contact?.lastName}</p>
         {/* <div className="h-12 w-12 rounded-full bg-baseLight uppercase font-semibold shrink-0 flex items-center justify-center">
                   {contact?.profileImg ? (
                     <Image

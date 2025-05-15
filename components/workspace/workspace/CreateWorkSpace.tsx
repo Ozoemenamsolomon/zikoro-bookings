@@ -75,7 +75,7 @@ const CreateWorkSpace = () => {
           label:item.currency, value:String(item.amount)
         }))
         setCurrencies(options)
-        // console.log({data, options})
+        console.log({data, options})
       }
       fetching()
   }, []);
@@ -281,15 +281,15 @@ const handleSubmission = () => {
     setStep(2)
   }
 }
-
+console.log({formData})
 return (
-    <TopModal
-      className={`sm:max-h-full`}
-      callback={()=>{
+    < >
+      <button onClick={()=>{
         clear()
         setStep(1)
-      }}  
-    >
+        setIsOpen(false)}} 
+        type="button" className='absolute right-2 top-2 bg-black text-white rounded-full h-7 w-7 flex  justify-center items-center z-10'><X size={16}/></button>
+      
       {
           step===1 ?
           <form onSubmit={(e)=>e.preventDefault()} className=" md:flex gap-0 text-base w-full h-full">
@@ -523,7 +523,7 @@ return (
             </section>
             )
       }
-    </TopModal>
+    </ >
   );
 };
 

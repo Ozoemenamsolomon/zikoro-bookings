@@ -18,7 +18,7 @@ import { uploadImage } from './uploadImage';
 import { useAppointmentContext } from '@/context/AppointmentContext';
 import useUserStore from '@/store/globalUserStore';
 import Loading from '@/components/shared/Loader';
-import { generateSlug } from '@/lib/generateSlug';
+import { generateSlug, generateSlugg } from '@/lib/generateSlug';
  
 
 const detailsArray: DetailItem[] = [
@@ -232,7 +232,7 @@ const CreateAppointments: React.FC<{ appointment?: AppointmentLink, serverError?
     try {
       const payload = { 
         ...formData, 
-        appointmentAlias: appointment ? appointment.appointmentAlias : generateSlug(formData.appointmentName),
+        appointmentAlias: appointment ? appointment.appointmentAlias : generateSlugg(formData.appointmentName),
         timeDetails: JSON.stringify(formData.timeDetails), 
         category: JSON.stringify(formData.category), 
         logo: logoUrl || '', 
