@@ -1,60 +1,89 @@
 'use client'
+import { BlockSlotSkeleton } from '@/components/shared/Loader'
+import PaginationMain from '@/components/shared/PaginationMain'
 import { Calendar } from '@/constants'
+import { useBookingsNotes } from '@/hooks/services/appointments'
+import { BookingNote } from '@/types/appointments'
 import { FolderOpen, PlusCircle } from 'lucide-react'
 import React, { useState } from 'react'
+import EmptyList from '../ui/EmptyList'
+import { CenterModal } from '@/components/shared/CenterModal'
+import AddNote from './notes/AddNote'
+import { useAppointmentContext } from '@/context/AppointmentContext'
 
-const ContactNotes = () => {
-    const [historyList, sethistoryList] = useState([''])
+const ContactNotes = ({notes,error,count, contactId}:{notes:BookingNote[]|null, error:null|string, count:null|number, contactId:string}) => {
+    const { contactNotes, error:notesError, totalPages, currentPage, handlePageChange, loading, insertNote, updateNote} = useBookingsNotes({notes,err:error,tableSize:count, contactId})
+
+    const [open, setOpen] = useState(false)
+     const { contact,   } = useAppointmentContext();
+
   return (
     <section className='md:p-3'>
         <div className="md:border md:rounded-lg bg-white flex-col h-full justify-between">
             <div className="">
-                <header className=" w-full py-4 text-center border-b bg-baseBg font-medium">
-                    Notes
-                </header>
 
-                <div className="notes  ">
-                    {
-                        // loading state
-                        historyList && historyList?.length ? 
-                        <section className='space-y-6 py-6'>
-                            <div className="w-full text-center  md:px-4 flex justify-between">
-                                <div className="">
-                                    <button className="border py-1 px-2 rounded-md flex gap-2 items-center text-slate-600">
-                                        <div className="bg-baseLight p-2 rounded-full"><Calendar/></div>
-                                        <p>Go to date</p>
-                                    </button>
-                                </div>
-                                <div className="">
+                <header className="">
+                    <h4 className=" w-full  py-4 text-center border-b bg-baseBg font-semibold text-lg">Notes</h4>
+
+                    <div className="w-full text-center py-4 md:px-4 flex justify-between items-center">
+                        <div className="">
+                            <button className="border py-1 px-2 rounded-md flex gap-2 items-center text-slate-600">
+                                <div className="bg-baseLight p-2 rounded-full"><Calendar/></div>
+                                <p>Go to date</p>
+                            </button>
+                        </div>
+                        <div className="">
+                            <CenterModal
+                                isOpen={open}
+                                onOpenChange={setOpen}
+                                trigerBtn={
                                     <button type="button" className='flex items-center gap-4 px-4 py-2 rounded-md bg-basePrimary text-white'>
                                         <PlusCircle />
                                         <p className="">Add Note</p>
                                     </button>
-                                </div>
-                            </div>
+                                }
+                            >
+                                <AddNote insertNote={insertNote} updateNote={updateNote} contact={contact!} />
+                            </CenterModal>
 
-                            <div className="min-h-96 grid sm:grid-cols-2 md:grid-cols- md:px-4 gap-4 ">
+
+                        </div>
+                    </div>
+                </header>
+
+                <div className="notes  ">
+                    {
+                        loading ?
+                        <section className="min-h-[80vh] grid sm:grid-cols-2 md:grid-cols- md:px-4 gap-4 ">
+                            <BlockSlotSkeleton size={4} className='h-56'/> 
+                        </section>
+                        :
+                        notesError ? 
+                        <div className="min-h-[70vh]  w-full flex gap-2 justify-center ">
+                            <EmptyList text={notesError || 'Unknown error occured, check your network and try again'}/>
+                        </div>
+                        :
+                        contactNotes?.length ? 
+                            <div className="min-h-[70vh] grid sm:grid-cols-2 md:grid-cols- md:px-4 gap-4 ">
                                 {
-                                    [...Array(8)].map((_,idx)=>{
+                                    contactNotes.map((_,idx)=>{
                                         return (
                                             <div key={idx} className="border rounded-lg h-60 w-full"></div>
                                         )
                                     })
                                 }
                             </div>
-                        </section>
                         : 
-                        <div className="h-96 w-full flex flex-col gap-2 justify-center items-center">
-                            <FolderOpen size={60} className='text-purple-100'/>
-                            <p className="text-center text-slate-500">No Notes</p>
+                        <div className="min-h-[70vh]  w-full flex gap-2 justify-center ">
+                            <EmptyList text={notesError || 'No item was found'}/>
                         </div>
                     }
                     
                 </div>
             </div>
 
-            <div className="border-t w-full py-4">
-                Pagination
+            <div className="border-t w-full pb-4">
+                <PaginationMain totalPages={totalPages} currentPage={currentPage} onPageChange={handlePageChange} />
             </div>
 
         </div>
@@ -63,3 +92,5 @@ const ContactNotes = () => {
 }
 
 export default ContactNotes
+
+

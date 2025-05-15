@@ -1,6 +1,7 @@
-import { BookingsContact } from "@/types/appointments";
+import { BookingNote, BookingsContact } from "@/types/appointments";
 import { createClient } from "@/utils/supabase/server"
 import { getUserData } from ".";
+import { createADMINClient } from "@/utils/supabase/no-caching";
 
 interface FetchContactsResult {
   data: BookingsContact[] | null;
@@ -12,7 +13,7 @@ export const fetchContacts = async (
   workspaceId:string,
   q?: string
 ): Promise<FetchContactsResult> => {
-    const supabase = createClient()
+    const supabase = createADMINClient()
     const {user} = await getUserData()
   try {
     let query = supabase
@@ -62,3 +63,48 @@ export const fetchContact = async (
   }
 };
 
+
+type FetchNotesParams = {
+  bookingId?: string;
+  contactId?: string;
+  workspaceId?: string;
+};
+
+type FetchNotesResult = {
+  data: BookingNote[] | null;
+  error: string | null;
+  count: number | null;
+};
+
+export const fetchNotes = async (
+  param: FetchNotesParams
+): Promise<FetchNotesResult> => {
+  const supabase = createADMINClient();
+
+  try {
+    const query = supabase
+      .from("bookingNote")
+      .select("*, createdBy(id, userEmail, organization, firstName, lastName, phoneNumber)", { count: "exact" })
+      .order("created_at", { ascending: false });
+
+    if (param.bookingId) {
+      query.eq("bookingId", param.bookingId);
+    } else if (param.contactId && param.workspaceId) {
+      query.eq("bookingContactId", param.contactId).eq("workspaceId", param.workspaceId);
+    } else {
+      return { data: null, error: "Missing query parameters", count: null };
+    }
+
+    const { data, error, count } = await query;
+console.log('FETCHING NOTES: ',  { data, error, count } )
+    if (error) {
+      console.error("Error fetching notes:", error.message);
+      return { data: null, error: error.message, count: null };
+    }
+
+    return { data, error: null, count };
+  } catch (err) {
+    console.error("Server error:", err);
+    return { data: null, error: "Server error", count: null };
+  }
+};
