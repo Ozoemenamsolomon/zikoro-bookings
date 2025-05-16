@@ -1,6 +1,6 @@
 
 import ContactLayout from '@/components/workspace/contact';
-import ContactNotes from '@/components/workspace/contact/ContactNotes';
+import ContactNotes from '@/components/workspace/contact/notes/ContactNotes';
 import ContactSubLayout from '@/components/workspace/contact/ContactSubLayout';
 import { fetchContacts, fetchNotes } from '@/lib/server/contacts';
 import { unstable_noStore } from 'next/cache';

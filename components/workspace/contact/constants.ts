@@ -26,7 +26,7 @@ import { urls } from "@/constants";
     },
     {
       label: 'Notes',
-      link: urls.contactsNotes,
+      link: 'notes',
     },
     // {
     //   label: 'Media',

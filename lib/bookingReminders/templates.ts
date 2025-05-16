@@ -10,7 +10,7 @@ export const getEmailReminderTemplate = (
         <head>
           <style>
             body { font-family: Arial, sans-serif; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; border-radius: 8px; }
             .header { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
             .details { margin-bottom: 15px; }
             .footer { font-size: 12px; color: #666; margin-top: 20px; }
@@ -61,5 +61,5 @@ export const getBookingSmsReminderMsg = (booking:Booking) => {
 
   const formattedDate = `${monthNames[date.getMonth()]} ${date.getDate()} at ${appointmentTime}`;
 
-  return `Hello, you have an appointment: "${appointmentName}" on ${formattedDate}. Location: ${shortLocation}. Please be on time.`;
+  return `Hello, you have an appointment: "${appointmentName}" on ${formattedDate}. Check your email to get more details. Please be on time.`;
 }

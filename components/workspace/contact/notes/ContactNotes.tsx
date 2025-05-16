@@ -6,31 +6,32 @@ import { useBookingsNotes } from '@/hooks/services/appointments'
 import { BookingNote } from '@/types/appointments'
 import { FolderOpen, PlusCircle } from 'lucide-react'
 import React, { useState } from 'react'
-import EmptyList from '../ui/EmptyList'
+import EmptyList from '../../ui/EmptyList'
 import { CenterModal } from '@/components/shared/CenterModal'
-import AddNote from './notes/AddNote'
+import AddNote from './AddNote'
 import { useAppointmentContext } from '@/context/AppointmentContext'
+import NoteCard from './NoteCard'
 
 const ContactNotes = ({notes,error,count, contactId}:{notes:BookingNote[]|null, error:null|string, count:null|number, contactId:string}) => {
-    const { contactNotes, error:notesError, totalPages, currentPage, handlePageChange, loading, insertNote, updateNote} = useBookingsNotes({notes,err:error,tableSize:count, contactId})
+    const { contactNotes, error:notesError, totalPages, currentPage, handlePageChange, loading, insertNote, updateNote, deleteNote} = useBookingsNotes({notes,err:error,tableSize:count, contactId})
 
     const [open, setOpen] = useState(false)
-     const { contact,   } = useAppointmentContext();
+    const { contact,   } = useAppointmentContext();
 
   return (
     <section className='md:p-3'>
         <div className="md:border md:rounded-lg bg-white flex-col h-full justify-between">
-            <div className="">
+            <div className="pb-6">
 
                 <header className="">
                     <h4 className=" w-full  py-4 text-center border-b bg-baseBg font-semibold text-lg">Notes</h4>
 
                     <div className="w-full text-center py-4 md:px-4 flex justify-between items-center">
                         <div className="">
-                            <button className="border py-1 px-2 rounded-md flex gap-2 items-center text-slate-600">
+                            {/* <button className="border py-1 px-2 rounded-md flex gap-2 items-center text-slate-600">
                                 <div className="bg-baseLight p-2 rounded-full"><Calendar/></div>
                                 <p>Go to date</p>
-                            </button>
+                            </button> */}
                         </div>
                         <div className="">
                             <CenterModal
@@ -43,7 +44,7 @@ const ContactNotes = ({notes,error,count, contactId}:{notes:BookingNote[]|null, 
                                     </button>
                                 }
                             >
-                                <AddNote insertNote={insertNote} updateNote={updateNote} contact={contact!} />
+                                <AddNote insertNote={insertNote} updateNote={updateNote} contact={contact!}/>
                             </CenterModal>
 
 
@@ -64,14 +65,16 @@ const ContactNotes = ({notes,error,count, contactId}:{notes:BookingNote[]|null, 
                         </div>
                         :
                         contactNotes?.length ? 
-                            <div className="min-h-[70vh] grid sm:grid-cols-2 md:grid-cols- md:px-4 gap-4 ">
+                            <div className="min-h-[70vh]   ">
+                            <div className="  grid sm:grid-cols-2 md:px-4 gap-4 ">
                                 {
                                     contactNotes.map((_,idx)=>{
                                         return (
-                                            <div key={idx} className="border rounded-lg h-60 w-full"></div>
+                                            <NoteCard key={idx} note={_} insertNote={insertNote} updateNote={updateNote} deleteNote={deleteNote}/>
                                         )
                                     })
                                 }
+                            </div>
                             </div>
                         : 
                         <div className="min-h-[70vh]  w-full flex gap-2 justify-center ">

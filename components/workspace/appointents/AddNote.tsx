@@ -38,7 +38,7 @@ const AddNote = ({setIsAddNote, isAddNote, booking, setBookingNotes }:{
         title: "",
         media: [],
         // createdBy: user?.id as bigint,
-        bookingContactId: booking?.participantEmail,
+        bookingContactId: booking?.contactId,
         bookingId: booking?.id!,
         workspaceId: booking?.workspaceId!
       };

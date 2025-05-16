@@ -69,7 +69,8 @@ const BookAppointment = async ({ params }: { params: { alias: string } }) => {
     );
   }
 
-  const { plan: { remaininBookings } } = await getPermissionsFromSubscription(organization);
+  // set isBooking=true to get booking counts and verify remaining bookings count.
+  const { plan: { remaininBookings } } = await getPermissionsFromSubscription(organization, true);
 
   if (remaininBookings && remaininBookings < 1) {
     return (
