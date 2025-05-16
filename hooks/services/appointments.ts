@@ -1,6 +1,6 @@
 "use client";
 
-import { AppointmentLink, AppointmentUnavailability, Booking, BookingNote, BookingReminder, BookingsContact, BookingsQuery, } from "@/types/appointments";
+import { AppointmentLink, AppointmentUnavailability, Booking, BookingNote, BookingNoteInput, BookingReminder, BookingsContact, BookingsQuery, } from "@/types/appointments";
 import { useState,   useCallback,  } from "react";
 import useUserStore from "@/store/globalUserStore";
 
@@ -10,6 +10,7 @@ import { GroupedBookings } from "@/lib/server/appointments";
 import { getRequest, PostRequest } from "@/utils/api";
 import { useRouter } from "next/navigation";
 import { useAppointmentContext } from "@/context/AppointmentContext";
+import { deleteItem } from "@/lib";
 
 export const useGetSchedules =  (scheduleData?: { error?: string | null; schedules?: AppointmentLink[] | null; count?: number; } )=> {
   const { user, currentWorkSpace } = useUserStore();
@@ -403,23 +404,25 @@ export function useBookingsNotes({ notes, tableSize, err, contactId }: UseBookin
     Math.ceil((tableSize ?? 0) / 20) || 1
   );
 
-  const insertNote = useCallback(async (note: BookingNote): Promise<string> => {
+  const insertNote = useCallback(async (note: BookingNoteInput): Promise<string> => {
+    console.log({note})
     const { data, error } = await PostRequest({
-      url: `/api/contacts/notes/create`,
+      url: `/api/appointments/addNote`,
       body: note,
     });
 
     if (data) {
       setContactNotes(prev => [data, ...prev]);
-      return 'Reminder added successfully';
+      toast.success('Note added successfully')
+      return 'Note added successfully';
     }
-
-    return error ?? 'Failed to add reminder';
+    toast.error('Failed to add note')
+    return  '';
   }, []);
 
-  const updateNote = useCallback(async (note: BookingNote): Promise<string> => {
+  const updateNote = useCallback(async (note: BookingNoteInput): Promise<string> => {
     const { data, error } = await PostRequest({
-      url: `/api/contacts/notes/edit`,
+      url: `/api/appointments/editNote`,
       body: note,
     });
 
@@ -427,24 +430,18 @@ export function useBookingsNotes({ notes, tableSize, err, contactId }: UseBookin
       setContactNotes(prev =>
         prev.map(item => (item.id === data.id ? data : item))
       );
-      return 'Reminder updated successfully';
+      toast.success('Note updated successfully')
+      return 'Note updated successfully';
     }
-
-    return error ?? 'Failed to update reminder';
+    toast.error('Failed to update note')
+    return  '';
   }, []);
 
-  const deleteNote = useCallback(async (id: number): Promise<string> => {
-    const { error } = await PostRequest({
-      url: `/api/contacts/notes/delete`,
-      body: id,
-    });
-
+  const deleteNote = useCallback(async (id: number)  => {
+    const { error } = await deleteItem('bookingNote', String(id))
     if (!error) {
       setContactNotes(prev => prev.filter(item => item.id !== id));
-      return 'Reminder deleted successfully';
     }
-
-    return error ?? 'Failed to delete reminder';
   }, []);
 
   const fetchContactNotes = useCallback(

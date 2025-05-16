@@ -16,10 +16,10 @@ export async function POST(req: NextRequest) {
       const { data, error } = await supabase
       .from('bookingNote')
       .insert([body])
-      .select()
-      // .single()
+      .select("*, createdBy(id, userEmail, organization, firstName, lastName, phoneNumber)" )
+      .single()
 
-        console.log('Favorite contact result', {data,error})
+        console.log('ADDING NOTE RESULT: ', {data,error})
         if (error) {
           console.error("Error adding new note", error);
           return NextResponse.json({ data:null, error: error.message }, { status: 400 });

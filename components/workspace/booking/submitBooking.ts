@@ -57,24 +57,7 @@ export const submitBooking = async ({
   // console.log({appointmentLink, newBookingData})
     delete newBookingData['categoryNote'];
     try {
-      // Step 1: Insert booking
-      const response = await fetch('/api/bookings/insert', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newBookingData),
-      });
-  
-      const result = await response.json();
-  
-      if (!response.ok) {
-        console.error('Form submission failed', result);
-        setErrors({ general: result.error });
-        return { bookingSuccess, emailSuccess };
-      }
-  
-      bookingSuccess = true;
-      setBookingFormData((prevData) => ({ ...prevData!, appointmentTime: null }));
-  
+        
       // Build contact record
       const newContact: BookingsContact = {
         email: bookingFormData?.participantEmail,
@@ -86,6 +69,28 @@ export const submitBooking = async ({
         workspaceId: appointmentLink?.workspaceId,
       };
   
+      // Step 0: insert ontact // fetch contact if it aleady exist else insert new one. based on email and workspaceId.
+      const data = insertBookingsContact && await insertBookingsContact(newContact)
+      // Step 1: Insert booking
+      const response = await fetch('/api/bookings/insert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({contactId:data.id??null, ...newBookingData}),
+      });
+  
+      const result = await response.json();
+      
+      console.log({response,contact:data})
+      
+      if (!response.ok) {
+        console.error('Form submission failed', result);
+        setErrors({ general: result.error });
+        return { bookingSuccess, emailSuccess };
+      }
+  
+      bookingSuccess = true;
+      setBookingFormData((prevData) => ({ ...prevData!, appointmentTime: null }));
+
       // Step 2: Run side effects concurrently
       const promises: Promise<any>[] = [
         appointmentLink?.smsNotification==='ON' && insertBookingsReminder({...result.data}), // Reminder is required
@@ -103,10 +108,6 @@ export const submitBooking = async ({
           }),
         }),
       ];
-  
-      if (insertBookingsContact) {
-        promises.unshift(insertBookingsContact(newContact)); // Add contact if function provided
-      }
   
       const results = await Promise.allSettled(promises);
   

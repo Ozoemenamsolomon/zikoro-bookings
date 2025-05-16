@@ -12,6 +12,20 @@ export async function POST(req: NextRequest) {
     
     const supabase = createClient()
     try {
+
+      const { data:contact, error:err } = await supabase
+        .from('bookingsContact')
+        .select('*')
+        .eq('email', body.email)
+        .eq('workspaceId', body.workspaceId)
+        .single()
+
+      console.log('FETCHED CONTACT', {contact, err})
+
+        if(contact){
+          return NextResponse.json({ data:contact,  error:null }, { status: 200 });
+        }
+
       const { data, error } = await supabase
         .from('bookingsContact')
         .insert( body)

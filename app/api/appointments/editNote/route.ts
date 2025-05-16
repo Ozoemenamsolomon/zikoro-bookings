@@ -11,16 +11,16 @@ export async function POST(req: NextRequest) {
     if (!body) {
       return NextResponse.json({ error: "Invalid request body" });
     }
-console.log(body)
+// console.log(body)
     try {
       const { data, error } = await supabase
         .from('bookingNote')
         .update(body)
         .eq('id', body.id)
-        .select()
+        .select("*, createdBy(id, userEmail, organization, firstName, lastName, phoneNumber)" )
         .single();
 
-        // console.log('Updating contact result', {data,error})
+        console.log('Updating contact result', {data,error})
         if (error) {
           console.error("Error Updating booking's note", error);
           return NextResponse.json({ data:null, error: error.message }, { status: 400 });

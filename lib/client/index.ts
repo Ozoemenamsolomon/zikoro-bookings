@@ -36,6 +36,7 @@ export const fetchAllData = async (table: string, orderBy?: string, start:number
 
 import { addMonths, addYears, formatISO } from 'date-fns';
 import { YEARLY_DISCOUNT_RATE } from '@/constants'
+import { toast } from "react-toastify";
  
 
 export function calculateSubscriptionEndDate(
@@ -125,4 +126,27 @@ export function calculateSubscriptionCost(
     total,
     currency: selectedCurrency.label,
   };
+}
+
+export async function deleteItem(table: string, id: string): Promise<{ data: string | null, error: string | null }> {
+  try {
+    const res = await fetch('/api/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ table, id }),
+    });
+
+    const { data, error } = await res.json();
+
+    if (error) {
+      toast.error(error || 'Failed to delete item');
+      return { data: null, error };
+    }
+
+    toast.success(data || 'Item deleted successfully');
+    return { data, error: null };
+  } catch (err: any) {
+    toast.error('Network or server error. Try again.');
+    return { data: null, error: 'Network error' };
+  }
 }
