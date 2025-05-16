@@ -53,7 +53,7 @@ const BookingRow = ({
   const { setBookingFormData, setSelectedItem } = useAppointmentContext();
   useClickOutside(notesRef, () => setShowNote(null));
   
-  return (
+  return ( 
     <>
     <tr className="bg-white border-b relative w-full flex">
       <td className="py-4 px-4 w-3/12  ">

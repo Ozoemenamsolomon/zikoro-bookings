@@ -1,6 +1,6 @@
 "use client";
 
-import { AppointmentLink, AppointmentUnavailability, Booking, BookingReminder, BookingsContact, BookingsQuery, } from "@/types/appointments";
+import { AppointmentLink, AppointmentUnavailability, Booking, BookingNote, BookingNoteInput, BookingReminder, BookingsContact, BookingsQuery, } from "@/types/appointments";
 import { useState,   useCallback,  } from "react";
 import useUserStore from "@/store/globalUserStore";
 
@@ -10,6 +10,7 @@ import { GroupedBookings } from "@/lib/server/appointments";
 import { getRequest, PostRequest } from "@/utils/api";
 import { useRouter } from "next/navigation";
 import { useAppointmentContext } from "@/context/AppointmentContext";
+import { deleteItem } from "@/lib";
 
 export const useGetSchedules =  (scheduleData?: { error?: string | null; schedules?: AppointmentLink[] | null; count?: number; } )=> {
   const { user, currentWorkSpace } = useUserStore();
@@ -383,4 +384,108 @@ export function useBookingsReminder() {
     }
 
   return { insertBookingsReminder, fetchAllBookingReminders };
+}
+
+ 
+type UseBookingNotesProps = {
+  notes: BookingNote[] | null;
+  tableSize: number | null;
+  err: string | null;
+  contactId: string;
+};
+
+export function useBookingsNotes({ notes, tableSize, err, contactId }: UseBookingNotesProps) {
+  const { currentWorkSpace, user } = useUserStore();
+  const [contactNotes, setContactNotes] = useState<BookingNote[]>(notes ?? []);
+  const [error, setError] = useState<string | null>(err);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(
+    Math.ceil((tableSize ?? 0) / 20) || 1
+  );
+
+  const insertNote = useCallback(async (note: BookingNoteInput): Promise<string> => {
+    console.log({note})
+    const { data, error } = await PostRequest({
+      url: `/api/appointments/addNote`,
+      body: note,
+    });
+
+    if (data) {
+      setContactNotes(prev => [data, ...prev]);
+      toast.success('Note added successfully')
+      return 'Note added successfully';
+    }
+    toast.error('Failed to add note')
+    return  '';
+  }, []);
+
+  const updateNote = useCallback(async (note: BookingNoteInput): Promise<string> => {
+    const { data, error } = await PostRequest({
+      url: `/api/appointments/editNote`,
+      body: note,
+    });
+
+    if (data) {
+      setContactNotes(prev =>
+        prev.map(item => (item.id === data.id ? data : item))
+      );
+      toast.success('Note updated successfully')
+      return 'Note updated successfully';
+    }
+    toast.error('Failed to update note')
+    return  '';
+  }, []);
+
+  const deleteNote = useCallback(async (id: number)  => {
+    const { error } = await deleteItem('bookingNote', String(id))
+    if (!error) {
+      setContactNotes(prev => prev.filter(item => item.id !== id));
+    }
+  }, []);
+
+  const fetchContactNotes = useCallback(
+    async (contactId: string, page = 1) => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `/api/contacts/notes?workspaceId=${currentWorkSpace?.organizationAlias}&owner=${user?.id}&contactId=${contactId}&page=${page}`
+        );
+        const { data, error, count } = await res.json();
+
+        setContactNotes(data ?? []);
+        setError(error ?? null);
+        setTotalPages(Math.ceil((count ?? 0) / 20) || 1);
+
+        return { data, error, count };
+      } catch (err) {
+        setError('Unhandled error: check your network and try again');
+        return { data: null, error: 'Unhandled error', count: null };
+      } finally {
+        setLoading(false);
+      }
+    },
+    [currentWorkSpace?.organizationAlias, user?.id]
+  );
+
+  const handlePageChange = useCallback(
+    async (page: number) => {
+      setCurrentPage(page);
+      await fetchContactNotes(contactId, page);
+    },
+    [contactId, fetchContactNotes]
+  );
+
+  return {
+    insertNote,
+    updateNote,
+    deleteNote,
+    fetchContactNotes,
+    handlePageChange,
+    currentPage,
+    loading,
+    error,
+    contactNotes,
+    totalPages,
+  };
 }

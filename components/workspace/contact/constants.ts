@@ -24,10 +24,10 @@ import { urls } from "@/constants";
       label: 'Appointment History',
       link: 'appointment-history',
     },
-    // {
-    //   label: 'Notes',
-    //   link: urls.contactsNotes,
-    // },
+    {
+      label: 'Notes',
+      link: 'notes',
+    },
     // {
     //   label: 'Media',
     //   link: urls.contactsMedia,

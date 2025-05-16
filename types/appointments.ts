@@ -244,12 +244,25 @@ export interface AppointmentNotes {
 }
 
 export interface BookingNote {
-  id?: bigint;
+  id?: number;
   created_at?: string; // ISO timestamp
-  bookingId?: bigint | null;
+  bookingId?: number | null;
   title?: string | null;
   note?: string | null;
   createdBy?: User;
+  lastEditDate?: string | null; // ISO timestamp
+  media?: { type: string; url: string; }[] | null; // JSONB type
+  workspaceId?: string | null;
+  bookingContactId?: string | null;
+}
+
+export interface BookingNoteInput {
+  id?: number;
+  created_at?: string; // ISO timestamp
+  bookingId?: number | null;
+  title?: string | null;
+  note?: string | null;
+  createdBy?: bigint;
   lastEditDate?: string | null; // ISO timestamp
   media?: { type: string; url: string; }[] | null; // JSONB type
   workspaceId?: string | null;

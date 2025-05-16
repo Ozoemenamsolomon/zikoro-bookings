@@ -14,6 +14,7 @@ interface FileUploaderProps {
   isDisabled: boolean;
   multiple?: boolean; // New prop for allowing single or multiple files
   input?: React.ReactNode
+  callback?:(url:string)=>void
 }
 
 export const FileUploader: React.FC<FileUploaderProps> = ({
@@ -22,6 +23,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
   setPreviewUrls,
   isDisabled,
   multiple = true, // Default is multiple
+  callback
 }) => {
  
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -97,6 +99,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
 
   const removeItem = (url: string) => {
     setPreviewUrls((prev) => prev.filter((item) => item.url !== url));
+    callback&&callback(url)
     setFiles((prev) => prev.filter((file) => URL.createObjectURL(file) !== url));
   };
 

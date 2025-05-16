@@ -60,7 +60,7 @@ export async function sendSms(recipients: string, message: string) {
     });
 
     const responseData = await response.json();
-    console.log({ responseData, data });
+    console.log({ smsResult: responseData });
 
     return responseData;
   } catch (error: any) {
