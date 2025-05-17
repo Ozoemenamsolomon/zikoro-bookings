@@ -9,12 +9,13 @@ import { Search } from 'lucide-react'
 import { DateRange } from 'react-day-picker'
 import SearchTags from './SearchTags'
 
-const SearchAppointment = ({ filterBookings, queryParams,setQueryParams, filter, setCurrentPage }: {
+const SearchAppointment = ({ filterBookings, queryParams,setQueryParams, filter, setCurrentPage, setFilter }: {
     filterBookings: (param: BookingsQuery) => any,
     queryParams: BookingsQuery,
     setQueryParams: Dispatch<SetStateAction<BookingsQuery>>
     setCurrentPage: Dispatch<SetStateAction<number>>
     filter:string,
+    setFilter:Dispatch<SetStateAction<string>>
 }) => {
     const [query, setQuery] = useState('')
     const [drop, setDrop] = useState(true)
@@ -29,6 +30,7 @@ const SearchAppointment = ({ filterBookings, queryParams,setQueryParams, filter,
 
     const handleSearch = () => {
         setCurrentPage(1)
+        setFilter("")
         const { type, date, page, ...rest } = queryParams
 
         if (query === '') return
@@ -37,6 +39,8 @@ const SearchAppointment = ({ filterBookings, queryParams,setQueryParams, filter,
 
     const handleDateSearch= (dateRange: DateRange | undefined) => {
         setCurrentPage(1)
+        setFilter("")
+        
         const { type, date, page, ...rest } = queryParams
         filterBookings({ ...rest,  from: dateRange?.from?.toISOString(), to: dateRange?.to?.toISOString() })
     }
@@ -79,16 +83,19 @@ const SearchAppointment = ({ filterBookings, queryParams,setQueryParams, filter,
                         onChange={filterBookings}
                         queryParams={queryParams!}
                         setCurrentPage={setCurrentPage}
+                        setFilter={setFilter}
                     />
                     <FilterByTeamMemebr 
                         onChange={filterBookings}
                         queryParams={queryParams!}
                         setCurrentPage={setCurrentPage}
+                        setFilter={setFilter}
                     />
                     <FilterByStatus 
                         onChange={filterBookings}
                         queryParams={queryParams!}
                         setCurrentPage={setCurrentPage}
+                        setFilter={setFilter}
                     />
                 </div>
                 

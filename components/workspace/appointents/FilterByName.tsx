@@ -15,9 +15,10 @@ interface FilterByNameProps {
   onChange: (queryParams: BookingsQuery) => void;
   queryParams: BookingsQuery;
   setCurrentPage: Dispatch<SetStateAction<number>>;
+  setFilter:Dispatch<SetStateAction<string>>
 }
 
-const FilterByName = ({ onChange, queryParams, setCurrentPage }: FilterByNameProps) => {
+const FilterByName = ({ onChange, queryParams, setCurrentPage, setFilter }: FilterByNameProps) => {
   const [appointmentNames, setAppointmentNames] = useState<Appointment[] | null>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState("");
@@ -69,6 +70,8 @@ const FilterByName = ({ onChange, queryParams, setCurrentPage }: FilterByNamePro
         appointmentName: updatedSelection.length > 0 ? JSON.stringify(updatedSelection) : null,
       };
       setCurrentPage(1)
+      setFilter("")
+
       onChange(newQueryParams); // Trigger filtering
   };
 

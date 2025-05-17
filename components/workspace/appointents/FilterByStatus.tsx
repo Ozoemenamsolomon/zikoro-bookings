@@ -7,10 +7,11 @@ import { Dispatch, SetStateAction } from "react";
 interface FilterByStatusProps {
   onChange: (queryParams: BookingsQuery) => void;
   queryParams: BookingsQuery;
+  setFilter:Dispatch<SetStateAction<string>>
   setCurrentPage: Dispatch<SetStateAction<number>>;
 }
 
-const FilterByStatus = ({ onChange, queryParams, setCurrentPage }: FilterByStatusProps) => {
+const FilterByStatus = ({ onChange, queryParams, setCurrentPage, setFilter }: FilterByStatusProps) => {
   // Extract selected team members from queryParams when page loads
   const selectedStatuses = useMemo(() => {
     return queryParams.status ? JSON.parse(queryParams.status) : [];
@@ -28,6 +29,7 @@ const FilterByStatus = ({ onChange, queryParams, setCurrentPage }: FilterByStatu
         status: updatedSelection.length > 0 ? JSON.stringify(updatedSelection) : null,
       };
       setCurrentPage(1)
+      setFilter("")
 
       onChange(newQueryParams); // Trigger filtering
   };

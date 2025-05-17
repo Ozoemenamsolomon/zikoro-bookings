@@ -12,7 +12,6 @@ interface FetchBookingsResult {
   data: GroupedBookings | null;
   error: string | null;
   count: number;
-  querySize:number
 }
 
 const groupBookingsByDate = (bookings: Booking[]): GroupedBookings => {
@@ -50,7 +49,6 @@ export const fetchAppointments = async (
       .select(`*, appointmentLinkId(*, createdBy(id, userEmail,organization,firstName,lastName,phoneNumber))`, { count: 'exact' })
       .eq("workspaceId", payload?.workspaceId)
 
-      const {count} = await query
 
       if (param?.search) {
         query = query.or(
@@ -109,23 +107,23 @@ export const fetchAppointments = async (
       // Pagination handling
       const start = param?.page ? (param?.page - 1) * settings.countLimit : 0;
       const limit = start + settings.countLimit || 20; 
+      query = query.range(start, limit-1); // Supabase uses 0-based indexes; e.g 0 - 4 will produce 5 items, so we make limit-1 to get the atual COUNTLIMIT
+      
+      const { data, count, error } = await query.order('appointmentDate', {ascending:false}); // Note count is always the size all the items in the table with all the queries except the range. range determines the number of items to return which represents the COUNTLIMIT. We then use the count to determine the totalPages size in the UI
 
-      query = query.range(start, start + limit - 1); // Supabase uses 0-based indexes
-
-      const { data, count:querySize, error } = await query.order('appointmentDate', {ascending:false});
+      console.log({count, start,   param, limit}) 
 
     if (error) {
       console.error('Error fetching appointments:', error, param);
-      return { data: null, error: error.message, count: 0, querySize:0 };
+      return { data: null, error: error.message, count: 0,  };
     }
 
-    return { data:groupBookingsByDate(data), error: null, count: count ?? 0,  querySize: querySize??0 };
+    return { data:groupBookingsByDate(data), error: null, count: count ?? 0,   };
 
   } catch (error) {
     console.error('Server error:', error);
-    return { data: null, error: 'Server error', count: 0 , querySize:0};
+    return { data: null, error: 'Server error', count: 0 ,  };
   }
-
 };
 
 export const fetchAppointmentNames = async (

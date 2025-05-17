@@ -3,7 +3,7 @@ import { fetchAppointments } from '@/lib/server/appointments';
 import { BookingsQuery } from '@/types/appointments';
 import React from 'react';
 
-export const COUNTLIMIT = 20;
+// export const COUNTLIMIT = 20;
 export const dynamic = 'force-dynamic';
 
 const AppointmentsPage = async ({
@@ -40,7 +40,7 @@ const AppointmentsPage = async ({
 
   const workspaceAlias = (await params).workspaceAlias;
   // Fetch appointments
-  const { data, count, error, querySize } = await fetchAppointments({
+  const { data, count, error,} = await fetchAppointments({
     workspaceId: workspaceAlias!,
     searchQuery,
   });

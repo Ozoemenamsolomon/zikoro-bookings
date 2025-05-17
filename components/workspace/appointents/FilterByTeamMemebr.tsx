@@ -11,10 +11,11 @@ import { BookingsQuery } from "@/types/appointments";
 interface FilterByTeamMemberProps {
   onChange: (queryParams: BookingsQuery) => void;
   queryParams: BookingsQuery;
+  setFilter:Dispatch<SetStateAction<string>>
   setCurrentPage: Dispatch<SetStateAction<number>>;
 }
 
-const FilterByTeamMember = ({ onChange, queryParams, setCurrentPage }: FilterByTeamMemberProps) => {
+const FilterByTeamMember = ({ onChange, queryParams, setCurrentPage, setFilter }: FilterByTeamMemberProps) => {
   const [teamMembers, setTeamMembers] = useState<BookingTeamMember[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState("");
@@ -59,6 +60,7 @@ const FilterByTeamMember = ({ onChange, queryParams, setCurrentPage }: FilterByT
         teamMembers: updatedSelection.length > 0 ? JSON.stringify(updatedSelection) : null,
       };
       setCurrentPage(1)
+      setFilter("")
 
       onChange(newQueryParams); // Trigger filtering
   };

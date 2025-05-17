@@ -319,7 +319,9 @@ const Appointments = ({
                 className="py-2 w-full bg-white px-4 rounded-full flex justify-between gap-2 items-center text-sm"
               >
                 <p>
-                  {filter === "upcoming"
+                  {!filter ?
+                  "Select type" :
+                  filter === "upcoming"
                     ? "Upcoming appointments"
                     : "Past appointments"}
                 </p>
@@ -366,7 +368,7 @@ const Appointments = ({
         </div>
       </header>
 
-      <SearchAppointment filterBookings={filterBookings} queryParams={queryParams} filter={filter} setQueryParams={setQueryParams} setCurrentPage={setCurrentPage}/>
+      <SearchAppointment filterBookings={filterBookings} queryParams={queryParams} filter={filter} setQueryParams={setQueryParams} setCurrentPage={setCurrentPage} setFilter={setFilter}/>
 
       <Suspense
         fallback={
